@@ -14,6 +14,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
+- Real API login wiring (FE-004): replaced mock auth with real Laravel API calls via Next.js BFF Route Handlers (/api/auth/login, /api/auth/logout, /api/auth/me) using secure httpOnly cookie (app_token); mapped API error codes (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) to LoginForm banner respecting bilingual messages; verified roles and permissions via GET /v1/auth/me; logout revokes token via API; 14 vitest tests PASS; Next.js build PASS.
 
 ### QA & Fixes
 - Fixed MinIO service failing to start (FIX-001): the `minio/minio` image was removed from Docker Hub; the compose stack now uses MinIO's official Quay registry image `quay.io/minio/minio`.
