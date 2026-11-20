@@ -15,7 +15,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ## BE-001 — Monorepo foundation & Docker Compose
 - Assignee: Muse · Level: L3 · Status: IN_REVIEW
-- Branch: be/BE-001-monorepo-docker · PR: —
+- Branch: be/BE-001-monorepo-docker · PR: #1 (đã merge)
 - Blocked by: DOC-001
 - Acceptance Criteria: Cấu trúc `apps/`, `packages/contracts/`, `tests/e2e/`, `docs/`; `docker-compose.yml` ở root chạy được các service api/web/mysql/redis/mailpit/minio trên máy sạch; `.gitignore` + `.editorconfig` đầy đủ cho Laravel + Next.js.
 - Progress: Muse bắt đầu 2026-11-20: đã soạn docker-compose.yml (api/web/mysql/redis/mailpit/minio), Dockerfile cho api (PHP 8.3) và web (Node 20), README cho packages/contracts và tests/e2e, .env.example + Makefile ở root. Chưa kiểm chứng chạy Docker thật (môi trường của Muse không có Docker) — cần OpenCode/Nguyen chạy `docker compose up` kiểm chứng ở bước review.
@@ -24,8 +24,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-002 — Initialize Laravel API & health endpoint
-- Assignee: Muse · Level: L2 · Status: IN_PROGRESS
-- Branch: be/BE-002-laravel-api-init · PR: —
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: be/BE-002-laravel-api-init · PR: #2 (đã merge)
 - Blocked by: BE-001
 - Acceptance Criteria: Laravel chạy ở `apps/api` trong Docker; `.env.example` không chứa secret thật; endpoint `GET /api/v1/health` trả về format response chuẩn đã thống nhất; Pint + PHPUnit/Pest chạy được.
 - Progress: Muse hoàn thành 2026-11-20: Laravel v12.73.0 (ghim đúng ^12.0 theo DEC-001), đã cài Sanctum API scaffolding, HealthController + test riêng. Kiểm chứng tại máy Muse: `php artisan test` 3 passed, HTTP thật tới `/api/v1/health` trả 200 đúng format `{data:{status,service,version,timestamp}}`, Pint PASS. Chưa kiểm chứng qua Docker (môi trường Muse không có Docker) — kiểm chứng ở bước review.
@@ -34,11 +34,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-001 — Initialize Next.js web app & i18n EN/VI
-- Assignee: Google Antigravity · Level: L2 · Status: TODO
-- Branch: fe/FE-001-nextjs-init · PR: —
+- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
+- Branch: fe/FE-001-nextjs-init · PR: #3 (đã merge)
 - Blocked by: BE-001
 - Acceptance Criteria: Next.js (App Router) + TypeScript strict ở `apps/web`; Tailwind CSS + shadcn/ui; `next-intl` với `en.json`/`vi.json` chuyển được EN ↔ VI ở trang khung; không có chuỗi hiển thị viết cứng trong component.
-- Progress: —
+- Progress: Khung khởi tạo do Muse dựng theo kế hoạch khởi tạo (2026-11-20), Antigravity tiếp quản từ đây: Next.js 15 + TypeScript strict + Tailwind v4 + next-intl, routing theo locale (en mặc định, vi đầy đủ), trang chủ dùng 100% chuỗi dịch từ `messages/`. Kiểm chứng tại máy Muse: `npm install` OK, `tsc --noEmit` không lỗi, `next build` thành công, sinh đủ trang `/en` và `/vi`. Chưa có `pnpm-lock.yaml` (máy Muse không có pnpm) — sinh khi `pnpm install` lần đầu/Docker build. shadcn/ui + TanStack Query + RHF/Zod thêm ở các task màn hình đầu tiên. (Ghi chú minh bạch: bản ghi Progress này lẽ ra nằm trong PR #3 nhưng bị sót do lỗi khớp chuỗi khi Muse cập nhật file — bổ sung tại PR tài liệu BE-003.)
 - Handoff: Khung khởi tạo có thể do Muse dựng ở bước bootstrap theo kế hoạch khởi tạo; Antigravity tiếp quản và hoàn thiện.
 
 ---
@@ -54,12 +54,42 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-003 — Auth, multi-tenancy & RBAC contract (design)
-- Assignee: Muse · Level: L3 · Status: TODO
+- Assignee: Muse · Level: L3 · Status: IN_PROGRESS
 - Branch: be/BE-003-auth-contract · PR: —
 - Blocked by: BE-002
 - Acceptance Criteria: Đề xuất contract Auth (đăng ký/đăng nhập/token) + mô hình multi-tenancy `agency_id` + ma trận phân quyền chi tiết 7 vai trò được Muse soạn và Nguyen duyệt trước khi phổ biến cho Antigravity/OpenCode (quy trình mục E, Quy ước chung).
-- Progress: —
+- Progress: Hợp đồng đã được Nguyen DUYỆT ngày 2026-11-20 (kèm 3 chốt tại DEC-008: email unique toàn hệ thống; token không đặt hạn cứng trong MVP; Portal có quên mật khẩu) và công bố tại `docs/AUTH_CONTRACT.md`. Đang triển khai phần Backend.
 - Handoff: —
+
+---
+
+## FE-002 — Internal app login (Auth contract implementation)
+- Assignee: Google Antigravity · Level: L2 · Status: TODO
+- Branch: fe/FE-002-login · PR: —
+- Blocked by: — (hợp đồng `docs/AUTH_CONTRACT.md` đã duyệt — làm bằng mock, không chờ BE-003 code)
+- Acceptance Criteria: Màn hình đăng nhập nội bộ gọi `POST /api/v1/auth/login` theo hợp đồng (mock trước, nối API thật khi BE-003 xong); lưu token an toàn phía client; route guard chặn trang nội bộ khi chưa đăng nhập; hiển thị lỗi theo mã lỗi chuẩn (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyển EN ↔ VI ngay tại màn login; không hardcode chuỗi hiển thị.
+- Progress: —
+- Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
+
+---
+
+## FE-003 — Client Portal login frame
+- Assignee: Google Antigravity · Level: L2 · Status: TODO
+- Branch: fe/FE-003-portal-login · PR: —
+- Blocked by: — (hợp đồng đã duyệt — làm bằng mock)
+- Acceptance Criteria: Khu vực Portal tách riêng tại route `/portal` với layout riêng; màn đăng nhập Portal gọi `POST /api/v1/portal/auth/login` (mock theo hợp đồng); token portal tách biệt token nội bộ (không dùng lẫn); trang tổng quan Portal trống (placeholder theo i18n) sau đăng nhập; EN/VI đầy đủ.
+- Progress: —
+- Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
+
+---
+
+## QA-002 — Auth & tenancy test coverage
+- Assignee: OpenCode · Level: L1 · Status: TODO
+- Branch: qa/QA-002-auth-tests · PR: —
+- Blocked by: BE-003 (chờ code Backend để chạy kiểm thử thật; viết test case từ Acceptance Criteria ngay được)
+- Acceptance Criteria: Bộ test case bao phủ: login đúng/sai thông tin, agency bị khoá, tài khoản bị vô hiệu hoá, token portal gọi API nội bộ bị chặn và ngược lại, truy vấn dữ liệu agency khác trả 404, rate limit login; E2E Playwright cho luồng login nội bộ + Portal; kết quả ghi vào task này.
+- Progress: —
+- Handoff: Viết test case từ `docs/AUTH_CONTRACT.md` ngay; chạy thật khi BE-003/FE-002/FE-003 lên PR.
 
 ---
 
