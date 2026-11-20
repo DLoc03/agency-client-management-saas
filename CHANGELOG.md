@@ -11,6 +11,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Monorepo foundation & Docker Compose (BE-001): root `docker-compose.yml` with api/web/mysql/redis/mailpit/minio, PHP 8.3 and Node 20 Dockerfiles, shared `.env.example` and `Makefile`.
 - Laravel API initialized (BE-002): Laravel 12 in `apps/api`, Sanctum API scaffolding, `GET /api/v1/health` endpoint in the standard response format with a dedicated feature test.
 - Auth, multi-tenancy & RBAC contract published (BE-003): `docs/AUTH_CONTRACT.md` approved by the Product Owner, including global-unique email, no hard token expiry in the MVP, and portal password reset (DEC-008).
+- Auth & tenancy implemented (BE-003): agencies/roles/client-accounts data model with agency global scope, internal + portal login/logout/me/change-password/forgot/reset endpoints, Sanctum token abilities `app` vs `portal` with cross-blocking, standard error format with EN/VI messages, login rate limiting, and the generated OpenAPI contract in `packages/contracts/openapi.json`.
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
