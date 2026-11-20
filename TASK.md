@@ -65,7 +65,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ## FE-002 — Internal app login (Auth contract implementation)
 - Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
-- Branch: fe/FE-002-login · PR: —
+- Branch: fe/FE-002-login · PR: #7
 - Blocked by: — (hợp đồng `docs/AUTH_CONTRACT.md` đã duyệt — làm bằng mock, không chờ BE-003 code)
 - Acceptance Criteria: Màn hình đăng nhập nội bộ gọi `POST /api/v1/auth/login` theo hợp đồng (mock trước, nối API thật khi BE-003 xong); lưu token an toàn phía client; route guard chặn trang nội bộ khi chưa đăng nhập; hiển thị lỗi theo mã lỗi chuẩn (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyển EN ↔ VI ngay tại màn login; không hardcode chuỗi hiển thị.
 - Progress: Antigravity bắt đầu 2026-11-20. Tạo branch fe/FE-002-login. Đang code: mock auth service, LoginForm component (RHF + Zod), route guard middleware, i18n EN/VI đầy đủ, lưu token qua httpOnly cookie pattern (localStorage fallback mock), hiển thị lỗi INVALID_CREDENTIALS / AGENCY_LOCKED / ACCOUNT_DISABLED. shadcn/ui + React Hook Form + Zod cài thêm (L2 — thêm vào package.json phần FE, không đổi cấu hình chung backend/docker).
