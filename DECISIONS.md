@@ -36,3 +36,8 @@
 - Decision: Lần khởi tạo đầu tiên của repo (5 file bắt buộc + tài liệu đã chốt trong `docs/`) được đẩy trực tiếp lên `main` một lần duy nhất, thay vì qua PR — vì repo trống chưa có nội dung để mở PR vào. Ngoại lệ này nằm trong Kế hoạch khởi tạo repo đã trình Nguyen trước khi Nguyen gửi link repo.
 - Reason: Không thể áp dụng quy trình PR cho commit đầu tiên của một repo rỗng.
 - Scope / Expiry: Chỉ áp dụng cho commit bootstrap DOC-001. Mọi thay đổi từ sau đó tuân thủ tuyệt đối quy trình PR có review thật.
+
+## DEC-008 — Hợp đồng Auth + Multi-tenancy + RBAC (BE-003) và 3 chốt chi tiết · 2026-11-20 · Mức: L3/L5
+- Decision: Duyệt hợp đồng tại `docs/AUTH_CONTRACT.md`: agency_id chỉ lấy từ token, dữ liệu agency khác trả 404, token Sanctum tách scope `app`/`portal` và chặn chéo, client_accounts là loại tài khoản riêng, chuẩn mã lỗi máy ổn định. Ba chốt chi tiết theo đề xuất của Muse được Nguyen duyệt: (1) email unique TOÀN HỆ THỐNG trong MVP (login 1 bước, không cần mã workspace); (2) token KHÔNG đặt hạn cứng trong MVP — thu hồi khi logout/đổi mật khẩu; (3) Portal CÓ quên mật khẩu, dùng chung cơ chế email với nội bộ.
+- Reason: Email toàn cục đơn giản hoá UX đăng nhập cho MVP; hạn token cứng chưa cần thiết ở quy mô MVP nhưng thu hồi chủ động thì bắt buộc; Portal là mặt tiền với khách hàng nên quên mật khẩu là tối thiểu phải có.
+- Scope / Expiry: Toàn bộ MVP; xem xét lại email-theo-agency và hạn token khi có nhu cầu đa workspace cho một người dùng.
