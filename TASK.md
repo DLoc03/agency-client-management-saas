@@ -70,11 +70,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-002 — Internal app login (Auth contract implementation)
-- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
-- Branch: fe/FE-002-login · PR: #7
+- Assignee: Google Antigravity · Level: L2 · Status: TODO
+- Branch: fe/FE-002-login · PR: —
 - Blocked by: — (hợp đồng `docs/AUTH_CONTRACT.md` đã duyệt — làm bằng mock, không chờ BE-003 code)
 - Acceptance Criteria: Màn hình đăng nhập nội bộ gọi `POST /api/v1/auth/login` theo hợp đồng (mock trước, nối API thật khi BE-003 xong); lưu token an toàn phía client; route guard chặn trang nội bộ khi chưa đăng nhập; hiển thị lỗi theo mã lỗi chuẩn (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyển EN ↔ VI ngay tại màn login; không hardcode chuỗi hiển thị.
-- Progress: Antigravity bắt đầu 2026-11-20. Tạo branch fe/FE-002-login. Đang code: mock auth service, LoginForm component (RHF + Zod), route guard middleware, i18n EN/VI đầy đủ, lưu token qua httpOnly cookie pattern (localStorage fallback mock), hiển thị lỗi INVALID_CREDENTIALS / AGENCY_LOCKED / ACCOUNT_DISABLED. shadcn/ui + React Hook Form + Zod cài thêm (L2 — thêm vào package.json phần FE, không đổi cấu hình chung backend/docker).
+- Progress: —
 - Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
@@ -101,6 +101,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
   - Không hardcode secret: mọi tài khoản/ID đọc từ biến `E2E_*` của seed dùng chung (`tests/e2e/README.md`, quy ước H.4). Không thêm dependency hay config chung (L4) — chỉ thêm 1 file spec trong phạm vi sở hữu QA.
   - Kết quả: **bộ test case HOÀN THÀNH ở mức viết; chưa có kết quả chạy thật.** Chuyển `IN_REVIEW` chờ Muse approve/merge; không tự merge PR của chính mình.
 - Handoff: Khi BE-003/FE-002/FE-003 mở PR, chạy `tests/e2e/auth.spec.ts` trên DB test riêng của QA (`agency_test`, G.2), bổ sung endpoint Portal forgot/reset sau khi contract chốt, rồi ghi kết quả PASS/FAIL vào task này.
+---
+
+## FIX-001 — MinIO image no longer on Docker Hub
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-001-minio-image · PR: —
+- Blocked by: —
+- Acceptance Criteria: `docker compose up` kéo được image MinIO (image `minio/minio` đã bị gỡ khỏi Docker Hub — phát hiện khi Nguyen chạy local lần đầu 2026-11-20); chuyển sang registry chính thức của MinIO tại Quay (`quay.io/minio/minio`); các service còn lại không đổi.
+- Progress: Muse sửa 2026-11-20 trong PR này; chờ kiểm chứng bằng lần `docker compose up` đầy đủ tiếp theo tại máy Nguyen.
+- Handoff: —
+
 ---
 
 ## Inbox
