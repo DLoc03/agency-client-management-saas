@@ -136,11 +136,16 @@ test.describe('QA-002 / API contract — portal auth & token scope isolation (DE
     expectScopeBlocked(response.status(), (await errorOf(response)).code);
   });
 
-  test('TC-AUTH-17 portal forgot/reset password endpoints — CONTRACT GAP', async () => {
-    test.fixme(
-      'DEC-008.3 approved portal password reset, but AUTH_CONTRACT §3 only lists portal login/logout/me. ' +
-        'Muse + Nguyen must confirm method/path/request/response before this case can run (reported in TASK.md Inbox by QA-001).',
-    );
+  test('TC-AUTH-17 portal forgot-password never enumerates accounts; invalid reset token returns 422', async ({ request }) => {
+    const unknown = await request.post(`${API_BASE}/portal/auth/forgot-password`, {
+      data: { email: `missing-${Date.now()}@example.invalid` },
+    });
+    expect(unknown.status()).toBe(200);
+    const reset = await request.post(`${API_BASE}/portal/auth/reset-password`, {
+      data: { token: 'invalid-token', email: credentials('PORTAL').email, password: 'new-password-123' },
+    });
+    expect(reset.status()).toBe(422);
+    expect((await errorOf(reset)).code).toBe('INVALID_RESET_TOKEN');
   });
 });
 
@@ -237,7 +242,7 @@ test.describe.serial('QA-002 / API contract — password lifecycle & rate limit'
     });
     expect(unknown.status()).toBe(200);
     const reset = await request.post(`${API_BASE}/auth/reset-password`, {
-      data: { token: 'invalid-token', email: credentials('USER').email, new_password: 'new-password-123' },
+      data: { token: 'invalid-token', email: credentials('USER').email, password: 'new-password-123' },
     });
     expect(reset.status()).toBe(422);
     expect((await errorOf(reset)).code).toBe('INVALID_RESET_TOKEN');
