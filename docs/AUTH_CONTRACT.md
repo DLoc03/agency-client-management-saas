@@ -40,6 +40,8 @@
 | POST | `/portal/auth/login` | Như login nội bộ nhưng xác thực trên `client_accounts`, token scope `portal`, response kèm `client` tóm tắt. |
 | POST | `/portal/auth/logout` | Thu hồi token. |
 | GET | `/portal/auth/me` | Hồ sơ client + agency tóm tắt. |
+| POST | `/portal/auth/forgot-password` | Gửi email đặt lại mật khẩu (DEC-008 mục 3 — dùng chung cơ chế với nội bộ, link trỏ về web app, hết hạn 60 phút). Luôn trả 200 kể cả email không tồn tại (chống dò tài khoản). |
+| POST | `/portal/auth/reset-password` | `{token, email, password}`. Token sai/hết hạn → 422 `INVALID_RESET_TOKEN`. Đặt lại thành công → thu hồi mọi token `portal` của tài khoản. |
 
 - Tài khoản Client do phía Agency tạo/cấp (module Client Portal sau), không tự đăng ký.
 
