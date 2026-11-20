@@ -126,9 +126,9 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
 - Assignee: Muse · Level: L3 · Status: TODO
 - Branch: be/BE-004-client-module · PR: —
-- Blocked by: Nguyen duyệt hợp đồng BE-004 (bản thảo Muse đã soạn 2026-11-20, gồm 6 điểm cần chốt) → công bố thành `docs/CLIENT_CONTRACT.md` + DEC-009 qua PR docs riêng như quy trình BE-003.
+- Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
-- Progress: Chưa bắt đầu — chờ duyệt hợp đồng.
+- Progress: Hợp đồng được Nguyen duyệt toàn bộ theo đề xuất 2026-11-20 (DEC-009) và công bố tại `docs/CLIENT_CONTRACT.md` qua PR docs kèm theo; Muse bắt đầu code ngay sau khi PR đó merge.
 - Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
 
 ---
