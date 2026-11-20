@@ -38,5 +38,70 @@
       "signOut": "Sign out",
       "mockNotice": "⚠️ Mock mode — data is not persisted. API connects when BE-003 ships."
     }
+  },
+  "Portal": {
+    "brand": "Client Portal",
+    "login": {
+      "title": "Sign in to Client Portal",
+      "subtitle": "Review projects, tasks, and billing from your agency.",
+      "emailLabel": "Client email",
+      "emailPlaceholder": "client@partner.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign in to Portal",
+      "submitting": "Signing in…",
+      "forgotPassword": "Forgot password?",
+      "errors": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordMinLength": "Password must be at least 8 characters.",
+        "INVALID_CREDENTIALS": "Incorrect email or password. Please try again.",
+        "AGENCY_LOCKED": "The agency workspace has been locked. Please contact your agency representative.",
+        "ACCOUNT_DISABLED": "Your portal account has been disabled. Please contact your agency administrator.",
+        "UNKNOWN": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email address to receive password reset instructions.",
+      "emailLabel": "Account email",
+      "emailPlaceholder": "client@partner.com",
+      "submit": "Send reset instructions",
+      "submitting": "Sending…",
+      "backToLogin": "Back to sign in",
+      "successNotice": "If the account exists, a password reset email has been sent. Please check your inbox.",
+      "errors": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address."
+      }
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "subtitle": "Enter the reset token and choose a new password.",
+      "tokenLabel": "Reset token",
+      "tokenPlaceholder": "Paste reset token from email",
+      "passwordLabel": "New password",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Reset password",
+      "submitting": "Resetting…",
+      "backToLogin": "Return to sign in",
+      "successNotice": "Your password has been successfully reset. You may now sign in.",
+      "errors": {
+        "tokenRequired": "Reset token is required.",
+        "passwordRequired": "New password is required.",
+        "passwordMinLength": "Password must be at least 8 characters.",
+        "INVALID_RESET_TOKEN": "The reset token is invalid or has expired."
+      }
+    },
+    "dashboard": {
+      "title": "Client Overview",
+      "welcome": "Welcome, {name}!",
+      "agency": "Servicing Agency: {agency}",
+      "clientId": "Client ID: #{id}",
+      "emptyNotice": "No active projects or invoices yet. New updates from your agency will appear here.",
+      "signOut": "Sign out of Portal",
+      "mockNotice": "⚠️ Portal Mock Mode — separate session and token from internal agency app."
+    }
   }
 }

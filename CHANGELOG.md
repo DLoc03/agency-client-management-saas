@@ -14,6 +14,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
+- Client Portal login frame (FE-003): dedicated /portal area with custom layout and emerald branding; mock auth service per AUTH_CONTRACT.md §3 (login, logout, me, forgot-password, reset-password); portal_token isolated from internal app_token; portal route guard in middleware; empty dashboard placeholder per i18n; EN/VI fully supported; 16 vitest tests PASS; next build PASS.
 
 ### QA & Fixes
 - Fixed MinIO service failing to start (FIX-001): the `minio/minio` image was removed from Docker Hub; the compose stack now uses MinIO's official Quay registry image `quay.io/minio/minio`.

@@ -80,11 +80,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-003 — Client Portal login frame
-- Assignee: Google Antigravity · Level: L2 · Status: TODO
+- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
 - Branch: fe/FE-003-portal-login · PR: —
 - Blocked by: — (hợp đồng đã duyệt — làm bằng mock)
 - Acceptance Criteria: Khu vực Portal tách riêng tại route `/portal` với layout riêng; màn đăng nhập Portal gọi `POST /api/v1/portal/auth/login` (mock theo hợp đồng); token portal tách biệt token nội bộ (không dùng lẫn); trang tổng quan Portal trống (placeholder theo i18n) sau đăng nhập; EN/VI đầy đủ.
-- Progress: —
+- Progress: Antigravity hoàn thành 2026-11-20: xây dựng khung Client Portal tại route /portal với layout riêng biệt, mock service theo docs/AUTH_CONTRACT.md (login, logout, me, forgot-password, reset-password), token portal_token tách biệt hoàn toàn với app_token, route guard cho Portal, i18n EN/VI đầy đủ (16 vitest tests PASS, tsc PASS, next build PASS). Đang mở PR.
 - Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
