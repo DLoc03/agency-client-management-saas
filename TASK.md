@@ -14,7 +14,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-001 — Monorepo foundation & Docker Compose
-- Assignee: Muse · Level: L3 · Status: IN_PROGRESS
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
 - Branch: be/BE-001-monorepo-docker · PR: —
 - Blocked by: DOC-001
 - Acceptance Criteria: Cấu trúc `apps/`, `packages/contracts/`, `tests/e2e/`, `docs/`; `docker-compose.yml` ở root chạy được các service api/web/mysql/redis/mailpit/minio trên máy sạch; `.gitignore` + `.editorconfig` đầy đủ cho Laravel + Next.js.
@@ -24,11 +24,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-002 — Initialize Laravel API & health endpoint
-- Assignee: Muse · Level: L2 · Status: TODO
+- Assignee: Muse · Level: L2 · Status: IN_PROGRESS
 - Branch: be/BE-002-laravel-api-init · PR: —
 - Blocked by: BE-001
-- Acceptance Criteria: Laravel chạy ở `apps/api` trong Docker; `.env.example` không chứa secret thật; endpoint `GET /api/v1/health` trả về format response chuẩn đã thống nhất; Pint + Pest chạy được.
-- Progress: —
+- Acceptance Criteria: Laravel chạy ở `apps/api` trong Docker; `.env.example` không chứa secret thật; endpoint `GET /api/v1/health` trả về format response chuẩn đã thống nhất; Pint + PHPUnit/Pest chạy được.
+- Progress: Muse hoàn thành 2026-11-20: Laravel v12.73.0 (ghim đúng ^12.0 theo DEC-001), đã cài Sanctum API scaffolding, HealthController + test riêng. Kiểm chứng tại máy Muse: `php artisan test` 3 passed, HTTP thật tới `/api/v1/health` trả 200 đúng format `{data:{status,service,version,timestamp}}`, Pint PASS. Chưa kiểm chứng qua Docker (môi trường Muse không có Docker) — kiểm chứng ở bước review.
 - Handoff: —
 
 ---
