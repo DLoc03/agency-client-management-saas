@@ -113,6 +113,26 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
+- Assignee: Google Antigravity · Level: L3 · Status: TODO
+- Branch: fe/FE-004-login-real-api · PR: —
+- Blocked by: — (BE-003 đã merge; FE-002 đã merge)
+- Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
+- Progress: Chưa bắt đầu. Đây là mốc nghiệm thu giao diện + luồng thật đầu tiên — làm xong báo Nguyen chạy local duyệt.
+- Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
+
+---
+
+## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: be/BE-004-client-module · PR: —
+- Blocked by: Nguyen duyệt hợp đồng BE-004 (bản thảo Muse đã soạn 2026-11-20, gồm 6 điểm cần chốt) → công bố thành `docs/CLIENT_CONTRACT.md` + DEC-009 qua PR docs riêng như quy trình BE-003.
+- Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
+- Progress: Chưa bắt đầu — chờ duyệt hợp đồng.
+- Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
+
+---
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
