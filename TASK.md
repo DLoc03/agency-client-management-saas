@@ -4,21 +4,21 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## DOC-001 — Bootstrap repository documents & conventions
-- Assignee: Muse · Level: L3 · Status: IN_PROGRESS
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
 - Branch: — (bootstrap trực tiếp lên `main` một lần duy nhất, xem DEC-007) · PR: —
 - Blocked by: —
 - Acceptance Criteria: 5 file bắt buộc (VERSION.md, TASK.md, CHANGELOG.md, README.md, DECISIONS.md) có mặt ở root với nội dung đã chốt; tài liệu Quy ước / Stack / Scope / RBAC-i18n nằm trong `docs/`; repo đọc lại được trên GitHub sau khi đẩy.
-- Progress: Đang thực hiện bởi Muse ngày 2026-11-20 sau khi Nguyen gửi link repo.
+- Progress: Hoàn thành và đẩy lên `main` ngày 2026-11-20 (commit 05aa5b1), đã đọc lại xác minh trên GitHub. Chờ OpenCode review theo QA-001.
 - Handoff: Sau khi xong, OpenCode review theo QA-001.
 
 ---
 
 ## BE-001 — Monorepo foundation & Docker Compose
-- Assignee: Muse · Level: L3 · Status: TODO
+- Assignee: Muse · Level: L3 · Status: IN_PROGRESS
 - Branch: be/BE-001-monorepo-docker · PR: —
 - Blocked by: DOC-001
 - Acceptance Criteria: Cấu trúc `apps/`, `packages/contracts/`, `tests/e2e/`, `docs/`; `docker-compose.yml` ở root chạy được các service api/web/mysql/redis/mailpit/minio trên máy sạch; `.gitignore` + `.editorconfig` đầy đủ cho Laravel + Next.js.
-- Progress: —
+- Progress: Muse bắt đầu 2026-11-20: đã soạn docker-compose.yml (api/web/mysql/redis/mailpit/minio), Dockerfile cho api (PHP 8.3) và web (Node 20), README cho packages/contracts và tests/e2e, .env.example + Makefile ở root. Chưa kiểm chứng chạy Docker thật (môi trường của Muse không có Docker) — cần OpenCode/Nguyen chạy `docker compose up` kiểm chứng ở bước review.
 - Handoff: —
 
 ---
