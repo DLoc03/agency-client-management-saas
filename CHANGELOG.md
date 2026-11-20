@@ -14,6 +14,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
+- Internal app login screen (FE-002): `LoginForm` (React Hook Form + Zod validation), mock auth service simulating `POST /api/v1/auth/login` per `AUTH_CONTRACT.md` (INVALID_CREDENTIALS / AGENCY_LOCKED / ACCOUNT_DISABLED), session storage for mock token, `AuthProvider` context, client-side route guard on `/dashboard`, EN ↔ VI switcher on login screen, 6 unit tests PASS, `tsc --noEmit` clean, `next build` PASS.
 
 ### QA & Fixes
 - QA-001 (OpenCode): reviewed bootstrap DOC-001 — 5 mandatory files + `docs/` verified against DEC-001..DEC-008: PASS, no blocker. Two minor findings logged in `TASK.md` Inbox (stale CONVENTIONS note; missing Portal password-reset endpoints in AUTH_CONTRACT).

@@ -1,1 +1,42 @@
-{"Common":{"language":"Ngôn ngữ"},"Home":{"status":"Giai đoạn nền tảng — ứng dụng đang được khởi tạo.","subtitle":"Quản lý lead, khách hàng, dự án và hoá đơn trong một hệ thống.","title":"Agency & Client Management SaaS"}}
+{
+  "Common": {
+    "language": "Ngôn ngữ",
+    "loading": "Đang tải…",
+    "or": "hoặc"
+  },
+  "Home": {
+    "status": "Giai đoạn nền tảng — ứng dụng đang được khởi tạo.",
+    "subtitle": "Quản lý lead, khách hàng, dự án và hoá đơn trong một hệ thống.",
+    "title": "Agency & Client Management SaaS"
+  },
+  "Auth": {
+    "login": {
+      "title": "Đăng nhập vào không gian làm việc",
+      "subtitle": "Nhập email và mật khẩu làm việc của bạn.",
+      "emailLabel": "Email làm việc",
+      "emailPlaceholder": "ban@agency.com",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Đăng nhập",
+      "submitting": "Đang đăng nhập…",
+      "forgotPassword": "Quên mật khẩu?",
+      "errors": {
+        "emailRequired": "Email là bắt buộc.",
+        "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
+        "passwordRequired": "Mật khẩu là bắt buộc.",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự.",
+        "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
+        "AGENCY_LOCKED": "Không gian làm việc của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.",
+        "ACCOUNT_DISABLED": "Tài khoản của bạn đã bị vô hiệu hoá. Vui lòng liên hệ chủ sở hữu không gian làm việc.",
+        "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+      }
+    },
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "welcome": "Chào mừng trở lại, {name}!",
+      "agency": "Không gian làm việc: {agency}",
+      "signOut": "Đăng xuất",
+      "mockNotice": "⚠️ Chế độ mock — dữ liệu không được lưu. API sẽ kết nối khi BE-003 hoàn thành."
+    }
+  }
+}
