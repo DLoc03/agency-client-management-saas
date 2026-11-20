@@ -84,11 +84,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## QA-002 — Auth & tenancy test coverage
-- Assignee: OpenCode · Level: L1 · Status: TODO
+- Assignee: OpenCode · Level: L1 · Status: IN_PROGRESS
 - Branch: qa/QA-002-auth-tests · PR: —
 - Blocked by: BE-003 (chờ code Backend để chạy kiểm thử thật; viết test case từ Acceptance Criteria ngay được)
 - Acceptance Criteria: Bộ test case bao phủ: login đúng/sai thông tin, agency bị khoá, tài khoản bị vô hiệu hoá, token portal gọi API nội bộ bị chặn và ngược lại, truy vấn dữ liệu agency khác trả 404, rate limit login; E2E Playwright cho luồng login nội bộ + Portal; kết quả ghi vào task này.
-- Progress: —
+- Progress: OpenCode claim lúc 2026-11-20 theo B.4; đang viết test case từ `docs/AUTH_CONTRACT.md` (đã duyệt theo DEC-008) — chạy thật khi BE-003/FE-002/FE-003 lên PR.
 - Handoff: Viết test case từ `docs/AUTH_CONTRACT.md` ngay; chạy thật khi BE-003/FE-002/FE-003 lên PR.
 
 ---
