@@ -11,13 +11,12 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Monorepo foundation & Docker Compose (BE-001): root `docker-compose.yml` with api/web/mysql/redis/mailpit/minio, PHP 8.3 and Node 20 Dockerfiles, shared `.env.example` and `Makefile`.
 - Laravel API initialized (BE-002): Laravel 12 in `apps/api`, Sanctum API scaffolding, `GET /api/v1/health` endpoint in the standard response format with a dedicated feature test.
 - Auth, multi-tenancy & RBAC contract published (BE-003): `docs/AUTH_CONTRACT.md` approved by the Product Owner, including global-unique email, no hard token expiry in the MVP, and portal password reset (DEC-008).
-- Auth & tenancy implemented (BE-003): agencies/roles/client-accounts data model with agency global scope, internal + portal login/logout/me/change-password/forgot/reset endpoints, Sanctum token abilities `app` vs `portal` with cross-blocking, standard error format with EN/VI messages, login rate limiting, and the generated OpenAPI contract in `packages/contracts/openapi.json`.
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
-- Internal app login screen (FE-002): `LoginForm` (React Hook Form + Zod validation), mock auth service simulating `POST /api/v1/auth/login` per `AUTH_CONTRACT.md` (INVALID_CREDENTIALS / AGENCY_LOCKED / ACCOUNT_DISABLED), session storage for mock token, `AuthProvider` context, client-side route guard on `/dashboard`, EN ↔ VI switcher on login screen, 6 unit tests PASS, `tsc --noEmit` clean, `next build` PASS.
 
 ### QA & Fixes
+- Fixed MinIO service failing to start (FIX-001): the `minio/minio` image was removed from Docker Hub; the compose stack now uses MinIO's official Quay registry image `quay.io/minio/minio`.
 - QA-001 (OpenCode): reviewed bootstrap DOC-001 — 5 mandatory files + `docs/` verified against DEC-001..DEC-008: PASS, no blocker. Two minor findings logged in `TASK.md` Inbox (stale CONVENTIONS note; missing Portal password-reset endpoints in AUTH_CONTRACT).
 - QA-002 (OpenCode): authored 23 Playwright cases from docs/AUTH_CONTRACT.md (17 API + 6 E2E) in tests/e2e/auth.spec.ts — login success/failure, locked agency, disabled account, app/portal token isolation, cross-tenant 404/422, rate limit, password lifecycle, i18n. Execution pending BE-003/FE-002/FE-003 PRs. (Entry restored here — it was dropped while resolving the PR #6 merge conflict.)
 
