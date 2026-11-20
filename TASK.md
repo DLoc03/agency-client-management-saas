@@ -61,7 +61,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ## BE-003 — Auth, multi-tenancy & RBAC contract (design)
 - Assignee: Muse · Level: L3 · Status: IN_REVIEW
-- Branch: be/BE-003-auth-tenancy-rbac · PR: —
+- Branch: be/BE-003-auth-tenancy-rbac · PR: #8
 - Blocked by: BE-002
 - Acceptance Criteria: Đề xuất contract Auth (đăng ký/đăng nhập/token) + mô hình multi-tenancy `agency_id` + ma trận phân quyền chi tiết 7 vai trò được Muse soạn và Nguyen duyệt trước khi phổ biến cho Antigravity/OpenCode (quy trình mục E, Quy ước chung).
 - Progress: Hợp đồng đã được Nguyen DUYỆT ngày 2026-11-20 (kèm 3 chốt tại DEC-008: email unique toàn hệ thống; token không đặt hạn cứng trong MVP; Portal có quên mật khẩu) và công bố tại `docs/AUTH_CONTRACT.md` (PR #4). Phần Backend đã triển khai xong: migrations agencies/roles/super_admins/client_accounts + users.agency_id/locale/is_active; trait BelongsToAgency (global scope theo agency của user đăng nhập, có chống đệ quy khi Sanctum đang nạp tokenable); AuthController + PortalAuthController (token tách ability `app`/`portal`, chặn chéo 403); chuẩn lỗi `{error:{code,message,details}}` + thông điệp EN/VI theo locale; rate limit login 5/phút; link reset mật khẩu trỏ về web app (FRONTEND_URL); seed roles + demo data opt-in (SEED_DEMO_DATA); OpenAPI sinh bằng Scramble tại `packages/contracts/openapi.json` (12 paths). Kiểm chứng tại máy Muse: `php artisan test` **19 passed** (gồm test từng mã lỗi, chặn chéo token, scope cross-tenant), Pint PASS, smoke test HTTP thật: login Owner/Portal đúng payload, token app gọi Portal bị 403 FORBIDDEN, sai mật khẩu với Accept-Language `vi` trả thông điệp tiếng Việt. Chưa kiểm chứng qua Docker (máy Muse không có Docker).
