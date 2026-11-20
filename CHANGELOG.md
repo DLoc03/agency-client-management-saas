@@ -16,7 +16,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
 
 ### QA & Fixes
--
+- QA-001 (OpenCode): reviewed bootstrap DOC-001 — 5 mandatory files + `docs/` verified against DEC-001..DEC-008: PASS, no blocker. Two minor findings logged in `TASK.md` Inbox (stale CONVENTIONS note; missing Portal password-reset endpoints in AUTH_CONTRACT).
 
 ## [0.1.0] - 2026-11-20
 - Project repository created by Nguyen (Product Owner). Pre-release baseline: documentation and planning only, no application code yet.
