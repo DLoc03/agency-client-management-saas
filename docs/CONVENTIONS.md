@@ -249,4 +249,4 @@ Nguyen + Muse phân task (L3) → ghi vào TASK.md (TODO, có Acceptance Criteri
 ```
 
 ---
-**Việc còn mở (không thuộc tài liệu này):** chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code theo đúng chỉ đạo của Nguyen.
+**Trạng thái:** stack (DEC-001) và scope MVP (DEC-004) đã chốt ngày 2026-11-20; dự án đã qua giai đoạn khởi tạo và đang triển khai theo TASK.md. (Dòng trạng thái này thay cho ghi chú cũ từ bản quy ước dự thảo — sửa theo finding QA-001, PR #5.)
