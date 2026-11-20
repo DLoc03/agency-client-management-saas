@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\ApiException;
+use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\SetApiLocale;
 use App\Support\ApiError;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'ability' => CheckAbilities::class,
             'abilities' => CheckForAnyAbility::class,
+            'permission' => EnsurePermission::class,
         ]);
         $middleware->api(append: [SetApiLocale::class]);
     })
