@@ -1,1 +1,42 @@
-{"Common":{"language":"Language"},"Home":{"status":"Foundation phase — the application is being initialized.","subtitle":"Manage leads, clients, projects and billing in one place.","title":"Agency & Client Management SaaS"}}
+{
+  "Common": {
+    "language": "Language",
+    "loading": "Loading…",
+    "or": "or"
+  },
+  "Home": {
+    "status": "Foundation phase — the application is being initialized.",
+    "subtitle": "Manage leads, clients, projects and billing in one place.",
+    "title": "Agency & Client Management SaaS"
+  },
+  "Auth": {
+    "login": {
+      "title": "Sign in to your workspace",
+      "subtitle": "Enter your work email and password.",
+      "emailLabel": "Work email",
+      "emailPlaceholder": "you@agency.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "forgotPassword": "Forgot password?",
+      "errors": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordMinLength": "Password must be at least 8 characters.",
+        "INVALID_CREDENTIALS": "Incorrect email or password. Please try again.",
+        "AGENCY_LOCKED": "Your workspace has been locked. Please contact support.",
+        "ACCOUNT_DISABLED": "Your account has been disabled. Please contact your workspace owner.",
+        "UNKNOWN": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back, {name}!",
+      "agency": "Workspace: {agency}",
+      "signOut": "Sign out",
+      "mockNotice": "⚠️ Mock mode — data is not persisted. API connects when BE-003 ships."
+    }
+  }
+}
