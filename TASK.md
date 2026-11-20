@@ -44,11 +44,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## QA-001 — Review bootstrap, conventions & repository structure
-- Assignee: OpenCode · Level: L1 · Status: TODO
+- Assignee: OpenCode · Level: L1 · Status: IN_PROGRESS
 - Branch: qa/QA-001-bootstrap-review · PR: —
 - Blocked by: DOC-001
 - Acceptance Criteria: Kiểm tra 5 file bắt buộc đúng quy ước (VERSION.md đúng 1 dòng; TASK.md theo ID; quyền ghi từng file); kiểm tra tài liệu trong `docs/` khớp các quyết định DEC-001 → DEC-007; báo cáo kết quả trong task này.
-- Progress: —
+- Progress: OpenCode claim lúc 2026-11-20 theo B.4; đang review 5 file bắt buộc + `docs/` đối chiếu DEC-001 → DEC-008 (mở rộng theo chỉ đạo của Nguyen so với Acceptance Criteria gốc DEC-001 → DEC-007).
 - Handoff: —
 
 ---
