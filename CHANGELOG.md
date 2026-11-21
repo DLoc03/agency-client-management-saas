@@ -15,6 +15,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ### QA & Fixes
 - Create responses now reflect database defaults (FIX-005): POST create endpoints refresh the model before responding, so fields such as client status, note author, and portal account locale/is_active are no longer blank in 201 responses. Includes a regression test.
 - Compose hardening (FIX-006): default filesystem disk is now `local` (S3/MinIO returns with the Group 7 storage decision), and the web service waits for the API healthcheck before starting.
+- Removed an accidentally committed compiled Blade view file from `apps/api/storage/framework/views` (FIX-007); the directory keeps only `.gitkeep`.
 - Fixed web-to-API wiring in Docker (FIX-004): the web service now sets INTERNAL_API_URL=http://api:8000/api so the Next.js BFF can reach the Laravel API over the compose network. Without it the BFF fell back to localhost inside its own container and every login failed with "fetch failed" / HTTP 500 before credentials were even checked.
 - MinIO removed from the default compose stack (FIX-003): MinIO no longer offers a free public image (Docker Hub removed it; Quay now returns 401), which blocked `docker compose up` entirely. The service now sits behind the `storage` compose profile and the API no longer depends on it; nothing in the current scope uses S3 yet.
 
