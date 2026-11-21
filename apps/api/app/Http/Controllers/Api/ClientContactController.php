@@ -26,7 +26,8 @@ class ClientContactController extends Controller
     {
         $contact = $client->contacts()->create($request->validated());
 
-        return ContactResource::make($contact)->response()->setStatusCode(201);
+        // FIX-005: reload so column defaults (is_primary) show up.
+        return ContactResource::make($contact->refresh())->response()->setStatusCode(201);
     }
 
     public function update(UpdateContactRequest $request, Client $client, int $contactId): ContactResource

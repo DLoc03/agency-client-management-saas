@@ -30,7 +30,8 @@ class ClientNoteController extends Controller
             'body' => $request->validated('body'),
         ]);
 
-        return ClientNoteResource::make($note->load('author'))->response()->setStatusCode(201);
+        // FIX-005: refresh for stored values, then load the author relation.
+        return ClientNoteResource::make($note->refresh()->load('author'))->response()->setStatusCode(201);
     }
 
     public function destroy(Request $request, Client $client, int $noteId): Response
