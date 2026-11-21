@@ -170,6 +170,24 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: — · PR: —
+- Blocked by: PR #19 merge (hợp đồng CRM_CONTRACT + DEC-014 chính thức trên main)
+- Acceptance Criteria: Đủ endpoints và quy tắc trong docs/CRM_CONTRACT.md: leads CRUD + lọc, pipeline-summary, convert Lead → Client (tạo Client + Organization + Contact, nối lại contacts, khoá sửa lead, 409 khi convert lại, 422 chống trùng kèm force), lead notes, lead activities + due list, contacts dùng chung (lead_id), ma trận quyền leads.* theo DEC-014, cách ly tenant. Test: bộ test Feature cho module Lead đạt, Pint PASS, OpenAPI cập nhật.
+- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014).
+- Handoff: OpenCode review theo ma trận G.3.
+
+## FIX-005 — Response tạo mới không phản ánh giá trị mặc định của DB (status/author/is_active trống)
+- Assignee: Muse · Level: L1 · Status: TODO
+- Branch: — · PR: —
+- Blocked by: —
+- Acceptance Criteria: Các response POST (tạo client, client note, portal account — và rà soát toàn bộ module BE-003/BE-004) trả về đúng giá trị thực trong DB (status=active, author, locale, is_active) bằng cách nạp lại model/quan hệ trước khi trả resource. Phát hiện khi Nguyen nghiệm thu Mốc 1 Luồng C: dữ liệu DB đúng, chỉ response hiển thị trống. Kèm test hồi quy cho ít nhất endpoint tạo client.
+- Progress: —
+- Handoff: OpenCode review theo ma trận G.3.
+
+---
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
