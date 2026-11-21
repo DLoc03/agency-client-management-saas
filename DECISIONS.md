@@ -56,3 +56,18 @@
 - Decision: OpenCode đảm nhiệm thêm vai trò Frontend Developer (vai trò chính QA Review & Tester giữ nguyên), thay Google Antigravity kể từ quyết định này. Mọi task FE từ thời điểm này được giao cho OpenCode trừ khi Nguyen chỉ định khác.
 - Reason: Antigravity tạm ngưng hoạt động; cần giữ tiến độ Frontend không bị chặn (lý do chi tiết do Nguyen nắm).
 - Scope / Expiry: Áp dụng cho mọi task FE mở sau thời điểm quyết định (FE-004/FE-003 đã hoàn thành trước đó không bị ảnh hưởng). Ràng buộc bất biến theo quy ước: **OpenCode không bao giờ được tự review/accept code FE của chính mình** — PR FE của OpenCode do Muse review chéo hoặc Nguyen duyệt. Quyết định hết hiệu lực khi Nguyen thông báo Antigravity quay lại hoặc chỉ định khác.
+
+## DEC-012 — Loại Google Antigravity khỏi danh sách Agents Coding · 2026-11-21 · Mức: L5 (Nguyen quyết)
+- Decision: Google Antigravity chính thức rời danh sách Agents Coding của dự án (bổ sung/thay thế khung tạm thời của DEC-011). Đội hình tạm thời còn: Nguyen (Product Owner) · Muse (Backend chính + điều phối phân task + review chéo code FE của OpenCode) · OpenCode (QA Review & Tester + Frontend Developer theo DEC-011, không tự review code FE của mình). Khi Nguyen tìm được AI Coding Agent mới tham gia, vai trò sẽ được phân chia lại và ghi quyết định mới.
+- Reason: Antigravity không còn đủ quota để tiếp tục tham gia hiệu quả (theo thông báo của Nguyen).
+- Scope / Expiry: Áp dụng ngay; các đóng góp đã merge của Antigravity (FE-001, FE-002, FE-003, FE-004) giữ nguyên giá trị và lịch sử. Hết hiệu lực khi có quyết định nhân sự mới.
+
+## DEC-013 — Hướng thiết kế UI: khung Classic Sidebar (A) + Pipeline CRM (D) + hơi hướng Bento (C) cho Portal · 2026-11-21 · Mức: L3 (Muse đề xuất, Nguyen duyệt)
+- Decision: Chốt sớm hướng giao diện ở mức khung và ngôn ngữ thị giác (chưa trau chuốt chi tiết từng màn): (1) Mẫu A "Classic Sidebar" là style chính của ứng dụng nội bộ, xây trên shadcn/ui + Tailwind với design tokens thống nhất. (2) Các màn CRM dùng mẫu D "Pipeline" (Kanban theo giai đoạn lead). (3) Khu Client Portal lấy hơi hướng mẫu C "Bento Thân Thiện" (thoáng, thân thiện với khách hàng). Toàn bộ quy ước giao diện ràng buộc nằm tại `docs/UI_GUIDELINES.md` — mọi agent làm Frontend (OpenCode, Muse khi kiêm nhiệm, hoặc agent mới) đều phải tuân thủ, và Nguyen nghiệm thu UI trực tiếp bằng mắt.
+- Reason: Các màn hình nghiệp vụ sắp nhân lên (CRM, Projects, Finance); chốt khung + tokens sớm tránh phải sửa lại toàn bộ về sau. Nguyen có kinh nghiệm Frontend ở các dự án trước và đặt yêu cầu cao về UI/UX cho người dùng cuối.
+- Scope / Expiry: Áp dụng cho mọi màn hình Frontend từ FE-005 trở đi. Đổi hướng thiết kế là quyết định L3 trở lên.
+
+## DEC-014 — Duyệt hợp đồng BE-005 (CRM/Lead) theo đề xuất của Muse · 2026-11-21 · Mức: L3 (Muse + Nguyen)
+- Decision: Công bố `docs/CRM_CONTRACT.md` với cả 6 điểm theo đề xuất: (1) trạng thái pipeline cố định new/contacted/qualified/unqualified, không stages tuỳ biến ở MVP; (2) mở rộng bảng contacts dùng chung Lead/Client (thêm lead_id, client_id nullable, contact thuộc đúng một chủ) và thêm clients.source_lead_id; (3) Follow-up Activities ở mức bảng lead_activities + endpoint due, thông báo đẩy để Nhóm 0; (4) lịch sử tương tác = notes + activities trong MVP, Activity Log tích hợp sau; (5) ma trận quyền leads.* (Sales toàn quyền trừ xoá; xoá lead = Owner + Admin; PM/Accountant chỉ xem; Team Member không có); (6) convert khoá sửa lead, chống trùng client 422 kèm cờ force, convert lại trả 409.
+- Reason: Giữ đúng phạm vi MVP Nhóm 1 đã chốt trong docs/MVP_SCOPE.md và nhất quán với các quyết định của module Client (DEC-009).
+- Scope / Expiry: Áp dụng cho BE-005 và các task CRM liên quan; thay đổi hợp đồng sau khi công bố cần quyết định mới.
