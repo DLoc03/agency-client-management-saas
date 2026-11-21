@@ -198,11 +198,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: OpenCode review theo ma trận G.3.
 
 ## FIX-005 — Response tạo mới không phản ánh giá trị mặc định của DB (status/author/is_active trống)
-- Assignee: Muse · Level: L1 · Status: TODO
-- Branch: — · PR: —
+- Assignee: Muse · Level: L1 · Status: IN_REVIEW
+- Branch: fix/FIX-005-response-defaults · PR: —
 - Blocked by: —
 - Acceptance Criteria: Các response POST (tạo client, client note, portal account — và rà soát toàn bộ module BE-003/BE-004) trả về đúng giá trị thực trong DB (status=active, author, locale, is_active) bằng cách nạp lại model/quan hệ trước khi trả resource. Phát hiện khi Nguyen nghiệm thu Mốc 1 Luồng C: dữ liệu DB đúng, chỉ response hiển thị trống. Kèm test hồi quy cho ít nhất endpoint tạo client.
-- Progress: —
+- Progress: Muse hoàn thành: refresh model sau khi tạo ở ClientController, ClientPortalAccountController, ClientContactController, ClientNoteController; test hồi quy CreateResponseDefaultsTest (4 test) — trước fix fail 3/4, sau fix đạt cả bộ 52 test.
 - Handoff: OpenCode review theo ma trận G.3.
 ## FIX-004 — Web container thiếu INTERNAL_API_URL — mọi login qua BFF đều "fetch failed" / 500
 - Assignee: Muse · Level: L2 · Status: IN_REVIEW

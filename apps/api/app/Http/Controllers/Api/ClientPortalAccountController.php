@@ -30,7 +30,8 @@ class ClientPortalAccountController extends Controller
             'agency_id' => $client->agency_id,
         ]);
 
-        return PortalAccountResource::make($account)->response()->setStatusCode(201);
+        // FIX-005: reload so column defaults (locale, is_active) show up.
+        return PortalAccountResource::make($account->refresh())->response()->setStatusCode(201);
     }
 
     public function update(UpdatePortalAccountRequest $request, Client $client, int $accountId): PortalAccountResource

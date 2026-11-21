@@ -53,6 +53,10 @@ class ClientController extends Controller
             return $client;
         });
 
+        // FIX-005: reload so column defaults (status, type) are reflected
+        // in the response instead of the in-memory nulls.
+        $client->refresh();
+
         return ClientResource::make(
             $client->load(['organization', 'tags', 'accountManager'])->loadCount('portalAccounts')
         )->response()->setStatusCode(201);
