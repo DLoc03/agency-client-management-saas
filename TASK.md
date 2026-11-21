@@ -160,6 +160,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FIX-004 — Web container thiếu INTERNAL_API_URL — mọi login qua BFF đều "fetch failed" / 500
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-004-web-internal-api-url · PR: #21
+- Blocked by: —
+- Acceptance Criteria: Trong Docker, đăng nhập nội bộ (đúng và sai mật khẩu) trả đúng kết quả của API (200 / 401 kèm mã lỗi) thay vì 500 "fetch failed": thêm `INTERNAL_API_URL: http://api:8000/api` vào environment của service web trong docker-compose.yml. Nguyên nhân: `getBackendApiUrl()` (FE-004) ưu tiên INTERNAL_API_URL nhưng compose chưa hề set biến này, nên BFF rơi về NEXT_PUBLIC_API_URL/localhost — bên trong container web, localhost là chính container web, kết nối bị từ chối trước khi API kịp kiểm tra mật khẩu. Phát hiện khi Nguyen nghiệm thu Mốc 1 (A1/A2 đều 500 kể cả mật khẩu đúng). Ghi chú review: nhận xét của OpenCode ở PR #14 cho rằng INTERNAL_API_URL "đã set" là chưa chính xác — biến này không tồn tại ở cả compose lẫn code ngoài hàm đọc.
+- Progress: Muse sửa trong PR này. PR được merge theo NGOẠI LỆ L5 do Nguyen duyệt ngày 2026-11-21 (để gỡ chặn nghiệm thu Mốc 1; OpenCode review bù sau merge).
+- Handoff: OpenCode review bù theo ma trận G.3.
+
+---
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 

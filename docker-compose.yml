@@ -63,6 +63,10 @@ services:
       - web_node_modules:/app/node_modules
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      # Server-side (BFF) calls must reach the API over the compose network —
+      # without this the web container falls back to localhost (= itself)
+      # and every login fails with "fetch failed" / 500 (FIX-004).
+      INTERNAL_API_URL: http://api:8000/api
     ports:
       - "3000:3000"
     depends_on:
