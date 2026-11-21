@@ -13,13 +13,21 @@ import type {
   MeResponse,
 } from "./types";
 
+export function normalizeBackendBaseUrl(url: string): string {
+  // Accept either ".../api" or ".../api/v1" (and trailing slashes) and always
+  // return the canonical ".../api" base, so callers can safely append "/v1/...".
+  return url.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
+}
+
 export function getBackendApiUrl(): string {
-  // In server-side / docker environment, prefer internal URL; fallback to public or localhost
-  return (
+  // In server-side / docker environment, prefer internal URL; fallback to public or localhost.
+  // NEXT_PUBLIC_API_URL historically carried a trailing "/v1", which previously caused
+  // a double "/v1" segment when appended again by the callers (FE-006).
+  const raw =
     process.env.INTERNAL_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8000/api"
-  );
+    "http://localhost:8000/api";
+  return normalizeBackendBaseUrl(raw);
 }
 
 /**

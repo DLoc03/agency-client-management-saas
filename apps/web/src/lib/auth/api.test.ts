@@ -4,7 +4,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { backendGetMe, backendLogin, backendLogout } from "./api";
+import { backendGetMe, backendLogin, backendLogout, getBackendApiUrl, normalizeBackendBaseUrl } from "./api";
 
 describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
   beforeEach(() => {
@@ -246,5 +246,35 @@ describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
         })
       );
     });
+  });
+});
+
+
+describe("getBackendApiUrl (FE-006 normalization)", () => {
+  const originalInternal = process.env.INTERNAL_API_URL;
+  const originalPublic = process.env.NEXT_PUBLIC_API_URL;
+
+  afterEach(() => {
+    if (originalInternal === undefined) delete process.env.INTERNAL_API_URL;
+    else process.env.INTERNAL_API_URL = originalInternal;
+    if (originalPublic === undefined) delete process.env.NEXT_PUBLIC_API_URL;
+    else process.env.NEXT_PUBLIC_API_URL = originalPublic;
+  });
+
+  it("normalizes a base that already ends with /v1 (no double /v1)", () => {
+    expect(normalizeBackendBaseUrl("http://localhost:8000/api/v1")).toBe("http://localhost:8000/api");
+    expect(normalizeBackendBaseUrl("http://localhost:8000/api/v1/")).toBe("http://localhost:8000/api");
+    expect(normalizeBackendBaseUrl("http://localhost:8000/api/")).toBe("http://localhost:8000/api");
+  });
+
+  it("returns canonical base when NEXT_PUBLIC_API_URL carries /v1 (regression)", () => {
+    delete process.env.INTERNAL_API_URL;
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:8000/api/v1";
+    expect(getBackendApiUrl()).toBe("http://localhost:8000/api");
+  });
+
+  it("prefers INTERNAL_API_URL and normalizes it too", () => {
+    process.env.INTERNAL_API_URL = "http://api:8000/api/v1/";
+    expect(getBackendApiUrl()).toBe("http://api:8000/api");
   });
 });
