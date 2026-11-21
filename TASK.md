@@ -150,13 +150,23 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FIX-003 — MinIO image không còn public (Docker Hub + Quay đều chặn) — đưa MinIO ra khỏi stack mặc định
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-003-minio-optional · PR: #20
+- Blocked by: —
+- Acceptance Criteria: `docker compose up -d --build` trên máy sạch chạy được mà không cần kéo image MinIO: service minio chuyển sau profile `storage` (bật thủ công bằng `--profile storage` khi có quyền truy cập image), `api` bỏ `depends_on` vào minio (chưa tính năng nào dùng S3 ở giai đoạn này). Khi module File (Nhóm 7) bắt đầu, chọn lại giải pháp S3 self-host còn được phân phối công khai và ghi quyết định mới.
+- Progress: Muse sửa trong PR này sau khi Nguyen chạy nghiệm thu Mốc 1 bị chặn bởi lỗi 401 từ quay.io (Muse đã tự kiểm chứng: Quay trả 401 ngay cả với token pull ẩn danh — MinIO đã rút toàn bộ image công khai miễn phí). Workaround trước mắt cho máy đang chạy: `docker compose up -d mysql redis mailpit` rồi `docker compose up -d --build --no-deps api web`.
+- Handoff: OpenCode review theo ma trận G.3.
+
+---
+
 ## FIX-004 — Web container thiếu INTERNAL_API_URL — mọi login qua BFF đều "fetch failed" / 500
 - Assignee: Muse · Level: L2 · Status: IN_REVIEW
-- Branch: fix/FIX-004-web-internal-api-url · PR: —
+- Branch: fix/FIX-004-web-internal-api-url · PR: #21
 - Blocked by: —
 - Acceptance Criteria: Trong Docker, đăng nhập nội bộ (đúng và sai mật khẩu) trả đúng kết quả của API (200 / 401 kèm mã lỗi) thay vì 500 "fetch failed": thêm `INTERNAL_API_URL: http://api:8000/api` vào environment của service web trong docker-compose.yml. Nguyên nhân: `getBackendApiUrl()` (FE-004) ưu tiên INTERNAL_API_URL nhưng compose chưa hề set biến này, nên BFF rơi về NEXT_PUBLIC_API_URL/localhost — bên trong container web, localhost là chính container web, kết nối bị từ chối trước khi API kịp kiểm tra mật khẩu. Phát hiện khi Nguyen nghiệm thu Mốc 1 (A1/A2 đều 500 kể cả mật khẩu đúng). Ghi chú review: nhận xét của OpenCode ở PR #14 cho rằng INTERNAL_API_URL "đã set" là chưa chính xác — biến này không tồn tại ở cả compose lẫn code ngoài hàm đọc.
-- Progress: Muse sửa trong PR này. Workaround tại máy Nguyen trước khi merge: tạo `docker-compose.override.yml` với cùng biến môi trường rồi `docker compose up -d web`.
-- Handoff: OpenCode review theo ma trận G.3.
+- Progress: Muse sửa trong PR này. PR được merge theo NGOẠI LỆ L5 do Nguyen duyệt ngày 2026-11-21 (để gỡ chặn nghiệm thu Mốc 1; OpenCode review bù sau merge).
+- Handoff: OpenCode review bù theo ma trận G.3.
 
 ---
 
