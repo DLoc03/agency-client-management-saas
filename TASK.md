@@ -212,6 +212,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-21 — Muse triển khai (docker-compose.yml) sau khi Nguyen merge xong 4 PR #24–#27; chờ OpenCode review.
 - Blockers: Không có.
 
+## FIX-007 — Dọn file rác Blade compiled view lọt vào main qua PR #29
+- Status: IN_REVIEW
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: File sinh tự động `apps/api/storage/framework/views/275c7c02e2528e6029079c885e2d2418.php` (Blade view đã biên dịch) bị môi trường của OpenCode commit nhầm vào branch FE-005 và đã vào main khi PR #29 merge. Xoá khỏi repo; thư mục views chỉ giữ `.gitkeep` như thiết kế (FIX-002). File này vô hại khi chạy (Laravel tự biên dịch lại) — đây thuần tuý là vệ sinh repo theo đề xuất của Muse, được Nguyen duyệt sau merge.
+- Acceptance Criteria: File không còn trên main sau khi PR này merge; `storage/framework/views/` chỉ còn `.gitkeep`.
+- Progress: 2026-11-21 — Muse đã xoá trên branch `fix/FIX-007-cleanup-compiled-view`; chờ Nguyen merge.
+- Blockers: Không có.
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
