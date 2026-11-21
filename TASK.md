@@ -204,6 +204,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FIX-006 — Compose hardening: ổ đĩa mặc định local + web chờ api khoẻ (từ review bù FIX-003/FIX-004)
+- Status: IN_REVIEW
+- Assignee: Muse · Reviewer: OpenCode
+- Mô tả: Hai finding hạ tầng từ đợt review bù của OpenCode: (1) compose mặc định để `FILESYSTEM_DISK: s3` + env AWS trỏ MinIO trong khi MinIO không chạy ở stack mặc định (FIX-003) — bất kỳ luồng ghi file nào trong tương lai sẽ lỗi khó hiểu; đổi mặc định sang `local`, S3 quay lại cùng quyết định storage ở Nhóm 7. (2) `web depends_on: api` chưa có điều kiện sẵn sàng (FIX-004) — thêm healthcheck cho api (đánh `/api/v1/health` bằng php) và để web chờ `condition: service_healthy`.
+- Acceptance Criteria: `docker compose up -d --build` chạy như cũ trên máy Nguyen; web chỉ start sau khi api trả health 200; không đổi hành vi nào khác.
+- Progress: 2026-11-21 — Muse triển khai (docker-compose.yml) sau khi Nguyen merge xong 4 PR #24–#27; chờ OpenCode review.
+- Blockers: Không có.
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
