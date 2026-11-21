@@ -4,7 +4,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## DOC-001 — Bootstrap repository documents & conventions
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: — (bootstrap trực tiếp lên `main` một lần duy nhất, xem DEC-007) · PR: —
 - Blocked by: —
 - Acceptance Criteria: 5 file bắt buộc (VERSION.md, TASK.md, CHANGELOG.md, README.md, DECISIONS.md) có mặt ở root với nội dung đã chốt; tài liệu Quy ước / Stack / Scope / RBAC-i18n nằm trong `docs/`; repo đọc lại được trên GitHub sau khi đẩy.
@@ -12,6 +12,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Sau khi xong, OpenCode review theo QA-001.
 
 ---
+- Đóng task: DONE 2026-11-21 — QA PASS toàn phần, đóng cùng release 0.2.0 (OpenCode theo thẩm quyền QA).
 
 ## BE-001 — Monorepo foundation & Docker Compose
 - Assignee: Muse · Level: L3 · Status: IN_REVIEW
@@ -44,7 +45,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## QA-001 — Review bootstrap, conventions & repository structure
-- Assignee: OpenCode · Level: L1 · Status: IN_REVIEW
+- Assignee: OpenCode · Level: L1 · Status: DONE
 - Branch: qa/QA-001-bootstrap-review · PR: #5 (chờ Muse review/merge — G.3)
 - Blocked by: DOC-001
 - Acceptance Criteria: Kiểm tra 5 file bắt buộc đúng quy ước (VERSION.md đúng 1 dòng; TASK.md theo ID; quyền ghi từng file); kiểm tra tài liệu trong `docs/` khớp các quyết định DEC-001 → DEC-007; báo cáo kết quả trong task này.
@@ -58,9 +59,10 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: PR #5 chờ Muse review; sau approve/merge, đề xuất cập nhật DOC-001 → DONE và xử lý 2 mục Inbox ở trên. (Người mở PR không tự merge — G.3.)
 
 ---
+- Đóng task: DONE 2026-11-21 — do Muse chuyển theo ngoại lệ F.2 (task của chính QA, QA không tự đóng); 2 finding đã xử lý ở PR #9.
 
 ## BE-003 — Auth, multi-tenancy & RBAC contract (design)
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: be/BE-003-auth-tenancy-rbac · PR: #8
 - Blocked by: BE-002
 - Acceptance Criteria: Đề xuất contract Auth (đăng ký/đăng nhập/token) + mô hình multi-tenancy `agency_id` + ma trận phân quyền chi tiết 7 vai trò được Muse soạn và Nguyen duyệt trước khi phổ biến cho Antigravity/OpenCode (quy trình mục E, Quy ước chung).
@@ -68,9 +70,10 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: —
 
 ---
+- Đóng task: DONE 2026-11-21 — QA-002 chạy thật PASS 17/17 API (gồm TC-AUTH-14/15 sau FIX-002); đóng cùng release 0.2.0.
 
 ## FE-002 — Internal app login (Auth contract implementation)
-- Assignee: Google Antigravity · Level: L2 · Status: TODO
+- Assignee: Google Antigravity · Level: L2 · Status: DONE
 - Branch: fe/FE-002-login · PR: —
 - Blocked by: — (hợp đồng `docs/AUTH_CONTRACT.md` đã duyệt — làm bằng mock, không chờ BE-003 code)
 - Acceptance Criteria: Màn hình đăng nhập nội bộ gọi `POST /api/v1/auth/login` theo hợp đồng (mock trước, nối API thật khi BE-003 xong); lưu token an toàn phía client; route guard chặn trang nội bộ khi chưa đăng nhập; hiển thị lỗi theo mã lỗi chuẩn (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyển EN ↔ VI ngay tại màn login; không hardcode chuỗi hiển thị.
@@ -78,9 +81,10 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
+- Đóng task: DONE 2026-11-21 — luồng login đã được FE-004 nối API thật thay mock; QA E2E PASS; đóng cùng release 0.2.0.
 
 ## FE-003 — Client Portal login frame
-- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
+- Assignee: Google Antigravity · Level: L2 · Status: DONE
 - Branch: fe/FE-003-portal-login · PR: —
 - Blocked by: — (hợp đồng đã duyệt — làm bằng mock)
 - Acceptance Criteria: Khu vực Portal tách riêng tại route `/portal` với layout riêng; màn đăng nhập Portal gọi `POST /api/v1/portal/auth/login` (mock theo hợp đồng); token portal tách biệt token nội bộ (không dùng lẫn); trang tổng quan Portal trống (placeholder theo i18n) sau đăng nhập; EN/VI đầy đủ.
@@ -88,9 +92,10 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
+- Đóng task: DONE 2026-11-21 — QA E2E PASS trên bản mock theo hợp đồng Portal; đóng cùng release 0.2.0. (Nối API thật là task riêng sau này.)
 
 ## QA-002 — Auth & tenancy test coverage
-- Assignee: OpenCode · Level: L1 · Status: IN_REVIEW
+- Assignee: OpenCode · Level: L1 · Status: DONE
 - Branch: qa/QA-002-run-results · PR: #6 (đã merge) + PR kết quả chạy thật này (Muse mở thay OpenCode từ commit d4f3af3 trên branch cũ, vì PR #6 đã đóng)
 - Blocked by: BE-003 (đã merge PR #8 — phần API chạy xong); FE-004 (chờ merge để chạy phần E2E)
 - Acceptance Criteria: Bộ test case bao phủ: login đúng/sai thông tin, agency bị khoá, tài khoản bị vô hiệu hoá, token portal gọi API nội bộ bị chặn và ngược lại, truy vấn dữ liệu agency khác trả 404, rate limit login; E2E Playwright cho luồng login nội bộ + Portal; kết quả ghi vào task này.
@@ -110,6 +115,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Khi BE-003/FE-002/FE-003 mở PR, chạy `tests/e2e/auth.spec.ts` trên DB test riêng của QA (`agency_test`, G.2), bổ sung endpoint Portal forgot/reset sau khi contract chốt, rồi ghi kết quả PASS/FAIL vào task này.
 
 ---
+- Đóng task: DONE 2026-11-21 — do Muse chuyển theo ngoại lệ F.2 (task của chính QA); kết quả chạy thật PASS 23/23 (API 17/17 + E2E 6/6) theo báo cáo OpenCode 2026-11-21.
+
 ## FIX-001 — MinIO image no longer on Docker Hub
 - Assignee: Muse · Level: L2 · Status: IN_REVIEW
 - Branch: fix/FIX-001-minio-image · PR: —
@@ -121,7 +128,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
-- Assignee: Google Antigravity · Level: L3 · Status: IN_REVIEW
+- Assignee: Google Antigravity · Level: L3 · Status: DONE
 - Branch: fe/FE-004-login-real-api · PR: #14
 - Blocked by: — (BE-003 đã merge; FE-002 đã merge)
 - Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
@@ -129,6 +136,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
 
 ---
+- Đóng task: DONE 2026-11-21 — QA E2E PASS + Nguyen nghiệm thu Luồng A ĐẠT 2026-11-21; đóng cùng release 0.2.0.
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
 - Assignee: Muse · Level: L3 · Status: IN_REVIEW
@@ -141,12 +149,23 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FIX-002 — Token bị thu hồi trả 500 thay vì 401 + thiếu thư mục storage khi checkout sạch
-- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Assignee: Muse · Level: L2 · Status: DONE
 - Branch: fix/FIX-002-auth-401-storage · PR: —
 - Blocked by: —
 - Acceptance Criteria: (1) Request API không gửi `Accept: application/json` (kiểu Playwright) với token đã thu hồi phải trả 401 `UNAUTHENTICATED`, không phải 500 — gốc lỗi: ApplicationBuilder mặc định của Laravel 12 đăng ký guest redirect gọi `route('login')` (route không tồn tại trong app API-only) ngay trong Authenticate middleware; sửa bằng `redirectGuestsTo` trả null + `shouldRenderJsonWhen` cho `api/*`, KHÔNG thêm route login. Có test hồi quy riêng. (2) Checkout sạch phải có `storage/framework/{views,cache,sessions,testing}` + `storage/logs` (thêm `.gitkeep`) để forgot/reset-password không còn 500 "valid cache path". (3) Kèm DEC-010 (chuẩn hoá field reset-password = `password`, sửa AUTH_CONTRACT) và DEC-011 (chuyển vai FE sang OpenCode) theo quyết định của Nguyen 2026-11-21.
 - Progress: Muse sửa xong trong PR này — test hồi quy mới PASS, full suite 32 passed, Pint PASS. Chờ OpenCode review; sau merge, QA chạy lại TC-AUTH-14/15 để xác nhận finding 1 đóng.
 - Handoff: OpenCode review theo ma trận G.3 (PR Backend của Muse → OpenCode).
+
+---
+- Đóng task: DONE 2026-11-21 — TC-AUTH-14/15 chạy lại PASS; đóng cùng release 0.2.0.
+
+## FIX-003 — MinIO image không còn public (Docker Hub + Quay đều chặn) — đưa MinIO ra khỏi stack mặc định
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-003-minio-optional · PR: #20
+- Blocked by: —
+- Acceptance Criteria: `docker compose up -d --build` trên máy sạch chạy được mà không cần kéo image MinIO: service minio chuyển sau profile `storage` (bật thủ công bằng `--profile storage` khi có quyền truy cập image), `api` bỏ `depends_on` vào minio (chưa tính năng nào dùng S3 ở giai đoạn này). Khi module File (Nhóm 7) bắt đầu, chọn lại giải pháp S3 self-host còn được phân phối công khai và ghi quyết định mới.
+- Progress: Muse sửa trong PR này sau khi Nguyen chạy nghiệm thu Mốc 1 bị chặn bởi lỗi 401 từ quay.io (Muse đã tự kiểm chứng: Quay trả 401 ngay cả với token pull ẩn danh — MinIO đã rút toàn bộ image công khai miễn phí). Workaround trước mắt cho máy đang chạy: `docker compose up -d mysql redis mailpit` rồi `docker compose up -d --build --no-deps api web`.
+- Handoff: OpenCode review theo ma trận G.3.
 
 ---
 

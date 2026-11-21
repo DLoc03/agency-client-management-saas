@@ -11,6 +11,8 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ### Frontend
 
 ### QA & Fixes
+- Fixed web-to-API wiring in Docker (FIX-004): the web service now sets INTERNAL_API_URL=http://api:8000/api so the Next.js BFF can reach the Laravel API over the compose network. Without it the BFF fell back to localhost inside its own container and every login failed with "fetch failed" / HTTP 500 before credentials were even checked.
+- MinIO removed from the default compose stack (FIX-003): MinIO no longer offers a free public image (Docker Hub removed it; Quay now returns 401), which blocked `docker compose up` entirely. The service now sits behind the `storage` compose profile and the API no longer depends on it; nothing in the current scope uses S3 yet.
 
 ## [0.2.0] - 2026-11-21
 
