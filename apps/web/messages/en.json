@@ -39,6 +39,36 @@
       "mockNotice": "Connected to backend API. Authenticated via secure httpOnly cookie session."
     }
   },
+  "Shell": {
+    "brand": "Agency SaaS",
+    "brandSubtitle": "Internal workspace",
+    "sidebarLabel": "Primary navigation",
+    "openMenu": "Open navigation menu",
+    "topbarTitle": "Internal app",
+    "topbarSubtitle": "Classic sidebar workspace",
+    "environment": "Local",
+    "signOut": "Sign out",
+    "comingSoon": "Coming soon",
+    "soon": "Soon",
+    "stats": {
+      "leads": "Leads",
+      "clients": "Clients",
+      "projects": "Projects",
+      "invoices": "Invoices"
+    },
+    "empty": {
+      "title": "No data yet",
+      "description": "Content for this module will appear here once it is available."
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "leads": "Leads",
+      "clients": "Clients",
+      "projects": "Projects",
+      "tasks": "Tasks",
+      "invoices": "Invoices"
+    }
+  },
   "Portal": {
     "brand": "Client Portal",
     "login": {

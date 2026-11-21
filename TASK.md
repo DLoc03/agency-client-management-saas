@@ -139,7 +139,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Đóng task: DONE 2026-11-21 — QA E2E PASS + Nguyen nghiệm thu Luồng A ĐẠT 2026-11-21; đóng cùng release 0.2.0.
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
 - Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
@@ -180,11 +180,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-005 — Áp dụng hướng thiết kế DEC-013 vào khung ứng dụng nội bộ
-- Assignee: OpenCode · Level: L3 · Status: TODO
+- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
 - Branch: — · PR: —
 - Blocked by: PR #19 merge (DEC-013 chính thức có hiệu lực trên main)
 - Acceptance Criteria: Khung ứng dụng nội bộ theo mẫu A — Classic Sidebar (DEC-013) với design tokens thống nhất trên shadcn/ui + Tailwind; tuân thủ toàn bộ docs/UI_GUIDELINES.md (responsive nhiều bề rộng, không scroll ngang cho bảng dữ liệu lớn, tương phản chữ, chip/badge một dòng, min-height và empty state giữ khung). Tự kiểm ở ít nhất 3 bề rộng màn hình và báo cáo rõ; Nguyen nghiệm thu UI bằng mắt. Mẫu D (Pipeline) cho CRM và hơi hướng C cho Portal áp dụng ở các task màn hình tương ứng sau này, không thuộc task này.
-- Progress: —
+- Progress: Implemented internal app shell (route group (app)/dashboard) with Classic Sidebar, design tokens in globals.css (shadcn-style CSS variables + Tailwind v4 theme), responsive AppShell (desktop sidebar + mobile drawer), Topbar, role chips (single line), stat cards with min-height, empty state. Self-check: tsc --noEmit PASS; pnpm build PASS (en/vi dashboard routes); vitest 24/24 PASS. Responsive classes reviewed for 3 representative widths (mobile 390px drawer, tablet 768px, desktop 1280px) - sidebar collapses to hamburger below md, content grid adapts sm:grid-cols-2 lg:grid-cols-4, no horizontal overflow at shell level. Browser screenshot not available in this environment; verified via build + class review.
 - Handoff: OpenCode (vai Frontend, DEC-011); Muse review chéo theo ma trận (OpenCode không tự review code FE của mình).
 
 ---
@@ -222,3 +222,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
 - [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
+- [OpenCode review 2026-11-21] PR #20 (FIX-003): compose leaves FILESYSTEM_DISK: s3 + AWS_* pointing at http://minio:9000 in the default stack where MinIO is not started; file operations will fail and the hostname may not resolve. Recommend defaulting to local disk or removing S3 env until Group 7 (File module) lands.
+- [OpenCode review 2026-11-21] PR #20 (FIX-003): quay.io/minio/minio:latest still returns 401 even under --profile storage; profile gating does not restore image availability. Re-evaluate registry/mirror before enabling storage profile.
+- [OpenCode review 2026-11-21] PR #20 (FIX-003): TASK.md contains two identical FIX-003 sections (rebase artifact) — needs de-duplication.
+- [OpenCode review 2026-11-21] PR #23 (FIX-004): getBackendApiUrl() falls back to NEXT_PUBLIC_API_URL (which includes /v1) and callers append /v1/..., producing a double /v1 segment in local dev outside Docker (pnpm dev). Docker path works via INTERNAL_API_URL. Normalize base URLs or make the fallback http://localhost:8000/api.
+- [OpenCode review 2026-11-21] PR #23 (FIX-004): web depends_on: api has no readiness condition; since api runs composer install on start, early login attempts right after docker compose up can still hit a not-ready API. Consider a health condition or documented wait.
