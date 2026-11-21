@@ -39,6 +39,36 @@
       "mockNotice": "Đã kết nối API backend. Xác thực an toàn qua phiên cookie httpOnly."
     }
   },
+  "Shell": {
+    "brand": "Agency SaaS",
+    "brandSubtitle": "Kh��ng gian n��Ti b��T",
+    "sidebarLabel": "�?i��?u h����>ng ch��nh",
+    "openMenu": "M��� menu �'i��?u h����>ng",
+    "topbarTitle": "���ng d���ng n��Ti b��T",
+    "topbarSubtitle": "Khung sidebar c�� �'i���n",
+    "environment": "C��Tc b��T",
+    "signOut": "�?��ng xu���t",
+    "comingSoon": "S���p c��",
+    "soon": "S���p",
+    "stats": {
+      "leads": "Lead",
+      "clients": "Khǭch h��ng",
+      "projects": "D��� ǭn",
+      "invoices": "Hoǭ �'��n"
+    },
+    "empty": {
+      "title": "Ch��a c�� d��� li���u",
+      "description": "N��Ti dung c���a module n��y s��� hi���n th��< khi s���n s��ng."
+    },
+    "nav": {
+      "dashboard": "B���ng �'i��?u khi���n",
+      "leads": "Lead",
+      "clients": "Khǭch h��ng",
+      "projects": "D��� ǭn",
+      "tasks": "T��c v���",
+      "invoices": "Hoǭ �'��n"
+    }
+  },
   "Portal": {
     "brand": "Cổng Khách Hàng",
     "login": {
