@@ -56,3 +56,8 @@
 - Decision: OpenCode đảm nhiệm thêm vai trò Frontend Developer (vai trò chính QA Review & Tester giữ nguyên), thay Google Antigravity kể từ quyết định này. Mọi task FE từ thời điểm này được giao cho OpenCode trừ khi Nguyen chỉ định khác.
 - Reason: Antigravity tạm ngưng hoạt động; cần giữ tiến độ Frontend không bị chặn (lý do chi tiết do Nguyen nắm).
 - Scope / Expiry: Áp dụng cho mọi task FE mở sau thời điểm quyết định (FE-004/FE-003 đã hoàn thành trước đó không bị ảnh hưởng). Ràng buộc bất biến theo quy ước: **OpenCode không bao giờ được tự review/accept code FE của chính mình** — PR FE của OpenCode do Muse review chéo hoặc Nguyen duyệt. Quyết định hết hiệu lực khi Nguyen thông báo Antigravity quay lại hoặc chỉ định khác.
+
+## DEC-012 — Loại Google Antigravity khỏi danh sách Agents Coding · 2026-11-21 · Mức: L5 (Nguyen quyết)
+- Decision: Google Antigravity chính thức rời danh sách Agents Coding của dự án (bổ sung/thay thế khung tạm thời của DEC-011). Đội hình tạm thời còn: Nguyen (Product Owner) · Muse (Backend chính + điều phối phân task + review chéo code FE của OpenCode) · OpenCode (QA Review & Tester + Frontend Developer theo DEC-011, không tự review code FE của mình). Khi Nguyen tìm được AI Coding Agent mới tham gia, vai trò sẽ được phân chia lại và ghi quyết định mới.
+- Reason: Antigravity không còn đủ quota để tiếp tục tham gia hiệu quả (theo thông báo của Nguyen).
+- Scope / Expiry: Áp dụng ngay; các đóng góp đã merge của Antigravity (FE-001, FE-002, FE-003, FE-004) giữ nguyên giá trị và lịch sử. Hết hiệu lực khi có quyết định nhân sự mới.
