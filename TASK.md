@@ -170,7 +170,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-005 — Áp dụng hướng thiết kế DEC-013 vào khung ứng dụng nội bộ
-- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Assignee: OpenCode · Level: L3 · Status: DONE
 - Branch: — · PR: —
 - Blocked by: PR #19 merge (DEC-013 chính thức có hiệu lực trên main)
 - Acceptance Criteria: Khung ứng dụng nội bộ theo mẫu A — Classic Sidebar (DEC-013) với design tokens thống nhất trên shadcn/ui + Tailwind; tuân thủ toàn bộ docs/UI_GUIDELINES.md (responsive nhiều bề rộng, không scroll ngang cho bảng dữ liệu lớn, tương phản chữ, chip/badge một dòng, min-height và empty state giữ khung). Tự kiểm ở ít nhất 3 bề rộng màn hình và báo cáo rõ; Nguyen nghiệm thu UI bằng mắt. Mẫu D (Pipeline) cho CRM và hơi hướng C cho Portal áp dụng ở các task màn hình tương ứng sau này, không thuộc task này.
@@ -205,7 +205,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FIX-006 — Compose hardening: ổ đĩa mặc định local + web chờ api khoẻ (từ review bù FIX-003/FIX-004)
-- Status: IN_REVIEW
+- Status: DONE
 - Assignee: Muse · Reviewer: OpenCode
 - Mô tả: Hai finding hạ tầng từ đợt review bù của OpenCode: (1) compose mặc định để `FILESYSTEM_DISK: s3` + env AWS trỏ MinIO trong khi MinIO không chạy ở stack mặc định (FIX-003) — bất kỳ luồng ghi file nào trong tương lai sẽ lỗi khó hiểu; đổi mặc định sang `local`, S3 quay lại cùng quyết định storage ở Nhóm 7. (2) `web depends_on: api` chưa có điều kiện sẵn sàng (FIX-004) — thêm healthcheck cho api (đánh `/api/v1/health` bằng php) và để web chờ `condition: service_healthy`.
 - Acceptance Criteria: `docker compose up -d --build` chạy như cũ trên máy Nguyen; web chỉ start sau khi api trả health 200; không đổi hành vi nào khác.
@@ -213,12 +213,25 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-007 — Dọn file rác Blade compiled view lọt vào main qua PR #29
-- Status: IN_REVIEW
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: File sinh tự động `apps/api/storage/framework/views/275c7c02e2528e6029079c885e2d2418.php` (Blade view đã biên dịch) bị môi trường của OpenCode commit nhầm vào branch FE-005 và đã vào main khi PR #29 merge. Xoá khỏi repo; thư mục views chỉ giữ `.gitkeep` như thiết kế (FIX-002). File này vô hại khi chạy (Laravel tự biên dịch lại) — đây thuần tuý là vệ sinh repo theo đề xuất của Muse, được Nguyen duyệt sau merge.
 - Acceptance Criteria: File không còn trên main sau khi PR này merge; `storage/framework/views/` chỉ còn `.gitkeep`.
 - Progress: 2026-11-21 — Muse đã xoá trên branch `fix/FIX-007-cleanup-compiled-view`; chờ Nguyen merge.
 - Blockers: Không có.
+
+## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
+- Status: DONE
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Viết test case cho module CRM/Lead từ Acceptance Criteria của `docs/CRM_CONTRACT.md` (CRUD + filter, ma trận quyền `leads.*`, chuyển đổi Lead → Client gồm guard 409/422, notes, activities + due list, pipeline summary, contacts dùng chung, cô lập tenant) tại `tests/e2e/crm-lead.spec.ts`, rồi chạy thật sau khi BE-005 merge.
+- Kết quả: Migrations BE-005 trên MySQL 8 (Docker) đạt; LeadModuleTest 16/16 PASS; Playwright 10 passed / 8 skipped — các skip do thiếu dữ liệu seed (user đa vai trò, agency thứ hai, lead đã convert sẵn), ghi nhận thành backlog mở rộng seed, không phải lỗi. Kèm verdict review bù BE-005: PASS → BE-005 chuyển DONE.
+- Progress: PR #30 đã merge (2026-11-21); Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục QA-003 trong TASK.md).
+
+## FE-006 — Sửa lỗi double `/v1` trong getBackendApiUrl() (từ review bù FIX-004)
+- Status: DONE
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Fallback `NEXT_PUBLIC_API_URL` (đang chứa `/v1`) bị nối thêm `/v1` khi gọi API khiến dev FE ngoài Docker sai path. Chuẩn hoá bằng `normalizeBackendBaseUrl()` (bỏ slash cuối + bỏ đúng một đoạn `/v1` cuối), giữ thứ tự ưu tiên INTERNAL_API_URL > NEXT_PUBLIC_API_URL > localhost; kèm 3 test hồi quy.
+- Progress: PR #31 đã merge (2026-11-21); suite web 27/27 PASS, typecheck PASS; Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục FE-006 trong TASK.md).
 
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
