@@ -80,11 +80,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-003 — Client Portal login frame
-- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
+- Assignee: Google Antigravity · Level: L2 · Status: TODO
 - Branch: fe/FE-003-portal-login · PR: —
 - Blocked by: — (hợp đồng đã duyệt — làm bằng mock)
 - Acceptance Criteria: Khu vực Portal tách riêng tại route `/portal` với layout riêng; màn đăng nhập Portal gọi `POST /api/v1/portal/auth/login` (mock theo hợp đồng); token portal tách biệt token nội bộ (không dùng lẫn); trang tổng quan Portal trống (placeholder theo i18n) sau đăng nhập; EN/VI đầy đủ.
-- Progress: Antigravity hoàn thành 2026-11-20: xây dựng khung Client Portal tại route /portal với layout riêng biệt, mock service theo docs/AUTH_CONTRACT.md (login, logout, me, forgot-password, reset-password), token portal_token tách biệt hoàn toàn với app_token, route guard cho Portal, i18n EN/VI đầy đủ (16 vitest tests PASS, tsc PASS, next build PASS). Đang mở PR.
+- Progress: —
 - Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
@@ -121,21 +121,21 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
-- Assignee: Google Antigravity · Level: L3 · Status: IN_REVIEW
-- Branch: fe/FE-004-login-real-api · PR: #14
+- Assignee: Google Antigravity · Level: L3 · Status: TODO
+- Branch: fe/FE-004-login-real-api · PR: —
 - Blocked by: — (BE-003 đã merge; FE-002 đã merge)
 - Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
-- Progress: Antigravity hoàn thành 2026-11-20: xây dựng BFF route handlers (/api/auth/login, /api/auth/logout, /api/auth/me) với httpOnly cookie app_token; nối POST /v1/auth/login + GET /v1/auth/me; map các mã lỗi chuẩn (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) và tôn trọng message song ngữ từ backend; cập nhật AuthContext, LoginForm và test suite (14 tests PASS, tsc PASS, next build PASS). Đang mở PR.
+- Progress: Chưa bắt đầu. Đây là mốc nghiệm thu giao diện + luồng thật đầu tiên — làm xong báo Nguyen chạy local duyệt.
 - Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
 
 ---
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
-- Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: be/BE-004-client-module · PR: —
 - Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
-- Progress: Hợp đồng duyệt 2026-11-20 (DEC-009, PR #12). Muse đã code xong trong PR này: 6 migrations (clients, organizations, contacts, client_notes, tags + client_tag, FK client_accounts.client_id), ma trận quyền clients.* theo DEC-009 (middleware permission tại API), 17 endpoints (clients CRUD + lọc status/tag/manager/q, contacts, notes, tags, portal-accounts), test: full suite 31 passed (12 test mới cho BE-004), Pint PASS, OpenAPI 21 paths. Kiểm chứng Docker/MySQL thật: nhờ OpenCode/Nguyen chạy lại migrate trên stack local khi review (máy Muse không có Docker).
+- Progress: Hợp đồng được Nguyen duyệt toàn bộ theo đề xuất 2026-11-20 (DEC-009) và công bố tại `docs/CLIENT_CONTRACT.md` qua PR docs kèm theo; Muse bắt đầu code ngay sau khi PR đó merge.
 - Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
 
 ---
@@ -147,6 +147,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: (1) Request API không gửi `Accept: application/json` (kiểu Playwright) với token đã thu hồi phải trả 401 `UNAUTHENTICATED`, không phải 500 — gốc lỗi: ApplicationBuilder mặc định của Laravel 12 đăng ký guest redirect gọi `route('login')` (route không tồn tại trong app API-only) ngay trong Authenticate middleware; sửa bằng `redirectGuestsTo` trả null + `shouldRenderJsonWhen` cho `api/*`, KHÔNG thêm route login. Có test hồi quy riêng. (2) Checkout sạch phải có `storage/framework/{views,cache,sessions,testing}` + `storage/logs` (thêm `.gitkeep`) để forgot/reset-password không còn 500 "valid cache path". (3) Kèm DEC-010 (chuẩn hoá field reset-password = `password`, sửa AUTH_CONTRACT) và DEC-011 (chuyển vai FE sang OpenCode) theo quyết định của Nguyen 2026-11-21.
 - Progress: Muse sửa xong trong PR này — test hồi quy mới PASS, full suite 32 passed, Pint PASS. Chờ OpenCode review; sau merge, QA chạy lại TC-AUTH-14/15 để xác nhận finding 1 đóng.
 - Handoff: OpenCode review theo ma trận G.3 (PR Backend của Muse → OpenCode).
+
+---
+
+## FIX-003 — MinIO image không còn public (Docker Hub + Quay đều chặn) — đưa MinIO ra khỏi stack mặc định
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-003-minio-optional · PR: —
+- Blocked by: —
+- Acceptance Criteria: `docker compose up -d --build` trên máy sạch chạy được mà không cần kéo image MinIO: service minio chuyển sau profile `storage` (bật thủ công bằng `--profile storage` khi có quyền truy cập image), `api` bỏ `depends_on` vào minio (chưa tính năng nào dùng S3 ở giai đoạn này). Khi module File (Nhóm 7) bắt đầu, chọn lại giải pháp S3 self-host còn được phân phối công khai và ghi quyết định mới.
+- Progress: Muse sửa trong PR này sau khi Nguyen chạy nghiệm thu Mốc 1 bị chặn bởi lỗi 401 từ quay.io (Muse đã tự kiểm chứng: Quay trả 401 ngay cả với token pull ẩn danh — MinIO đã rút toàn bộ image công khai miễn phí). Workaround trước mắt cho máy đang chạy: `docker compose up -d mysql redis mailpit` rồi `docker compose up -d --build --no-deps api web`.
+- Handoff: OpenCode review theo ma trận G.3.
 
 ---
 

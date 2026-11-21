@@ -49,8 +49,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      minio:
-        condition: service_started
     command: >
       sh -c "composer install --no-interaction --prefer-dist &&
              php artisan serve --host=0.0.0.0 --port=8000"
@@ -101,7 +99,12 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  # S3 storage is OPTIONAL until the file features land (Group 7): MinIO no
+  # longer publishes a free public image (Docker Hub removed, Quay returns
+  # 401), so this service sits behind the `storage` profile and is NOT part
+  # of the default stack. Enable with: docker compose --profile storage up -d
   minio:
+    profiles: ["storage"]
     image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
     environment:
