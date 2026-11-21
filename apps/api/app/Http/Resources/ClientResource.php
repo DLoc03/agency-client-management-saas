@@ -19,6 +19,7 @@ class ClientResource extends JsonResource
                 'name' => $this->accountManager->name,
                 'email' => $this->accountManager->email,
             ] : null),
+            'source_lead_id' => $this->source_lead_id,
             'email' => $this->email,
             'phone' => $this->phone,
             'website' => $this->website,

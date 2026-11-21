@@ -30,7 +30,7 @@ class Client extends Model
     public const STATUS_CHURNED = 'churned';
 
     protected $fillable = [
-        'agency_id', 'name', 'type', 'status', 'account_manager_id',
+        'agency_id', 'name', 'type', 'status', 'account_manager_id', 'source_lead_id',
         'email', 'phone', 'website', 'address', 'tax_code',
     ];
 
@@ -62,5 +62,11 @@ class Client extends Model
     public function accountManager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'account_manager_id');
+    }
+
+    /** The lead this client was converted from, if any (DEC-014). */
+    public function sourceLead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class, 'source_lead_id');
     }
 }
