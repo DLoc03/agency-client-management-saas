@@ -44,21 +44,27 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## QA-001 — Review bootstrap, conventions & repository structure
-- Assignee: OpenCode · Level: L1 · Status: TODO
-- Branch: qa/QA-001-bootstrap-review · PR: —
+- Assignee: OpenCode · Level: L1 · Status: IN_REVIEW
+- Branch: qa/QA-001-bootstrap-review · PR: #5 (chờ Muse review/merge — G.3)
 - Blocked by: DOC-001
 - Acceptance Criteria: Kiểm tra 5 file bắt buộc đúng quy ước (VERSION.md đúng 1 dòng; TASK.md theo ID; quyền ghi từng file); kiểm tra tài liệu trong `docs/` khớp các quyết định DEC-001 → DEC-007; báo cáo kết quả trong task này.
-- Progress: —
-- Handoff: —
+- Progress: OpenCode review ngày 2026-11-20 tại commit `7432ccd` (main). **Kết luận: PASS, không có blocker cho DOC-001** — phạm vi mở rộng theo chỉ đạo của Nguyen: DEC-001 → DEC-008 (AC gốc ghi đến DEC-007).
+  - 5 file bắt buộc: `VERSION.md` đúng 1 dòng `0.1.0`, không tiêu đề/ngày/ghi chú, đúng chủ ghi OpenCode ✅ · `TASK.md` theo danh sách Task ID (9 mục + Inbox), mỗi mục đủ Assignee/Level/Status/Branch/Blocked by/AC/Progress/Handoff, quyền ghi đúng F.2 ✅ · `CHANGELOG.md` đúng Keep a Changelog, có `[Unreleased]` với 3 tiểu mục cố định, append-only ✅ · `README.md` (EN, DEC-006) + `README.vi.md` có link chéo đầy đủ ✅ · `DECISIONS.md` có DEC-001 → DEC-008, append-only, đúng chủ ghi Nguyen + Muse (QA chỉ đọc, không sửa) ✅.
+  - `docs/` khớp quyết định: `STACK.md` ↔ DEC-001/003 · `MVP_SCOPE.md` ↔ DEC-004 (8 nhóm, luồng lõi, Super Admin tối giản, shared DB + `agency_id`) · `RBAC_AND_I18N.md` ↔ DEC-005/006 (7 vai trò, Client tách loại tài khoản, nhiều vai trò, scope dữ liệu, EN mặc định + VI đầy đủ) · `REPO_INITIALIZATION.md` ↔ DEC-007 · `AUTH_CONTRACT.md` ↔ DEC-008 (email unique toàn hệ thống, token không hạn cứng, Portal có quên mật khẩu, tách scope `app`/`portal`, cross-tenant 404) — đều nhất quán ✅. `git log` xác nhận bootstrap `05aa5b1` đẩy thẳng `main` đúng ngoại lệ DEC-007; các thay đổi sau đi qua PR #1–#4 ✅.
+  - Finding minor (không block, đã ghi Inbox): `docs/CONVENTIONS.md:252` còn ghi "chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code", mâu thuẫn DEC-001/DEC-004 và thực tế đã merge BE-001/BE-002/FE-001. Sửa quy ước thuộc quyền Nguyen (DEC-002) → QA không tự sửa.
+  - Finding minor (không block, đã ghi Inbox): `docs/AUTH_CONTRACT.md` mục 8/DEC-008.3 chốt Portal có quên mật khẩu, nhưng bảng endpoint mục 3 mới có login/logout/me — thiếu `POST /portal/auth/forgot-password` và `/portal/auth/reset-password`. Cần Muse + Nguyen chốt trước khi chạy test thật QA-002.
+  - Observation (không block): `docs/STACK.md` mục 3 vẫn liệt kê multi-tenancy là "chưa quyết" dù DEC-004 đã chốt; README "Getting started" vẫn nói chờ monorepo dù BE-001 đã merge.
+  - Không tự merge PR của chính mình (B.6/G.3). Task giữ `IN_REVIEW` chờ Muse approve/merge; Muse hoặc Nguyen chuyển `DONE` theo ngoại lệ F.2 cho task do OpenCode tự làm. Đề xuất DOC-001 → `DONE` sau khi PR này merge (F.2 cho phép OpenCode nghiệm thu task của Muse).
+- Handoff: PR #5 chờ Muse review; sau approve/merge, đề xuất cập nhật DOC-001 → DONE và xử lý 2 mục Inbox ở trên. (Người mở PR không tự merge — G.3.)
 
 ---
 
 ## BE-003 — Auth, multi-tenancy & RBAC contract (design)
-- Assignee: Muse · Level: L3 · Status: IN_PROGRESS
-- Branch: be/BE-003-auth-contract · PR: —
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-003-auth-tenancy-rbac · PR: #8
 - Blocked by: BE-002
 - Acceptance Criteria: Đề xuất contract Auth (đăng ký/đăng nhập/token) + mô hình multi-tenancy `agency_id` + ma trận phân quyền chi tiết 7 vai trò được Muse soạn và Nguyen duyệt trước khi phổ biến cho Antigravity/OpenCode (quy trình mục E, Quy ước chung).
-- Progress: Hợp đồng đã được Nguyen DUYỆT ngày 2026-11-20 (kèm 3 chốt tại DEC-008: email unique toàn hệ thống; token không đặt hạn cứng trong MVP; Portal có quên mật khẩu) và công bố tại `docs/AUTH_CONTRACT.md`. Đang triển khai phần Backend.
+- Progress: Hợp đồng đã được Nguyen DUYỆT ngày 2026-11-20 (kèm 3 chốt tại DEC-008: email unique toàn hệ thống; token không đặt hạn cứng trong MVP; Portal có quên mật khẩu) và công bố tại `docs/AUTH_CONTRACT.md` (PR #4). Phần Backend đã triển khai xong: migrations agencies/roles/super_admins/client_accounts + users.agency_id/locale/is_active; trait BelongsToAgency (global scope theo agency của user đăng nhập, có chống đệ quy khi Sanctum đang nạp tokenable); AuthController + PortalAuthController (token tách ability `app`/`portal`, chặn chéo 403); chuẩn lỗi `{error:{code,message,details}}` + thông điệp EN/VI theo locale; rate limit login 5/phút; link reset mật khẩu trỏ về web app (FRONTEND_URL); seed roles + demo data opt-in (SEED_DEMO_DATA); OpenAPI sinh bằng Scramble tại `packages/contracts/openapi.json` (12 paths). Kiểm chứng tại máy Muse: `php artisan test` **19 passed** (gồm test từng mã lỗi, chặn chéo token, scope cross-tenant), Pint PASS, smoke test HTTP thật: login Owner/Portal đúng payload, token app gọi Portal bị 403 FORBIDDEN, sai mật khẩu với Accept-Language `vi` trả thông điệp tiếng Việt. Chưa kiểm chứng qua Docker (máy Muse không có Docker).
 - Handoff: —
 
 ---
@@ -104,10 +110,41 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Khi BE-003/FE-002/FE-003 mở PR, chạy `tests/e2e/auth.spec.ts` trên DB test riêng của QA (`agency_test`, G.2), bổ sung endpoint Portal forgot/reset sau khi contract chốt, rồi ghi kết quả PASS/FAIL vào task này.
 
 ---
+## FIX-001 — MinIO image no longer on Docker Hub
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-001-minio-image · PR: —
+- Blocked by: —
+- Acceptance Criteria: `docker compose up` kéo được image MinIO (image `minio/minio` đã bị gỡ khỏi Docker Hub — phát hiện khi Nguyen chạy local lần đầu 2026-11-20); chuyển sang registry chính thức của MinIO tại Quay (`quay.io/minio/minio`); các service còn lại không đổi.
+- Progress: Muse sửa 2026-11-20 trong PR này; chờ kiểm chứng bằng lần `docker compose up` đầy đủ tiếp theo tại máy Nguyen.
+- Handoff: —
+
+---
+
+## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
+- Assignee: Google Antigravity · Level: L3 · Status: TODO
+- Branch: fe/FE-004-login-real-api · PR: —
+- Blocked by: — (BE-003 đã merge; FE-002 đã merge)
+- Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
+- Progress: Chưa bắt đầu. Đây là mốc nghiệm thu giao diện + luồng thật đầu tiên — làm xong báo Nguyen chạy local duyệt.
+- Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
+
+---
+
+## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: be/BE-004-client-module · PR: —
+- Blocked by: — (hợp đồng đã duyệt, DEC-009)
+- Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
+- Progress: Hợp đồng được Nguyen duyệt toàn bộ theo đề xuất 2026-11-20 (DEC-009) và công bố tại `docs/CLIENT_CONTRACT.md` qua PR docs kèm theo; Muse bắt đầu code ngay sau khi PR đó merge.
+- Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
+
+---
 
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
+- [QA-001 · 2026-11-20] `docs/CONVENTIONS.md:252` — dòng cuối "chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code" đã lỗi thời sau DEC-001/DEC-004 và các PR #1–#4. Đề xuất Nguyen/Muse sửa hoặc xoá dòng này qua PR `docs/` theo DEC-002; QA không tự sửa quy ước.
+- [QA-001 · 2026-11-20] `docs/AUTH_CONTRACT.md:37-43,81-85` — DEC-008.3 chốt "Portal có quên mật khẩu, dùng chung cơ chế email" nhưng bảng endpoint Portal thiếu `POST /portal/auth/forgot-password` và `POST /portal/auth/reset-password`. Đề xuất Muse + Nguyen chốt method/path/request/response + mã lỗi trước khi QA chạy test thật QA-002.
 - [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
 - [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
