@@ -7,12 +7,14 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Backend
+- CRM / Lead module (BE-005, per docs/CRM_CONTRACT.md + DEC-014): lead CRUD with status pipeline (new/contacted/qualified/unqualified), pipeline summary, lead notes, follow-up activities with a due list, shared contacts (contacts now belong to a lead or a client), and one-action Lead → Client conversion that creates the Client + Organization + Contact, re-links contacts, locks the lead, and guards duplicates. New `leads.*` permissions enforced at the API layer.
 
 ### Frontend
 - Internal app shell (FE-005): Classic Sidebar layout (DEC-013) for the internal app with unified shadcn-style design tokens (CSS variables + Tailwind v4 theme) in globals.css, responsive AppShell (desktop sidebar + mobile drawer), Topbar, single-line role chips, min-height stat cards and empty state. Dashboard moved under a route group so future modules share the shell. Self-check: tsc, build (en/vi) and vitest all pass.
 
 ### QA & Fixes
-- QA-003 (OpenCode): authored Playwright test cases for the CRM/Lead module from docs/CRM_CONTRACT.md in tests/e2e/crm-lead.spec.ts (CRUD + filters, leads.* permission matrix across six roles, Lead->Client conversion incl. 409/422 guards, notes, activities + due list, pipeline summary, shared contacts, cross-tenant isolation). Marked as not-yet-runnable until BE-005 merges.
+- Create responses now reflect database defaults (FIX-005): POST create endpoints refresh the model before responding, so fields such as client status, note author, and portal account locale/is_active are no longer blank in 201 responses. Includes a regression test.
+- Compose hardening (FIX-006): default filesystem disk is now `local` (S3/MinIO returns with the Group 7 storage decision), and the web service waits for the API healthcheck before starting.
 - Fixed web-to-API wiring in Docker (FIX-004): the web service now sets INTERNAL_API_URL=http://api:8000/api so the Next.js BFF can reach the Laravel API over the compose network. Without it the BFF fell back to localhost inside its own container and every login failed with "fetch failed" / HTTP 500 before credentials were even checked.
 - MinIO removed from the default compose stack (FIX-003): MinIO no longer offers a free public image (Docker Hub removed it; Quay now returns 401), which blocked `docker compose up` entirely. The service now sits behind the `storage` compose profile and the API no longer depends on it; nothing in the current scope uses S3 yet.
 

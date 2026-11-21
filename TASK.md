@@ -139,7 +139,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Đóng task: DONE 2026-11-21 — QA E2E PASS + Nguyen nghiệm thu Luồng A ĐẠT 2026-11-21; đóng cùng release 0.2.0.
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: DONE
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
 - Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
 - Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
@@ -169,16 +169,6 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
-## FIX-003 — MinIO image không còn public (Docker Hub + Quay đều chặn) — đưa MinIO ra khỏi stack mặc định
-- Assignee: Muse · Level: L2 · Status: IN_REVIEW
-- Branch: fix/FIX-003-minio-optional · PR: #20
-- Blocked by: —
-- Acceptance Criteria: `docker compose up -d --build` trên máy sạch chạy được mà không cần kéo image MinIO: service minio chuyển sau profile `storage` (bật thủ công bằng `--profile storage` khi có quyền truy cập image), `api` bỏ `depends_on` vào minio (chưa tính năng nào dùng S3 ở giai đoạn này). Khi module File (Nhóm 7) bắt đầu, chọn lại giải pháp S3 self-host còn được phân phối công khai và ghi quyết định mới.
-- Progress: Muse sửa trong PR này sau khi Nguyen chạy nghiệm thu Mốc 1 bị chặn bởi lỗi 401 từ quay.io (Muse đã tự kiểm chứng: Quay trả 401 ngay cả với token pull ẩn danh — MinIO đã rút toàn bộ image công khai miễn phí). Workaround trước mắt cho máy đang chạy: `docker compose up -d mysql redis mailpit` rồi `docker compose up -d --build --no-deps api web`.
-- Handoff: OpenCode review theo ma trận G.3.
-
----
-
 ## FE-005 — Áp dụng hướng thiết kế DEC-013 vào khung ứng dụng nội bộ
 - Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
 - Branch: — · PR: —
@@ -190,19 +180,19 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
-- Branch: — · PR: —
+- Assignee: Muse · Level: L3 · Status: DONE
+- Branch: be/BE-005-crm-lead · PR: —
 - Blocked by: PR #19 merge (hợp đồng CRM_CONTRACT + DEC-014 chính thức trên main)
 - Acceptance Criteria: Đủ endpoints và quy tắc trong docs/CRM_CONTRACT.md: leads CRUD + lọc, pipeline-summary, convert Lead → Client (tạo Client + Organization + Contact, nối lại contacts, khoá sửa lead, 409 khi convert lại, 422 chống trùng kèm force), lead notes, lead activities + due list, contacts dùng chung (lead_id), ma trận quyền leads.* theo DEC-014, cách ly tenant. Test: bộ test Feature cho module Lead đạt, Pint PASS, OpenAPI cập nhật.
-- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014).
+- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014). Muse đã triển khai xong trong PR này: 5 migration, leads CRUD + pipeline-summary + convert, notes, activities + due list, contacts dùng chung; bộ test toàn cục 52 passed, Pint PASS, OpenAPI 32 paths.
 - Handoff: OpenCode review theo ma trận G.3.
 
 ## FIX-005 — Response tạo mới không phản ánh giá trị mặc định của DB (status/author/is_active trống)
-- Assignee: Muse · Level: L1 · Status: TODO
-- Branch: — · PR: —
+- Assignee: Muse · Level: L1 · Status: IN_REVIEW
+- Branch: fix/FIX-005-response-defaults · PR: —
 - Blocked by: —
 - Acceptance Criteria: Các response POST (tạo client, client note, portal account — và rà soát toàn bộ module BE-003/BE-004) trả về đúng giá trị thực trong DB (status=active, author, locale, is_active) bằng cách nạp lại model/quan hệ trước khi trả resource. Phát hiện khi Nguyen nghiệm thu Mốc 1 Luồng C: dữ liệu DB đúng, chỉ response hiển thị trống. Kèm test hồi quy cho ít nhất endpoint tạo client.
-- Progress: —
+- Progress: Muse hoàn thành: refresh model sau khi tạo ở ClientController, ClientPortalAccountController, ClientContactController, ClientNoteController; test hồi quy CreateResponseDefaultsTest (4 test) — trước fix fail 3/4, sau fix đạt cả bộ 52 test.
 - Handoff: OpenCode review theo ma trận G.3.
 ## FIX-004 — Web container thiếu INTERNAL_API_URL — mọi login qua BFF đều "fetch failed" / 500
 - Assignee: Muse · Level: L2 · Status: IN_REVIEW
@@ -214,6 +204,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FIX-006 — Compose hardening: ổ đĩa mặc định local + web chờ api khoẻ (từ review bù FIX-003/FIX-004)
+- Status: IN_REVIEW
+- Assignee: Muse · Reviewer: OpenCode
+- Mô tả: Hai finding hạ tầng từ đợt review bù của OpenCode: (1) compose mặc định để `FILESYSTEM_DISK: s3` + env AWS trỏ MinIO trong khi MinIO không chạy ở stack mặc định (FIX-003) — bất kỳ luồng ghi file nào trong tương lai sẽ lỗi khó hiểu; đổi mặc định sang `local`, S3 quay lại cùng quyết định storage ở Nhóm 7. (2) `web depends_on: api` chưa có điều kiện sẵn sàng (FIX-004) — thêm healthcheck cho api (đánh `/api/v1/health` bằng php) và để web chờ `condition: service_healthy`.
+- Acceptance Criteria: `docker compose up -d --build` chạy như cũ trên máy Nguyen; web chỉ start sau khi api trả health 200; không đổi hành vi nào khác.
+- Progress: 2026-11-21 — Muse triển khai (docker-compose.yml) sau khi Nguyen merge xong 4 PR #24–#27; chờ OpenCode review.
+- Blockers: Không có.
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
@@ -222,8 +220,3 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
 - [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
-- [OpenCode review 2026-11-21] PR #20 (FIX-003): compose leaves FILESYSTEM_DISK: s3 + AWS_* pointing at http://minio:9000 in the default stack where MinIO is not started; file operations will fail and the hostname may not resolve. Recommend defaulting to local disk or removing S3 env until Group 7 (File module) lands.
-- [OpenCode review 2026-11-21] PR #20 (FIX-003): quay.io/minio/minio:latest still returns 401 even under --profile storage; profile gating does not restore image availability. Re-evaluate registry/mirror before enabling storage profile.
-- [OpenCode review 2026-11-21] PR #20 (FIX-003): TASK.md contains two identical FIX-003 sections (rebase artifact) — needs de-duplication.
-- [OpenCode review 2026-11-21] PR #23 (FIX-004): getBackendApiUrl() falls back to NEXT_PUBLIC_API_URL (which includes /v1) and callers append /v1/..., producing a double /v1 segment in local dev outside Docker (pnpm dev). Docker path works via INTERNAL_API_URL. Normalize base URLs or make the fallback http://localhost:8000/api.
-- [OpenCode review 2026-11-21] PR #23 (FIX-004): web depends_on: api has no readiness condition; since api runs composer install on start, early login attempts right after docker compose up can still hit a not-ready API. Consider a health condition or documented wait.
