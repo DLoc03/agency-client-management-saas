@@ -38,5 +38,70 @@
       "signOut": "Đăng xuất",
       "mockNotice": "Đã kết nối API backend. Xác thực an toàn qua phiên cookie httpOnly."
     }
+  },
+  "Portal": {
+    "brand": "Cổng Khách Hàng",
+    "login": {
+      "title": "Đăng nhập Cổng Khách Hàng",
+      "subtitle": "Theo dõi dự án, công việc và hoá đơn từ đơn vị cung cấp dịch vụ.",
+      "emailLabel": "Email tài khoản khách hàng",
+      "emailPlaceholder": "khachhang@partner.com",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Đăng nhập vào Portal",
+      "submitting": "Đang đăng nhập…",
+      "forgotPassword": "Quên mật khẩu?",
+      "errors": {
+        "emailRequired": "Email là bắt buộc.",
+        "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
+        "passwordRequired": "Mật khẩu là bắt buộc.",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự.",
+        "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
+        "AGENCY_LOCKED": "Không gian làm việc của agency đã bị khoá. Vui lòng liên hệ đại diện agency.",
+        "ACCOUNT_DISABLED": "Tài khoản Portal của bạn đã bị vô hiệu hoá. Vui lòng liên hệ quản trị viên agency.",
+        "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+      }
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu Portal",
+      "subtitle": "Nhập địa chỉ email để nhận hướng dẫn đặt lại mật khẩu.",
+      "emailLabel": "Email tài khoản",
+      "emailPlaceholder": "khachhang@partner.com",
+      "submit": "Gửi liên kết đặt lại",
+      "submitting": "Đang gửi…",
+      "backToLogin": "Quay lại đăng nhập",
+      "successNotice": "Nếu tài khoản tồn tại, email hướng dẫn đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư.",
+      "errors": {
+        "emailRequired": "Email là bắt buộc.",
+        "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ."
+      }
+    },
+    "resetPassword": {
+      "title": "Đặt mật khẩu mới",
+      "subtitle": "Nhập mã token xác nhận và mật khẩu mới cho tài khoản của bạn.",
+      "tokenLabel": "Mã xác nhận (Token)",
+      "tokenPlaceholder": "Dán mã token từ email",
+      "passwordLabel": "Mật khẩu mới",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Cập nhật mật khẩu",
+      "submitting": "Đang cập nhật…",
+      "backToLogin": "Quay lại trang đăng nhập",
+      "successNotice": "Mật khẩu của bạn đã được đặt lại thành công. Bây giờ bạn có thể đăng nhập.",
+      "errors": {
+        "tokenRequired": "Mã token là bắt buộc.",
+        "passwordRequired": "Mật khẩu mới là bắt buộc.",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự.",
+        "INVALID_RESET_TOKEN": "Mã xác nhận không hợp lệ hoặc đã hết hạn."
+      }
+    },
+    "dashboard": {
+      "title": "Tổng quan Khách Hàng",
+      "welcome": "Kính chào quý khách, {name}!",
+      "agency": "Đơn vị phụ trách: {agency}",
+      "clientId": "Mã khách hàng: #{id}",
+      "emptyNotice": "Chưa có dự án hoặc hoá đơn nào. Các cập nhật mới từ agency sẽ hiển thị tại đây.",
+      "signOut": "Đăng xuất khỏi Portal",
+      "mockNotice": "⚠️ Chế độ Mock Portal — phiên đăng nhập và token độc lập với ứng dụng nội bộ."
+    }
   }
 }
