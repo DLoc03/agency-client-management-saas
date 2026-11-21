@@ -1,6 +1,8 @@
 /**
- * LoginForm — FE-002
- * Calls POST /api/v1/auth/login (mocked) per AUTH_CONTRACT.md §3.
+ * LoginForm — FE-002, FE-004
+ * Calls POST /api/v1/auth/login via BFF route handler per AUTH_CONTRACT.md §3.
+ * Maps INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED to the error banner,
+ * respecting bilingual error messages returned by the API.
  * No hardcoded display strings — all from next-intl.
  */
 
@@ -19,6 +21,11 @@ type ErrorCode =
   | "AGENCY_LOCKED"
   | "ACCOUNT_DISABLED"
   | "UNKNOWN";
+
+interface FormServerError {
+  code: ErrorCode;
+  message?: string;
+}
 
 function buildSchema(t: ReturnType<typeof useTranslations<"Auth.login">>) {
   return z.object({
@@ -40,7 +47,7 @@ export function LoginForm() {
   const schema = buildSchema(t);
   const { login } = useAuth();
   const router = useRouter();
-  const [serverError, setServerError] = useState<ErrorCode | null>(null);
+  const [serverError, setServerError] = useState<FormServerError | null>(null);
 
   const {
     register,
@@ -52,9 +59,9 @@ export function LoginForm() {
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
-    const errorCode = await login(values);
+    const error = await login(values);
 
-    if (!errorCode) {
+    if (!error) {
       router.replace("/dashboard");
       return;
     }
@@ -64,11 +71,13 @@ export function LoginForm() {
       "AGENCY_LOCKED",
       "ACCOUNT_DISABLED",
     ];
-    setServerError(
-      knownCodes.includes(errorCode as ErrorCode)
-        ? (errorCode as ErrorCode)
-        : "UNKNOWN"
-    );
+
+    setServerError({
+      code: knownCodes.includes(error.code as ErrorCode)
+        ? (error.code as ErrorCode)
+        : "UNKNOWN",
+      message: error.message,
+    });
   };
 
   return (
@@ -85,7 +94,7 @@ export function LoginForm() {
           aria-live="assertive"
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
-          {t(`errors.${serverError}`)}
+          {serverError.message || t(`errors.${serverError.code}`)}
         </div>
       )}
 

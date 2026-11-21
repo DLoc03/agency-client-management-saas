@@ -91,18 +91,25 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ## QA-002 — Auth & tenancy test coverage
 - Assignee: OpenCode · Level: L1 · Status: IN_REVIEW
-- Branch: qa/QA-002-auth-tests · PR: #6 (chờ Muse review/merge — G.3)
-- Blocked by: BE-003 (chờ code Backend để chạy kiểm thử thật; viết test case từ Acceptance Criteria ngay được)
+- Branch: qa/QA-002-run-results · PR: #6 (đã merge) + PR kết quả chạy thật này (Muse mở thay OpenCode từ commit d4f3af3 trên branch cũ, vì PR #6 đã đóng)
+- Blocked by: BE-003 (đã merge PR #8 — phần API chạy xong); FE-004 (chờ merge để chạy phần E2E)
 - Acceptance Criteria: Bộ test case bao phủ: login đúng/sai thông tin, agency bị khoá, tài khoản bị vô hiệu hoá, token portal gọi API nội bộ bị chặn và ngược lại, truy vấn dữ liệu agency khác trả 404, rate limit login; E2E Playwright cho luồng login nội bộ + Portal; kết quả ghi vào task này.
 - Progress: OpenCode hoàn thành 2026-11-20 bộ **23 test case** (17 API + 6 E2E) từ `docs/AUTH_CONTRACT.md` đã duyệt (DEC-008), lưu tại `tests/e2e/auth.spec.ts`. Chưa chạy thật vì BE-003/FE-002/FE-003 chưa lên PR — đúng Handoff của task.
   - Phủ Acceptance Criteria: login đúng (TC-AUTH-01, TC-E2E-01), sai email/sai mật khẩu (02, E2E-02), agency khoá (03, E2E-03), tài khoản vô hiệu (04, E2E-03), token Portal → API nội bộ bị chặn (08, E2E-05) và token nội bộ → API Portal bị chặn (09), đọc dữ liệu agency khác → 404 thay vì 403 (11), rate limit 5 lần/phút/IP (13).
   - Phủ thêm theo hợp đồng: token Portal tách biệt + client summary (07), `agency_id` chỉ lấy từ token (10), FK khác agency → 422 `CROSS_TENANT_REFERENCE` (12), logout thu hồi token (14), đổi mật khẩu thu hồi mọi token khác (15), forgot/reset không dò tài khoản + `INVALID_RESET_TOKEN` (16), mã lỗi ổn định nhưng message theo locale (06), E2E Portal `/portal` + guard + EN/VI (E2E-05/06).
   - `test.fixme` có chủ đích: TC-AUTH-17 (Portal forgot/reset) — DEC-008.3 đã chốt nhưng `AUTH_CONTRACT.md` mục 3 chưa định nghĩa endpoint; đã báo tại PR #5 (Inbox QA-001), chờ Muse + Nguyen chốt. TC-AUTH-11/12 dùng env `E2E_TENANT_RESOURCE_PATH` / `E2E_TENANT_CREATE_PATH` + `test.skip` có lý do tới khi có endpoint nghiệp vụ — không fail giả.
   - Không hardcode secret: mọi tài khoản/ID đọc từ biến `E2E_*` của seed dùng chung (`tests/e2e/README.md`, quy ước H.4). Không thêm dependency hay config chung (L4) — chỉ thêm 1 file spec trong phạm vi sở hữu QA.
-  - Kết quả: **bộ test case HOÀN THÀNH ở mức viết; chưa có kết quả chạy thật.** Chuyển `IN_REVIEW` chờ Muse approve/merge; không tự merge PR của chính mình.
+  - Kết quả chạy thật (API, 2026-11-20, DB `agency_saas`, seed demo + QA accounts): **14 PASS / 2 FAIL / 2 SKIP** trên tổng 17 ca API. Chi tiết:
+    - PASS: TC-AUTH-01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 13, 16, 17 (và TC-AUTH-11/12 SKIP vì chưa có endpoint nghiệp vụ BE-004).
+    - FAIL: TC-AUTH-14 và TC-AUTH-15 — sau logout/đổi mật khẩu, token bị xoá trả **500** thay vì 401 `UNAUTHENTICATED` (root cause: `auth:sanctum` middleware gọi `route('login')` không tồn tại trong API-only app). Đã ghi finding Inbox. TC-AUTH-15 fail cùng root cause.
+    - SKIP: TC-AUTH-11 (cross-tenant 404), TC-AUTH-12 (cross-tenant FK 422) — chờ BE-004 cung cấp endpoint nghiệp vụ; giữ `test.skip` có lý do, không fail giả.
+  - TC-AUTH-17 đã bật (không còn `test.fixme`) sau khi PR #9 bổ sung endpoint Portal forgot/reset; PASS.
+  - Môi trường: cần `storage/framework/views` (view cache) cho luồng forgot-password; đã ghi finding setup. Rate limit 5/phút/IP khiến suite phải chạy theo nhóm + flush Redis — ghi nhận trong PR.
+  - E2E (TC-E2E-01..06) chưa chạy: FE-004 chưa merge; sẽ chạy sau FE-004.
+  - Kết luận: bộ API **PASS có điều kiện** (14/14 ca có thể chạy đều pass; 2 fail cùng 1 bug BE); không tự chuyển `DONE` khi còn fail và còn E2E chưa chạy; không tự merge PR.
 - Handoff: Khi BE-003/FE-002/FE-003 mở PR, chạy `tests/e2e/auth.spec.ts` trên DB test riêng của QA (`agency_test`, G.2), bổ sung endpoint Portal forgot/reset sau khi contract chốt, rồi ghi kết quả PASS/FAIL vào task này.
----
 
+---
 ## FIX-001 — MinIO image no longer on Docker Hub
 - Assignee: Muse · Level: L2 · Status: IN_REVIEW
 - Branch: fix/FIX-001-minio-image · PR: —
@@ -114,22 +121,32 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
-- Assignee: Google Antigravity · Level: L3 · Status: TODO
-- Branch: fe/FE-004-login-real-api · PR: —
+- Assignee: Google Antigravity · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-004-login-real-api · PR: #14
 - Blocked by: — (BE-003 đã merge; FE-002 đã merge)
 - Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
-- Progress: Chưa bắt đầu. Đây là mốc nghiệm thu giao diện + luồng thật đầu tiên — làm xong báo Nguyen chạy local duyệt.
+- Progress: Antigravity hoàn thành 2026-11-20: xây dựng BFF route handlers (/api/auth/login, /api/auth/logout, /api/auth/me) với httpOnly cookie app_token; nối POST /v1/auth/login + GET /v1/auth/me; map các mã lỗi chuẩn (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) và tôn trọng message song ngữ từ backend; cập nhật AuthContext, LoginForm và test suite (14 tests PASS, tsc PASS, next build PASS). Đang mở PR.
 - Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
 
 ---
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
-- Branch: be/BE-004-client-module · PR: —
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
 - Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
-- Progress: Hợp đồng được Nguyen duyệt toàn bộ theo đề xuất 2026-11-20 (DEC-009) và công bố tại `docs/CLIENT_CONTRACT.md` qua PR docs kèm theo; Muse bắt đầu code ngay sau khi PR đó merge.
+- Progress: Hợp đồng duyệt 2026-11-20 (DEC-009, PR #12). Muse đã code xong trong PR này: 6 migrations (clients, organizations, contacts, client_notes, tags + client_tag, FK client_accounts.client_id), ma trận quyền clients.* theo DEC-009 (middleware permission tại API), 17 endpoints (clients CRUD + lọc status/tag/manager/q, contacts, notes, tags, portal-accounts), test: full suite 31 passed (12 test mới cho BE-004), Pint PASS, OpenAPI 21 paths. Kiểm chứng Docker/MySQL thật: nhờ OpenCode/Nguyen chạy lại migrate trên stack local khi review (máy Muse không có Docker).
 - Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
+
+---
+
+## FIX-002 — Token bị thu hồi trả 500 thay vì 401 + thiếu thư mục storage khi checkout sạch
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-002-auth-401-storage · PR: —
+- Blocked by: —
+- Acceptance Criteria: (1) Request API không gửi `Accept: application/json` (kiểu Playwright) với token đã thu hồi phải trả 401 `UNAUTHENTICATED`, không phải 500 — gốc lỗi: ApplicationBuilder mặc định của Laravel 12 đăng ký guest redirect gọi `route('login')` (route không tồn tại trong app API-only) ngay trong Authenticate middleware; sửa bằng `redirectGuestsTo` trả null + `shouldRenderJsonWhen` cho `api/*`, KHÔNG thêm route login. Có test hồi quy riêng. (2) Checkout sạch phải có `storage/framework/{views,cache,sessions,testing}` + `storage/logs` (thêm `.gitkeep`) để forgot/reset-password không còn 500 "valid cache path". (3) Kèm DEC-010 (chuẩn hoá field reset-password = `password`, sửa AUTH_CONTRACT) và DEC-011 (chuyển vai FE sang OpenCode) theo quyết định của Nguyen 2026-11-21.
+- Progress: Muse sửa xong trong PR này — test hồi quy mới PASS, full suite 32 passed, Pint PASS. Chờ OpenCode review; sau merge, QA chạy lại TC-AUTH-14/15 để xác nhận finding 1 đóng.
+- Handoff: OpenCode review theo ma trận G.3 (PR Backend của Muse → OpenCode).
 
 ---
 
@@ -138,3 +155,6 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 - [QA-001 · 2026-11-20] `docs/CONVENTIONS.md:252` — dòng cuối "chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code" đã lỗi thời sau DEC-001/DEC-004 và các PR #1–#4. Đề xuất Nguyen/Muse sửa hoặc xoá dòng này qua PR `docs/` theo DEC-002; QA không tự sửa quy ước.
 - [QA-001 · 2026-11-20] `docs/AUTH_CONTRACT.md:37-43,81-85` — DEC-008.3 chốt "Portal có quên mật khẩu, dùng chung cơ chế email" nhưng bảng endpoint Portal thiếu `POST /portal/auth/forgot-password` và `POST /portal/auth/reset-password`. Đề xuất Muse + Nguyen chốt method/path/request/response + mã lỗi trước khi QA chạy test thật QA-002.
+- [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
+- [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
+- [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.

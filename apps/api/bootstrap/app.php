@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\ApiException;
+use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\SetApiLocale;
 use App\Support\ApiError;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -28,10 +29,27 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'ability' => CheckAbilities::class,
             'abilities' => CheckForAnyAbility::class,
+            'permission' => EnsurePermission::class,
         ]);
         $middleware->api(append: [SetApiLocale::class]);
+
+        // API-only backend: there is no web `login` route to redirect guests
+        // to. Laravel's default guest redirect calls route('login') eagerly
+        // inside the Authenticate middleware, which turned a revoked token
+        // into a 500 instead of 401 for non-JSON clients (QA-002, FIX-002).
+        // Returning null lets the exception handler answer 401 JSON instead
+        // (see shouldRenderJsonWhen below).
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // API clients must always get JSON, whatever Accept header they send.
+        // Without this, an unauthenticated non-JSON request makes the auth
+        // middleware redirect to a named `login` route that does not exist in
+        // this API-only app — a 500 instead of 401 (QA-002 finding, FIX-002).
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*'),
+        );
+
         // Standard API error format for all /api responses (contract §4).
         $exceptions->render(function (ApiException $e, Request $request) {
             if ($request->is('api/*')) {

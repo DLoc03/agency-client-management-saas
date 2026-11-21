@@ -36,7 +36,7 @@
       "welcome": "Chào mừng trở lại, {name}!",
       "agency": "Không gian làm việc: {agency}",
       "signOut": "Đăng xuất",
-      "mockNotice": "⚠️ Chế độ mock — dữ liệu không được lưu. API sẽ kết nối khi BE-003 hoàn thành."
+      "mockNotice": "Đã kết nối API backend. Xác thực an toàn qua phiên cookie httpOnly."
     }
   },
   "Portal": {

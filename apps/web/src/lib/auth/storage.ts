@@ -1,11 +1,12 @@
 /**
- * Auth token storage — FE-002
+ * Auth session storage — FE-004
  *
- * During mock phase: stores token in sessionStorage so it survives page
- * refreshes within the tab but clears on tab close (safer than localStorage).
- *
- * When BE-003 ships: replace with httpOnly cookie set by the API, and remove
- * sessionStorage reads/writes here.
+ * Security model:
+ * 1. The actual API token is stored exclusively in a secure httpOnly cookie (app_token)
+ *    managed by the Next.js Route Handlers (BFF) and verified on every server request.
+ * 2. Non-sensitive profile data (user, agency) is cached in sessionStorage for fast
+ *    client-side UI rehydration between page transitions in the same tab.
+ * 3. On page load / mount, AuthProvider revalidates with /api/auth/me.
  */
 
 import { TOKEN_STORAGE_KEY, type AuthSession } from "./types";
@@ -19,8 +20,6 @@ function isBrowser() {
 export function saveSession(session: AuthSession): void {
   if (!isBrowser()) return;
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  // Also set a plain token key for middleware-compatible reads
-  sessionStorage.setItem(TOKEN_STORAGE_KEY, session.token);
 }
 
 export function loadSession(): AuthSession | null {
@@ -42,5 +41,5 @@ export function clearSession(): void {
 
 export function hasSession(): boolean {
   if (!isBrowser()) return false;
-  return !!sessionStorage.getItem(TOKEN_STORAGE_KEY);
+  return !!sessionStorage.getItem(SESSION_KEY);
 }

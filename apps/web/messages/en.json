@@ -36,7 +36,7 @@
       "welcome": "Welcome back, {name}!",
       "agency": "Workspace: {agency}",
       "signOut": "Sign out",
-      "mockNotice": "⚠️ Mock mode — data is not persisted. API connects when BE-003 ships."
+      "mockNotice": "Connected to backend API. Authenticated via secure httpOnly cookie session."
     }
   },
   "Portal": {
