@@ -49,8 +49,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      minio:
-        condition: service_started
     command: >
       sh -c "composer install --no-interaction --prefer-dist &&
              php artisan serve --host=0.0.0.0 --port=8000"
@@ -65,6 +63,10 @@ services:
       - web_node_modules:/app/node_modules
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      # Server-side (BFF) calls must reach the API over the compose network —
+      # without this the web container falls back to localhost (= itself)
+      # and every login fails with "fetch failed" / 500 (FIX-004).
+      INTERNAL_API_URL: http://api:8000/api
     ports:
       - "3000:3000"
     depends_on:
@@ -101,7 +103,12 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  # S3 storage is OPTIONAL until the file features land (Group 7): MinIO no
+  # longer publishes a free public image (Docker Hub removed, Quay returns
+  # 401), so this service sits behind the `storage` profile and is NOT part
+  # of the default stack. Enable with: docker compose --profile storage up -d
   minio:
+    profiles: ["storage"]
     image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
     environment:
