@@ -16,6 +16,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
 
 ### QA & Fixes
+- Fixed revoked tokens returning 500 instead of 401 for non-JSON API clients (FIX-002, QA-002 finding): Laravel's default guest redirect called a nonexistent `login` route inside the auth middleware; API guests now get the standard 401 `UNAUTHENTICATED`. Also restored `storage/framework/*` directories via `.gitkeep` so password-reset mails work on a clean checkout.
 - Fixed MinIO service failing to start (FIX-001): the `minio/minio` image was removed from Docker Hub; the compose stack now uses MinIO's official Quay registry image `quay.io/minio/minio`.
 - QA-001 (OpenCode): reviewed bootstrap DOC-001 — 5 mandatory files + `docs/` verified against DEC-001..DEC-008: PASS, no blocker. Two minor findings logged in `TASK.md` Inbox (stale CONVENTIONS note; missing Portal password-reset endpoints in AUTH_CONTRACT).
 - QA-002 (OpenCode): authored 23 Playwright cases from docs/AUTH_CONTRACT.md (17 API + 6 E2E) in tests/e2e/auth.spec.ts; API run on BE-003: 14 PASS / 2 FAIL (TC-AUTH-14, 15 - 500 on revoked token) / 2 SKIP (11, 12 pending BE-004); TC-AUTH-17 enabled after portal reset endpoints landed. E2E pending FE-004.
