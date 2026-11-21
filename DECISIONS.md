@@ -46,3 +46,13 @@
 - Decision: Duyệt hợp đồng tại `docs/CLIENT_CONTRACT.md`: module Client gồm hồ sơ client, organization tách bảng riêng (1–1), contacts, tags phân đoạn, client notes nội bộ, và cấp/khoá tài khoản Portal (thêm FK `client_accounts.client_id → clients.id`). Sáu chốt chi tiết theo đề xuất của Muse được Nguyen duyệt toàn bộ: (1) organization tách bảng riêng; (2) data scope của Sales Manager = toàn agency trong MVP; (3) Team Member không có quyền clients.* ở MVP; (4) xoá client = soft delete + vô hiệu hoá tài khoản Portal liên kết; (5) Admin không có quyền xoá client — chỉ Owner; (6) mật khẩu tài khoản Portal do agency đặt khi tạo, luồng email tự đặt mật khẩu để Phase 2.
 - Reason: Giữ mô hình dữ liệu khớp luồng Convert Lead → Client về sau; scope đơn giản ở MVP để không chặn tiến độ; quyền xoá (thao tác phá huỷ) tập trung ở Owner nhất quán với nguyên tắc quản trị cấp cao nhất của RBAC đã chốt.
 - Scope / Expiry: Toàn bộ MVP; xem xét lại scope của Sales và luồng mật khẩu Portal khi vào Phase 2.
+
+## DEC-010 — Chuẩn hoá field reset-password là `password` · 2026-11-21 · Mức: L3
+- Decision: Field đặt lại mật khẩu trong `POST /auth/reset-password` và `POST /portal/auth/reset-password` là `password` (không phải `new_password` như bản hợp đồng Auth ban đầu ghi). `docs/AUTH_CONTRACT.md` được sửa cho khớp; implementation, test Backend và Portal FE-003 vốn đã dùng `password` nên không phải sửa code. Riêng change-password giữ nguyên `current_password` + `new_password` (hợp đồng và code đã thống nhất từ đầu).
+- Reason: Đúng quy ước Laravel cho luồng reset (form đặt mật khẩu mới tại trang reset), và là lựa chọn ít thay đổi nhất: chỉ sửa 1 dòng tài liệu thay vì sửa code + test + FE. Phát hiện qua QA-002 finding 3.
+- Scope / Expiry: Áp dụng cho cả reset nội bộ và Portal trong toàn bộ MVP.
+
+## DEC-011 — Chuyển vai trò Frontend Developer từ Google Antigravity sang OpenCode · 2026-11-21 · Mức: L5 (ngoại lệ do Nguyen quyết)
+- Decision: OpenCode đảm nhiệm thêm vai trò Frontend Developer (vai trò chính QA Review & Tester giữ nguyên), thay Google Antigravity kể từ quyết định này. Mọi task FE từ thời điểm này được giao cho OpenCode trừ khi Nguyen chỉ định khác.
+- Reason: Antigravity tạm ngưng hoạt động; cần giữ tiến độ Frontend không bị chặn (lý do chi tiết do Nguyen nắm).
+- Scope / Expiry: Áp dụng cho mọi task FE mở sau thời điểm quyết định (FE-004/FE-003 đã hoàn thành trước đó không bị ảnh hưởng). Ràng buộc bất biến theo quy ước: **OpenCode không bao giờ được tự review/accept code FE của chính mình** — PR FE của OpenCode do Muse review chéo hoặc Nguyen duyệt. Quyết định hết hiệu lực khi Nguyen thông báo Antigravity quay lại hoặc chỉ định khác.

@@ -30,7 +30,7 @@
 | GET | `/auth/me` | đã đăng nhập | Hồ sơ + roles + permissions hiệu lực + agency. |
 | POST | `/auth/change-password` | đã đăng nhập | {current_password, new_password}; sai mật khẩu hiện tại → 422 `CURRENT_PASSWORD_MISMATCH`. |
 | POST | `/auth/forgot-password` | public | Gửi email đặt lại mật khẩu (link hết hạn 60 phút). Luôn trả 200 kể cả email không tồn tại (chống dò tài khoản). |
-| POST | `/auth/reset-password` | public | {token, email, new_password}. Token sai/hết hạn → 422 `INVALID_RESET_TOKEN`. |
+| POST | `/auth/reset-password` | public | {token, email, password}. Token sai/hết hạn → 422 `INVALID_RESET_TOKEN`. (Tên field `password` đã chuẩn hoá theo implementation — DEC-010.) |
 
 - Đăng ký tài khoản: KHÔNG có đăng ký công khai trong MVP. Agency do Super Admin tạo (kèm user Owner đầu tiên); thành viên nội bộ do Owner/Admin mời (module Team — BE-005): POST `/team/invitations` + POST `/auth/accept-invitation`. Phần invitation nằm ở BE-005, BE-003 chỉ gồm login/logout/me/password + forgot/reset.
 
