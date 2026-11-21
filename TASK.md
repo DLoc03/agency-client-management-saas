@@ -131,11 +131,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
-- Branch: be/BE-004-client-module · PR: —
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
 - Blocked by: — (hợp đồng đã duyệt, DEC-009)
 - Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
-- Progress: Hợp đồng được Nguyen duyệt toàn bộ theo đề xuất 2026-11-20 (DEC-009) và công bố tại `docs/CLIENT_CONTRACT.md` qua PR docs kèm theo; Muse bắt đầu code ngay sau khi PR đó merge.
+- Progress: Hợp đồng duyệt 2026-11-20 (DEC-009, PR #12). Muse đã code xong trong PR này: 6 migrations (clients, organizations, contacts, client_notes, tags + client_tag, FK client_accounts.client_id), ma trận quyền clients.* theo DEC-009 (middleware permission tại API), 17 endpoints (clients CRUD + lọc status/tag/manager/q, contacts, notes, tags, portal-accounts), test: full suite 31 passed (12 test mới cho BE-004), Pint PASS, OpenAPI 21 paths. Kiểm chứng Docker/MySQL thật: nhờ OpenCode/Nguyen chạy lại migrate trên stack local khi review (máy Muse không có Docker).
 - Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
 
 ---

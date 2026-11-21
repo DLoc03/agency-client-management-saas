@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Backend
+- Client module (BE-004, per docs/CLIENT_CONTRACT.md + DEC-009): client profiles with organizations (1-1) and contacts, segmentation tags and filters, internal client notes, and Portal account provisioning (create/enable/disable) including the `client_accounts.client_id` foreign key. RBAC `clients.*` permissions are enforced at the API layer via a new permission middleware; deleting a client soft-deletes it and disables its Portal accounts.
 - Repository bootstrap by Muse (Backend): project conventions, finalized stack, MVP scope, RBAC & i18n decisions, and initialization plan added under `docs/`.
 - Monorepo foundation & Docker Compose (BE-001): root `docker-compose.yml` with api/web/mysql/redis/mailpit/minio, PHP 8.3 and Node 20 Dockerfiles, shared `.env.example` and `Makefile`.
 - Laravel API initialized (BE-002): Laravel 12 in `apps/api`, Sanctum API scaffolding, `GET /api/v1/health` endpoint in the standard response format with a dedicated feature test.
