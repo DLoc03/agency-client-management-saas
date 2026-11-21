@@ -6,6 +6,10 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ClientNoteController;
 use App\Http\Controllers\Api\ClientPortalAccountController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\LeadActivityController;
+use App\Http\Controllers\Api\LeadContactController;
+use App\Http\Controllers\Api\LeadController;
+use App\Http\Controllers\Api\LeadNoteController;
 use App\Http\Controllers\Api\PortalAuthController;
 use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
@@ -61,4 +65,33 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
 
     Route::get('/tags', [TagController::class, 'index'])->middleware('permission:clients.view');
     Route::post('/tags', [TagController::class, 'store'])->middleware('permission:clients.create');
+});
+
+// CRM module (docs/CRM_CONTRACT.md) — same tenancy and permission model.
+// The fixed-path routes (pipeline-summary, lead-activities/due) are
+// registered before /leads/{lead} so they are not swallowed by binding.
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function () {
+    Route::get('/leads/pipeline-summary', [LeadController::class, 'pipelineSummary'])->middleware('permission:leads.view');
+    Route::get('/lead-activities/due', [LeadActivityController::class, 'due'])->middleware('permission:leads.view');
+
+    Route::get('/leads', [LeadController::class, 'index'])->middleware('permission:leads.view');
+    Route::post('/leads', [LeadController::class, 'store'])->middleware('permission:leads.create');
+    Route::get('/leads/{lead}', [LeadController::class, 'show'])->middleware('permission:leads.view');
+    Route::patch('/leads/{lead}', [LeadController::class, 'update'])->middleware('permission:leads.update');
+    Route::delete('/leads/{lead}', [LeadController::class, 'destroy'])->middleware('permission:leads.delete');
+    Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->middleware('permission:leads.convert');
+
+    Route::get('/leads/{lead}/contacts', [LeadContactController::class, 'index'])->middleware('permission:leads.view');
+    Route::post('/leads/{lead}/contacts', [LeadContactController::class, 'store'])->middleware('permission:leads.update');
+    Route::patch('/leads/{lead}/contacts/{contactId}', [LeadContactController::class, 'update'])->middleware('permission:leads.update');
+    Route::delete('/leads/{lead}/contacts/{contactId}', [LeadContactController::class, 'destroy'])->middleware('permission:leads.update');
+
+    Route::get('/leads/{lead}/notes', [LeadNoteController::class, 'index'])->middleware('permission:leads.view');
+    Route::post('/leads/{lead}/notes', [LeadNoteController::class, 'store'])->middleware('permission:leads.notes.manage');
+    Route::delete('/leads/{lead}/notes/{noteId}', [LeadNoteController::class, 'destroy'])->middleware('permission:leads.notes.manage');
+
+    Route::get('/leads/{lead}/activities', [LeadActivityController::class, 'index'])->middleware('permission:leads.view');
+    Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->middleware('permission:leads.activities.manage');
+    Route::patch('/leads/{lead}/activities/{activityId}', [LeadActivityController::class, 'update'])->middleware('permission:leads.activities.manage');
+    Route::delete('/leads/{lead}/activities/{activityId}', [LeadActivityController::class, 'destroy'])->middleware('permission:leads.activities.manage');
 });

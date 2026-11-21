@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Backend
+- CRM / Lead module (BE-005, per docs/CRM_CONTRACT.md + DEC-014): lead CRUD with status pipeline (new/contacted/qualified/unqualified), pipeline summary, lead notes, follow-up activities with a due list, shared contacts (contacts now belong to a lead or a client), and one-action Lead → Client conversion that creates the Client + Organization + Contact, re-links contacts, locks the lead, and guards duplicates. New `leads.*` permissions enforced at the API layer.
 
 ### Frontend
 

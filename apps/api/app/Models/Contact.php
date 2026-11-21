@@ -8,13 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/** A contact person of a client (shared concept with CRM leads, Group 1). */
+/**
+ * A contact person, shared between clients and leads (DEC-014): each
+ * contact belongs to exactly one owner — a client XOR a lead.
+ */
 class Contact extends Model
 {
     use BelongsToAgency, HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'agency_id', 'client_id', 'organization_id', 'full_name',
+        'agency_id', 'client_id', 'lead_id', 'organization_id', 'full_name',
         'email', 'phone', 'position', 'is_primary',
     ];
 
@@ -26,6 +29,11 @@ class Contact extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
     }
 
     public function organization(): BelongsTo

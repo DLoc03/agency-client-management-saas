@@ -13,6 +13,8 @@ return [
     'CURRENT_PASSWORD_MISMATCH' => 'The current password is incorrect.',
     'INVALID_RESET_TOKEN' => 'This password reset token is invalid or has expired.',
     'CROSS_TENANT_REFERENCE' => 'A referenced resource belongs to a different workspace.',
+    'LEAD_ALREADY_CONVERTED' => 'This lead has already been converted into a client.',
+    'DUPLICATE_CLIENT_CANDIDATE' => 'A client with the same email or tax code already exists in this workspace.',
     'OWNER_REQUIRED' => 'Only the workspace owner can perform this action.',
     'CANNOT_MODIFY_OWNER' => 'The workspace owner cannot be modified this way.',
     'PASSWORD_RESET_SENT' => 'If the account exists, a password reset email has been sent.',

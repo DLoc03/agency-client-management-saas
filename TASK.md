@@ -180,11 +180,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
-- Branch: — · PR: —
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-005-crm-lead · PR: —
 - Blocked by: PR #19 merge (hợp đồng CRM_CONTRACT + DEC-014 chính thức trên main)
 - Acceptance Criteria: Đủ endpoints và quy tắc trong docs/CRM_CONTRACT.md: leads CRUD + lọc, pipeline-summary, convert Lead → Client (tạo Client + Organization + Contact, nối lại contacts, khoá sửa lead, 409 khi convert lại, 422 chống trùng kèm force), lead notes, lead activities + due list, contacts dùng chung (lead_id), ma trận quyền leads.* theo DEC-014, cách ly tenant. Test: bộ test Feature cho module Lead đạt, Pint PASS, OpenAPI cập nhật.
-- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014).
+- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014). Muse đã triển khai xong trong PR này: 5 migration, leads CRUD + pipeline-summary + convert, notes, activities + due list, contacts dùng chung; bộ test toàn cục 52 passed, Pint PASS, OpenAPI 32 paths.
 - Handoff: OpenCode review theo ma trận G.3.
 
 ## FIX-005 — Response tạo mới không phản ánh giá trị mặc định của DB (status/author/is_active trống)

@@ -25,6 +25,14 @@ return [
         'clients.delete',
         'clients.notes.manage',
         'clients.portal_accounts.manage',
+        // CRM module (docs/CRM_CONTRACT.md).
+        'leads.view',
+        'leads.create',
+        'leads.update',
+        'leads.delete',
+        'leads.convert',
+        'leads.notes.manage',
+        'leads.activities.manage',
     ],
 
     'roles' => [
@@ -40,6 +48,14 @@ return [
             'clients.update',
             'clients.notes.manage',
             'clients.portal_accounts.manage',
+            // DEC-014: Admin holds every leads.* permission, delete included.
+            'leads.view',
+            'leads.create',
+            'leads.update',
+            'leads.delete',
+            'leads.convert',
+            'leads.notes.manage',
+            'leads.activities.manage',
         ],
         Role::SALES_MANAGER => [
             'workspace.view',
@@ -49,10 +65,18 @@ return [
             'clients.update',
             'clients.notes.manage',
             'clients.portal_accounts.manage',
+            // DEC-014: Sales runs the pipeline but may NOT delete leads.
+            'leads.view',
+            'leads.create',
+            'leads.update',
+            'leads.convert',
+            'leads.notes.manage',
+            'leads.activities.manage',
         ],
-        Role::PROJECT_MANAGER => ['workspace.view', 'clients.view'],
+        Role::PROJECT_MANAGER => ['workspace.view', 'clients.view', 'leads.view'],
         // DEC-009.3: Team Members hold no clients.* permission in the MVP.
+        // DEC-014: and no leads.* permission either.
         Role::TEAM_MEMBER => ['workspace.view'],
-        Role::ACCOUNTANT => ['workspace.view', 'clients.view'],
+        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view'],
     ],
 ];

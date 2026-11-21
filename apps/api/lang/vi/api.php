@@ -13,6 +13,8 @@ return [
     'CURRENT_PASSWORD_MISMATCH' => 'Mật khẩu hiện tại không đúng.',
     'INVALID_RESET_TOKEN' => 'Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.',
     'CROSS_TENANT_REFERENCE' => 'Dữ liệu tham chiếu thuộc về workspace khác.',
+    'LEAD_ALREADY_CONVERTED' => 'Lead này đã được chuyển thành khách hàng.',
+    'DUPLICATE_CLIENT_CANDIDATE' => 'Đã tồn tại khách hàng trùng email hoặc mã số thuế trong workspace này.',
     'OWNER_REQUIRED' => 'Chỉ chủ sở hữu workspace mới thực hiện được thao tác này.',
     'CANNOT_MODIFY_OWNER' => 'Không thể sửa chủ sở hữu workspace theo cách này.',
     'PASSWORD_RESET_SENT' => 'Nếu tài khoản tồn tại, email đặt lại mật khẩu đã được gửi.',
