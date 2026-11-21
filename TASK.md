@@ -121,11 +121,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
-- Assignee: Google Antigravity · Level: L3 · Status: TODO
-- Branch: fe/FE-004-login-real-api · PR: —
+- Assignee: Google Antigravity · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-004-login-real-api · PR: #14
 - Blocked by: — (BE-003 đã merge; FE-002 đã merge)
 - Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
-- Progress: Chưa bắt đầu. Đây là mốc nghiệm thu giao diện + luồng thật đầu tiên — làm xong báo Nguyen chạy local duyệt.
+- Progress: Antigravity hoàn thành 2026-11-20: xây dựng BFF route handlers (/api/auth/login, /api/auth/logout, /api/auth/me) với httpOnly cookie app_token; nối POST /v1/auth/login + GET /v1/auth/me; map các mã lỗi chuẩn (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) và tôn trọng message song ngữ từ backend; cập nhật AuthContext, LoginForm và test suite (14 tests PASS, tsc PASS, next build PASS). Đang mở PR.
 - Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
 
 ---

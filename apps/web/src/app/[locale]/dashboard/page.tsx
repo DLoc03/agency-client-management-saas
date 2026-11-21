@@ -58,8 +58,8 @@ export default function DashboardPage() {
 
         {/* Sign out */}
         <button
-          onClick={() => {
-            logout();
+          onClick={async () => {
+            await logout();
             router.replace("/login");
           }}
           className="mt-6 rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition"

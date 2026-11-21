@@ -15,6 +15,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Frontend
 - Next.js web skeleton (FE-001): Next.js 15 + TypeScript strict + Tailwind v4, next-intl routing for `en` (default) and `vi` with all UI strings in `messages/` files, locale switcher on the home frame page. (Entry restored in the BE-003 docs PR — it was missed in PR #3 due to a string-matching mistake by Muse.)
+- Real API login wiring (FE-004): replaced mock auth with real Laravel API calls via Next.js BFF Route Handlers (/api/auth/login, /api/auth/logout, /api/auth/me) using secure httpOnly cookie (app_token); mapped API error codes (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) to LoginForm banner respecting bilingual messages; verified roles and permissions via GET /v1/auth/me; logout revokes token via API; 14 vitest tests PASS; Next.js build PASS.
 
 ### QA & Fixes
 - Fixed revoked tokens returning 500 instead of 401 for non-JSON API clients (FIX-002, QA-002 finding): Laravel's default guest redirect called a nonexistent `login` route inside the auth middleware; API guests now get the standard 401 `UNAUTHENTICATED`. Also restored `storage/framework/*` directories via `.gitkeep` so password-reset mails work on a clean checkout.
