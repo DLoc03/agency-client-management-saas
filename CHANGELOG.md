@@ -6,6 +6,8 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-22
+
 ### Backend
 - Project Management contract published (BE-006): `docs/PROJECT_CONTRACT.md` approved by the Product Owner (DEC-016) — projects with members and milestones, tasks with assignees, priorities, due dates, comments and checklist items, read-time progress %, list timeline, and read-only Portal project endpoints. Implementation follows in BE-006.
 - Project Management module (BE-006): projects CRUD with filters and soft-delete cascade, project members, milestones, tasks with assignee/priority/due date and automatic `completed_at`, task comments and checklist items, read-time progress %, list timeline, due list, and read-only Portal project endpoints. `projects.*`/`tasks.*` RBAC per DEC-016 with Team Member scoping (participating projects only, own assigned tasks only).

@@ -245,7 +245,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Đóng task: DONE 2026-11-22 — QA-004 chạy thật PASS: `tests/e2e/project.spec.ts` (29 ca) trên Docker/MySQL 8 + seed demo. Minimal seed: 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai — ghi nhận backlog seed, không phải lỗi sản phẩm). Bật seed QA đầy đủ 7 vai: 29 PASS / 0 SKIP trong các lô an toàn rate-limit. Verdict review bù BE-006: PASS → BE-006 chuyển DONE theo thẩm quyền QA.
 
 ## FE-008 — Màn hình Project Management (Nhóm 3) theo PROJECT_CONTRACT
-- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Assignee: OpenCode · Level: L3 · Status: DONE
 - Branch: fe/FE-008-project-management · PR: (mở PR vào main)
 - Blocked by: BE-006 (đã merge)
 - Acceptance Criteria: Bật mục Projects trên sidebar; màn hình danh sách Projects với bộ lọc client/trạng thái/người phụ trách/tìm kiếm, hiển thị client, trạng thái, % tiến độ kèm số task done/tổng; empty state; màn hình chi tiết Project với tổng quan, thanh tiến độ, Milestones kèm %, Members thêm/gỡ, Tasks lọc theo trạng thái/ưu tiên/người gán/milestone; chi tiết Task với mô tả/trạng thái/ưu tiên/hạn/người gán, checklist thêm/tick/xóa, comments thêm/xóa theo quyền; BFF route proxy tới /projects,/tasks; i18n namespace Projects EN/VI; quyền hiển thị theo DEC-016.
