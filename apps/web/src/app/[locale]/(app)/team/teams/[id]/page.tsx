@@ -1,0 +1,223 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import { useRouter as useI18nRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
+import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember } from "@/lib/team/api";
+import type { Team } from "@/lib/team/types";
+
+export default function TeamDetailPage() {
+  const params = useParams();
+  const id = Number(params?.id);
+  const { session, isLoading } = useAuth();
+  const router = useI18nRouter();
+  const t = useTranslations("Teams");
+  const c = useTranslations("Common");
+
+  const [team, setTeam] = useState<Team | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
+  const [newMemberId, setNewMemberId] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && !session) router.replace("/login");
+  }, [isLoading, session, router]);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const tm = await getTeam(id);
+      setTeam(tm);
+      setForm({
+        name: tm.name,
+        description: tm.description ?? "",
+        lead_id: tm.lead_id ? String(tm.lead_id) : "",
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session && id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, id]);
+
+  const canUpdate = !!session?.user.permissions.includes("teams.update");
+  const canManageMembers = !!session?.user.permissions.includes("teams.members.manage");
+  const canDelete = !!session?.user.permissions.includes("teams.delete");
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const updated = await updateTeam(id, {
+        name: form.name,
+        description: form.description || null,
+        lead_id: form.lead_id ? Number(form.lead_id) : null,
+      });
+      setTeam(updated);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberId) return;
+    try {
+      const updated = await addTeamMember(id, Number(newMemberId));
+      setTeam(updated);
+      setNewMemberId("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleRemoveMember = async (userId: number) => {
+    try {
+      await removeTeamMember(id, userId);
+      const updated = await getTeam(id);
+      setTeam(updated);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+    }
+  };
+
+  if (isLoading || !session) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (loading || !team) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={() => router.push("/team/teams")} className="rounded-md border border-border px-3 py-1.5 text-sm">
+          {t("actions.back")}
+        </button>
+        <h1 className="text-2xl font-bold tracking-tight">{team.name}</h1>
+      </div>
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+      )}
+
+      {canUpdate && (
+        <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold">{t("actions.edit")}</h2>
+          <form onSubmit={handleSave} className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.teamName")}</label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.lead")}</label>
+                <input
+                  type="number"
+                  value={form.lead_id}
+                  onChange={(e) => setForm({ ...form, lead_id: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("fields.description")}</label>
+              <textarea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                {t("actions.save")}
+              </button>
+              {canDelete && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm("Delete team?")) return;
+                    try {
+                      await deleteTeam(id);
+                      router.push("/team/teams");
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+                    }
+                  }}
+                  className="rounded-md border border-red-200 px-4 py-2 text-sm text-red-600"
+                >
+                  {t("actions.delete")}
+                </button>
+              )}
+            </div>
+          </form>
+        </section>
+      )}
+
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold">{t("teamsDetail.members")}</h2>
+        {canManageMembers && (
+          <form onSubmit={handleAddMember} className="mb-4 flex gap-2">
+            <input
+              type="number"
+              required
+              placeholder="User ID"
+              value={newMemberId}
+              onChange={(e) => setNewMemberId(e.target.value)}
+              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            />
+            <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
+              {t("actions.add")}
+            </button>
+          </form>
+        )}
+        {(team.members || []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("teamsDetail.noMembers")}</p>
+        ) : (
+          <ul className="space-y-2">
+            {(team.members || []).map((m) => (
+              <li key={m.id} className="flex items-center justify-between rounded-md border border-border p-3">
+                <div>
+                  <p className="font-medium">{m.name}</p>
+                  <p className="text-xs text-muted-foreground">{m.email}</p>
+                </div>
+                {canManageMembers && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(m.id)}
+                    className="text-xs text-red-600 hover:underline"
+                  >
+                    {t("actions.remove")}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}

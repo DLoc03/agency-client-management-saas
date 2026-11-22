@@ -253,5 +253,107 @@
       "deleteFailed": "Failed to delete project.",
       "notFound": "Project not found."
     }
+  },
+  "Teams": {
+    "title": "Team & Resources",
+    "members": "Members",
+    "teams": "Teams",
+    "invitations": "Invitations",
+    "workload": {
+      "title": "Workload",
+      "subtitle": "Open and overdue tasks per person."
+    },
+    "newTeam": "New team",
+    "invite": "Invite member",
+    "empty": {
+      "title": "No data yet",
+      "description": "Content will appear here once available."
+    },
+    "filters": {
+      "role": "Role",
+      "team": "Team",
+      "status": "Status",
+      "search": "Search",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "roles": {
+      "agency_owner": "Agency Owner",
+      "admin": "Admin",
+      "sales_manager": "Sales Manager",
+      "project_manager": "Project Manager",
+      "team_member": "Team Member",
+      "accountant": "Accountant"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "jobTitle": "Job title",
+      "phone": "Phone",
+      "roles": "Roles",
+      "teams": "Teams",
+      "status": "Status",
+      "teamName": "Team name",
+      "description": "Description",
+      "lead": "Team lead",
+      "membersCount": "Members",
+      "openTasks": "Open tasks",
+      "overdue": "Overdue",
+      "dueNext7": "Due in 7 days",
+      "projects": "Projects"
+    },
+    "actions": {
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "add": "Add",
+      "remove": "Remove",
+      "resend": "Resend",
+      "revoke": "Revoke",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "changeRoles": "Change roles",
+      "back": "Back"
+    },
+    "membersDetail": {
+      "title": "Member profile",
+      "openTasks": "Open tasks",
+      "noTeams": "No teams",
+      "noRoles": "No roles"
+    },
+    "teamsDetail": {
+      "title": "Team detail",
+      "members": "Members",
+      "noMembers": "No members yet."
+    },
+    "invitationsForm": {
+      "email": "Email",
+      "roles": "Roles",
+      "send": "Send invitation"
+    },
+    "accept": {
+      "title": "Accept invitation",
+      "subtitle": "Set your name and password to join the workspace.",
+      "name": "Full name",
+      "password": "Password",
+      "submit": "Accept invitation",
+      "success": "Invitation accepted. You can now sign in.",
+      "goToLogin": "Go to sign in",
+      "errors": {
+        "INVITATION_EXPIRED": "This invitation has expired.",
+        "INVITATION_ALREADY_ACCEPTED": "This invitation has already been accepted.",
+        "EMAIL_ALREADY_REGISTERED": "This email is already registered.",
+        "INVALID": "Invalid invitation."
+      }
+    },
+    "errors": {
+      "loadFailed": "Failed to load data.",
+      "createFailed": "Failed to create.",
+      "updateFailed": "Failed to update.",
+      "deleteFailed": "Failed to delete."
+    }
   }
 }

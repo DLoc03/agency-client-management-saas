@@ -22,6 +22,7 @@ import {
   deleteTask,
   getTimeline,
 } from "@/lib/projects/api";
+import { assignTeamToProject, removeTeamFromProject } from "@/lib/team/api";
 import type {
   Project,
   ProjectStatus,
@@ -68,6 +69,8 @@ export default function ProjectDetailPage() {
   const [milestoneForm, setMilestoneForm] = useState({ name: "", description: "", due_date: "", status: "planned" });
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
   const [showTask, setShowTask] = useState(false);
+  const [teamAssignId, setTeamAssignId] = useState("");
+  const [teamResult, setTeamResult] = useState<string | null>(null);
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -235,6 +238,37 @@ export default function ProjectDetailPage() {
       setProject(p);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+    }
+  };
+
+  const handleAssignTeam = async () => {
+    if (!teamAssignId) return;
+    setTeamResult(null);
+    try {
+      const res = await assignTeamToProject(id, Number(teamAssignId));
+      const added = res.added_user_ids?.length ?? 0;
+      setTeamResult(`Team assigned: ${added} added`);
+      const p = await getProject(id);
+      setProject(p);
+      const m = await listMembers(id);
+      setMembers(m);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleRemoveTeam = async () => {
+    if (!teamAssignId) return;
+    setTeamResult(null);
+    try {
+      const res = await removeTeamFromProject(id, Number(teamAssignId));
+      const removed = res.removed_user_ids?.length ?? 0;
+      const kept = res.kept_user_ids?.length ?? 0;
+      setTeamResult(`Removed ${removed}, kept ${kept}`);
+      const m = await listMembers(id);
+      setMembers(m);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -416,6 +450,39 @@ export default function ProjectDetailPage() {
           </div>
         )}
       </section>
+
+      {/* Team assignment (FE-009) */}
+      {session.user.permissions.includes("projects.update") && (
+        <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold">Team assignment</h2>
+          <div className="flex flex-wrap gap-2">
+            <input
+              type="number"
+              placeholder="Team ID"
+              value={teamAssignId}
+              onChange={(e) => setTeamAssignId(e.target.value)}
+              className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={handleAssignTeam}
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            >
+              Assign team
+            </button>
+            <button
+              type="button"
+              onClick={handleRemoveTeam}
+              className="rounded-md border border-red-200 px-3 py-2 text-sm text-red-600"
+            >
+              Remove team
+            </button>
+          </div>
+          {teamResult && (
+            <p className="mt-2 text-sm text-muted-foreground">{teamResult}</p>
+          )}
+        </section>
+      )}
 
       {/* Milestones */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">

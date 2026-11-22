@@ -253,5 +253,107 @@
       "deleteFailed": "Không xóa được dự án.",
       "notFound": "Không tìm thấy dự án."
     }
+  },
+  "Teams": {
+    "title": "Nhóm & Nhân sự",
+    "members": "Thành viên",
+    "teams": "Nhóm",
+    "invitations": "Lời mời",
+    "workload": {
+      "title": "Khối lượng công việc",
+      "subtitle": "Công việc mở và quá hạn theo người."
+    },
+    "newTeam": "Nhóm mới",
+    "invite": "Mời thành viên",
+    "empty": {
+      "title": "Chưa có dữ liệu",
+      "description": "Dữ liệu sẽ xuất hiện ở đây khi có."
+    },
+    "filters": {
+      "role": "Vai trò",
+      "team": "Nhóm",
+      "status": "Trạng thái",
+      "search": "Tìm kiếm",
+      "all": "Tất cả",
+      "active": "Hoạt động",
+      "inactive": "Vô hiệu"
+    },
+    "roles": {
+      "agency_owner": "Chủ agency",
+      "admin": "Quản trị",
+      "sales_manager": "Trưởng kinh doanh",
+      "project_manager": "Quản lý dự án",
+      "team_member": "Thành viên",
+      "accountant": "Kế toán"
+    },
+    "fields": {
+      "name": "Tên",
+      "email": "Email",
+      "jobTitle": "Chức danh",
+      "phone": "Điện thoại",
+      "roles": "Vai trò",
+      "teams": "Nhóm",
+      "status": "Trạng thái",
+      "teamName": "Tên nhóm",
+      "description": "Mô tả",
+      "lead": "Trưởng nhóm",
+      "membersCount": "Thành viên",
+      "openTasks": "Công việc mở",
+      "overdue": "Quá hạn",
+      "dueNext7": "Đến hạn 7 ngày",
+      "projects": "Dự án"
+    },
+    "actions": {
+      "create": "Tạo",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "add": "Thêm",
+      "remove": "Gỡ",
+      "resend": "Gửi lại",
+      "revoke": "Thu hồi",
+      "activate": "Kích hoạt",
+      "deactivate": "Vô hiệu",
+      "changeRoles": "Đổi vai trò",
+      "back": "Quay lại"
+    },
+    "membersDetail": {
+      "title": "Hồ sơ thành viên",
+      "openTasks": "Công việc mở",
+      "noTeams": "Chưa có nhóm",
+      "noRoles": "Chưa có vai trò"
+    },
+    "teamsDetail": {
+      "title": "Chi tiết nhóm",
+      "members": "Thành viên",
+      "noMembers": "Chưa có thành viên."
+    },
+    "invitationsForm": {
+      "email": "Email",
+      "roles": "Vai trò",
+      "send": "Gửi lời mời"
+    },
+    "accept": {
+      "title": "Nhận lời mời",
+      "subtitle": "Đặt tên và mật khẩu để tham gia không gian làm việc.",
+      "name": "Họ và tên",
+      "password": "Mật khẩu",
+      "submit": "Nhận lời mời",
+      "success": "Đã nhận lời mời. Bạn có thể đăng nhập.",
+      "goToLogin": "Đi tới đăng nhập",
+      "errors": {
+        "INVITATION_EXPIRED": "Lời mời đã hết hạn.",
+        "INVITATION_ALREADY_ACCEPTED": "Lời mời đã được chấp nhận.",
+        "EMAIL_ALREADY_REGISTERED": "Email này đã được đăng ký.",
+        "INVALID": "Lời mời không hợp lệ."
+      }
+    },
+    "errors": {
+      "loadFailed": "Không tải được dữ liệu.",
+      "createFailed": "Không tạo được.",
+      "updateFailed": "Không cập nhật được.",
+      "deleteFailed": "Không xóa được."
+    }
   }
 }

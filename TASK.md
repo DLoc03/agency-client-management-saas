@@ -282,11 +282,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
-## FE-009 — Màn hình Team & Resource (Nhóm 4) theo TEAM_CONTRACT
-- Assignee: OpenCode · Level: L3 · Status: TODO
-- Blocked by: ⏸ chờ BE-007 merge
-- Acceptance Criteria: (soạn chi tiết khi mở khoá) Bật mục Team trên sidebar; danh bạ nhân viên; quản lý teams + thành viên; mời thành viên + danh sách lời mời đang chờ; workload-lite theo người; quyền hiển thị theo DEC-017; i18n namespace Teams EN/VI.
-- Handoff: Chưa gửi prompt — chờ BE-007 merge theo kỷ luật prompt.
+## FE-009 - Màn hình Team & Resource (Nhóm 4) theo TEAM_CONTRACT
+- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-009-team-resource · PR: (mở PR vào main)
+- Blocked by: BE-007 (đã merge)
+- Acceptance Criteria: Thêm mục Team sidebar + route guard; Members danh bạ với lọc vai trò/team/trạng thái/tìm kiếm, chi tiết nhân viên với sửa hồ sơ, đổi vai, khoá/mở; Teams CRUD + thành viên; Invitations danh sách + form mời mới (email + vai trò, ẩn Owner/Admin theo quyền) + resend/revoke; Workload theo người; trang công khai nhận lời mời; bổ sung team assignment vào chi tiết Project (added/removed/kept); BFF proxy; i18n Teams EN/VI.
+- Progress: OpenCode hoàn thành 2026-11-22: trang members/teams/invitations/workload, chi tiết member/team, accept-invitation công khai, BFF routes, i18n Teams (U+FFFD=0, Ã=0). Tự kiểm: typecheck PASS, build PASS (en+vi), tests PASS. Responsive rà soát class ở 3 bề rộng (390/768/1280).
+- Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
 
 ---
 
