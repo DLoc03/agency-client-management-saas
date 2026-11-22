@@ -1,272 +1,273 @@
-﻿# TASK.md â€” Danh sÃ¡ch task theo ID
-Quy táº¯c ghi file nÃ y xem táº¡i `docs/CONVENTIONS.md` má»¥c F.2. Luá»“ng tráº¡ng thÃ¡i: `TODO â†’ IN_PROGRESS â†’ IN_REVIEW â†’ DONE` Â· nhÃ¡nh: `BLOCKED`, `REOPEN`.
+# TASK.md — Danh sách task theo ID
+Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
 ---
 
-## DOC-001 â€” Bootstrap repository documents & conventions
-- Assignee: Muse Â· Level: L3 Â· Status: DONE
-- Branch: â€” (bootstrap trá»±c tiáº¿p lÃªn `main` má»™t láº§n duy nháº¥t, xem DEC-007) Â· PR: â€”
-- Blocked by: â€”
-- Acceptance Criteria: 5 file báº¯t buá»™c (VERSION.md, TASK.md, CHANGELOG.md, README.md, DECISIONS.md) cÃ³ máº·t á»Ÿ root vá»›i ná»™i dung Ä‘Ã£ chá»‘t; tÃ i liá»‡u Quy Æ°á»›c / Stack / Scope / RBAC-i18n náº±m trong `docs/`; repo Ä‘á»c láº¡i Ä‘Æ°á»£c trÃªn GitHub sau khi Ä‘áº©y.
-- Progress: HoÃ n thÃ nh vÃ  Ä‘áº©y lÃªn `main` ngÃ y 2026-11-20 (commit 05aa5b1), Ä‘Ã£ Ä‘á»c láº¡i xÃ¡c minh trÃªn GitHub. Chá» OpenCode review theo QA-001.
+## DOC-001 — Bootstrap repository documents & conventions
+- Assignee: Muse · Level: L3 · Status: DONE
+- Branch: — (bootstrap trực tiếp lên `main` một lần duy nhất, xem DEC-007) · PR: —
+- Blocked by: —
+- Acceptance Criteria: 5 file bắt buộc (VERSION.md, TASK.md, CHANGELOG.md, README.md, DECISIONS.md) có mặt ở root với nội dung đã chốt; tài liệu Quy ước / Stack / Scope / RBAC-i18n nằm trong `docs/`; repo đọc lại được trên GitHub sau khi đẩy.
+- Progress: Hoàn thành và đẩy lên `main` ngày 2026-11-20 (commit 05aa5b1), đã đọc lại xác minh trên GitHub. Chờ OpenCode review theo QA-001.
 - Handoff: Sau khi xong, OpenCode review theo QA-001.
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” QA PASS toÃ n pháº§n, Ä‘Ã³ng cÃ¹ng release 0.2.0 (OpenCode theo tháº©m quyá»n QA).
+- Đóng task: DONE 2026-11-21 — QA PASS toàn phần, đóng cùng release 0.2.0 (OpenCode theo thẩm quyền QA).
 
-## BE-001 â€” Monorepo foundation & Docker Compose
-- Assignee: Muse Â· Level: L3 Â· Status: IN_REVIEW
-- Branch: be/BE-001-monorepo-docker Â· PR: #1 (Ä‘Ã£ merge)
+## BE-001 — Monorepo foundation & Docker Compose
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-001-monorepo-docker · PR: #1 (đã merge)
 - Blocked by: DOC-001
-- Acceptance Criteria: Cáº¥u trÃºc `apps/`, `packages/contracts/`, `tests/e2e/`, `docs/`; `docker-compose.yml` á»Ÿ root cháº¡y Ä‘Æ°á»£c cÃ¡c service api/web/mysql/redis/mailpit/minio trÃªn mÃ¡y sáº¡ch; `.gitignore` + `.editorconfig` Ä‘áº§y Ä‘á»§ cho Laravel + Next.js.
-- Progress: Muse báº¯t Ä‘áº§u 2026-11-20: Ä‘Ã£ soáº¡n docker-compose.yml (api/web/mysql/redis/mailpit/minio), Dockerfile cho api (PHP 8.3) vÃ  web (Node 20), README cho packages/contracts vÃ  tests/e2e, .env.example + Makefile á»Ÿ root. ChÆ°a kiá»ƒm chá»©ng cháº¡y Docker tháº­t (mÃ´i trÆ°á»ng cá»§a Muse khÃ´ng cÃ³ Docker) â€” cáº§n OpenCode/Nguyen cháº¡y `docker compose up` kiá»ƒm chá»©ng á»Ÿ bÆ°á»›c review.
-- Handoff: â€”
+- Acceptance Criteria: Cấu trúc `apps/`, `packages/contracts/`, `tests/e2e/`, `docs/`; `docker-compose.yml` ở root chạy được các service api/web/mysql/redis/mailpit/minio trên máy sạch; `.gitignore` + `.editorconfig` đầy đủ cho Laravel + Next.js.
+- Progress: Muse bắt đầu 2026-11-20: đã soạn docker-compose.yml (api/web/mysql/redis/mailpit/minio), Dockerfile cho api (PHP 8.3) và web (Node 20), README cho packages/contracts và tests/e2e, .env.example + Makefile ở root. Chưa kiểm chứng chạy Docker thật (môi trường của Muse không có Docker) — cần OpenCode/Nguyen chạy `docker compose up` kiểm chứng ở bước review.
+- Handoff: —
 
 ---
 
-## BE-002 â€” Initialize Laravel API & health endpoint
-- Assignee: Muse Â· Level: L2 Â· Status: IN_REVIEW
-- Branch: be/BE-002-laravel-api-init Â· PR: #2 (Ä‘Ã£ merge)
+## BE-002 — Initialize Laravel API & health endpoint
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: be/BE-002-laravel-api-init · PR: #2 (đã merge)
 - Blocked by: BE-001
-- Acceptance Criteria: Laravel cháº¡y á»Ÿ `apps/api` trong Docker; `.env.example` khÃ´ng chá»©a secret tháº­t; endpoint `GET /api/v1/health` tráº£ vá» format response chuáº©n Ä‘Ã£ thá»‘ng nháº¥t; Pint + PHPUnit/Pest cháº¡y Ä‘Æ°á»£c.
-- Progress: Muse hoÃ n thÃ nh 2026-11-20: Laravel v12.73.0 (ghim Ä‘Ãºng ^12.0 theo DEC-001), Ä‘Ã£ cÃ i Sanctum API scaffolding, HealthController + test riÃªng. Kiá»ƒm chá»©ng táº¡i mÃ¡y Muse: `php artisan test` 3 passed, HTTP tháº­t tá»›i `/api/v1/health` tráº£ 200 Ä‘Ãºng format `{data:{status,service,version,timestamp}}`, Pint PASS. ChÆ°a kiá»ƒm chá»©ng qua Docker (mÃ´i trÆ°á»ng Muse khÃ´ng cÃ³ Docker) â€” kiá»ƒm chá»©ng á»Ÿ bÆ°á»›c review.
-- Handoff: â€”
+- Acceptance Criteria: Laravel chạy ở `apps/api` trong Docker; `.env.example` không chứa secret thật; endpoint `GET /api/v1/health` trả về format response chuẩn đã thống nhất; Pint + PHPUnit/Pest chạy được.
+- Progress: Muse hoàn thành 2026-11-20: Laravel v12.73.0 (ghim đúng ^12.0 theo DEC-001), đã cài Sanctum API scaffolding, HealthController + test riêng. Kiểm chứng tại máy Muse: `php artisan test` 3 passed, HTTP thật tới `/api/v1/health` trả 200 đúng format `{data:{status,service,version,timestamp}}`, Pint PASS. Chưa kiểm chứng qua Docker (môi trường Muse không có Docker) — kiểm chứng ở bước review.
+- Handoff: —
 
 ---
 
-## FE-001 â€” Initialize Next.js web app & i18n EN/VI
-- Assignee: Google Antigravity Â· Level: L2 Â· Status: IN_REVIEW
-- Branch: fe/FE-001-nextjs-init Â· PR: #3 (Ä‘Ã£ merge)
+## FE-001 — Initialize Next.js web app & i18n EN/VI
+- Assignee: Google Antigravity · Level: L2 · Status: IN_REVIEW
+- Branch: fe/FE-001-nextjs-init · PR: #3 (đã merge)
 - Blocked by: BE-001
-- Acceptance Criteria: Next.js (App Router) + TypeScript strict á»Ÿ `apps/web`; Tailwind CSS + shadcn/ui; `next-intl` vá»›i `en.json`/`vi.json` chuyá»ƒn Ä‘Æ°á»£c EN â†” VI á»Ÿ trang khung; khÃ´ng cÃ³ chuá»—i hiá»ƒn thá»‹ viáº¿t cá»©ng trong component.
-- Progress: Khung khá»Ÿi táº¡o do Muse dá»±ng theo káº¿ hoáº¡ch khá»Ÿi táº¡o (2026-11-20), Antigravity tiáº¿p quáº£n tá»« Ä‘Ã¢y: Next.js 15 + TypeScript strict + Tailwind v4 + next-intl, routing theo locale (en máº·c Ä‘á»‹nh, vi Ä‘áº§y Ä‘á»§), trang chá»§ dÃ¹ng 100% chuá»—i dá»‹ch tá»« `messages/`. Kiá»ƒm chá»©ng táº¡i mÃ¡y Muse: `npm install` OK, `tsc --noEmit` khÃ´ng lá»—i, `next build` thÃ nh cÃ´ng, sinh Ä‘á»§ trang `/en` vÃ  `/vi`. ChÆ°a cÃ³ `pnpm-lock.yaml` (mÃ¡y Muse khÃ´ng cÃ³ pnpm) â€” sinh khi `pnpm install` láº§n Ä‘áº§u/Docker build. shadcn/ui + TanStack Query + RHF/Zod thÃªm á»Ÿ cÃ¡c task mÃ n hÃ¬nh Ä‘áº§u tiÃªn. (Ghi chÃº minh báº¡ch: báº£n ghi Progress nÃ y láº½ ra náº±m trong PR #3 nhÆ°ng bá»‹ sÃ³t do lá»—i khá»›p chuá»—i khi Muse cáº­p nháº­t file â€” bá»• sung táº¡i PR tÃ i liá»‡u BE-003.)
-- Handoff: Khung khá»Ÿi táº¡o cÃ³ thá»ƒ do Muse dá»±ng á»Ÿ bÆ°á»›c bootstrap theo káº¿ hoáº¡ch khá»Ÿi táº¡o; Antigravity tiáº¿p quáº£n vÃ  hoÃ n thiá»‡n.
+- Acceptance Criteria: Next.js (App Router) + TypeScript strict ở `apps/web`; Tailwind CSS + shadcn/ui; `next-intl` với `en.json`/`vi.json` chuyển được EN ↔ VI ở trang khung; không có chuỗi hiển thị viết cứng trong component.
+- Progress: Khung khởi tạo do Muse dựng theo kế hoạch khởi tạo (2026-11-20), Antigravity tiếp quản từ đây: Next.js 15 + TypeScript strict + Tailwind v4 + next-intl, routing theo locale (en mặc định, vi đầy đủ), trang chủ dùng 100% chuỗi dịch từ `messages/`. Kiểm chứng tại máy Muse: `npm install` OK, `tsc --noEmit` không lỗi, `next build` thành công, sinh đủ trang `/en` và `/vi`. Chưa có `pnpm-lock.yaml` (máy Muse không có pnpm) — sinh khi `pnpm install` lần đầu/Docker build. shadcn/ui + TanStack Query + RHF/Zod thêm ở các task màn hình đầu tiên. (Ghi chú minh bạch: bản ghi Progress này lẽ ra nằm trong PR #3 nhưng bị sót do lỗi khớp chuỗi khi Muse cập nhật file — bổ sung tại PR tài liệu BE-003.)
+- Handoff: Khung khởi tạo có thể do Muse dựng ở bước bootstrap theo kế hoạch khởi tạo; Antigravity tiếp quản và hoàn thiện.
 
 ---
 
-## QA-001 â€” Review bootstrap, conventions & repository structure
-- Assignee: OpenCode Â· Level: L1 Â· Status: DONE
-- Branch: qa/QA-001-bootstrap-review Â· PR: #5 (chá» Muse review/merge â€” G.3)
+## QA-001 — Review bootstrap, conventions & repository structure
+- Assignee: OpenCode · Level: L1 · Status: DONE
+- Branch: qa/QA-001-bootstrap-review · PR: #5 (chờ Muse review/merge — G.3)
 - Blocked by: DOC-001
-- Acceptance Criteria: Kiá»ƒm tra 5 file báº¯t buá»™c Ä‘Ãºng quy Æ°á»›c (VERSION.md Ä‘Ãºng 1 dÃ²ng; TASK.md theo ID; quyá»n ghi tá»«ng file); kiá»ƒm tra tÃ i liá»‡u trong `docs/` khá»›p cÃ¡c quyáº¿t Ä‘á»‹nh DEC-001 â†’ DEC-007; bÃ¡o cÃ¡o káº¿t quáº£ trong task nÃ y.
-- Progress: OpenCode review ngÃ y 2026-11-20 táº¡i commit `7432ccd` (main). **Káº¿t luáº­n: PASS, khÃ´ng cÃ³ blocker cho DOC-001** â€” pháº¡m vi má»Ÿ rá»™ng theo chá»‰ Ä‘áº¡o cá»§a Nguyen: DEC-001 â†’ DEC-008 (AC gá»‘c ghi Ä‘áº¿n DEC-007).
-  - 5 file báº¯t buá»™c: `VERSION.md` Ä‘Ãºng 1 dÃ²ng `0.1.0`, khÃ´ng tiÃªu Ä‘á»/ngÃ y/ghi chÃº, Ä‘Ãºng chá»§ ghi OpenCode âœ… Â· `TASK.md` theo danh sÃ¡ch Task ID (9 má»¥c + Inbox), má»—i má»¥c Ä‘á»§ Assignee/Level/Status/Branch/Blocked by/AC/Progress/Handoff, quyá»n ghi Ä‘Ãºng F.2 âœ… Â· `CHANGELOG.md` Ä‘Ãºng Keep a Changelog, cÃ³ `[Unreleased]` vá»›i 3 tiá»ƒu má»¥c cá»‘ Ä‘á»‹nh, append-only âœ… Â· `README.md` (EN, DEC-006) + `README.vi.md` cÃ³ link chÃ©o Ä‘áº§y Ä‘á»§ âœ… Â· `DECISIONS.md` cÃ³ DEC-001 â†’ DEC-008, append-only, Ä‘Ãºng chá»§ ghi Nguyen + Muse (QA chá»‰ Ä‘á»c, khÃ´ng sá»­a) âœ….
-  - `docs/` khá»›p quyáº¿t Ä‘á»‹nh: `STACK.md` â†” DEC-001/003 Â· `MVP_SCOPE.md` â†” DEC-004 (8 nhÃ³m, luá»“ng lÃµi, Super Admin tá»‘i giáº£n, shared DB + `agency_id`) Â· `RBAC_AND_I18N.md` â†” DEC-005/006 (7 vai trÃ², Client tÃ¡ch loáº¡i tÃ i khoáº£n, nhiá»u vai trÃ², scope dá»¯ liá»‡u, EN máº·c Ä‘á»‹nh + VI Ä‘áº§y Ä‘á»§) Â· `REPO_INITIALIZATION.md` â†” DEC-007 Â· `AUTH_CONTRACT.md` â†” DEC-008 (email unique toÃ n há»‡ thá»‘ng, token khÃ´ng háº¡n cá»©ng, Portal cÃ³ quÃªn máº­t kháº©u, tÃ¡ch scope `app`/`portal`, cross-tenant 404) â€” Ä‘á»u nháº¥t quÃ¡n âœ…. `git log` xÃ¡c nháº­n bootstrap `05aa5b1` Ä‘áº©y tháº³ng `main` Ä‘Ãºng ngoáº¡i lá»‡ DEC-007; cÃ¡c thay Ä‘á»•i sau Ä‘i qua PR #1â€“#4 âœ….
-  - Finding minor (khÃ´ng block, Ä‘Ã£ ghi Inbox): `docs/CONVENTIONS.md:252` cÃ²n ghi "chá»‘t stack backend + scope MVP â€” váº«n Ä‘ang chá», chÆ°a báº¯t Ä‘áº§u code", mÃ¢u thuáº«n DEC-001/DEC-004 vÃ  thá»±c táº¿ Ä‘Ã£ merge BE-001/BE-002/FE-001. Sá»­a quy Æ°á»›c thuá»™c quyá»n Nguyen (DEC-002) â†’ QA khÃ´ng tá»± sá»­a.
-  - Finding minor (khÃ´ng block, Ä‘Ã£ ghi Inbox): `docs/AUTH_CONTRACT.md` má»¥c 8/DEC-008.3 chá»‘t Portal cÃ³ quÃªn máº­t kháº©u, nhÆ°ng báº£ng endpoint má»¥c 3 má»›i cÃ³ login/logout/me â€” thiáº¿u `POST /portal/auth/forgot-password` vÃ  `/portal/auth/reset-password`. Cáº§n Muse + Nguyen chá»‘t trÆ°á»›c khi cháº¡y test tháº­t QA-002.
-  - Observation (khÃ´ng block): `docs/STACK.md` má»¥c 3 váº«n liá»‡t kÃª multi-tenancy lÃ  "chÆ°a quyáº¿t" dÃ¹ DEC-004 Ä‘Ã£ chá»‘t; README "Getting started" váº«n nÃ³i chá» monorepo dÃ¹ BE-001 Ä‘Ã£ merge.
-  - KhÃ´ng tá»± merge PR cá»§a chÃ­nh mÃ¬nh (B.6/G.3). Task giá»¯ `IN_REVIEW` chá» Muse approve/merge; Muse hoáº·c Nguyen chuyá»ƒn `DONE` theo ngoáº¡i lá»‡ F.2 cho task do OpenCode tá»± lÃ m. Äá» xuáº¥t DOC-001 â†’ `DONE` sau khi PR nÃ y merge (F.2 cho phÃ©p OpenCode nghiá»‡m thu task cá»§a Muse).
-- Handoff: PR #5 chá» Muse review; sau approve/merge, Ä‘á» xuáº¥t cáº­p nháº­t DOC-001 â†’ DONE vÃ  xá»­ lÃ½ 2 má»¥c Inbox á»Ÿ trÃªn. (NgÆ°á»i má»Ÿ PR khÃ´ng tá»± merge â€” G.3.)
+- Acceptance Criteria: Kiểm tra 5 file bắt buộc đúng quy ước (VERSION.md đúng 1 dòng; TASK.md theo ID; quyền ghi từng file); kiểm tra tài liệu trong `docs/` khớp các quyết định DEC-001 → DEC-007; báo cáo kết quả trong task này.
+- Progress: OpenCode review ngày 2026-11-20 tại commit `7432ccd` (main). **Kết luận: PASS, không có blocker cho DOC-001** — phạm vi mở rộng theo chỉ đạo của Nguyen: DEC-001 → DEC-008 (AC gốc ghi đến DEC-007).
+  - 5 file bắt buộc: `VERSION.md` đúng 1 dòng `0.1.0`, không tiêu đề/ngày/ghi chú, đúng chủ ghi OpenCode ✅ · `TASK.md` theo danh sách Task ID (9 mục + Inbox), mỗi mục đủ Assignee/Level/Status/Branch/Blocked by/AC/Progress/Handoff, quyền ghi đúng F.2 ✅ · `CHANGELOG.md` đúng Keep a Changelog, có `[Unreleased]` với 3 tiểu mục cố định, append-only ✅ · `README.md` (EN, DEC-006) + `README.vi.md` có link chéo đầy đủ ✅ · `DECISIONS.md` có DEC-001 → DEC-008, append-only, đúng chủ ghi Nguyen + Muse (QA chỉ đọc, không sửa) ✅.
+  - `docs/` khớp quyết định: `STACK.md` ↔ DEC-001/003 · `MVP_SCOPE.md` ↔ DEC-004 (8 nhóm, luồng lõi, Super Admin tối giản, shared DB + `agency_id`) · `RBAC_AND_I18N.md` ↔ DEC-005/006 (7 vai trò, Client tách loại tài khoản, nhiều vai trò, scope dữ liệu, EN mặc định + VI đầy đủ) · `REPO_INITIALIZATION.md` ↔ DEC-007 · `AUTH_CONTRACT.md` ↔ DEC-008 (email unique toàn hệ thống, token không hạn cứng, Portal có quên mật khẩu, tách scope `app`/`portal`, cross-tenant 404) — đều nhất quán ✅. `git log` xác nhận bootstrap `05aa5b1` đẩy thẳng `main` đúng ngoại lệ DEC-007; các thay đổi sau đi qua PR #1–#4 ✅.
+  - Finding minor (không block, đã ghi Inbox): `docs/CONVENTIONS.md:252` còn ghi "chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code", mâu thuẫn DEC-001/DEC-004 và thực tế đã merge BE-001/BE-002/FE-001. Sửa quy ước thuộc quyền Nguyen (DEC-002) → QA không tự sửa.
+  - Finding minor (không block, đã ghi Inbox): `docs/AUTH_CONTRACT.md` mục 8/DEC-008.3 chốt Portal có quên mật khẩu, nhưng bảng endpoint mục 3 mới có login/logout/me — thiếu `POST /portal/auth/forgot-password` và `/portal/auth/reset-password`. Cần Muse + Nguyen chốt trước khi chạy test thật QA-002.
+  - Observation (không block): `docs/STACK.md` mục 3 vẫn liệt kê multi-tenancy là "chưa quyết" dù DEC-004 đã chốt; README "Getting started" vẫn nói chờ monorepo dù BE-001 đã merge.
+  - Không tự merge PR của chính mình (B.6/G.3). Task giữ `IN_REVIEW` chờ Muse approve/merge; Muse hoặc Nguyen chuyển `DONE` theo ngoại lệ F.2 cho task do OpenCode tự làm. Đề xuất DOC-001 → `DONE` sau khi PR này merge (F.2 cho phép OpenCode nghiệm thu task của Muse).
+- Handoff: PR #5 chờ Muse review; sau approve/merge, đề xuất cập nhật DOC-001 → DONE và xử lý 2 mục Inbox ở trên. (Người mở PR không tự merge — G.3.)
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” do Muse chuyá»ƒn theo ngoáº¡i lá»‡ F.2 (task cá»§a chÃ­nh QA, QA khÃ´ng tá»± Ä‘Ã³ng); 2 finding Ä‘Ã£ xá»­ lÃ½ á»Ÿ PR #9.
+- Đóng task: DONE 2026-11-21 — do Muse chuyển theo ngoại lệ F.2 (task của chính QA, QA không tự đóng); 2 finding đã xử lý ở PR #9.
 
-## BE-003 â€” Auth, multi-tenancy & RBAC contract (design)
-- Assignee: Muse Â· Level: L3 Â· Status: DONE
-- Branch: be/BE-003-auth-tenancy-rbac Â· PR: #8
+## BE-003 — Auth, multi-tenancy & RBAC contract (design)
+- Assignee: Muse · Level: L3 · Status: DONE
+- Branch: be/BE-003-auth-tenancy-rbac · PR: #8
 - Blocked by: BE-002
-- Acceptance Criteria: Äá» xuáº¥t contract Auth (Ä‘Äƒng kÃ½/Ä‘Äƒng nháº­p/token) + mÃ´ hÃ¬nh multi-tenancy `agency_id` + ma tráº­n phÃ¢n quyá»n chi tiáº¿t 7 vai trÃ² Ä‘Æ°á»£c Muse soáº¡n vÃ  Nguyen duyá»‡t trÆ°á»›c khi phá»• biáº¿n cho Antigravity/OpenCode (quy trÃ¬nh má»¥c E, Quy Æ°á»›c chung).
-- Progress: Há»£p Ä‘á»“ng Ä‘Ã£ Ä‘Æ°á»£c Nguyen DUYá»†T ngÃ y 2026-11-20 (kÃ¨m 3 chá»‘t táº¡i DEC-008: email unique toÃ n há»‡ thá»‘ng; token khÃ´ng Ä‘áº·t háº¡n cá»©ng trong MVP; Portal cÃ³ quÃªn máº­t kháº©u) vÃ  cÃ´ng bá»‘ táº¡i `docs/AUTH_CONTRACT.md` (PR #4). Pháº§n Backend Ä‘Ã£ triá»ƒn khai xong: migrations agencies/roles/super_admins/client_accounts + users.agency_id/locale/is_active; trait BelongsToAgency (global scope theo agency cá»§a user Ä‘Äƒng nháº­p, cÃ³ chá»‘ng Ä‘á»‡ quy khi Sanctum Ä‘ang náº¡p tokenable); AuthController + PortalAuthController (token tÃ¡ch ability `app`/`portal`, cháº·n chÃ©o 403); chuáº©n lá»—i `{error:{code,message,details}}` + thÃ´ng Ä‘iá»‡p EN/VI theo locale; rate limit login 5/phÃºt; link reset máº­t kháº©u trá» vá» web app (FRONTEND_URL); seed roles + demo data opt-in (SEED_DEMO_DATA); OpenAPI sinh báº±ng Scramble táº¡i `packages/contracts/openapi.json` (12 paths). Kiá»ƒm chá»©ng táº¡i mÃ¡y Muse: `php artisan test` **19 passed** (gá»“m test tá»«ng mÃ£ lá»—i, cháº·n chÃ©o token, scope cross-tenant), Pint PASS, smoke test HTTP tháº­t: login Owner/Portal Ä‘Ãºng payload, token app gá»i Portal bá»‹ 403 FORBIDDEN, sai máº­t kháº©u vá»›i Accept-Language `vi` tráº£ thÃ´ng Ä‘iá»‡p tiáº¿ng Viá»‡t. ChÆ°a kiá»ƒm chá»©ng qua Docker (mÃ¡y Muse khÃ´ng cÃ³ Docker).
-- Handoff: â€”
+- Acceptance Criteria: Đề xuất contract Auth (đăng ký/đăng nhập/token) + mô hình multi-tenancy `agency_id` + ma trận phân quyền chi tiết 7 vai trò được Muse soạn và Nguyen duyệt trước khi phổ biến cho Antigravity/OpenCode (quy trình mục E, Quy ước chung).
+- Progress: Hợp đồng đã được Nguyen DUYỆT ngày 2026-11-20 (kèm 3 chốt tại DEC-008: email unique toàn hệ thống; token không đặt hạn cứng trong MVP; Portal có quên mật khẩu) và công bố tại `docs/AUTH_CONTRACT.md` (PR #4). Phần Backend đã triển khai xong: migrations agencies/roles/super_admins/client_accounts + users.agency_id/locale/is_active; trait BelongsToAgency (global scope theo agency của user đăng nhập, có chống đệ quy khi Sanctum đang nạp tokenable); AuthController + PortalAuthController (token tách ability `app`/`portal`, chặn chéo 403); chuẩn lỗi `{error:{code,message,details}}` + thông điệp EN/VI theo locale; rate limit login 5/phút; link reset mật khẩu trỏ về web app (FRONTEND_URL); seed roles + demo data opt-in (SEED_DEMO_DATA); OpenAPI sinh bằng Scramble tại `packages/contracts/openapi.json` (12 paths). Kiểm chứng tại máy Muse: `php artisan test` **19 passed** (gồm test từng mã lỗi, chặn chéo token, scope cross-tenant), Pint PASS, smoke test HTTP thật: login Owner/Portal đúng payload, token app gọi Portal bị 403 FORBIDDEN, sai mật khẩu với Accept-Language `vi` trả thông điệp tiếng Việt. Chưa kiểm chứng qua Docker (máy Muse không có Docker).
+- Handoff: —
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” QA-002 cháº¡y tháº­t PASS 17/17 API (gá»“m TC-AUTH-14/15 sau FIX-002); Ä‘Ã³ng cÃ¹ng release 0.2.0.
+- Đóng task: DONE 2026-11-21 — QA-002 chạy thật PASS 17/17 API (gồm TC-AUTH-14/15 sau FIX-002); đóng cùng release 0.2.0.
 
-## FE-002 â€” Internal app login (Auth contract implementation)
-- Assignee: Google Antigravity Â· Level: L2 Â· Status: DONE
-- Branch: fe/FE-002-login Â· PR: â€”
-- Blocked by: â€” (há»£p Ä‘á»“ng `docs/AUTH_CONTRACT.md` Ä‘Ã£ duyá»‡t â€” lÃ m báº±ng mock, khÃ´ng chá» BE-003 code)
-- Acceptance Criteria: MÃ n hÃ¬nh Ä‘Äƒng nháº­p ná»™i bá»™ gá»i `POST /api/v1/auth/login` theo há»£p Ä‘á»“ng (mock trÆ°á»›c, ná»‘i API tháº­t khi BE-003 xong); lÆ°u token an toÃ n phÃ­a client; route guard cháº·n trang ná»™i bá»™ khi chÆ°a Ä‘Äƒng nháº­p; hiá»ƒn thá»‹ lá»—i theo mÃ£ lá»—i chuáº©n (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyá»ƒn EN â†” VI ngay táº¡i mÃ n login; khÃ´ng hardcode chuá»—i hiá»ƒn thá»‹.
-- Progress: â€”
-- Handoff: Báº¯t Ä‘áº§u Ä‘Æ°á»£c ngay sau khi PR tÃ i liá»‡u BE-003 merge.
-
----
-- ÄÃ³ng task: DONE 2026-11-21 â€” luá»“ng login Ä‘Ã£ Ä‘Æ°á»£c FE-004 ná»‘i API tháº­t thay mock; QA E2E PASS; Ä‘Ã³ng cÃ¹ng release 0.2.0.
-
-## FE-003 â€” Client Portal login frame
-- Assignee: Google Antigravity Â· Level: L2 Â· Status: DONE
-- Branch: fe/FE-003-portal-login Â· PR: â€”
-- Blocked by: â€” (há»£p Ä‘á»“ng Ä‘Ã£ duyá»‡t â€” lÃ m báº±ng mock)
-- Acceptance Criteria: Khu vá»±c Portal tÃ¡ch riÃªng táº¡i route `/portal` vá»›i layout riÃªng; mÃ n Ä‘Äƒng nháº­p Portal gá»i `POST /api/v1/portal/auth/login` (mock theo há»£p Ä‘á»“ng); token portal tÃ¡ch biá»‡t token ná»™i bá»™ (khÃ´ng dÃ¹ng láº«n); trang tá»•ng quan Portal trá»‘ng (placeholder theo i18n) sau Ä‘Äƒng nháº­p; EN/VI Ä‘áº§y Ä‘á»§.
-- Progress: Antigravity hoÃ n thÃ nh 2026-11-20: xÃ¢y dá»±ng khung Client Portal táº¡i route /portal vá»›i layout riÃªng biá»‡t, mock service theo docs/AUTH_CONTRACT.md (login, logout, me, forgot-password, reset-password), token portal_token tÃ¡ch biá»‡t hoÃ n toÃ n vá»›i app_token, route guard cho Portal, i18n EN/VI Ä‘áº§y Ä‘á»§ (16 vitest tests PASS, tsc PASS, next build PASS). Äang má»Ÿ PR.
-- Handoff: Báº¯t Ä‘áº§u Ä‘Æ°á»£c ngay sau khi PR tÃ i liá»‡u BE-003 merge.
+## FE-002 — Internal app login (Auth contract implementation)
+- Assignee: Google Antigravity · Level: L2 · Status: DONE
+- Branch: fe/FE-002-login · PR: —
+- Blocked by: — (hợp đồng `docs/AUTH_CONTRACT.md` đã duyệt — làm bằng mock, không chờ BE-003 code)
+- Acceptance Criteria: Màn hình đăng nhập nội bộ gọi `POST /api/v1/auth/login` theo hợp đồng (mock trước, nối API thật khi BE-003 xong); lưu token an toàn phía client; route guard chặn trang nội bộ khi chưa đăng nhập; hiển thị lỗi theo mã lỗi chuẩn (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`); chuyển EN ↔ VI ngay tại màn login; không hardcode chuỗi hiển thị.
+- Progress: —
+- Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” QA E2E PASS trÃªn báº£n mock theo há»£p Ä‘á»“ng Portal; Ä‘Ã³ng cÃ¹ng release 0.2.0. (Ná»‘i API tháº­t lÃ  task riÃªng sau nÃ y.)
+- Đóng task: DONE 2026-11-21 — luồng login đã được FE-004 nối API thật thay mock; QA E2E PASS; đóng cùng release 0.2.0.
 
-## QA-002 â€” Auth & tenancy test coverage
-- Assignee: OpenCode Â· Level: L1 Â· Status: DONE
-- Branch: qa/QA-002-run-results Â· PR: #6 (Ä‘Ã£ merge) + PR káº¿t quáº£ cháº¡y tháº­t nÃ y (Muse má»Ÿ thay OpenCode tá»« commit d4f3af3 trÃªn branch cÅ©, vÃ¬ PR #6 Ä‘Ã£ Ä‘Ã³ng)
-- Blocked by: BE-003 (Ä‘Ã£ merge PR #8 â€” pháº§n API cháº¡y xong); FE-004 (chá» merge Ä‘á»ƒ cháº¡y pháº§n E2E)
-- Acceptance Criteria: Bá»™ test case bao phá»§: login Ä‘Ãºng/sai thÃ´ng tin, agency bá»‹ khoÃ¡, tÃ i khoáº£n bá»‹ vÃ´ hiá»‡u hoÃ¡, token portal gá»i API ná»™i bá»™ bá»‹ cháº·n vÃ  ngÆ°á»£c láº¡i, truy váº¥n dá»¯ liá»‡u agency khÃ¡c tráº£ 404, rate limit login; E2E Playwright cho luá»“ng login ná»™i bá»™ + Portal; káº¿t quáº£ ghi vÃ o task nÃ y.
-- Progress: OpenCode hoÃ n thÃ nh 2026-11-20 bá»™ **23 test case** (17 API + 6 E2E) tá»« `docs/AUTH_CONTRACT.md` Ä‘Ã£ duyá»‡t (DEC-008), lÆ°u táº¡i `tests/e2e/auth.spec.ts`. ChÆ°a cháº¡y tháº­t vÃ¬ BE-003/FE-002/FE-003 chÆ°a lÃªn PR â€” Ä‘Ãºng Handoff cá»§a task.
-  - Phá»§ Acceptance Criteria: login Ä‘Ãºng (TC-AUTH-01, TC-E2E-01), sai email/sai máº­t kháº©u (02, E2E-02), agency khoÃ¡ (03, E2E-03), tÃ i khoáº£n vÃ´ hiá»‡u (04, E2E-03), token Portal â†’ API ná»™i bá»™ bá»‹ cháº·n (08, E2E-05) vÃ  token ná»™i bá»™ â†’ API Portal bá»‹ cháº·n (09), Ä‘á»c dá»¯ liá»‡u agency khÃ¡c â†’ 404 thay vÃ¬ 403 (11), rate limit 5 láº§n/phÃºt/IP (13).
-  - Phá»§ thÃªm theo há»£p Ä‘á»“ng: token Portal tÃ¡ch biá»‡t + client summary (07), `agency_id` chá»‰ láº¥y tá»« token (10), FK khÃ¡c agency â†’ 422 `CROSS_TENANT_REFERENCE` (12), logout thu há»“i token (14), Ä‘á»•i máº­t kháº©u thu há»“i má»i token khÃ¡c (15), forgot/reset khÃ´ng dÃ² tÃ i khoáº£n + `INVALID_RESET_TOKEN` (16), mÃ£ lá»—i á»•n Ä‘á»‹nh nhÆ°ng message theo locale (06), E2E Portal `/portal` + guard + EN/VI (E2E-05/06).
-  - `test.fixme` cÃ³ chá»§ Ä‘Ã­ch: TC-AUTH-17 (Portal forgot/reset) â€” DEC-008.3 Ä‘Ã£ chá»‘t nhÆ°ng `AUTH_CONTRACT.md` má»¥c 3 chÆ°a Ä‘á»‹nh nghÄ©a endpoint; Ä‘Ã£ bÃ¡o táº¡i PR #5 (Inbox QA-001), chá» Muse + Nguyen chá»‘t. TC-AUTH-11/12 dÃ¹ng env `E2E_TENANT_RESOURCE_PATH` / `E2E_TENANT_CREATE_PATH` + `test.skip` cÃ³ lÃ½ do tá»›i khi cÃ³ endpoint nghiá»‡p vá»¥ â€” khÃ´ng fail giáº£.
-  - KhÃ´ng hardcode secret: má»i tÃ i khoáº£n/ID Ä‘á»c tá»« biáº¿n `E2E_*` cá»§a seed dÃ¹ng chung (`tests/e2e/README.md`, quy Æ°á»›c H.4). KhÃ´ng thÃªm dependency hay config chung (L4) â€” chá»‰ thÃªm 1 file spec trong pháº¡m vi sá»Ÿ há»¯u QA.
-  - Káº¿t quáº£ cháº¡y tháº­t (API, 2026-11-20, DB `agency_saas`, seed demo + QA accounts): **14 PASS / 2 FAIL / 2 SKIP** trÃªn tá»•ng 17 ca API. Chi tiáº¿t:
-    - PASS: TC-AUTH-01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 13, 16, 17 (vÃ  TC-AUTH-11/12 SKIP vÃ¬ chÆ°a cÃ³ endpoint nghiá»‡p vá»¥ BE-004).
-    - FAIL: TC-AUTH-14 vÃ  TC-AUTH-15 â€” sau logout/Ä‘á»•i máº­t kháº©u, token bá»‹ xoÃ¡ tráº£ **500** thay vÃ¬ 401 `UNAUTHENTICATED` (root cause: `auth:sanctum` middleware gá»i `route('login')` khÃ´ng tá»“n táº¡i trong API-only app). ÄÃ£ ghi finding Inbox. TC-AUTH-15 fail cÃ¹ng root cause.
-    - SKIP: TC-AUTH-11 (cross-tenant 404), TC-AUTH-12 (cross-tenant FK 422) â€” chá» BE-004 cung cáº¥p endpoint nghiá»‡p vá»¥; giá»¯ `test.skip` cÃ³ lÃ½ do, khÃ´ng fail giáº£.
-  - TC-AUTH-17 Ä‘Ã£ báº­t (khÃ´ng cÃ²n `test.fixme`) sau khi PR #9 bá»• sung endpoint Portal forgot/reset; PASS.
-  - MÃ´i trÆ°á»ng: cáº§n `storage/framework/views` (view cache) cho luá»“ng forgot-password; Ä‘Ã£ ghi finding setup. Rate limit 5/phÃºt/IP khiáº¿n suite pháº£i cháº¡y theo nhÃ³m + flush Redis â€” ghi nháº­n trong PR.
-  - E2E (TC-E2E-01..06) chÆ°a cháº¡y: FE-004 chÆ°a merge; sáº½ cháº¡y sau FE-004.
-  - Káº¿t luáº­n: bá»™ API **PASS cÃ³ Ä‘iá»u kiá»‡n** (14/14 ca cÃ³ thá»ƒ cháº¡y Ä‘á»u pass; 2 fail cÃ¹ng 1 bug BE); khÃ´ng tá»± chuyá»ƒn `DONE` khi cÃ²n fail vÃ  cÃ²n E2E chÆ°a cháº¡y; khÃ´ng tá»± merge PR.
-- Handoff: Khi BE-003/FE-002/FE-003 má»Ÿ PR, cháº¡y `tests/e2e/auth.spec.ts` trÃªn DB test riÃªng cá»§a QA (`agency_test`, G.2), bá»• sung endpoint Portal forgot/reset sau khi contract chá»‘t, rá»“i ghi káº¿t quáº£ PASS/FAIL vÃ o task nÃ y.
+## FE-003 — Client Portal login frame
+- Assignee: Google Antigravity · Level: L2 · Status: DONE
+- Branch: fe/FE-003-portal-login · PR: —
+- Blocked by: — (hợp đồng đã duyệt — làm bằng mock)
+- Acceptance Criteria: Khu vực Portal tách riêng tại route `/portal` với layout riêng; màn đăng nhập Portal gọi `POST /api/v1/portal/auth/login` (mock theo hợp đồng); token portal tách biệt token nội bộ (không dùng lẫn); trang tổng quan Portal trống (placeholder theo i18n) sau đăng nhập; EN/VI đầy đủ.
+- Progress: Antigravity hoàn thành 2026-11-20: xây dựng khung Client Portal tại route /portal với layout riêng biệt, mock service theo docs/AUTH_CONTRACT.md (login, logout, me, forgot-password, reset-password), token portal_token tách biệt hoàn toàn với app_token, route guard cho Portal, i18n EN/VI đầy đủ (16 vitest tests PASS, tsc PASS, next build PASS). Đang mở PR.
+- Handoff: Bắt đầu được ngay sau khi PR tài liệu BE-003 merge.
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” do Muse chuyá»ƒn theo ngoáº¡i lá»‡ F.2 (task cá»§a chÃ­nh QA); káº¿t quáº£ cháº¡y tháº­t PASS 23/23 (API 17/17 + E2E 6/6) theo bÃ¡o cÃ¡o OpenCode 2026-11-21.
+- Đóng task: DONE 2026-11-21 — QA E2E PASS trên bản mock theo hợp đồng Portal; đóng cùng release 0.2.0. (Nối API thật là task riêng sau này.)
 
-## FIX-001 â€” MinIO image no longer on Docker Hub
-- Assignee: Muse Â· Level: L2 Â· Status: IN_REVIEW
-- Branch: fix/FIX-001-minio-image Â· PR: â€”
-- Blocked by: â€”
-- Acceptance Criteria: `docker compose up` kÃ©o Ä‘Æ°á»£c image MinIO (image `minio/minio` Ä‘Ã£ bá»‹ gá»¡ khá»i Docker Hub â€” phÃ¡t hiá»‡n khi Nguyen cháº¡y local láº§n Ä‘áº§u 2026-11-20); chuyá»ƒn sang registry chÃ­nh thá»©c cá»§a MinIO táº¡i Quay (`quay.io/minio/minio`); cÃ¡c service cÃ²n láº¡i khÃ´ng Ä‘á»•i.
-- Progress: Muse sá»­a 2026-11-20 trong PR nÃ y; chá» kiá»ƒm chá»©ng báº±ng láº§n `docker compose up` Ä‘áº§y Ä‘á»§ tiáº¿p theo táº¡i mÃ¡y Nguyen.
-- Handoff: â€”
+## QA-002 — Auth & tenancy test coverage
+- Assignee: OpenCode · Level: L1 · Status: DONE
+- Branch: qa/QA-002-run-results · PR: #6 (đã merge) + PR kết quả chạy thật này (Muse mở thay OpenCode từ commit d4f3af3 trên branch cũ, vì PR #6 đã đóng)
+- Blocked by: BE-003 (đã merge PR #8 — phần API chạy xong); FE-004 (chờ merge để chạy phần E2E)
+- Acceptance Criteria: Bộ test case bao phủ: login đúng/sai thông tin, agency bị khoá, tài khoản bị vô hiệu hoá, token portal gọi API nội bộ bị chặn và ngược lại, truy vấn dữ liệu agency khác trả 404, rate limit login; E2E Playwright cho luồng login nội bộ + Portal; kết quả ghi vào task này.
+- Progress: OpenCode hoàn thành 2026-11-20 bộ **23 test case** (17 API + 6 E2E) từ `docs/AUTH_CONTRACT.md` đã duyệt (DEC-008), lưu tại `tests/e2e/auth.spec.ts`. Chưa chạy thật vì BE-003/FE-002/FE-003 chưa lên PR — đúng Handoff của task.
+  - Phủ Acceptance Criteria: login đúng (TC-AUTH-01, TC-E2E-01), sai email/sai mật khẩu (02, E2E-02), agency khoá (03, E2E-03), tài khoản vô hiệu (04, E2E-03), token Portal → API nội bộ bị chặn (08, E2E-05) và token nội bộ → API Portal bị chặn (09), đọc dữ liệu agency khác → 404 thay vì 403 (11), rate limit 5 lần/phút/IP (13).
+  - Phủ thêm theo hợp đồng: token Portal tách biệt + client summary (07), `agency_id` chỉ lấy từ token (10), FK khác agency → 422 `CROSS_TENANT_REFERENCE` (12), logout thu hồi token (14), đổi mật khẩu thu hồi mọi token khác (15), forgot/reset không dò tài khoản + `INVALID_RESET_TOKEN` (16), mã lỗi ổn định nhưng message theo locale (06), E2E Portal `/portal` + guard + EN/VI (E2E-05/06).
+  - `test.fixme` có chủ đích: TC-AUTH-17 (Portal forgot/reset) — DEC-008.3 đã chốt nhưng `AUTH_CONTRACT.md` mục 3 chưa định nghĩa endpoint; đã báo tại PR #5 (Inbox QA-001), chờ Muse + Nguyen chốt. TC-AUTH-11/12 dùng env `E2E_TENANT_RESOURCE_PATH` / `E2E_TENANT_CREATE_PATH` + `test.skip` có lý do tới khi có endpoint nghiệp vụ — không fail giả.
+  - Không hardcode secret: mọi tài khoản/ID đọc từ biến `E2E_*` của seed dùng chung (`tests/e2e/README.md`, quy ước H.4). Không thêm dependency hay config chung (L4) — chỉ thêm 1 file spec trong phạm vi sở hữu QA.
+  - Kết quả chạy thật (API, 2026-11-20, DB `agency_saas`, seed demo + QA accounts): **14 PASS / 2 FAIL / 2 SKIP** trên tổng 17 ca API. Chi tiết:
+    - PASS: TC-AUTH-01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 13, 16, 17 (và TC-AUTH-11/12 SKIP vì chưa có endpoint nghiệp vụ BE-004).
+    - FAIL: TC-AUTH-14 và TC-AUTH-15 — sau logout/đổi mật khẩu, token bị xoá trả **500** thay vì 401 `UNAUTHENTICATED` (root cause: `auth:sanctum` middleware gọi `route('login')` không tồn tại trong API-only app). Đã ghi finding Inbox. TC-AUTH-15 fail cùng root cause.
+    - SKIP: TC-AUTH-11 (cross-tenant 404), TC-AUTH-12 (cross-tenant FK 422) — chờ BE-004 cung cấp endpoint nghiệp vụ; giữ `test.skip` có lý do, không fail giả.
+  - TC-AUTH-17 đã bật (không còn `test.fixme`) sau khi PR #9 bổ sung endpoint Portal forgot/reset; PASS.
+  - Môi trường: cần `storage/framework/views` (view cache) cho luồng forgot-password; đã ghi finding setup. Rate limit 5/phút/IP khiến suite phải chạy theo nhóm + flush Redis — ghi nhận trong PR.
+  - E2E (TC-E2E-01..06) chưa chạy: FE-004 chưa merge; sẽ chạy sau FE-004.
+  - Kết luận: bộ API **PASS có điều kiện** (14/14 ca có thể chạy đều pass; 2 fail cùng 1 bug BE); không tự chuyển `DONE` khi còn fail và còn E2E chưa chạy; không tự merge PR.
+- Handoff: Khi BE-003/FE-002/FE-003 mở PR, chạy `tests/e2e/auth.spec.ts` trên DB test riêng của QA (`agency_test`, G.2), bổ sung endpoint Portal forgot/reset sau khi contract chốt, rồi ghi kết quả PASS/FAIL vào task này.
 
 ---
+- Đóng task: DONE 2026-11-21 — do Muse chuyển theo ngoại lệ F.2 (task của chính QA); kết quả chạy thật PASS 23/23 (API 17/17 + E2E 6/6) theo báo cáo OpenCode 2026-11-21.
 
-## FE-004 â€” Ná»‘i mÃ n hÃ¬nh Ä‘Äƒng nháº­p ná»™i bá»™ vÃ o API tháº­t (BE-003)
-- Assignee: Google Antigravity Â· Level: L3 Â· Status: DONE
-- Branch: fe/FE-004-login-real-api Â· PR: #14
-- Blocked by: â€” (BE-003 Ä‘Ã£ merge; FE-002 Ä‘Ã£ merge)
-- Acceptance Criteria: thay `mockLogin()` báº±ng `POST /api/v1/auth/login` tháº­t; lÆ°u token vÃ  gá»i Ä‘Æ°á»£c `GET /api/v1/auth/me` (user + roles + permissions); cÃ¡c mÃ£ lá»—i cá»§a API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiá»ƒn thá»‹ Ä‘Ãºng banner Ä‘Ã£ lÃ m á»Ÿ FE-002, tÃ´n trá»ng thÃ´ng Ä‘iá»‡p song ngá»¯ API tráº£ vá»; logout gá»i API vÃ  xoÃ¡ token; cÃ¡ch lÆ°u token pháº£i ghi rÃµ trade-off báº£o máº­t trong PR (Æ°u tiÃªn httpOnly cookie qua route handler). Cáº­p nháº­t TASK.md má»¥c nÃ y + CHANGELOG.md [Unreleased] Frontend khi lÃ m.
-- Progress: Antigravity hoÃ n thÃ nh 2026-11-20: xÃ¢y dá»±ng BFF route handlers (/api/auth/login, /api/auth/logout, /api/auth/me) vá»›i httpOnly cookie app_token; ná»‘i POST /v1/auth/login + GET /v1/auth/me; map cÃ¡c mÃ£ lá»—i chuáº©n (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) vÃ  tÃ´n trá»ng message song ngá»¯ tá»« backend; cáº­p nháº­t AuthContext, LoginForm vÃ  test suite (14 tests PASS, tsc PASS, next build PASS). Äang má»Ÿ PR.
-- Handoff: OpenCode review theo ma tráº­n G.3; sau merge, QA-002 cháº¡y tháº­t pháº§n E2E trÃªn luá»“ng nÃ y.
-
----
-- ÄÃ³ng task: DONE 2026-11-21 â€” QA E2E PASS + Nguyen nghiá»‡m thu Luá»“ng A Äáº T 2026-11-21; Ä‘Ã³ng cÃ¹ng release 0.2.0.
-
-## BE-004 â€” Module Client (NhÃ³m 2) theo há»£p Ä‘á»“ng CLIENT_CONTRACT
-- Assignee: Muse Â· Level: L3 Â· Status: IN_REVIEW
-- Branch: be/BE-004-client-module Â· PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
-- Blocked by: â€” (há»£p Ä‘á»“ng Ä‘Ã£ duyá»‡t, DEC-009)
-- Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bá»™ lá»c phÃ¢n Ä‘oáº¡n; Client Notes ná»™i bá»™; cáº¥p/khoÃ¡ tÃ i khoáº£n Portal cho client (thÃªm FK `client_accounts.client_id â†’ clients.id`); ma tráº­n quyá»n clients.* theo há»£p Ä‘á»“ng; test Pest phá»§ cÃ¡ch ly tenant + ma tráº­n quyá»n + luá»“ng táº¡o tÃ i khoáº£n Portal Ä‘Äƒng nháº­p Ä‘Æ°á»£c; OpenAPI cáº­p nháº­t; Pint PASS.
-- Progress: Há»£p Ä‘á»“ng duyá»‡t 2026-11-20 (DEC-009, PR #12). Muse Ä‘Ã£ code xong trong PR nÃ y: 6 migrations (clients, organizations, contacts, client_notes, tags + client_tag, FK client_accounts.client_id), ma tráº­n quyá»n clients.* theo DEC-009 (middleware permission táº¡i API), 17 endpoints (clients CRUD + lá»c status/tag/manager/q, contacts, notes, tags, portal-accounts), test: full suite 31 passed (12 test má»›i cho BE-004), Pint PASS, OpenAPI 21 paths. Kiá»ƒm chá»©ng Docker/MySQL tháº­t: nhá» OpenCode/Nguyen cháº¡y láº¡i migrate trÃªn stack local khi review (mÃ¡y Muse khÃ´ng cÃ³ Docker).
-- Handoff: OpenCode review theo ma tráº­n G.3; Antigravity lÃ m mÃ n hÃ¬nh quáº£n lÃ½ Client (task FE riÃªng) sau khi há»£p Ä‘á»“ng chá»‘t, mock-first theo OpenAPI.
+## FIX-001 — MinIO image no longer on Docker Hub
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-001-minio-image · PR: —
+- Blocked by: —
+- Acceptance Criteria: `docker compose up` kéo được image MinIO (image `minio/minio` đã bị gỡ khỏi Docker Hub — phát hiện khi Nguyen chạy local lần đầu 2026-11-20); chuyển sang registry chính thức của MinIO tại Quay (`quay.io/minio/minio`); các service còn lại không đổi.
+- Progress: Muse sửa 2026-11-20 trong PR này; chờ kiểm chứng bằng lần `docker compose up` đầy đủ tiếp theo tại máy Nguyen.
+- Handoff: —
 
 ---
 
-## FIX-002 â€” Token bá»‹ thu há»“i tráº£ 500 thay vÃ¬ 401 + thiáº¿u thÆ° má»¥c storage khi checkout sáº¡ch
-- Assignee: Muse Â· Level: L2 Â· Status: DONE
-- Branch: fix/FIX-002-auth-401-storage Â· PR: â€”
-- Blocked by: â€”
-- Acceptance Criteria: (1) Request API khÃ´ng gá»­i `Accept: application/json` (kiá»ƒu Playwright) vá»›i token Ä‘Ã£ thu há»“i pháº£i tráº£ 401 `UNAUTHENTICATED`, khÃ´ng pháº£i 500 â€” gá»‘c lá»—i: ApplicationBuilder máº·c Ä‘á»‹nh cá»§a Laravel 12 Ä‘Äƒng kÃ½ guest redirect gá»i `route('login')` (route khÃ´ng tá»“n táº¡i trong app API-only) ngay trong Authenticate middleware; sá»­a báº±ng `redirectGuestsTo` tráº£ null + `shouldRenderJsonWhen` cho `api/*`, KHÃ”NG thÃªm route login. CÃ³ test há»“i quy riÃªng. (2) Checkout sáº¡ch pháº£i cÃ³ `storage/framework/{views,cache,sessions,testing}` + `storage/logs` (thÃªm `.gitkeep`) Ä‘á»ƒ forgot/reset-password khÃ´ng cÃ²n 500 "valid cache path". (3) KÃ¨m DEC-010 (chuáº©n hoÃ¡ field reset-password = `password`, sá»­a AUTH_CONTRACT) vÃ  DEC-011 (chuyá»ƒn vai FE sang OpenCode) theo quyáº¿t Ä‘á»‹nh cá»§a Nguyen 2026-11-21.
-- Progress: Muse sá»­a xong trong PR nÃ y â€” test há»“i quy má»›i PASS, full suite 32 passed, Pint PASS. Chá» OpenCode review; sau merge, QA cháº¡y láº¡i TC-AUTH-14/15 Ä‘á»ƒ xÃ¡c nháº­n finding 1 Ä‘Ã³ng.
-- Handoff: OpenCode review theo ma tráº­n G.3 (PR Backend cá»§a Muse â†’ OpenCode).
+## FE-004 — Nối màn hình đăng nhập nội bộ vào API thật (BE-003)
+- Assignee: Google Antigravity · Level: L3 · Status: DONE
+- Branch: fe/FE-004-login-real-api · PR: #14
+- Blocked by: — (BE-003 đã merge; FE-002 đã merge)
+- Acceptance Criteria: thay `mockLogin()` bằng `POST /api/v1/auth/login` thật; lưu token và gọi được `GET /api/v1/auth/me` (user + roles + permissions); các mã lỗi của API (`INVALID_CREDENTIALS`, `AGENCY_LOCKED`, `ACCOUNT_DISABLED`) hiển thị đúng banner đã làm ở FE-002, tôn trọng thông điệp song ngữ API trả về; logout gọi API và xoá token; cách lưu token phải ghi rõ trade-off bảo mật trong PR (ưu tiên httpOnly cookie qua route handler). Cập nhật TASK.md mục này + CHANGELOG.md [Unreleased] Frontend khi làm.
+- Progress: Antigravity hoàn thành 2026-11-20: xây dựng BFF route handlers (/api/auth/login, /api/auth/logout, /api/auth/me) với httpOnly cookie app_token; nối POST /v1/auth/login + GET /v1/auth/me; map các mã lỗi chuẩn (INVALID_CREDENTIALS, AGENCY_LOCKED, ACCOUNT_DISABLED) và tôn trọng message song ngữ từ backend; cập nhật AuthContext, LoginForm và test suite (14 tests PASS, tsc PASS, next build PASS). Đang mở PR.
+- Handoff: OpenCode review theo ma trận G.3; sau merge, QA-002 chạy thật phần E2E trên luồng này.
 
 ---
-- ÄÃ³ng task: DONE 2026-11-21 â€” TC-AUTH-14/15 cháº¡y láº¡i PASS; Ä‘Ã³ng cÃ¹ng release 0.2.0.
+- Đóng task: DONE 2026-11-21 — QA E2E PASS + Nguyen nghiệm thu Luồng A ĐẠT 2026-11-21; đóng cùng release 0.2.0.
 
-## FIX-003 â€” MinIO image khÃ´ng cÃ²n public (Docker Hub + Quay Ä‘á»u cháº·n) â€” Ä‘Æ°a MinIO ra khá»i stack máº·c Ä‘á»‹nh
-- Assignee: Muse Â· Level: L2 Â· Status: IN_REVIEW
-- Branch: fix/FIX-003-minio-optional Â· PR: #20
-- Blocked by: â€”
-- Acceptance Criteria: `docker compose up -d --build` trÃªn mÃ¡y sáº¡ch cháº¡y Ä‘Æ°á»£c mÃ  khÃ´ng cáº§n kÃ©o image MinIO: service minio chuyá»ƒn sau profile `storage` (báº­t thá»§ cÃ´ng báº±ng `--profile storage` khi cÃ³ quyá»n truy cáº­p image), `api` bá» `depends_on` vÃ o minio (chÆ°a tÃ­nh nÄƒng nÃ o dÃ¹ng S3 á»Ÿ giai Ä‘oáº¡n nÃ y). Khi module File (NhÃ³m 7) báº¯t Ä‘áº§u, chá»n láº¡i giáº£i phÃ¡p S3 self-host cÃ²n Ä‘Æ°á»£c phÃ¢n phá»‘i cÃ´ng khai vÃ  ghi quyáº¿t Ä‘á»‹nh má»›i.
-- Progress: Muse sá»­a trong PR nÃ y sau khi Nguyen cháº¡y nghiá»‡m thu Má»‘c 1 bá»‹ cháº·n bá»Ÿi lá»—i 401 tá»« quay.io (Muse Ä‘Ã£ tá»± kiá»ƒm chá»©ng: Quay tráº£ 401 ngay cáº£ vá»›i token pull áº©n danh â€” MinIO Ä‘Ã£ rÃºt toÃ n bá»™ image cÃ´ng khai miá»…n phÃ­). Workaround trÆ°á»›c máº¯t cho mÃ¡y Ä‘ang cháº¡y: `docker compose up -d mysql redis mailpit` rá»“i `docker compose up -d --build --no-deps api web`.
-- Handoff: OpenCode review theo ma tráº­n G.3.
-
----
-
-## FE-005 â€” Ãp dá»¥ng hÆ°á»›ng thiáº¿t káº¿ DEC-013 vÃ o khung á»©ng dá»¥ng ná»™i bá»™
-- Assignee: OpenCode Â· Level: L3 Â· Status: DONE
-- Branch: â€” Â· PR: â€”
-- Blocked by: PR #19 merge (DEC-013 chÃ­nh thá»©c cÃ³ hiá»‡u lá»±c trÃªn main)
-- Acceptance Criteria: Khung á»©ng dá»¥ng ná»™i bá»™ theo máº«u A â€” Classic Sidebar (DEC-013) vá»›i design tokens thá»‘ng nháº¥t trÃªn shadcn/ui + Tailwind; tuÃ¢n thá»§ toÃ n bá»™ docs/UI_GUIDELINES.md (responsive nhiá»u bá» rá»™ng, khÃ´ng scroll ngang cho báº£ng dá»¯ liá»‡u lá»›n, tÆ°Æ¡ng pháº£n chá»¯, chip/badge má»™t dÃ²ng, min-height vÃ  empty state giá»¯ khung). Tá»± kiá»ƒm á»Ÿ Ã­t nháº¥t 3 bá» rá»™ng mÃ n hÃ¬nh vÃ  bÃ¡o cÃ¡o rÃµ; Nguyen nghiá»‡m thu UI báº±ng máº¯t. Máº«u D (Pipeline) cho CRM vÃ  hÆ¡i hÆ°á»›ng C cho Portal Ã¡p dá»¥ng á»Ÿ cÃ¡c task mÃ n hÃ¬nh tÆ°Æ¡ng á»©ng sau nÃ y, khÃ´ng thuá»™c task nÃ y.
-- Progress: Implemented internal app shell (route group (app)/dashboard) with Classic Sidebar, design tokens in globals.css (shadcn-style CSS variables + Tailwind v4 theme), responsive AppShell (desktop sidebar + mobile drawer), Topbar, role chips (single line), stat cards with min-height, empty state. Self-check: tsc --noEmit PASS; pnpm build PASS (en/vi dashboard routes); vitest 24/24 PASS. Responsive classes reviewed for 3 representative widths (mobile 390px drawer, tablet 768px, desktop 1280px) - sidebar collapses to hamburger below md, content grid adapts sm:grid-cols-2 lg:grid-cols-4, no horizontal overflow at shell level. Browser screenshot not available in this environment; verified via build + class review.
-- Handoff: OpenCode (vai Frontend, DEC-011); Muse review chÃ©o theo ma tráº­n (OpenCode khÃ´ng tá»± review code FE cá»§a mÃ¬nh).
+## BE-004 — Module Client (Nhóm 2) theo hợp đồng CLIENT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-004-client-module · PR: https://github.com/DLoc03/agency-client-management-saas/pull/13
+- Blocked by: — (hợp đồng đã duyệt, DEC-009)
+- Acceptance Criteria: CRUD Client + Organization + Contacts; tags & bộ lọc phân đoạn; Client Notes nội bộ; cấp/khoá tài khoản Portal cho client (thêm FK `client_accounts.client_id → clients.id`); ma trận quyền clients.* theo hợp đồng; test Pest phủ cách ly tenant + ma trận quyền + luồng tạo tài khoản Portal đăng nhập được; OpenAPI cập nhật; Pint PASS.
+- Progress: Hợp đồng duyệt 2026-11-20 (DEC-009, PR #12). Muse đã code xong trong PR này: 6 migrations (clients, organizations, contacts, client_notes, tags + client_tag, FK client_accounts.client_id), ma trận quyền clients.* theo DEC-009 (middleware permission tại API), 17 endpoints (clients CRUD + lọc status/tag/manager/q, contacts, notes, tags, portal-accounts), test: full suite 31 passed (12 test mới cho BE-004), Pint PASS, OpenAPI 21 paths. Kiểm chứng Docker/MySQL thật: nhờ OpenCode/Nguyen chạy lại migrate trên stack local khi review (máy Muse không có Docker).
+- Handoff: OpenCode review theo ma trận G.3; Antigravity làm màn hình quản lý Client (task FE riêng) sau khi hợp đồng chốt, mock-first theo OpenAPI.
 
 ---
 
-## BE-005 â€” Module CRM/Lead (NhÃ³m 1) theo há»£p Ä‘á»“ng CRM_CONTRACT
-- Assignee: Muse Â· Level: L3 Â· Status: DONE
-- Branch: be/BE-005-crm-lead Â· PR: â€”
-- Blocked by: PR #19 merge (há»£p Ä‘á»“ng CRM_CONTRACT + DEC-014 chÃ­nh thá»©c trÃªn main)
-- Acceptance Criteria: Äá»§ endpoints vÃ  quy táº¯c trong docs/CRM_CONTRACT.md: leads CRUD + lá»c, pipeline-summary, convert Lead â†’ Client (táº¡o Client + Organization + Contact, ná»‘i láº¡i contacts, khoÃ¡ sá»­a lead, 409 khi convert láº¡i, 422 chá»‘ng trÃ¹ng kÃ¨m force), lead notes, lead activities + due list, contacts dÃ¹ng chung (lead_id), ma tráº­n quyá»n leads.* theo DEC-014, cÃ¡ch ly tenant. Test: bá»™ test Feature cho module Lead Ä‘áº¡t, Pint PASS, OpenAPI cáº­p nháº­t.
-- Progress: Há»£p Ä‘á»“ng Ä‘Ã£ Ä‘Æ°á»£c Nguyen duyá»‡t vÃ  cÃ´ng bá»‘ trong PR #19 (DEC-014). Muse Ä‘Ã£ triá»ƒn khai xong trong PR nÃ y: 5 migration, leads CRUD + pipeline-summary + convert, notes, activities + due list, contacts dÃ¹ng chung; bá»™ test toÃ n cá»¥c 52 passed, Pint PASS, OpenAPI 32 paths.
-- Handoff: OpenCode review theo ma tráº­n G.3.
+## FIX-002 — Token bị thu hồi trả 500 thay vì 401 + thiếu thư mục storage khi checkout sạch
+- Assignee: Muse · Level: L2 · Status: DONE
+- Branch: fix/FIX-002-auth-401-storage · PR: —
+- Blocked by: —
+- Acceptance Criteria: (1) Request API không gửi `Accept: application/json` (kiểu Playwright) với token đã thu hồi phải trả 401 `UNAUTHENTICATED`, không phải 500 — gốc lỗi: ApplicationBuilder mặc định của Laravel 12 đăng ký guest redirect gọi `route('login')` (route không tồn tại trong app API-only) ngay trong Authenticate middleware; sửa bằng `redirectGuestsTo` trả null + `shouldRenderJsonWhen` cho `api/*`, KHÔNG thêm route login. Có test hồi quy riêng. (2) Checkout sạch phải có `storage/framework/{views,cache,sessions,testing}` + `storage/logs` (thêm `.gitkeep`) để forgot/reset-password không còn 500 "valid cache path". (3) Kèm DEC-010 (chuẩn hoá field reset-password = `password`, sửa AUTH_CONTRACT) và DEC-011 (chuyển vai FE sang OpenCode) theo quyết định của Nguyen 2026-11-21.
+- Progress: Muse sửa xong trong PR này — test hồi quy mới PASS, full suite 32 passed, Pint PASS. Chờ OpenCode review; sau merge, QA chạy lại TC-AUTH-14/15 để xác nhận finding 1 đóng.
+- Handoff: OpenCode review theo ma trận G.3 (PR Backend của Muse → OpenCode).
 
-## FIX-005 â€” Response táº¡o má»›i khÃ´ng pháº£n Ã¡nh giÃ¡ trá»‹ máº·c Ä‘á»‹nh cá»§a DB (status/author/is_active trá»‘ng)
-- Assignee: Muse Â· Level: L1 Â· Status: IN_REVIEW
-- Branch: fix/FIX-005-response-defaults Â· PR: â€”
-- Blocked by: â€”
-- Acceptance Criteria: CÃ¡c response POST (táº¡o client, client note, portal account â€” vÃ  rÃ  soÃ¡t toÃ n bá»™ module BE-003/BE-004) tráº£ vá» Ä‘Ãºng giÃ¡ trá»‹ thá»±c trong DB (status=active, author, locale, is_active) báº±ng cÃ¡ch náº¡p láº¡i model/quan há»‡ trÆ°á»›c khi tráº£ resource. PhÃ¡t hiá»‡n khi Nguyen nghiá»‡m thu Má»‘c 1 Luá»“ng C: dá»¯ liá»‡u DB Ä‘Ãºng, chá»‰ response hiá»ƒn thá»‹ trá»‘ng. KÃ¨m test há»“i quy cho Ã­t nháº¥t endpoint táº¡o client.
-- Progress: Muse hoÃ n thÃ nh: refresh model sau khi táº¡o á»Ÿ ClientController, ClientPortalAccountController, ClientContactController, ClientNoteController; test há»“i quy CreateResponseDefaultsTest (4 test) â€” trÆ°á»›c fix fail 3/4, sau fix Ä‘áº¡t cáº£ bá»™ 52 test.
-- Handoff: OpenCode review theo ma tráº­n G.3.
-## FIX-004 â€” Web container thiáº¿u INTERNAL_API_URL â€” má»i login qua BFF Ä‘á»u "fetch failed" / 500
-- Assignee: Muse Â· Level: L2 Â· Status: IN_REVIEW
-- Branch: fix/FIX-004-web-internal-api-url Â· PR: #21
-- Blocked by: â€”
-- Acceptance Criteria: Trong Docker, Ä‘Äƒng nháº­p ná»™i bá»™ (Ä‘Ãºng vÃ  sai máº­t kháº©u) tráº£ Ä‘Ãºng káº¿t quáº£ cá»§a API (200 / 401 kÃ¨m mÃ£ lá»—i) thay vÃ¬ 500 "fetch failed": thÃªm `INTERNAL_API_URL: http://api:8000/api` vÃ o environment cá»§a service web trong docker-compose.yml. NguyÃªn nhÃ¢n: `getBackendApiUrl()` (FE-004) Æ°u tiÃªn INTERNAL_API_URL nhÆ°ng compose chÆ°a há» set biáº¿n nÃ y, nÃªn BFF rÆ¡i vá» NEXT_PUBLIC_API_URL/localhost â€” bÃªn trong container web, localhost lÃ  chÃ­nh container web, káº¿t ná»‘i bá»‹ tá»« chá»‘i trÆ°á»›c khi API ká»‹p kiá»ƒm tra máº­t kháº©u. PhÃ¡t hiá»‡n khi Nguyen nghiá»‡m thu Má»‘c 1 (A1/A2 Ä‘á»u 500 ká»ƒ cáº£ máº­t kháº©u Ä‘Ãºng). Ghi chÃº review: nháº­n xÃ©t cá»§a OpenCode á»Ÿ PR #14 cho ráº±ng INTERNAL_API_URL "Ä‘Ã£ set" lÃ  chÆ°a chÃ­nh xÃ¡c â€” biáº¿n nÃ y khÃ´ng tá»“n táº¡i á»Ÿ cáº£ compose láº«n code ngoÃ i hÃ m Ä‘á»c.
-- Progress: Muse sá»­a trong PR nÃ y. PR Ä‘Æ°á»£c merge theo NGOáº I Lá»† L5 do Nguyen duyá»‡t ngÃ y 2026-11-21 (Ä‘á»ƒ gá»¡ cháº·n nghiá»‡m thu Má»‘c 1; OpenCode review bÃ¹ sau merge).
-- Handoff: OpenCode review bÃ¹ theo ma tráº­n G.3.
+---
+- Đóng task: DONE 2026-11-21 — TC-AUTH-14/15 chạy lại PASS; đóng cùng release 0.2.0.
+
+## FIX-003 — MinIO image không còn public (Docker Hub + Quay đều chặn) — đưa MinIO ra khỏi stack mặc định
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-003-minio-optional · PR: #20
+- Blocked by: —
+- Acceptance Criteria: `docker compose up -d --build` trên máy sạch chạy được mà không cần kéo image MinIO: service minio chuyển sau profile `storage` (bật thủ công bằng `--profile storage` khi có quyền truy cập image), `api` bỏ `depends_on` vào minio (chưa tính năng nào dùng S3 ở giai đoạn này). Khi module File (Nhóm 7) bắt đầu, chọn lại giải pháp S3 self-host còn được phân phối công khai và ghi quyết định mới.
+- Progress: Muse sửa trong PR này sau khi Nguyen chạy nghiệm thu Mốc 1 bị chặn bởi lỗi 401 từ quay.io (Muse đã tự kiểm chứng: Quay trả 401 ngay cả với token pull ẩn danh — MinIO đã rút toàn bộ image công khai miễn phí). Workaround trước mắt cho máy đang chạy: `docker compose up -d mysql redis mailpit` rồi `docker compose up -d --build --no-deps api web`.
+- Handoff: OpenCode review theo ma trận G.3.
 
 ---
 
-## FIX-006 â€” Compose hardening: á»• Ä‘Ä©a máº·c Ä‘á»‹nh local + web chá» api khoáº» (tá»« review bÃ¹ FIX-003/FIX-004)
-- Status: DONE
-- Assignee: Muse Â· Reviewer: OpenCode
-- MÃ´ táº£: Hai finding háº¡ táº§ng tá»« Ä‘á»£t review bÃ¹ cá»§a OpenCode: (1) compose máº·c Ä‘á»‹nh Ä‘á»ƒ `FILESYSTEM_DISK: s3` + env AWS trá» MinIO trong khi MinIO khÃ´ng cháº¡y á»Ÿ stack máº·c Ä‘á»‹nh (FIX-003) â€” báº¥t ká»³ luá»“ng ghi file nÃ o trong tÆ°Æ¡ng lai sáº½ lá»—i khÃ³ hiá»ƒu; Ä‘á»•i máº·c Ä‘á»‹nh sang `local`, S3 quay láº¡i cÃ¹ng quyáº¿t Ä‘á»‹nh storage á»Ÿ NhÃ³m 7. (2) `web depends_on: api` chÆ°a cÃ³ Ä‘iá»u kiá»‡n sáºµn sÃ ng (FIX-004) â€” thÃªm healthcheck cho api (Ä‘Ã¡nh `/api/v1/health` báº±ng php) vÃ  Ä‘á»ƒ web chá» `condition: service_healthy`.
-- Acceptance Criteria: `docker compose up -d --build` cháº¡y nhÆ° cÅ© trÃªn mÃ¡y Nguyen; web chá»‰ start sau khi api tráº£ health 200; khÃ´ng Ä‘á»•i hÃ nh vi nÃ o khÃ¡c.
-- Progress: 2026-11-21 â€” Muse triá»ƒn khai (docker-compose.yml) sau khi Nguyen merge xong 4 PR #24â€“#27; chá» OpenCode review.
-- Blockers: KhÃ´ng cÃ³.
-
-## FIX-007 â€” Dá»n file rÃ¡c Blade compiled view lá»t vÃ o main qua PR #29
-- Status: DONE
-- Assignee: Muse Â· Reviewer: Nguyen
-- MÃ´ táº£: File sinh tá»± Ä‘á»™ng `apps/api/storage/framework/views/275c7c02e2528e6029079c885e2d2418.php` (Blade view Ä‘Ã£ biÃªn dá»‹ch) bá»‹ mÃ´i trÆ°á»ng cá»§a OpenCode commit nháº§m vÃ o branch FE-005 vÃ  Ä‘Ã£ vÃ o main khi PR #29 merge. XoÃ¡ khá»i repo; thÆ° má»¥c views chá»‰ giá»¯ `.gitkeep` nhÆ° thiáº¿t káº¿ (FIX-002). File nÃ y vÃ´ háº¡i khi cháº¡y (Laravel tá»± biÃªn dá»‹ch láº¡i) â€” Ä‘Ã¢y thuáº§n tuÃ½ lÃ  vá»‡ sinh repo theo Ä‘á» xuáº¥t cá»§a Muse, Ä‘Æ°á»£c Nguyen duyá»‡t sau merge.
-- Acceptance Criteria: File khÃ´ng cÃ²n trÃªn main sau khi PR nÃ y merge; `storage/framework/views/` chá»‰ cÃ²n `.gitkeep`.
-- Progress: 2026-11-21 â€” Muse Ä‘Ã£ xoÃ¡ trÃªn branch `fix/FIX-007-cleanup-compiled-view`; chá» Nguyen merge.
-- Blockers: KhÃ´ng cÃ³.
-
-## QA-003 â€” Bá»™ test CRM/Lead theo CRM_CONTRACT + cháº¡y tháº­t trÃªn BE-005
-- Status: DONE
-- Assignee: OpenCode Â· Reviewer: Muse
-- MÃ´ táº£: Viáº¿t test case cho module CRM/Lead tá»« Acceptance Criteria cá»§a `docs/CRM_CONTRACT.md` (CRUD + filter, ma tráº­n quyá»n `leads.*`, chuyá»ƒn Ä‘á»•i Lead â†’ Client gá»“m guard 409/422, notes, activities + due list, pipeline summary, contacts dÃ¹ng chung, cÃ´ láº­p tenant) táº¡i `tests/e2e/crm-lead.spec.ts`, rá»“i cháº¡y tháº­t sau khi BE-005 merge.
-- Káº¿t quáº£: Migrations BE-005 trÃªn MySQL 8 (Docker) Ä‘áº¡t; LeadModuleTest 16/16 PASS; Playwright 10 passed / 8 skipped â€” cÃ¡c skip do thiáº¿u dá»¯ liá»‡u seed (user Ä‘a vai trÃ², agency thá»© hai, lead Ä‘Ã£ convert sáºµn), ghi nháº­n thÃ nh backlog má»Ÿ rá»™ng seed, khÃ´ng pháº£i lá»—i. KÃ¨m verdict review bÃ¹ BE-005: PASS â†’ BE-005 chuyá»ƒn DONE.
-- Progress: PR #30 Ä‘Ã£ merge (2026-11-21); Muse review chÃ©o Äáº T; Ä‘Ã³ng DONE trong release 0.3.0 theo ngoáº¡i lá»‡ F.2 (Muse bá»• sung má»¥c nÃ y vÃ¬ OpenCode chÆ°a tá»«ng táº¡o má»¥c QA-003 trong TASK.md).
-
-## FE-006 â€” Sá»­a lá»—i double `/v1` trong getBackendApiUrl() (tá»« review bÃ¹ FIX-004)
-- Status: DONE
-- Assignee: OpenCode Â· Reviewer: Muse
-- MÃ´ táº£: Fallback `NEXT_PUBLIC_API_URL` (Ä‘ang chá»©a `/v1`) bá»‹ ná»‘i thÃªm `/v1` khi gá»i API khiáº¿n dev FE ngoÃ i Docker sai path. Chuáº©n hoÃ¡ báº±ng `normalizeBackendBaseUrl()` (bá» slash cuá»‘i + bá» Ä‘Ãºng má»™t Ä‘oáº¡n `/v1` cuá»‘i), giá»¯ thá»© tá»± Æ°u tiÃªn INTERNAL_API_URL > NEXT_PUBLIC_API_URL > localhost; kÃ¨m 3 test há»“i quy.
-- Progress: PR #31 Ä‘Ã£ merge (2026-11-21); suite web 27/27 PASS, typecheck PASS; Muse review chÃ©o Äáº T; Ä‘Ã³ng DONE trong release 0.3.0 theo ngoáº¡i lá»‡ F.2 (Muse bá»• sung má»¥c nÃ y vÃ¬ OpenCode chÆ°a tá»«ng táº¡o má»¥c FE-006 trong TASK.md).
-
-## BE-006 â€” Module Project Management (NhÃ³m 3) theo há»£p Ä‘á»“ng PROJECT_CONTRACT
-- Assignee: Muse Â· Level: L3 Â· Status: DONE
-- Branch: be/BE-006-project-management Â· PR: (PR triá»ƒn khai BE-006)
-- Blocked by: â€”
-- Acceptance Criteria: Äá»§ endpoints vÃ  quy táº¯c trong docs/PROJECT_CONTRACT.md: projects CRUD + lá»c, project members, milestones, tasks CRUD + lá»c + due list, task comments, checklist items, progress % tÃ­nh lÃºc Ä‘á»c, timeline dáº¡ng list, endpoint Portal chá»‰-Ä‘á»c, ma tráº­n quyá»n projects.*/tasks.* theo DEC-016, cÃ¡ch ly tenant. Test: bá»™ test Feature cho module Project Ä‘áº¡t, Pint PASS, OpenAPI cáº­p nháº­t.
-- Progress: Há»£p Ä‘á»“ng Ä‘Ã£ Ä‘Æ°á»£c Nguyen duyá»‡t theo Ä‘á» xuáº¥t ngÃ y 2026-11-22 vÃ  cÃ´ng bá»‘ trong PR #35 (DEC-016, Ä‘Ã£ merge). Muse Ä‘Ã£ triá»ƒn khai xong trong PR nÃ y: 6 migration (projects, project_members, milestones, tasks, task_comments, task_checklist_items), projects/milestones/tasks CRUD + bá»™ lá»c, members, timeline dáº¡ng list, progress % tÃ­nh lÃºc Ä‘á»c, task comments + checklist, endpoint Portal chá»‰-Ä‘á»c, ma tráº­n quyá»n projects.*/tasks.* theo DEC-016 kÃ¨m scope Team Member (chá»‰ tháº¥y project tham gia, chá»‰ sá»­a task Ä‘Æ°á»£c gÃ¡n); bá»™ test toÃ n cá»¥c 72 passed, Pint PASS, OpenAPI 48 paths.
-- Handoff: OpenCode review theo ma tráº­n G.3 sau khi Muse má»Ÿ PR triá»ƒn khai. Task FE/QA cho NhÃ³m 3: â¸ chá» BE-006 merge.
-
----
-- ÄÃ³ng task: DONE 2026-11-22 â€” QA-004 cháº¡y tháº­t PASS: `tests/e2e/project.spec.ts` (29 ca) trÃªn Docker/MySQL 8 + seed demo. Minimal seed: 17 PASS / 12 SKIP (thiáº¿u dá»¯ liá»‡u seed Ä‘a vai trÃ²/agency thá»© hai â€” ghi nháº­n backlog seed, khÃ´ng pháº£i lá»—i sáº£n pháº©m). Báº­t seed QA Ä‘áº§y Ä‘á»§ 7 vai: 29 PASS / 0 SKIP trong cÃ¡c lÃ´ an toÃ n rate-limit. Verdict review bÃ¹ BE-006: PASS â†’ BE-006 chuyá»ƒn DONE theo tháº©m quyá»n QA.
-
+## FE-005 — Áp dụng hướng thiết kế DEC-013 vào khung ứng dụng nội bộ
 - Assignee: OpenCode · Level: L3 · Status: DONE
-- Branch: fe/FE-008-project-management Â· PR: (má»Ÿ PR vÃ o main)
-- Blocked by: BE-006 (Ä‘Ã£ merge)
-- Acceptance Criteria: Báº­t má»¥c Projects trÃªn sidebar; mÃ n hÃ¬nh danh sÃ¡ch Projects vá»›i bá»™ lá»c client/tráº¡ng thÃ¡i/ngÆ°á»i phá»¥ trÃ¡ch/tÃ¬m kiáº¿m, hiá»ƒn thá»‹ client, tráº¡ng thÃ¡i, % tiáº¿n Ä‘á»™ kÃ¨m sá»‘ task done/tá»•ng; empty state; mÃ n hÃ¬nh chi tiáº¿t Project vá»›i tá»•ng quan, thanh tiáº¿n Ä‘á»™, Milestones kÃ¨m %, Members thÃªm/gá»¡, Tasks lá»c theo tráº¡ng thÃ¡i/Æ°u tiÃªn/ngÆ°á»i gÃ¡n/milestone; chi tiáº¿t Task vá»›i mÃ´ táº£/tráº¡ng thÃ¡i/Æ°u tiÃªn/háº¡n/ngÆ°á»i gÃ¡n, checklist thÃªm/tick/xÃ³a, comments thÃªm/xÃ³a theo quyá»n; BFF route proxy tá»›i /projects,/tasks; i18n namespace Projects EN/VI; quyá»n hiá»ƒn thá»‹ theo DEC-016.
-- Progress: OpenCode hoÃ n thÃ nh 2026-11-22: báº­t nav Projects, trang danh sÃ¡ch + chi tiáº¿t dá»± Ã¡n + chi tiáº¿t cÃ´ng viá»‡c, BFF proxy routes, i18n Projects (U+FFFD vi.json = 0). Tá»± kiá»ƒm: pnpm typecheck PASS, pnpm build PASS (en/vi), pnpm test PASS (27). Responsive rÃ  soÃ¡t class cho 3 bá» rá»™ng (mobile 390, tablet 768, desktop 1280): sidebar drawer, grid sm:2 lg:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vÃ¹ng ná»™i dung + empty state.
-- Handoff: Chá» Muse review chÃ©o (DEC-011); khÃ´ng tá»± merge.
+- Branch: — · PR: —
+- Blocked by: PR #19 merge (DEC-013 chính thức có hiệu lực trên main)
+- Acceptance Criteria: Khung ứng dụng nội bộ theo mẫu A — Classic Sidebar (DEC-013) với design tokens thống nhất trên shadcn/ui + Tailwind; tuân thủ toàn bộ docs/UI_GUIDELINES.md (responsive nhiều bề rộng, không scroll ngang cho bảng dữ liệu lớn, tương phản chữ, chip/badge một dòng, min-height và empty state giữ khung). Tự kiểm ở ít nhất 3 bề rộng màn hình và báo cáo rõ; Nguyen nghiệm thu UI bằng mắt. Mẫu D (Pipeline) cho CRM và hơi hướng C cho Portal áp dụng ở các task màn hình tương ứng sau này, không thuộc task này.
+- Progress: Implemented internal app shell (route group (app)/dashboard) with Classic Sidebar, design tokens in globals.css (shadcn-style CSS variables + Tailwind v4 theme), responsive AppShell (desktop sidebar + mobile drawer), Topbar, role chips (single line), stat cards with min-height, empty state. Self-check: tsc --noEmit PASS; pnpm build PASS (en/vi dashboard routes); vitest 24/24 PASS. Responsive classes reviewed for 3 representative widths (mobile 390px drawer, tablet 768px, desktop 1280px) - sidebar collapses to hamburger below md, content grid adapts sm:grid-cols-2 lg:grid-cols-4, no horizontal overflow at shell level. Browser screenshot not available in this environment; verified via build + class review.
+- Handoff: OpenCode (vai Frontend, DEC-011); Muse review chéo theo ma trận (OpenCode không tự review code FE của mình).
 
 ---
 
-## QA-004 â€” Bá»™ test Project Management theo PROJECT_CONTRACT + cháº¡y tháº­t trÃªn BE-006
+## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
+- Assignee: Muse · Level: L3 · Status: DONE
+- Branch: be/BE-005-crm-lead · PR: —
+- Blocked by: PR #19 merge (hợp đồng CRM_CONTRACT + DEC-014 chính thức trên main)
+- Acceptance Criteria: Đủ endpoints và quy tắc trong docs/CRM_CONTRACT.md: leads CRUD + lọc, pipeline-summary, convert Lead → Client (tạo Client + Organization + Contact, nối lại contacts, khoá sửa lead, 409 khi convert lại, 422 chống trùng kèm force), lead notes, lead activities + due list, contacts dùng chung (lead_id), ma trận quyền leads.* theo DEC-014, cách ly tenant. Test: bộ test Feature cho module Lead đạt, Pint PASS, OpenAPI cập nhật.
+- Progress: Hợp đồng đã được Nguyen duyệt và công bố trong PR #19 (DEC-014). Muse đã triển khai xong trong PR này: 5 migration, leads CRUD + pipeline-summary + convert, notes, activities + due list, contacts dùng chung; bộ test toàn cục 52 passed, Pint PASS, OpenAPI 32 paths.
+- Handoff: OpenCode review theo ma trận G.3.
+
+## FIX-005 — Response tạo mới không phản ánh giá trị mặc định của DB (status/author/is_active trống)
+- Assignee: Muse · Level: L1 · Status: IN_REVIEW
+- Branch: fix/FIX-005-response-defaults · PR: —
+- Blocked by: —
+- Acceptance Criteria: Các response POST (tạo client, client note, portal account — và rà soát toàn bộ module BE-003/BE-004) trả về đúng giá trị thực trong DB (status=active, author, locale, is_active) bằng cách nạp lại model/quan hệ trước khi trả resource. Phát hiện khi Nguyen nghiệm thu Mốc 1 Luồng C: dữ liệu DB đúng, chỉ response hiển thị trống. Kèm test hồi quy cho ít nhất endpoint tạo client.
+- Progress: Muse hoàn thành: refresh model sau khi tạo ở ClientController, ClientPortalAccountController, ClientContactController, ClientNoteController; test hồi quy CreateResponseDefaultsTest (4 test) — trước fix fail 3/4, sau fix đạt cả bộ 52 test.
+- Handoff: OpenCode review theo ma trận G.3.
+## FIX-004 — Web container thiếu INTERNAL_API_URL — mọi login qua BFF đều "fetch failed" / 500
+- Assignee: Muse · Level: L2 · Status: IN_REVIEW
+- Branch: fix/FIX-004-web-internal-api-url · PR: #21
+- Blocked by: —
+- Acceptance Criteria: Trong Docker, đăng nhập nội bộ (đúng và sai mật khẩu) trả đúng kết quả của API (200 / 401 kèm mã lỗi) thay vì 500 "fetch failed": thêm `INTERNAL_API_URL: http://api:8000/api` vào environment của service web trong docker-compose.yml. Nguyên nhân: `getBackendApiUrl()` (FE-004) ưu tiên INTERNAL_API_URL nhưng compose chưa hề set biến này, nên BFF rơi về NEXT_PUBLIC_API_URL/localhost — bên trong container web, localhost là chính container web, kết nối bị từ chối trước khi API kịp kiểm tra mật khẩu. Phát hiện khi Nguyen nghiệm thu Mốc 1 (A1/A2 đều 500 kể cả mật khẩu đúng). Ghi chú review: nhận xét của OpenCode ở PR #14 cho rằng INTERNAL_API_URL "đã set" là chưa chính xác — biến này không tồn tại ở cả compose lẫn code ngoài hàm đọc.
+- Progress: Muse sửa trong PR này. PR được merge theo NGOẠI LỆ L5 do Nguyen duyệt ngày 2026-11-21 (để gỡ chặn nghiệm thu Mốc 1; OpenCode review bù sau merge).
+- Handoff: OpenCode review bù theo ma trận G.3.
+
+---
+
+## FIX-006 — Compose hardening: ổ đĩa mặc định local + web chờ api khoẻ (từ review bù FIX-003/FIX-004)
 - Status: DONE
-- Assignee: OpenCode Â· Reviewer: Muse
-- MÃ´ táº£: Viáº¿t test case cho module Project Management tá»« Acceptance Criteria cá»§a `docs/PROJECT_CONTRACT.md` (CRUD project/milestone/task + bá»™ lá»c, ma tráº­n quyá»n 7 vai, cÃ´ láº­p tenant 404/422, progress %, timeline ordering, soft delete cascade, completed_at, endpoint Portal chá»‰-Ä‘á»c, token app/portal khÃ´ng dÃ¹ng chÃ©o) táº¡i `tests/e2e/project.spec.ts`, rá»“i cháº¡y tháº­t sau khi BE-006 merge; bá»• sung `tests/e2e/project-ui.spec.ts` cho UI FE-008.
-- Káº¿t quáº£: Migrations BE-006 trÃªn MySQL 8 (Docker) Ä‘áº¡t; Playwright API 29 ca â€” minimal demo seed 17 PASS / 12 SKIP (thiáº¿u dá»¯ liá»‡u seed Ä‘a vai trÃ²/agency thá»© hai, ghi nháº­n backlog seed, khÃ´ng pháº£i lá»—i); seed QA Ä‘áº§y Ä‘á»§ 29 PASS / 0 SKIP trong cÃ¡c lÃ´ an toÃ n rate-limit. UI FE-008: `tests/e2e/project-ui.spec.ts` 5/5 PASS trÃªn stack Docker (owner@demo.test). KÃ¨m verdict review bÃ¹ BE-006: PASS â†’ BE-006 chuyá»ƒn DONE.
-- Progress: PR má»Ÿ vÃ o main chá» Muse review; CHANGELOG [Unreleased] QA & Fixes cáº­p nháº­t.
+- Assignee: Muse · Reviewer: OpenCode
+- Mô tả: Hai finding hạ tầng từ đợt review bù của OpenCode: (1) compose mặc định để `FILESYSTEM_DISK: s3` + env AWS trỏ MinIO trong khi MinIO không chạy ở stack mặc định (FIX-003) — bất kỳ luồng ghi file nào trong tương lai sẽ lỗi khó hiểu; đổi mặc định sang `local`, S3 quay lại cùng quyết định storage ở Nhóm 7. (2) `web depends_on: api` chưa có điều kiện sẵn sàng (FIX-004) — thêm healthcheck cho api (đánh `/api/v1/health` bằng php) và để web chờ `condition: service_healthy`.
+- Acceptance Criteria: `docker compose up -d --build` chạy như cũ trên máy Nguyen; web chỉ start sau khi api trả health 200; không đổi hành vi nào khác.
+- Progress: 2026-11-21 — Muse triển khai (docker-compose.yml) sau khi Nguyen merge xong 4 PR #24–#27; chờ OpenCode review.
+- Blockers: Không có.
+
+## FIX-007 — Dọn file rác Blade compiled view lọt vào main qua PR #29
+- Status: DONE
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: File sinh tự động `apps/api/storage/framework/views/275c7c02e2528e6029079c885e2d2418.php` (Blade view đã biên dịch) bị môi trường của OpenCode commit nhầm vào branch FE-005 và đã vào main khi PR #29 merge. Xoá khỏi repo; thư mục views chỉ giữ `.gitkeep` như thiết kế (FIX-002). File này vô hại khi chạy (Laravel tự biên dịch lại) — đây thuần tuý là vệ sinh repo theo đề xuất của Muse, được Nguyen duyệt sau merge.
+- Acceptance Criteria: File không còn trên main sau khi PR này merge; `storage/framework/views/` chỉ còn `.gitkeep`.
+- Progress: 2026-11-21 — Muse đã xoá trên branch `fix/FIX-007-cleanup-compiled-view`; chờ Nguyen merge.
+- Blockers: Không có.
+
+## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
+- Status: DONE
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Viết test case cho module CRM/Lead từ Acceptance Criteria của `docs/CRM_CONTRACT.md` (CRUD + filter, ma trận quyền `leads.*`, chuyển đổi Lead → Client gồm guard 409/422, notes, activities + due list, pipeline summary, contacts dùng chung, cô lập tenant) tại `tests/e2e/crm-lead.spec.ts`, rồi chạy thật sau khi BE-005 merge.
+- Kết quả: Migrations BE-005 trên MySQL 8 (Docker) đạt; LeadModuleTest 16/16 PASS; Playwright 10 passed / 8 skipped — các skip do thiếu dữ liệu seed (user đa vai trò, agency thứ hai, lead đã convert sẵn), ghi nhận thành backlog mở rộng seed, không phải lỗi. Kèm verdict review bù BE-005: PASS → BE-005 chuyển DONE.
+- Progress: PR #30 đã merge (2026-11-21); Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục QA-003 trong TASK.md).
+
+## FE-006 — Sửa lỗi double `/v1` trong getBackendApiUrl() (từ review bù FIX-004)
+- Status: DONE
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Fallback `NEXT_PUBLIC_API_URL` (đang chứa `/v1`) bị nối thêm `/v1` khi gọi API khiến dev FE ngoài Docker sai path. Chuẩn hoá bằng `normalizeBackendBaseUrl()` (bỏ slash cuối + bỏ đúng một đoạn `/v1` cuối), giữ thứ tự ưu tiên INTERNAL_API_URL > NEXT_PUBLIC_API_URL > localhost; kèm 3 test hồi quy.
+- Progress: PR #31 đã merge (2026-11-21); suite web 27/27 PASS, typecheck PASS; Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục FE-006 trong TASK.md).
+
+## BE-006 — Module Project Management (Nhóm 3) theo hợp đồng PROJECT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: DONE
+- Branch: be/BE-006-project-management · PR: (PR triển khai BE-006)
+- Blocked by: —
+- Acceptance Criteria: Đủ endpoints và quy tắc trong docs/PROJECT_CONTRACT.md: projects CRUD + lọc, project members, milestones, tasks CRUD + lọc + due list, task comments, checklist items, progress % tính lúc đọc, timeline dạng list, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016, cách ly tenant. Test: bộ test Feature cho module Project đạt, Pint PASS, OpenAPI cập nhật.
+- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR #35 (DEC-016, đã merge). Muse đã triển khai xong trong PR này: 6 migration (projects, project_members, milestones, tasks, task_comments, task_checklist_items), projects/milestones/tasks CRUD + bộ lọc, members, timeline dạng list, progress % tính lúc đọc, task comments + checklist, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016 kèm scope Team Member (chỉ thấy project tham gia, chỉ sửa task được gán); bộ test toàn cục 72 passed, Pint PASS, OpenAPI 48 paths.
+- Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 3: ⏸ chờ BE-006 merge.
+
+---
+- Đóng task: DONE 2026-11-22 — QA-004 chạy thật PASS: `tests/e2e/project.spec.ts` (29 ca) trên Docker/MySQL 8 + seed demo. Minimal seed: 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai — ghi nhận backlog seed, không phải lỗi sản phẩm). Bật seed QA đầy đủ 7 vai: 29 PASS / 0 SKIP trong các lô an toàn rate-limit. Verdict review bù BE-006: PASS → BE-006 chuyển DONE theo thẩm quyền QA.
+
+## FE-008 — Màn hình Project Management (Nhóm 3) theo PROJECT_CONTRACT
+- Assignee: OpenCode · Level: L3 · Status: DONE
+- Branch: fe/FE-008-project-management · PR: (mở PR vào main)
+- Blocked by: BE-006 (đã merge)
+- Acceptance Criteria: Bật mục Projects trên sidebar; màn hình danh sách Projects với bộ lọc client/trạng thái/người phụ trách/tìm kiếm, hiển thị client, trạng thái, % tiến độ kèm số task done/tổng; empty state; màn hình chi tiết Project với tổng quan, thanh tiến độ, Milestones kèm %, Members thêm/gỡ, Tasks lọc theo trạng thái/ưu tiên/người gán/milestone; chi tiết Task với mô tả/trạng thái/ưu tiên/hạn/người gán, checklist thêm/tick/xóa, comments thêm/xóa theo quyền; BFF route proxy tới /projects,/tasks; i18n namespace Projects EN/VI; quyền hiển thị theo DEC-016.
+- Progress: OpenCode hoàn thành 2026-11-22: bật nav Projects, trang danh sách + chi tiết dự án + chi tiết công việc, BFF proxy routes, i18n Projects (U+FFFD vi.json = 0). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en/vi), pnpm test PASS (27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): sidebar drawer, grid sm:2 lg:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
+
+---
+
+## QA-004 — Bộ test Project Management theo PROJECT_CONTRACT + chạy thật trên BE-006
+- Status: DONE
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Viết test case cho module Project Management từ Acceptance Criteria của `docs/PROJECT_CONTRACT.md` (CRUD project/milestone/task + bộ lọc, ma trận quyền 7 vai, cô lập tenant 404/422, progress %, timeline ordering, soft delete cascade, completed_at, endpoint Portal chỉ-đọc, token app/portal không dùng chéo) tại `tests/e2e/project.spec.ts`, rồi chạy thật sau khi BE-006 merge; bổ sung `tests/e2e/project-ui.spec.ts` cho UI FE-008.
+- Kết quả: Migrations BE-006 trên MySQL 8 (Docker) đạt; Playwright API 29 ca — minimal demo seed 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai, ghi nhận backlog seed, không phải lỗi); seed QA đầy đủ 29 PASS / 0 SKIP trong các lô an toàn rate-limit. UI FE-008: `tests/e2e/project-ui.spec.ts` 5/5 PASS trên stack Docker (owner@demo.test). Kèm verdict review bù BE-006: PASS → BE-006 chuyển DONE.
+- Progress: PR mở vào main chờ Muse review; CHANGELOG [Unreleased] QA & Fixes cập nhật.
 
 ---
 
 ## Inbox
-*Má»i agent Ä‘Æ°á»£c thÃªm má»¥c má»›i á»Ÿ Ä‘Ã¢y, khÃ´ng sá»­a má»¥c cá»§a ngÆ°á»i khÃ¡c. (Hiá»‡n chÆ°a cÃ³ má»¥c nÃ o.)*
+*Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
-- [QA-001 Â· 2026-11-20] `docs/CONVENTIONS.md:252` â€” dÃ²ng cuá»‘i "chá»‘t stack backend + scope MVP â€” váº«n Ä‘ang chá», chÆ°a báº¯t Ä‘áº§u code" Ä‘Ã£ lá»—i thá»i sau DEC-001/DEC-004 vÃ  cÃ¡c PR #1â€“#4. Äá» xuáº¥t Nguyen/Muse sá»­a hoáº·c xoÃ¡ dÃ²ng nÃ y qua PR `docs/` theo DEC-002; QA khÃ´ng tá»± sá»­a quy Æ°á»›c.
-- [QA-001 Â· 2026-11-20] `docs/AUTH_CONTRACT.md:37-43,81-85` â€” DEC-008.3 chá»‘t "Portal cÃ³ quÃªn máº­t kháº©u, dÃ¹ng chung cÆ¡ cháº¿ email" nhÆ°ng báº£ng endpoint Portal thiáº¿u `POST /portal/auth/forgot-password` vÃ  `POST /portal/auth/reset-password`. Äá» xuáº¥t Muse + Nguyen chá»‘t method/path/request/response + mÃ£ lá»—i trÆ°á»›c khi QA cháº¡y test tháº­t QA-002.
-- [QA-002 Â· 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoáº·c Ä‘á»•i máº­t kháº©u, token bá»‹ xoÃ¡ khiáº¿n `GET /api/v1/auth/me` tráº£ **500** (`Route [login] not defined`) thay vÃ¬ 401 `UNAUTHENTICATED`. Cáº§n cáº¥u hÃ¬nh `redirectTo` tráº£ null cho API hoáº·c xá»­ lÃ½ unauthenticated JSON trong Authenticate middleware. áº¢nh hÆ°á»Ÿng TC-AUTH-14, 15 (FAIL).
-- [QA-002 Â· 2026-11-20] `apps/api` setup: thiáº¿u `storage/framework/views` trÃªn checkout sáº¡ch khiáº¿n forgot-password/reset-password (gá»­i mail markdown) tráº£ 500 "Please provide a valid cache path"; cáº§n táº¡o thÆ° má»¥c hoáº·c cháº¡y `php artisan view:cache` trong entrypoint Docker.
-- [QA-002 Â· 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract ná»™i bá»™ ghi reset password dÃ¹ng `new_password`, nhÆ°ng implementation/tests dÃ¹ng `password` (Portal cÅ©ng dÃ¹ng `password`). Cáº§n Muse + Nguyen thá»‘ng nháº¥t tÃªn field.
+- [QA-001 · 2026-11-20] `docs/CONVENTIONS.md:252` — dòng cuối "chốt stack backend + scope MVP — vẫn đang chờ, chưa bắt đầu code" đã lỗi thời sau DEC-001/DEC-004 và các PR #1–#4. Đề xuất Nguyen/Muse sửa hoặc xoá dòng này qua PR `docs/` theo DEC-002; QA không tự sửa quy ước.
+- [QA-001 · 2026-11-20] `docs/AUTH_CONTRACT.md:37-43,81-85` — DEC-008.3 chốt "Portal có quên mật khẩu, dùng chung cơ chế email" nhưng bảng endpoint Portal thiếu `POST /portal/auth/forgot-password` và `POST /portal/auth/reset-password`. Đề xuất Muse + Nguyen chốt method/path/request/response + mã lỗi trước khi QA chạy test thật QA-002.
+- [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
+- [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
+- [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
