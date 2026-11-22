@@ -6,6 +6,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Backend
+- Team & Resource Management contract published (BE-007): `docs/TEAM_CONTRACT.md` approved by the Product Owner (DEC-017) — teams and membership, employee directory, role assignment, account activation/deactivation, email invitations, snapshot team-to-project assignment, workload-lite. Implementation follows in BE-007.
+
 ## [0.4.0] - 2026-11-22
 
 ### Backend
