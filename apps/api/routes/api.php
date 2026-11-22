@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ClientNoteController;
 use App\Http\Controllers\Api\ClientPortalAccountController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\LeadActivityController;
 use App\Http\Controllers\Api\LeadContactController;
 use App\Http\Controllers\Api\LeadController;
@@ -15,10 +16,15 @@ use App\Http\Controllers\Api\PortalAuthController;
 use App\Http\Controllers\Api\PortalProjectController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
+use App\Http\Controllers\Api\ProjectTeamController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TaskChecklistController;
 use App\Http\Controllers\Api\TaskCommentController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TeamMemberController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WorkloadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/v1/health', HealthController::class);
@@ -47,6 +53,10 @@ Route::prefix('v1/portal/auth')->group(function () {
         Route::get('/me', [PortalAuthController::class, 'me']);
     });
 });
+
+// Invitation acceptance is public: the emailed token is the credential
+// (docs/TEAM_CONTRACT.md section 4).
+Route::post('/v1/invitations/accept', [InvitationController::class, 'accept'])->middleware('throttle:10,1');
 
 // Client module (docs/CLIENT_CONTRACT.md) — internal app only, RBAC
 // permissions enforced per route; tenancy via the BelongsToAgency scope.
@@ -139,6 +149,30 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
     Route::post('/tasks/{task}/checklist', [TaskChecklistController::class, 'store'])->middleware('permission:tasks.update');
     Route::patch('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'update'])->middleware('permission:tasks.update');
     Route::delete('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'destroy'])->middleware('permission:tasks.update');
+    // Team & Resource module (docs/TEAM_CONTRACT.md, DEC-017).
+    Route::get('/teams', [TeamController::class, 'index'])->middleware('permission:teams.view');
+    Route::post('/teams', [TeamController::class, 'store'])->middleware('permission:teams.create');
+    Route::get('/teams/{team}', [TeamController::class, 'show'])->middleware('permission:teams.view');
+    Route::patch('/teams/{team}', [TeamController::class, 'update'])->middleware('permission:teams.update');
+    Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->middleware('permission:teams.delete');
+    Route::post('/teams/{team}/members', [TeamMemberController::class, 'store'])->middleware('permission:teams.members.manage');
+    Route::delete('/teams/{team}/members/{userId}', [TeamMemberController::class, 'destroy'])->middleware('permission:teams.members.manage');
+
+    Route::get('/users', [UserController::class, 'index'])->middleware('permission:users.view');
+    Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:users.view');
+    Route::patch('/users/{user}', [UserController::class, 'update'])->middleware('permission:users.update');
+    Route::put('/users/{user}/roles', [UserController::class, 'updateRoles'])->middleware('permission:users.roles.manage');
+    Route::patch('/users/{user}/activation', [UserController::class, 'activation'])->middleware('permission:users.activation');
+
+    Route::get('/invitations', [InvitationController::class, 'index'])->middleware('permission:invitations.manage');
+    Route::post('/invitations', [InvitationController::class, 'store'])->middleware('permission:invitations.manage');
+    Route::post('/invitations/{invitation}/resend', [InvitationController::class, 'resend'])->middleware('permission:invitations.manage');
+    Route::delete('/invitations/{invitation}', [InvitationController::class, 'destroy'])->middleware('permission:invitations.manage');
+
+    Route::post('/projects/{project}/teams', [ProjectTeamController::class, 'store'])->middleware('permission:projects.update');
+    Route::delete('/projects/{project}/teams/{team}', [ProjectTeamController::class, 'destroy'])->middleware('permission:projects.update');
+
+    Route::get('/workload', [WorkloadController::class, 'index'])->middleware('permission:workload.view');
 });
 
 // Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —
@@ -146,4 +180,5 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
 Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal'])->group(function () {
     Route::get('/projects', [PortalProjectController::class, 'index']);
     Route::get('/projects/{projectId}', [PortalProjectController::class, 'show']);
+
 });

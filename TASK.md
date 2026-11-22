@@ -273,12 +273,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
 
 ## BE-007 — Module Team & Resource Management (Nhóm 4) theo hợp đồng TEAM_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
 - Branch: be/BE-007-team-resource · PR: (PR triển khai BE-007)
 - Blocked by: —
 - Acceptance Criteria: Đủ endpoints và quy tắc trong docs/TEAM_CONTRACT.md: teams CRUD + thành viên, danh bạ nhân viên (users) + hồ sơ, gán/đổi vai, khoá/mở tài khoản (thu hồi token), invitations (mời/accept/resend/thu hồi, token hash, hạn 7 ngày), gán project theo team kiểu snapshot (via_team_id), GET /workload-lite, ma trận quyền teams.*/users.*/invitations.* theo DEC-017 kèm giới hạn Admin, cách ly tenant. Test: bộ test Feature cho module Team đạt, Pint PASS, OpenAPI cập nhật.
-- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR docs này (DEC-017).
-- Handoff: Muse triển khai sau khi PR docs này merge. Task FE/QA cho Nhóm 4: ⏸ chờ BE-007 merge.
+- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR #40 (DEC-017, đã merge). Muse đã triển khai xong trong PR này: 4 migration (teams + team_user, invitations, users.job_title/phone, project_members.via_team_id), teams CRUD + thành viên, danh bạ nhân viên + quản trị tài khoản (đổi vai, khoá/mở kèm thu hồi token, giới hạn Admin theo DEC-017), invitations (token hash, hạn 7 ngày, accept công khai, resend/thu hồi), gán project theo team kiểu snapshot, GET /workload-lite; bộ test toàn cục 86 passed, Pint PASS, OpenAPI 63 paths.
+- Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 4: ⏸ chờ BE-007 merge.
 
 ---
 

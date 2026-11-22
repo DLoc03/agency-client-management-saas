@@ -64,7 +64,7 @@ class Project extends Model
 
     public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'project_members')->withTimestamps();
+        return $this->belongsToMany(User::class, 'project_members')->withPivot('via_team_id')->withTimestamps();
     }
 
     public function milestones(): HasMany
