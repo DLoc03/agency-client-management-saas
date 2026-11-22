@@ -6,6 +6,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Backend
+- Project Management contract published (BE-006): `docs/PROJECT_CONTRACT.md` approved by the Product Owner (DEC-016) — projects with members and milestones, tasks with assignees, priorities, due dates, comments and checklist items, read-time progress %, list timeline, and read-only Portal project endpoints. Implementation follows in BE-006.
+
 ## [0.3.0] - 2026-11-21
 
 ### Backend
