@@ -44,6 +44,11 @@ class Client extends Model
         return $this->hasMany(Contact::class);
     }
 
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
     public function notes(): HasMany
     {
         return $this->hasMany(ClientNote::class);

@@ -58,6 +58,24 @@ class User extends Authenticatable
         return $this->roles->contains('key', $key);
     }
 
+    /** @param  string[]  $keys */
+    public function hasAnyRole(array $keys): bool
+    {
+        return collect($keys)->contains(fn (string $key) => $this->hasRole($key));
+    }
+
+    /** Projects this user is a member of (docs/PROJECT_CONTRACT.md). */
+    public function memberProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_members')->withTimestamps();
+    }
+
+    /** Tasks assigned to this user. */
+    public function assignedTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'assignee_id');
+    }
+
     public function isOwner(): bool
     {
         return $this->hasRole(Role::OWNER);

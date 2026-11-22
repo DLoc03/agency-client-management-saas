@@ -33,6 +33,17 @@ return [
         'leads.convert',
         'leads.notes.manage',
         'leads.activities.manage',
+        // Project module (docs/PROJECT_CONTRACT.md, DEC-016).
+        'projects.view',
+        'projects.create',
+        'projects.update',
+        'projects.delete',
+        'projects.members.manage',
+        'milestones.manage',
+        'tasks.create',
+        'tasks.update',
+        'tasks.delete',
+        'tasks.comments.manage',
     ],
 
     'roles' => [
@@ -56,6 +67,16 @@ return [
             'leads.convert',
             'leads.notes.manage',
             'leads.activities.manage',
+            // DEC-016: Admin manages projects but may NOT delete them.
+            'projects.view',
+            'projects.create',
+            'projects.update',
+            'projects.members.manage',
+            'milestones.manage',
+            'tasks.create',
+            'tasks.update',
+            'tasks.delete',
+            'tasks.comments.manage',
         ],
         Role::SALES_MANAGER => [
             'workspace.view',
@@ -72,11 +93,33 @@ return [
             'leads.convert',
             'leads.notes.manage',
             'leads.activities.manage',
+            // DEC-016: Sales is view-only on projects (handover visibility).
+            'projects.view',
         ],
-        Role::PROJECT_MANAGER => ['workspace.view', 'clients.view', 'leads.view'],
+        Role::PROJECT_MANAGER => [
+            'workspace.view', 'clients.view', 'leads.view',
+            // DEC-016: PM runs projects end to end except deleting them.
+            'projects.view',
+            'projects.create',
+            'projects.update',
+            'projects.members.manage',
+            'milestones.manage',
+            'tasks.create',
+            'tasks.update',
+            'tasks.delete',
+            'tasks.comments.manage',
+        ],
         // DEC-009.3: Team Members hold no clients.* permission in the MVP.
         // DEC-014: and no leads.* permission either.
-        Role::TEAM_MEMBER => ['workspace.view'],
-        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view'],
+        Role::TEAM_MEMBER => [
+            'workspace.view',
+            // DEC-016: Team Member views only projects they participate
+            // in (scoped in the API layer) and updates only tasks
+            // assigned to them (enforced in the controllers).
+            'projects.view',
+            'tasks.update',
+            'tasks.comments.manage',
+        ],
+        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view', 'projects.view'],
     ],
 ];

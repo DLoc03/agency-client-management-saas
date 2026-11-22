@@ -179,16 +179,6 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
-## FE-007 - Sua loi tieng Viet Shell + chip vai tro + user menu sidebar (NT2-01/02/03)
-- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
-- Branch: fe/FE-007-sidebar-user-menu · PR: (se tao)
-- Blocked by: FE-005 merge
-- Acceptance Criteria: (NT2-01) viet lai toan bo chuoi tieng Viet namespace Shell trong vi.json, khong con U+FFFD; (NT2-02) chip vai tro hien thi nhan da ban dia hoa (anh xa slug -> nhan i18n); (NT2-03) sidebar sticky cao 1 man hinh, menu cuon noi bo, chan sidebar la khoi user (avatar + ten + vai tro da dich) voi popover len tren (Ho so / Cai dat workspace disabled / Dang xuat), bo nut Sign out trung lap trong the chao dashboard, topbar khong them menu user.
-- Progress: Implemented. Rewrote Shell namespace in vi.json (0 U+FFFD). Role chips now use Shell.roles mapping. Sidebar sticky h-screen with internal nav scroll and footer user block + popover; dashboard removed duplicate sign-out button. Self-check: tsc PASS, build PASS (en/vi), vitest 27/27 PASS; responsive classes reviewed for mobile/tablet/desktop; vi.json verified no U+FFFD.
-- Handoff: OpenCode (vai Frontend, DEC-011); Muse review cheo.
-
----
-
 ## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
 - Assignee: Muse · Level: L3 · Status: DONE
 - Branch: be/BE-005-crm-lead · PR: —
@@ -244,11 +234,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: PR #31 đã merge (2026-11-21); suite web 27/27 PASS, typecheck PASS; Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục FE-006 trong TASK.md).
 
 ## BE-006 — Module Project Management (Nhóm 3) theo hợp đồng PROJECT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: TODO
-- Branch: be/BE-006-project-management · PR: —
-- Blocked by: PR docs công bố hợp đồng (docs/PROJECT_CONTRACT.md + DEC-016) merge vào main
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: be/BE-006-project-management · PR: (PR triển khai BE-006)
+- Blocked by: —
 - Acceptance Criteria: Đủ endpoints và quy tắc trong docs/PROJECT_CONTRACT.md: projects CRUD + lọc, project members, milestones, tasks CRUD + lọc + due list, task comments, checklist items, progress % tính lúc đọc, timeline dạng list, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016, cách ly tenant. Test: bộ test Feature cho module Project đạt, Pint PASS, OpenAPI cập nhật.
-- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR docs (DEC-016). Chưa triển khai — Muse bắt đầu sau khi PR docs merge.
+- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR #35 (DEC-016, đã merge). Muse đã triển khai xong trong PR này: 6 migration (projects, project_members, milestones, tasks, task_comments, task_checklist_items), projects/milestones/tasks CRUD + bộ lọc, members, timeline dạng list, progress % tính lúc đọc, task comments + checklist, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016 kèm scope Team Member (chỉ thấy project tham gia, chỉ sửa task được gán); bộ test toàn cục 72 passed, Pint PASS, OpenAPI 48 paths.
 - Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 3: ⏸ chờ BE-006 merge.
 
 ## Inbox
