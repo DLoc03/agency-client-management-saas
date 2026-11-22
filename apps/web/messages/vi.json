@@ -83,7 +83,7 @@
       "signOut": "Đăng xuất"
     }
   },
-"Portal": {
+  "Portal": {
     "brand": "Cổng Khách Hàng",
     "login": {
       "title": "Đăng nhập Cổng Khách Hàng",
@@ -146,6 +146,112 @@
       "emptyNotice": "Chưa có dự án hoặc hoá đơn nào. Các cập nhật mới từ agency sẽ hiển thị tại đây.",
       "signOut": "Đăng xuất khỏi Portal",
       "mockNotice": "⚠️ Chế độ Mock Portal — phiên đăng nhập và token độc lập với ứng dụng nội bộ."
+    }
+  },
+  "Projects": {
+    "title": "Dự án",
+    "subtitle": "Quản lý dự án, cột mốc và công việc.",
+    "newProject": "Dự án mới",
+    "empty": {
+      "title": "Chưa có dự án",
+      "description": "Tạo dự án đầu tiên để bắt đầu."
+    },
+    "filters": {
+      "client": "Khách hàng",
+      "status": "Trạng thái",
+      "manager": "Người phụ trách",
+      "search": "Tìm dự án",
+      "all": "Tất cả"
+    },
+    "statuses": {
+      "draft": "Bản nháp",
+      "in_progress": "Đang thực hiện",
+      "on_hold": "Tạm dừng",
+      "completed": "Hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "taskStatuses": {
+      "todo": "Cần làm",
+      "in_progress": "Đang thực hiện",
+      "in_review": "Đang duyệt",
+      "done": "Hoàn thành"
+    },
+    "priorities": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "urgent": "Khẩn cấp"
+    },
+    "milestoneStatuses": {
+      "planned": "Kế hoạch",
+      "in_progress": "Đang thực hiện",
+      "completed": "Hoàn thành"
+    },
+    "fields": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "client": "Khách hàng",
+      "status": "Trạng thái",
+      "manager": "Người phụ trách",
+      "startDate": "Ngày bắt đầu",
+      "dueDate": "Hạn",
+      "budget": "Ngân sách",
+      "progress": "Tiến độ",
+      "tasks": "Công việc",
+      "members": "Thành viên",
+      "milestones": "Cột mốc",
+      "assignee": "Người được gán",
+      "priority": "Ưu tiên",
+      "title": "Tiêu đề",
+      "milestone": "Cột mốc"
+    },
+    "actions": {
+      "create": "Tạo",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "addMember": "Thêm thành viên",
+      "remove": "Gỡ",
+      "addMilestone": "Thêm cột mốc",
+      "addTask": "Thêm công việc",
+      "addComment": "Thêm bình luận",
+      "addChecklist": "Thêm mục",
+      "back": "Về danh sách dự án"
+    },
+    "detail": {
+      "overview": "Tổng quan",
+      "members": "Thành viên",
+      "milestones": "Cột mốc",
+      "tasks": "Công việc",
+      "timeline": "Dòng thời gian",
+      "noMembers": "Chưa có thành viên.",
+      "noMilestones": "Chưa có cột mốc.",
+      "noTasks": "Chưa có công việc.",
+      "progressWarning": "Vẫn còn công việc chưa hoàn thành."
+    },
+    "task": {
+      "title": "Công việc",
+      "comments": "Bình luận",
+      "checklist": "Danh sách kiểm",
+      "noComments": "Chưa có bình luận.",
+      "noChecklist": "Chưa có mục kiểm.",
+      "fields": {
+        "title": "Tiêu đề",
+        "description": "Mô tả",
+        "status": "Trạng thái",
+        "priority": "Ưu tiên",
+        "assignee": "Người được gán",
+        "dueDate": "Hạn",
+        "milestone": "Cột mốc"
+      }
+    },
+    "errors": {
+      "loadFailed": "Không tải được danh sách dự án.",
+      "createFailed": "Không tạo được dự án.",
+      "updateFailed": "Không cập nhật được dự án.",
+      "deleteFailed": "Không xóa được dự án.",
+      "notFound": "Không tìm thấy dự án."
     }
   }
 }
