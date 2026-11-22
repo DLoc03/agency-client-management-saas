@@ -8,6 +8,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Backend
 - Project Management contract published (BE-006): `docs/PROJECT_CONTRACT.md` approved by the Product Owner (DEC-016) — projects with members and milestones, tasks with assignees, priorities, due dates, comments and checklist items, read-time progress %, list timeline, and read-only Portal project endpoints. Implementation follows in BE-006.
+- Project Management module (BE-006): projects CRUD with filters and soft-delete cascade, project members, milestones, tasks with assignee/priority/due date and automatic `completed_at`, task comments and checklist items, read-time progress %, list timeline, due list, and read-only Portal project endpoints. `projects.*`/`tasks.*` RBAC per DEC-016 with Team Member scoping (participating projects only, own assigned tasks only).
 
 ## [0.3.0] - 2026-11-21
 
@@ -15,7 +16,6 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - CRM / Lead module (BE-005, per docs/CRM_CONTRACT.md + DEC-014): lead CRUD with status pipeline (new/contacted/qualified/unqualified), pipeline summary, lead notes, follow-up activities with a due list, shared contacts (contacts now belong to a lead or a client), and one-action Lead → Client conversion that creates the Client + Organization + Contact, re-links contacts, locks the lead, and guards duplicates. New `leads.*` permissions enforced at the API layer.
 
 ### Frontend
-- FE-007: rewrote all Vietnamese strings in the Shell namespace (fixing mojibake, 0 U+FFFD), localized role chips via slug-to-label mapping, and reworked the sidebar into a sticky full-height layout with an internal scroll area and a footer user block (avatar + name + role) opening an upward popover (Profile / Workspace settings disabled / Sign out); removed the duplicate sign-out button from the dashboard welcome card. Topbar unchanged (no user menu). Self-check: tsc, build (en/vi), vitest all pass.
 - Internal app shell (FE-005): Classic Sidebar layout (DEC-013) for the internal app with unified shadcn-style design tokens (CSS variables + Tailwind v4 theme) in globals.css, responsive AppShell (desktop sidebar + mobile drawer), Topbar, single-line role chips, min-height stat cards and empty state. Dashboard moved under a route group so future modules share the shell. Self-check: tsc, build (en/vi) and vitest all pass.
 - Normalized backend base URL (FE-006): `getBackendApiUrl()` now strips a trailing `/v1` from `NEXT_PUBLIC_API_URL`/`INTERNAL_API_URL`, preventing a double `/v1` segment in local dev; added regression tests.
 

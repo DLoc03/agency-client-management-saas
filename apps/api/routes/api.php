@@ -10,8 +10,15 @@ use App\Http\Controllers\Api\LeadActivityController;
 use App\Http\Controllers\Api\LeadContactController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\LeadNoteController;
+use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\PortalAuthController;
+use App\Http\Controllers\Api\PortalProjectController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\TaskChecklistController;
+use App\Http\Controllers\Api\TaskCommentController;
+use App\Http\Controllers\Api\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/v1/health', HealthController::class);
@@ -94,4 +101,49 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
     Route::post('/leads/{lead}/activities', [LeadActivityController::class, 'store'])->middleware('permission:leads.activities.manage');
     Route::patch('/leads/{lead}/activities/{activityId}', [LeadActivityController::class, 'update'])->middleware('permission:leads.activities.manage');
     Route::delete('/leads/{lead}/activities/{activityId}', [LeadActivityController::class, 'destroy'])->middleware('permission:leads.activities.manage');
+});
+
+// Project module (docs/PROJECT_CONTRACT.md, DEC-016) — same tenancy and
+// permission model. The fixed-path route /tasks/due is registered before
+// /tasks/{task} so it is not swallowed by binding.
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function () {
+    Route::get('/projects', [ProjectController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects', [ProjectController::class, 'store'])->middleware('permission:projects.create');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->middleware('permission:projects.view');
+    Route::patch('/projects/{project}', [ProjectController::class, 'update'])->middleware('permission:projects.update');
+    Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->middleware('permission:projects.delete');
+    Route::get('/projects/{project}/timeline', [ProjectController::class, 'timeline'])->middleware('permission:projects.view');
+
+    Route::get('/projects/{project}/members', [ProjectMemberController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/members', [ProjectMemberController::class, 'store'])->middleware('permission:projects.members.manage');
+    Route::delete('/projects/{project}/members/{userId}', [ProjectMemberController::class, 'destroy'])->middleware('permission:projects.members.manage');
+
+    Route::get('/projects/{project}/milestones', [MilestoneController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/milestones', [MilestoneController::class, 'store'])->middleware('permission:milestones.manage');
+    Route::patch('/projects/{project}/milestones/{milestoneId}', [MilestoneController::class, 'update'])->middleware('permission:milestones.manage');
+    Route::delete('/projects/{project}/milestones/{milestoneId}', [MilestoneController::class, 'destroy'])->middleware('permission:milestones.manage');
+
+    Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/tasks', [TaskController::class, 'store'])->middleware('permission:tasks.create');
+
+    Route::get('/tasks/due', [TaskController::class, 'due'])->middleware('permission:projects.view');
+    Route::get('/tasks/{task}', [TaskController::class, 'show'])->middleware('permission:projects.view');
+    Route::patch('/tasks/{task}', [TaskController::class, 'update'])->middleware('permission:tasks.update');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->middleware('permission:tasks.delete');
+
+    Route::get('/tasks/{task}/comments', [TaskCommentController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/tasks/{task}/comments', [TaskCommentController::class, 'store'])->middleware('permission:tasks.comments.manage');
+    Route::delete('/tasks/{task}/comments/{commentId}', [TaskCommentController::class, 'destroy'])->middleware('permission:tasks.comments.manage');
+
+    Route::get('/tasks/{task}/checklist', [TaskChecklistController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/tasks/{task}/checklist', [TaskChecklistController::class, 'store'])->middleware('permission:tasks.update');
+    Route::patch('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'update'])->middleware('permission:tasks.update');
+    Route::delete('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'destroy'])->middleware('permission:tasks.update');
+});
+
+// Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —
+// read-only, scoped to the signed-in client's own projects.
+Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal'])->group(function () {
+    Route::get('/projects', [PortalProjectController::class, 'index']);
+    Route::get('/projects/{projectId}', [PortalProjectController::class, 'show']);
 });
