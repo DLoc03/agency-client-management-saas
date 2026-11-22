@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { Icon } from "@/components/shell/Icon";
 
 export default function DashboardPage() {
-  const { session, logout, isLoading } = useAuth();
+  const { session, isLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations("Auth.dashboard");
   const s = useTranslations("Shell");
@@ -52,24 +52,14 @@ export default function DashboardPage() {
                 className="inline-flex max-w-full items-center whitespace-nowrap rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
                 title={role}
               >
-                <span className="truncate">{role}</span>
+                <span className="truncate">
+                  {s.has(`roles.${role}`) ? s(`roles.${role}`) : role}
+                </span>
               </span>
             ))}
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <button
-            onClick={async () => {
-              await logout();
-              router.replace("/login");
-            }}
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            <Icon name="log-out" className="h-4 w-4" />
-            {t("signOut")}
-          </button>
-        </div>
       </section>
 
       {/* Stat cards — min-height keeps footer from jumping (UI_GUIDELINES 6) */}

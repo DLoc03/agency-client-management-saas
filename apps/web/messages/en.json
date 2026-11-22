@@ -67,6 +67,20 @@
       "projects": "Projects",
       "tasks": "Tasks",
       "invoices": "Invoices"
+    },
+    "roles": {
+      "agency_owner": "Agency Owner",
+      "admin": "Admin",
+      "sales_manager": "Sales Manager",
+      "project_manager": "Project Manager",
+      "team_member": "Team Member",
+      "accountant": "Accountant",
+      "client": "Client"
+    },
+    "userMenu": {
+      "profile": "Profile",
+      "workspaceSettings": "Workspace settings",
+      "signOut": "Sign out"
     }
   },
   "Portal": {

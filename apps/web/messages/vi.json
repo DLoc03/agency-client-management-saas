@@ -41,35 +41,49 @@
   },
   "Shell": {
     "brand": "Agency SaaS",
-    "brandSubtitle": "Kh��ng gian n��Ti b��T",
-    "sidebarLabel": "�?i��?u h����>ng ch��nh",
-    "openMenu": "M��� menu �'i��?u h����>ng",
-    "topbarTitle": "���ng d���ng n��Ti b��T",
-    "topbarSubtitle": "Khung sidebar c�� �'i���n",
-    "environment": "C��Tc b��T",
-    "signOut": "�?��ng xu���t",
-    "comingSoon": "S���p c��",
-    "soon": "S���p",
+    "brandSubtitle": "Không gian nội bộ",
+    "sidebarLabel": "Điều hướng chính",
+    "openMenu": "Mở menu điều hướng",
+    "topbarTitle": "Ứng dụng nội bộ",
+    "topbarSubtitle": "Khung sidebar cổ điển",
+    "environment": "Cục bộ",
+    "signOut": "Đăng xuất",
+    "comingSoon": "Sắp có",
+    "soon": "Sắp",
     "stats": {
       "leads": "Lead",
-      "clients": "Khǭch h��ng",
-      "projects": "D��� ǭn",
-      "invoices": "Hoǭ �'��n"
+      "clients": "Khách hàng",
+      "projects": "Dự án",
+      "invoices": "Hoá đơn"
     },
     "empty": {
-      "title": "Ch��a c�� d��� li���u",
-      "description": "N��Ti dung c���a module n��y s��� hi���n th��< khi s���n s��ng."
+      "title": "Chưa có dữ liệu",
+      "description": "Nội dung của module này sẽ hiển thị khi sẵn sàng."
     },
     "nav": {
-      "dashboard": "B���ng �'i��?u khi���n",
+      "dashboard": "Bảng điều khiển",
       "leads": "Lead",
-      "clients": "Khǭch h��ng",
-      "projects": "D��� ǭn",
-      "tasks": "T��c v���",
-      "invoices": "Hoǭ �'��n"
+      "clients": "Khách hàng",
+      "projects": "Dự án",
+      "tasks": "Tác vụ",
+      "invoices": "Hoá đơn"
+    },
+    "roles": {
+      "agency_owner": "Chủ agency",
+      "admin": "Quản trị viên",
+      "sales_manager": "Trưởng phòng bán hàng",
+      "project_manager": "Quản lý dự án",
+      "team_member": "Thành viên",
+      "accountant": "Kế toán",
+      "client": "Khách hàng"
+    },
+    "userMenu": {
+      "profile": "Hồ sơ",
+      "workspaceSettings": "Cài đặt workspace",
+      "signOut": "Đăng xuất"
     }
   },
-  "Portal": {
+"Portal": {
     "brand": "Cổng Khách Hàng",
     "login": {
       "title": "Đăng nhập Cổng Khách Hàng",

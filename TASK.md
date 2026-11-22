@@ -179,6 +179,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FE-007 - Sua loi tieng Viet Shell + chip vai tro + user menu sidebar (NT2-01/02/03)
+- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-007-sidebar-user-menu · PR: (se tao)
+- Blocked by: FE-005 merge
+- Acceptance Criteria: (NT2-01) viet lai toan bo chuoi tieng Viet namespace Shell trong vi.json, khong con U+FFFD; (NT2-02) chip vai tro hien thi nhan da ban dia hoa (anh xa slug -> nhan i18n); (NT2-03) sidebar sticky cao 1 man hinh, menu cuon noi bo, chan sidebar la khoi user (avatar + ten + vai tro da dich) voi popover len tren (Ho so / Cai dat workspace disabled / Dang xuat), bo nut Sign out trung lap trong the chao dashboard, topbar khong them menu user.
+- Progress: Implemented. Rewrote Shell namespace in vi.json (0 U+FFFD). Role chips now use Shell.roles mapping. Sidebar sticky h-screen with internal nav scroll and footer user block + popover; dashboard removed duplicate sign-out button. Self-check: tsc PASS, build PASS (en/vi), vitest 27/27 PASS; responsive classes reviewed for mobile/tablet/desktop; vi.json verified no U+FFFD.
+- Handoff: OpenCode (vai Frontend, DEC-011); Muse review cheo.
+
+---
+
 ## BE-005 — Module CRM/Lead (Nhóm 1) theo hợp đồng CRM_CONTRACT
 - Assignee: Muse · Level: L3 · Status: DONE
 - Branch: be/BE-005-crm-lead · PR: —
