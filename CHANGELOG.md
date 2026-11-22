@@ -10,6 +10,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Project Management contract published (BE-006): `docs/PROJECT_CONTRACT.md` approved by the Product Owner (DEC-016) — projects with members and milestones, tasks with assignees, priorities, due dates, comments and checklist items, read-time progress %, list timeline, and read-only Portal project endpoints. Implementation follows in BE-006.
 - Project Management module (BE-006): projects CRUD with filters and soft-delete cascade, project members, milestones, tasks with assignee/priority/due date and automatic `completed_at`, task comments and checklist items, read-time progress %, list timeline, due list, and read-only Portal project endpoints. `projects.*`/`tasks.*` RBAC per DEC-016 with Team Member scoping (participating projects only, own assigned tasks only).
 
+### Frontend
+- Project Management screens (FE-008): enabled Projects nav item; list page with client/status/manager/search filters, progress % with done/total, empty state; project detail with overview, progress bar, milestones with per-milestone %, members add/remove, tasks with status/priority/assignee/milestone filters, timeline list; task detail with status/priority/due/assignee, checklist add/tick/remove, internal comments add/delete by author; BFF proxy routes to /projects and /tasks; Projects i18n namespace EN/VI (vi.json U+FFFD = 0). Self-check: typecheck, build (en+vi), tests pass; responsive classes reviewed at 390/768/1280.
+
 ## [0.3.0] - 2026-11-21
 
 ### Backend

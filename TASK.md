@@ -241,6 +241,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR #35 (DEC-016, đã merge). Muse đã triển khai xong trong PR này: 6 migration (projects, project_members, milestones, tasks, task_comments, task_checklist_items), projects/milestones/tasks CRUD + bộ lọc, members, timeline dạng list, progress % tính lúc đọc, task comments + checklist, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016 kèm scope Team Member (chỉ thấy project tham gia, chỉ sửa task được gán); bộ test toàn cục 72 passed, Pint PASS, OpenAPI 48 paths.
 - Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 3: ⏸ chờ BE-006 merge.
 
+## FE-008 — Màn hình Project Management (Nhóm 3) theo PROJECT_CONTRACT
+- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-008-project-management · PR: (mở PR vào main)
+- Blocked by: BE-006 (đã merge)
+- Acceptance Criteria: Bật mục Projects trên sidebar; màn hình danh sách Projects với bộ lọc client/trạng thái/người phụ trách/tìm kiếm, hiển thị client, trạng thái, % tiến độ kèm số task done/tổng; empty state; màn hình chi tiết Project với tổng quan, thanh tiến độ, Milestones kèm %, Members thêm/gỡ, Tasks lọc theo trạng thái/ưu tiên/người gán/milestone; chi tiết Task với mô tả/trạng thái/ưu tiên/hạn/người gán, checklist thêm/tick/xóa, comments thêm/xóa theo quyền; BFF route proxy tới /projects,/tasks; i18n namespace Projects EN/VI; quyền hiển thị theo DEC-016.
+- Progress: OpenCode hoàn thành 2026-11-22: bật nav Projects, trang danh sách + chi tiết dự án + chi tiết công việc, BFF proxy routes, i18n Projects (U+FFFD vi.json = 0). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en/vi), pnpm test PASS (27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): sidebar drawer, grid sm:2 lg:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
+
+---
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
