@@ -233,6 +233,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Mô tả: Fallback `NEXT_PUBLIC_API_URL` (đang chứa `/v1`) bị nối thêm `/v1` khi gọi API khiến dev FE ngoài Docker sai path. Chuẩn hoá bằng `normalizeBackendBaseUrl()` (bỏ slash cuối + bỏ đúng một đoạn `/v1` cuối), giữ thứ tự ưu tiên INTERNAL_API_URL > NEXT_PUBLIC_API_URL > localhost; kèm 3 test hồi quy.
 - Progress: PR #31 đã merge (2026-11-21); suite web 27/27 PASS, typecheck PASS; Muse review chéo ĐẠT; đóng DONE trong release 0.3.0 theo ngoại lệ F.2 (Muse bổ sung mục này vì OpenCode chưa từng tạo mục FE-006 trong TASK.md).
 
+## BE-006 — Module Project Management (Nhóm 3) theo hợp đồng PROJECT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: be/BE-006-project-management · PR: —
+- Blocked by: PR docs công bố hợp đồng (docs/PROJECT_CONTRACT.md + DEC-016) merge vào main
+- Acceptance Criteria: Đủ endpoints và quy tắc trong docs/PROJECT_CONTRACT.md: projects CRUD + lọc, project members, milestones, tasks CRUD + lọc + due list, task comments, checklist items, progress % tính lúc đọc, timeline dạng list, endpoint Portal chỉ-đọc, ma trận quyền projects.*/tasks.* theo DEC-016, cách ly tenant. Test: bộ test Feature cho module Project đạt, Pint PASS, OpenAPI cập nhật.
+- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR docs (DEC-016). Chưa triển khai — Muse bắt đầu sau khi PR docs merge.
+- Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 3: ⏸ chờ BE-006 merge.
+
 ## Inbox
 *Mọi agent được thêm mục mới ở đây, không sửa mục của người khác. (Hiện chưa có mục nào.)*
 
