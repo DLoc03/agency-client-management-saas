@@ -44,6 +44,18 @@ return [
         'tasks.update',
         'tasks.delete',
         'tasks.comments.manage',
+        // Team & Resource module (docs/TEAM_CONTRACT.md, DEC-017).
+        'teams.view',
+        'teams.create',
+        'teams.update',
+        'teams.delete',
+        'teams.members.manage',
+        'users.view',
+        'users.update',
+        'users.roles.manage',
+        'users.activation',
+        'invitations.manage',
+        'workload.view',
     ],
 
     'roles' => [
@@ -77,6 +89,19 @@ return [
             'tasks.update',
             'tasks.delete',
             'tasks.comments.manage',
+            // DEC-017: Admin runs teams/users/invitations; touching Admin
+            // accounts or the Admin role stays Owner-only (controller level).
+            'teams.view',
+            'teams.create',
+            'teams.update',
+            'teams.delete',
+            'teams.members.manage',
+            'users.view',
+            'users.update',
+            'users.roles.manage',
+            'users.activation',
+            'invitations.manage',
+            'workload.view',
         ],
         Role::SALES_MANAGER => [
             'workspace.view',
@@ -95,6 +120,9 @@ return [
             'leads.activities.manage',
             // DEC-016: Sales is view-only on projects (handover visibility).
             'projects.view',
+            // DEC-017: directory lookups only.
+            'teams.view',
+            'users.view',
         ],
         Role::PROJECT_MANAGER => [
             'workspace.view', 'clients.view', 'leads.view',
@@ -108,6 +136,14 @@ return [
             'tasks.update',
             'tasks.delete',
             'tasks.comments.manage',
+            // DEC-017: PM builds teams for their projects but may not
+            // delete teams or administer accounts.
+            'teams.view',
+            'teams.create',
+            'teams.update',
+            'teams.members.manage',
+            'users.view',
+            'workload.view',
         ],
         // DEC-009.3: Team Members hold no clients.* permission in the MVP.
         // DEC-014: and no leads.* permission either.
@@ -119,7 +155,12 @@ return [
             'projects.view',
             'tasks.update',
             'tasks.comments.manage',
+            // DEC-017: own teams + directory + own workload row (the API
+            // layer scopes all three).
+            'teams.view',
+            'users.view',
+            'workload.view',
         ],
-        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view', 'projects.view'],
+        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view', 'projects.view', 'teams.view', 'users.view'],
     ],
 ];

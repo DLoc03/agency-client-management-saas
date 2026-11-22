@@ -17,6 +17,8 @@ class User extends Authenticatable
         'agency_id',
         'name',
         'email',
+        'job_title',
+        'phone',
         'locale',
         'password',
         'is_active',
@@ -65,6 +67,11 @@ class User extends Authenticatable
     }
 
     /** Projects this user is a member of (docs/PROJECT_CONTRACT.md). */
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'team_user')->withTimestamps();
+    }
+
     public function memberProjects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_members')->withTimestamps();
