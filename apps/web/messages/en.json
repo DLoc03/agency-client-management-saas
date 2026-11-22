@@ -147,5 +147,111 @@
       "signOut": "Sign out of Portal",
       "mockNotice": "⚠️ Portal Mock Mode — separate session and token from internal agency app."
     }
+  },
+  "Projects": {
+    "title": "Projects",
+    "subtitle": "Manage projects, milestones and tasks.",
+    "newProject": "New project",
+    "empty": {
+      "title": "No projects yet",
+      "description": "Create your first project to get started."
+    },
+    "filters": {
+      "client": "Client",
+      "status": "Status",
+      "manager": "Project manager",
+      "search": "Search projects",
+      "all": "All"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "in_progress": "In progress",
+      "on_hold": "On hold",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "taskStatuses": {
+      "todo": "To do",
+      "in_progress": "In progress",
+      "in_review": "In review",
+      "done": "Done"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "milestoneStatuses": {
+      "planned": "Planned",
+      "in_progress": "In progress",
+      "completed": "Completed"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "client": "Client",
+      "status": "Status",
+      "manager": "Project manager",
+      "startDate": "Start date",
+      "dueDate": "Due date",
+      "budget": "Budget",
+      "progress": "Progress",
+      "tasks": "Tasks",
+      "members": "Members",
+      "milestones": "Milestones",
+      "assignee": "Assignee",
+      "priority": "Priority",
+      "title": "Title",
+      "milestone": "Milestone"
+    },
+    "actions": {
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "addMember": "Add member",
+      "remove": "Remove",
+      "addMilestone": "Add milestone",
+      "addTask": "Add task",
+      "addComment": "Add comment",
+      "addChecklist": "Add item",
+      "back": "Back to projects"
+    },
+    "detail": {
+      "overview": "Overview",
+      "members": "Members",
+      "milestones": "Milestones",
+      "tasks": "Tasks",
+      "timeline": "Timeline",
+      "noMembers": "No members yet.",
+      "noMilestones": "No milestones yet.",
+      "noTasks": "No tasks yet.",
+      "progressWarning": "Some tasks are still open."
+    },
+    "task": {
+      "title": "Task",
+      "comments": "Comments",
+      "checklist": "Checklist",
+      "noComments": "No comments yet.",
+      "noChecklist": "No checklist items yet.",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "status": "Status",
+        "priority": "Priority",
+        "assignee": "Assignee",
+        "dueDate": "Due date",
+        "milestone": "Milestone"
+      }
+    },
+    "errors": {
+      "loadFailed": "Failed to load projects.",
+      "createFailed": "Failed to create project.",
+      "updateFailed": "Failed to update project.",
+      "deleteFailed": "Failed to delete project.",
+      "notFound": "Project not found."
+    }
   }
 }

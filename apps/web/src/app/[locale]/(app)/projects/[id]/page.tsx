@@ -1,0 +1,817 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import { useRouter as useI18nRouter } from "@/i18n/routing";
+import { useTranslations, useLocale } from "next-intl";
+import { Icon } from "@/components/shell/Icon";
+import {
+  getProject,
+  updateProject,
+  deleteProject,
+  listMembers,
+  addMember,
+  removeMember,
+  listMilestones,
+  createMilestone,
+  updateMilestone,
+  deleteMilestone,
+  listTasks,
+  createTask,
+  deleteTask,
+  getTimeline,
+} from "@/lib/projects/api";
+import type {
+  Project,
+  ProjectStatus,
+  Milestone,
+  MilestoneStatus,
+  Task,
+  TaskStatus,
+  TaskPriority,
+  TimelineItem,
+} from "@/lib/projects/types";
+
+const PROJECT_STATUSES: ProjectStatus[] = ["draft", "in_progress", "on_hold", "completed", "cancelled"];
+const TASK_STATUSES: TaskStatus[] = ["todo", "in_progress", "in_review", "done"];
+const TASK_PRIORITIES: TaskPriority[] = ["low", "medium", "high", "urgent"];
+const MILESTONE_STATUSES: MilestoneStatus[] = ["planned", "in_progress", "completed"];
+
+export default function ProjectDetailPage() {
+  const params = useParams();
+  const id = Number(params?.id);
+  const { session, isLoading } = useAuth();
+  const router = useI18nRouter();
+  const locale = useLocale();
+  const t = useTranslations("Projects");
+  const c = useTranslations("Common");
+
+  const [project, setProject] = useState<Project | null>(null);
+  const [members, setMembers] = useState<{ id: number; name: string; email: string }[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [timeline, setTimeline] = useState<TimelineItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // task filters
+  const [taskStatus, setTaskStatus] = useState("");
+  const [taskPriority, setTaskPriority] = useState("");
+  const [taskAssignee, setTaskAssignee] = useState("");
+  const [taskMilestone, setTaskMilestone] = useState("");
+
+  // modals
+  const [showMember, setShowMember] = useState(false);
+  const [memberUserId, setMemberUserId] = useState("");
+  const [showMilestone, setShowMilestone] = useState(false);
+  const [milestoneForm, setMilestoneForm] = useState({ name: "", description: "", due_date: "", status: "planned" });
+  const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
+  const [showTask, setShowTask] = useState(false);
+  const [taskForm, setTaskForm] = useState({
+    title: "",
+    description: "",
+    status: "todo",
+    priority: "medium",
+    assignee_id: "",
+    due_date: "",
+    milestone_id: "",
+  });
+
+  useEffect(() => {
+    if (!isLoading && !session) router.replace("/login");
+  }, [isLoading, session, router]);
+
+  const loadAll = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [p, m, ms, tl] = await Promise.all([
+        getProject(id),
+        listMembers(id),
+        listMilestones(id),
+        getTimeline(id),
+      ]);
+      setProject(p);
+      setMembers(m);
+      setMilestones(ms);
+      setTimeline(tl);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadTasks = async () => {
+    try {
+      const data = await listTasks(id, {
+        status: taskStatus || undefined,
+        priority: taskPriority || undefined,
+        assignee_id: taskAssignee ? Number(taskAssignee) : undefined,
+        milestone_id: taskMilestone ? Number(taskMilestone) : undefined,
+      });
+      setTasks(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+    }
+  };
+
+  useEffect(() => {
+    if (session && id) loadAll();
+  }, [session, id]);
+
+  useEffect(() => {
+    if (session && id) loadTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, id, taskStatus, taskPriority, taskAssignee, taskMilestone]);
+
+  const canManageMembers = !!session?.user.permissions.includes("projects.members.manage");
+  const canManageMilestones = !!session?.user.permissions.includes("milestones.manage");
+  const canCreateTask = !!session?.user.permissions.includes("tasks.create");
+  const canUpdateTask = !!session?.user.permissions.includes("tasks.update");
+  const canDeleteTask = !!session?.user.permissions.includes("tasks.delete");
+  const canUpdateProject = !!session?.user.permissions.includes("projects.update");
+  const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
+
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await addMember(id, Number(memberUserId));
+      setMemberUserId("");
+      setShowMember(false);
+      const m = await listMembers(id);
+      setMembers(m);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleRemoveMember = async (userId: number) => {
+    try {
+      await removeMember(id, userId);
+      setMembers((prev) => prev.filter((m) => m.id !== userId));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleSaveMilestone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        name: milestoneForm.name,
+        description: milestoneForm.description || null,
+        due_date: milestoneForm.due_date || null,
+        status: milestoneForm.status,
+      };
+      if (editingMilestone) {
+        await updateMilestone(id, editingMilestone.id, payload);
+      } else {
+        await createMilestone(id, payload);
+      }
+      setShowMilestone(false);
+      setEditingMilestone(null);
+      setMilestoneForm({ name: "", description: "", due_date: "", status: "planned" });
+      const ms = await listMilestones(id);
+      setMilestones(ms);
+      const tl = await getTimeline(id);
+      setTimeline(tl);
+      const p = await getProject(id);
+      setProject(p);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleDeleteMilestone = async (milestoneId: number) => {
+    if (!confirm("Delete milestone?")) return;
+    try {
+      await deleteMilestone(id, milestoneId);
+      setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
+      const tl = await getTimeline(id);
+      setTimeline(tl);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+    }
+  };
+
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createTask(id, {
+        title: taskForm.title,
+        description: taskForm.description || null,
+        status: taskForm.status,
+        priority: taskForm.priority,
+        assignee_id: taskForm.assignee_id ? Number(taskForm.assignee_id) : null,
+        due_date: taskForm.due_date || null,
+        milestone_id: taskForm.milestone_id ? Number(taskForm.milestone_id) : null,
+      });
+      setShowTask(false);
+      setTaskForm({
+        title: "",
+        description: "",
+        status: "todo",
+        priority: "medium",
+        assignee_id: "",
+        due_date: "",
+        milestone_id: "",
+      });
+      await loadTasks();
+      const p = await getProject(id);
+      setProject(p);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+    }
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    if (!confirm("Delete task?")) return;
+    try {
+      await deleteTask(taskId);
+      await loadTasks();
+      const p = await getProject(id);
+      setProject(p);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+    }
+  };
+
+  if (isLoading || !session) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (loading || !project) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  const pct = project.progress_percent ?? 0;
+  const done = project.tasks_done_count ?? 0;
+  const total = project.tasks_count ?? 0;
+  const openTasks = total - done;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.push("/projects")}
+            className="rounded-md border border-border px-3 py-1.5 text-sm"
+          >
+            {t("actions.back")}
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
+            <p className="text-sm text-muted-foreground">
+              {project.client?.name ?? "—"} · {t(`statuses.${project.status}`)}
+            </p>
+          </div>
+        </div>
+        {canDeleteProject && (
+          <button
+            type="button"
+            onClick={async () => {
+              if (!confirm("Delete project?")) return;
+              try {
+                await deleteProject(id);
+                router.push("/projects");
+              } catch (e) {
+                setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+              }
+            }}
+            className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+          >
+            {t("actions.delete")}
+          </button>
+        )}
+      </div>
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {openTasks > 0 && project.status === "completed" && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {t("detail.progressWarning")}
+        </div>
+      )}
+
+      {/* Overview */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold">{t("detail.overview")}</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.client")}</p>
+            <p className="font-medium">{project.client?.name ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.manager")}</p>
+            <p className="font-medium">{project.project_manager?.name ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.startDate")}</p>
+            <p className="font-medium">{project.start_date ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.dueDate")}</p>
+            <p className="font-medium">{project.due_date ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.budget")}</p>
+            <p className="font-medium">{project.budget ?? "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.status")}</p>
+            {canUpdateProject ? (
+              <select
+                value={project.status}
+                onChange={async (e) => {
+                  try {
+                    const updated = await updateProject(id, { status: e.target.value });
+                    setProject(updated);
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : t("errors.updateFailed"));
+                  }
+                }}
+                className="mt-1 rounded-md border border-border bg-background px-2 py-1 text-sm"
+              >
+                {PROJECT_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`statuses.${s}`)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="font-medium">{t(`statuses.${project.status}`)}</p>
+            )}
+          </div>
+          <div className="sm:col-span-2">
+            <p className="text-xs text-muted-foreground">{t("fields.progress")}</p>
+            <div className="mt-1 flex items-center gap-3">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
+                />
+              </div>
+              <span className="text-sm font-medium tabular-nums">
+                {pct}% · {done}/{total}
+              </span>
+            </div>
+          </div>
+        </div>
+        {project.description && (
+          <p className="mt-4 text-sm text-muted-foreground">{project.description}</p>
+        )}
+      </section>
+
+      {/* Members */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("detail.members")}</h2>
+          {canManageMembers && (
+            <button
+              type="button"
+              onClick={() => setShowMember(true)}
+              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+            >
+              {t("actions.addMember")}
+            </button>
+          )}
+        </div>
+        {members.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("detail.noMembers")}</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {members.map((m) => (
+              <span
+                key={m.id}
+                className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+              >
+                <span className="whitespace-nowrap">{m.name}</span>
+                {canManageMembers && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(m.id)}
+                    className="text-red-600 hover:text-red-800"
+                    aria-label={t("actions.remove")}
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Milestones */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("detail.milestones")}</h2>
+          {canManageMilestones && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingMilestone(null);
+                setMilestoneForm({ name: "", description: "", due_date: "", status: "planned" });
+                setShowMilestone(true);
+              }}
+              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+            >
+              {t("actions.addMilestone")}
+            </button>
+          )}
+        </div>
+        {milestones.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("detail.noMilestones")}</p>
+        ) : (
+          <div className="space-y-3">
+            {milestones.map((m) => {
+              const mpct = m.progress_percent ?? 0;
+              const mdone = m.tasks_done_count ?? 0;
+              const mtotal = m.tasks_count ?? 0;
+              return (
+                <div key={m.id} className="rounded-md border border-border p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{m.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {m.due_date ?? "—"} · {t(`milestoneStatuses.${m.status}`)}
+                      </p>
+                    </div>
+                    {canManageMilestones && (
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingMilestone(m);
+                            setMilestoneForm({
+                              name: m.name,
+                              description: m.description ?? "",
+                              due_date: m.due_date ?? "",
+                              status: m.status,
+                            });
+                            setShowMilestone(true);
+                          }}
+                          className="text-xs text-primary hover:underline"
+                        >
+                          {t("actions.edit")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMilestone(m.id)}
+                          className="text-xs text-red-600 hover:underline"
+                        >
+                          {t("actions.delete")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${Math.min(100, Math.max(0, mpct))}%` }}
+                      />
+                    </div>
+                    <span className="text-xs tabular-nums">
+                      {mpct}% · {mdone}/{mtotal}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Tasks */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">{t("detail.tasks")}</h2>
+          {canCreateTask && (
+            <button
+              type="button"
+              onClick={() => setShowTask(true)}
+              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+            >
+              {t("actions.addTask")}
+            </button>
+          )}
+        </div>
+        <div className="mb-4 flex flex-wrap gap-3">
+          <select
+            value={taskStatus}
+            onChange={(e) => setTaskStatus(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("filters.all")} {t("fields.status")}</option>
+            {TASK_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {t(`taskStatuses.${s}`)}
+              </option>
+            ))}
+          </select>
+          <select
+            value={taskPriority}
+            onChange={(e) => setTaskPriority(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("filters.all")} {t("fields.priority")}</option>
+            {TASK_PRIORITIES.map((p) => (
+              <option key={p} value={p}>
+                {t(`priorities.${p}`)}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            placeholder={t("fields.assignee")}
+            value={taskAssignee}
+            onChange={(e) => setTaskAssignee(e.target.value)}
+            className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <select
+            value={taskMilestone}
+            onChange={(e) => setTaskMilestone(e.target.value)}
+            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("filters.all")} {t("fields.milestone")}</option>
+            {milestones.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        {tasks.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("detail.noTasks")}</p>
+        ) : (
+          <div className="space-y-2">
+            {tasks.map((task) => (
+              <div
+                key={task.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
+                    className="truncate font-medium text-primary hover:underline"
+                  >
+                    {task.title}
+                  </button>
+                  <p className="text-xs text-muted-foreground">
+                    {t(`taskStatuses.${task.status}`)} · {t(`priorities.${task.priority}`)}
+                    {task.assignee ? ` · ${task.assignee.name}` : ""}
+                    {task.due_date ? ` · ${task.due_date.slice(0, 10)}` : ""}
+                  </p>
+                </div>
+                {canDeleteTask && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-xs text-red-600 hover:underline"
+                  >
+                    {t("actions.delete")}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Timeline */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <h2 className="text-lg font-semibold">{t("detail.timeline")}</h2>
+        {timeline.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">{t("detail.noTasks")}</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {timeline.map((item, idx) => (
+              <li key={`${item.type}-${item.id}-${idx}`} className="flex items-center gap-3 text-sm">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">
+                  {item.due_date ?? "—"}
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    item.type === "milestone"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-secondary text-secondary-foreground"
+                  }`}
+                >
+                  {item.type}
+                </span>
+                <span className="truncate">{item.name}</span>
+                {item.type === "milestone" && item.progress_percent != null && (
+                  <span className="text-xs tabular-nums text-muted-foreground">
+                    {item.progress_percent}%
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* Member modal */}
+      {showMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleAddMember} className="w-full max-w-sm space-y-4 rounded-lg bg-background p-6 shadow-xl">
+            <h2 className="text-lg font-semibold">{t("actions.addMember")}</h2>
+            <input
+              type="number"
+              required
+              placeholder="User ID"
+              value={memberUserId}
+              onChange={(e) => setMemberUserId(e.target.value)}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            />
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setShowMember(false)} className="rounded-md border border-border px-4 py-2 text-sm">
+                {t("actions.cancel")}
+              </button>
+              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                {t("actions.addMember")}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Milestone modal */}
+      {showMilestone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleSaveMilestone} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
+            <h2 className="text-lg font-semibold">
+              {editingMilestone ? t("actions.edit") : t("actions.addMilestone")}
+            </h2>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("fields.name")}</label>
+              <input
+                required
+                value={milestoneForm.name}
+                onChange={(e) => setMilestoneForm({ ...milestoneForm, name: e.target.value })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("fields.description")}</label>
+              <textarea
+                value={milestoneForm.description}
+                onChange={(e) => setMilestoneForm({ ...milestoneForm, description: e.target.value })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                rows={2}
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.dueDate")}</label>
+                <input
+                  type="date"
+                  value={milestoneForm.due_date}
+                  onChange={(e) => setMilestoneForm({ ...milestoneForm, due_date: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.status")}</label>
+                <select
+                  value={milestoneForm.status}
+                  onChange={(e) => setMilestoneForm({ ...milestoneForm, status: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
+                  {MILESTONE_STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`milestoneStatuses.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setShowMilestone(false)} className="rounded-md border border-border px-4 py-2 text-sm">
+                {t("actions.cancel")}
+              </button>
+              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                {t("actions.save")}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Task modal */}
+      {showTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form onSubmit={handleCreateTask} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
+            <h2 className="text-lg font-semibold">{t("actions.addTask")}</h2>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("fields.title")}</label>
+              <input
+                required
+                value={taskForm.title}
+                onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t("fields.description")}</label>
+              <textarea
+                value={taskForm.description}
+                onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                rows={3}
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.status")}</label>
+                <select
+                  value={taskForm.status}
+                  onChange={(e) => setTaskForm({ ...taskForm, status: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
+                  {TASK_STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`taskStatuses.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.priority")}</label>
+                <select
+                  value={taskForm.priority}
+                  onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
+                  {TASK_PRIORITIES.map((p) => (
+                    <option key={p} value={p}>
+                      {t(`priorities.${p}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.assignee")}</label>
+                <input
+                  type="number"
+                  value={taskForm.assignee_id}
+                  onChange={(e) => setTaskForm({ ...taskForm, assignee_id: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t("fields.milestone")}</label>
+                <select
+                  value={taskForm.milestone_id}
+                  onChange={(e) => setTaskForm({ ...taskForm, milestone_id: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">—</option>
+                  {milestones.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <label className="text-sm font-medium">{t("fields.dueDate")}</label>
+                <input
+                  type="date"
+                  value={taskForm.due_date}
+                  onChange={(e) => setTaskForm({ ...taskForm, due_date: e.target.value })}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button type="button" onClick={() => setShowTask(false)} className="rounded-md border border-border px-4 py-2 text-sm">
+                {t("actions.cancel")}
+              </button>
+              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                {t("actions.create")}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

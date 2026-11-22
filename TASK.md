@@ -244,11 +244,21 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 - Đóng task: DONE 2026-11-22 — QA-004 chạy thật PASS: `tests/e2e/project.spec.ts` (29 ca) trên Docker/MySQL 8 + seed demo. Minimal seed: 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai — ghi nhận backlog seed, không phải lỗi sản phẩm). Bật seed QA đầy đủ 7 vai: 29 PASS / 0 SKIP trong các lô an toàn rate-limit. Verdict review bù BE-006: PASS → BE-006 chuyển DONE theo thẩm quyền QA.
 
+## FE-008 — Màn hình Project Management (Nhóm 3) theo PROJECT_CONTRACT
+- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-008-project-management · PR: (mở PR vào main)
+- Blocked by: BE-006 (đã merge)
+- Acceptance Criteria: Bật mục Projects trên sidebar; màn hình danh sách Projects với bộ lọc client/trạng thái/người phụ trách/tìm kiếm, hiển thị client, trạng thái, % tiến độ kèm số task done/tổng; empty state; màn hình chi tiết Project với tổng quan, thanh tiến độ, Milestones kèm %, Members thêm/gỡ, Tasks lọc theo trạng thái/ưu tiên/người gán/milestone; chi tiết Task với mô tả/trạng thái/ưu tiên/hạn/người gán, checklist thêm/tick/xóa, comments thêm/xóa theo quyền; BFF route proxy tới /projects,/tasks; i18n namespace Projects EN/VI; quyền hiển thị theo DEC-016.
+- Progress: OpenCode hoàn thành 2026-11-22: bật nav Projects, trang danh sách + chi tiết dự án + chi tiết công việc, BFF proxy routes, i18n Projects (U+FFFD vi.json = 0). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en/vi), pnpm test PASS (27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): sidebar drawer, grid sm:2 lg:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
+
+---
+
 ## QA-004 — Bộ test Project Management theo PROJECT_CONTRACT + chạy thật trên BE-006
 - Status: DONE
 - Assignee: OpenCode · Reviewer: Muse
-- Mô tả: Viết test case cho module Project Management từ Acceptance Criteria của `docs/PROJECT_CONTRACT.md` (CRUD project/milestone/task + bộ lọc, ma trận quyền 7 vai, cô lập tenant 404/422, progress %, timeline ordering, soft delete cascade, completed_at, endpoint Portal chỉ-đọc, token app/portal không dùng chéo) tại `tests/e2e/project.spec.ts`, rồi chạy thật sau khi BE-006 merge.
-- Kết quả: Migrations BE-006 trên MySQL 8 (Docker) đạt; Playwright 29 ca — minimal demo seed 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai, ghi nhận backlog seed, không phải lỗi); seed QA đầy đủ 29 PASS / 0 SKIP trong các lô an toàn rate-limit. Kèm verdict review bù BE-006: PASS → BE-006 chuyển DONE.
+- Mô tả: Viết test case cho module Project Management từ Acceptance Criteria của `docs/PROJECT_CONTRACT.md` (CRUD project/milestone/task + bộ lọc, ma trận quyền 7 vai, cô lập tenant 404/422, progress %, timeline ordering, soft delete cascade, completed_at, endpoint Portal chỉ-đọc, token app/portal không dùng chéo) tại `tests/e2e/project.spec.ts`, rồi chạy thật sau khi BE-006 merge; bổ sung `tests/e2e/project-ui.spec.ts` cho UI FE-008.
+- Kết quả: Migrations BE-006 trên MySQL 8 (Docker) đạt; Playwright API 29 ca — minimal demo seed 17 PASS / 12 SKIP (thiếu dữ liệu seed đa vai trò/agency thứ hai, ghi nhận backlog seed, không phải lỗi); seed QA đầy đủ 29 PASS / 0 SKIP trong các lô an toàn rate-limit. UI FE-008: `tests/e2e/project-ui.spec.ts` 5/5 PASS trên stack Docker (owner@demo.test). Kèm verdict review bù BE-006: PASS → BE-006 chuyển DONE.
 - Progress: PR mở vào main chờ Muse review; CHANGELOG [Unreleased] QA & Fixes cập nhật.
 
 ---
