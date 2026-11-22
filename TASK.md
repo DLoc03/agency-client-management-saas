@@ -271,3 +271,29 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
 - [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
+
+## BE-007 — Module Team & Resource Management (Nhóm 4) theo hợp đồng TEAM_CONTRACT
+- Assignee: Muse · Level: L3 · Status: TODO
+- Branch: be/BE-007-team-resource · PR: (PR triển khai BE-007)
+- Blocked by: —
+- Acceptance Criteria: Đủ endpoints và quy tắc trong docs/TEAM_CONTRACT.md: teams CRUD + thành viên, danh bạ nhân viên (users) + hồ sơ, gán/đổi vai, khoá/mở tài khoản (thu hồi token), invitations (mời/accept/resend/thu hồi, token hash, hạn 7 ngày), gán project theo team kiểu snapshot (via_team_id), GET /workload-lite, ma trận quyền teams.*/users.*/invitations.* theo DEC-017 kèm giới hạn Admin, cách ly tenant. Test: bộ test Feature cho module Team đạt, Pint PASS, OpenAPI cập nhật.
+- Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR docs này (DEC-017).
+- Handoff: Muse triển khai sau khi PR docs này merge. Task FE/QA cho Nhóm 4: ⏸ chờ BE-007 merge.
+
+---
+
+## FE-009 — Màn hình Team & Resource (Nhóm 4) theo TEAM_CONTRACT
+- Assignee: OpenCode · Level: L3 · Status: TODO
+- Blocked by: ⏸ chờ BE-007 merge
+- Acceptance Criteria: (soạn chi tiết khi mở khoá) Bật mục Team trên sidebar; danh bạ nhân viên; quản lý teams + thành viên; mời thành viên + danh sách lời mời đang chờ; workload-lite theo người; quyền hiển thị theo DEC-017; i18n namespace Teams EN/VI.
+- Handoff: Chưa gửi prompt — chờ BE-007 merge theo kỷ luật prompt.
+
+---
+
+## QA-005 — Bộ test Team & Resource theo TEAM_CONTRACT + chạy thật trên BE-007
+- Assignee: OpenCode · Level: L3 · Status: TODO
+- Blocked by: ⏸ chờ BE-007 merge
+- Acceptance Criteria: (soạn chi tiết khi mở khoá) Test case từ Acceptance Criteria của docs/TEAM_CONTRACT.md tại tests/e2e/team.spec.ts + chạy thật trên Docker/MySQL.
+- Handoff: Chưa gửi prompt — chờ BE-007 merge theo kỷ luật prompt.
+
+---
