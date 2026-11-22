@@ -10,6 +10,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Project Management contract published (BE-006): `docs/PROJECT_CONTRACT.md` approved by the Product Owner (DEC-016) — projects with members and milestones, tasks with assignees, priorities, due dates, comments and checklist items, read-time progress %, list timeline, and read-only Portal project endpoints. Implementation follows in BE-006.
 - Project Management module (BE-006): projects CRUD with filters and soft-delete cascade, project members, milestones, tasks with assignee/priority/due date and automatic `completed_at`, task comments and checklist items, read-time progress %, list timeline, due list, and read-only Portal project endpoints. `projects.*`/`tasks.*` RBAC per DEC-016 with Team Member scoping (participating projects only, own assigned tasks only).
 
+### QA & Fixes
+- QA-004 (OpenCode): authored Playwright test cases for the Project Management module from docs/PROJECT_CONTRACT.md in tests/e2e/project.spec.ts (29 cases: project/milestone/task CRUD + filters, 7-role permission matrix, tenant isolation 404/422, progress % incl. 0-task project, timeline ordering milestones-before-tasks same day, soft-delete cascade, completed_at set/clear, portal read-only without budget/internal comments, app/portal token cross-use blocked). Real run on Docker/MySQL 8 + demo seed: 17 passed / 12 skipped on minimal seed (missing multi-role/foreign-agency seed data — documented, not product defects); 29 passed / 0 skipped with the full 7-role seed. Verdict: BE-006 → DONE per QA authority.
+
 ## [0.3.0] - 2026-11-21
 
 ### Backend
