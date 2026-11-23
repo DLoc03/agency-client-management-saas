@@ -252,6 +252,14 @@
       "updateFailed": "Không cập nhật được dự án.",
       "deleteFailed": "Không xóa được dự án.",
       "notFound": "Không tìm thấy dự án."
+    },
+    "teamAssignment": {
+      "title": "Gán team vào dự án",
+      "selectTeam": "Chọn team",
+      "assign": "Gán team",
+      "remove": "Gỡ team",
+      "resultAssigned": "Đã gán team: thêm {added} thành viên.",
+      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
     }
   },
   "Teams": {
@@ -327,7 +335,8 @@
     "teamsDetail": {
       "title": "Chi tiết nhóm",
       "members": "Thành viên",
-      "noMembers": "Chưa có thành viên."
+      "noMembers": "Chưa có thành viên.",
+      "selectMember": "Chọn thành viên"
     },
     "invitationsForm": {
       "email": "Email",
@@ -354,6 +363,8 @@
       "createFailed": "Không tạo được.",
       "updateFailed": "Không cập nhật được.",
       "deleteFailed": "Không xóa được."
-    }
+    },
+    "confirmDeleteTeam": "Xoá team này?",
+    "confirmRevokeInvitation": "Thu hồi lời mời này?"
   }
 }

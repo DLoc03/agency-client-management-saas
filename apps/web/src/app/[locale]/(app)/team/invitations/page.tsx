@@ -88,7 +88,7 @@ export default function InvitationsPage() {
   };
 
   const handleRevoke = async (id: number) => {
-    if (!confirm("Revoke invitation?")) return;
+    if (!confirm(t("confirmRevokeInvitation"))) return;
     try {
       await revokeInvitation(id);
       await load();

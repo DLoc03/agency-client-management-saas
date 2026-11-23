@@ -27,11 +27,11 @@ function AcceptInvitationInner() {
       await acceptInvitation({ token, name, password });
       setSuccess(true);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t("accept.errors.INVALID");
-      // map known messages? rely on backend message; also try code-like mapping
-      if (msg.includes("INVITATION_EXPIRED")) setError(t("accept.errors.INVITATION_EXPIRED"));
-      else if (msg.includes("INVITATION_ALREADY_ACCEPTED")) setError(t("accept.errors.INVITATION_ALREADY_ACCEPTED"));
-      else if (msg.includes("EMAIL_ALREADY_REGISTERED")) setError(t("accept.errors.EMAIL_ALREADY_REGISTERED"));
+      const code = (err as { code?: string } | null)?.code;
+      const msg = err instanceof Error ? err.message : "";
+      if (code === "INVITATION_EXPIRED") setError(t("accept.errors.INVITATION_EXPIRED"));
+      else if (code === "INVITATION_ALREADY_ACCEPTED") setError(t("accept.errors.INVITATION_ALREADY_ACCEPTED"));
+      else if (code === "EMAIL_ALREADY_REGISTERED") setError(t("accept.errors.EMAIL_ALREADY_REGISTERED"));
       else setError(msg || t("accept.errors.INVALID"));
     } finally {
       setSubmitting(false);

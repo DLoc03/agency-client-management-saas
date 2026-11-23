@@ -12,7 +12,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const body = await res.json().catch(() => null);
   if (!res.ok) {
     const msg = body?.error?.message || `Request failed (${res.status})`;
-    throw new Error(msg);
+    const err = new Error(msg) as Error & { code?: string; status?: number };
+    err.code = body?.error?.code;
+    err.status = res.status;
+    throw err;
   }
   return body as T;
 }

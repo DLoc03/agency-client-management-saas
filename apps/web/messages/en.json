@@ -252,6 +252,14 @@
       "updateFailed": "Failed to update project.",
       "deleteFailed": "Failed to delete project.",
       "notFound": "Project not found."
+    },
+    "teamAssignment": {
+      "title": "Team assignment",
+      "selectTeam": "Select a team",
+      "assign": "Assign team",
+      "remove": "Remove team",
+      "resultAssigned": "Team assigned: {added} member(s) added.",
+      "resultRemoved": "Removed {removed} member(s), kept {kept}."
     }
   },
   "Teams": {
@@ -327,7 +335,8 @@
     "teamsDetail": {
       "title": "Team detail",
       "members": "Members",
-      "noMembers": "No members yet."
+      "noMembers": "No members yet.",
+      "selectMember": "Select a member"
     },
     "invitationsForm": {
       "email": "Email",
@@ -354,6 +363,8 @@
       "createFailed": "Failed to create.",
       "updateFailed": "Failed to update.",
       "deleteFailed": "Failed to delete."
-    }
+    },
+    "confirmDeleteTeam": "Delete this team?",
+    "confirmRevokeInvitation": "Revoke this invitation?"
   }
 }

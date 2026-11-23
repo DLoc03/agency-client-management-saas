@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember } from "@/lib/team/api";
-import type { Team } from "@/lib/team/types";
+import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
+import type { DirectoryUser, Team } from "@/lib/team/types";
 
 export default function TeamDetailPage() {
   const params = useParams();
@@ -21,6 +21,7 @@ export default function TeamDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
   const [newMemberId, setNewMemberId] = useState("");
+  const [directory, setDirectory] = useState<DirectoryUser[]>([]);
 
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
@@ -30,8 +31,9 @@ export default function TeamDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const tm = await getTeam(id);
+      const [tm, users] = await Promise.all([getTeam(id), listUsers().catch(() => [] as DirectoryUser[])]);
       setTeam(tm);
+      setDirectory(users);
       setForm({
         name: tm.name,
         description: tm.description ?? "",
@@ -159,7 +161,7 @@ export default function TeamDetailPage() {
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!confirm("Delete team?")) return;
+                    if (!confirm(t("confirmDeleteTeam"))) return;
                     try {
                       await deleteTeam(id);
                       router.push("/team/teams");
@@ -181,14 +183,21 @@ export default function TeamDetailPage() {
         <h2 className="mb-4 text-lg font-semibold">{t("teamsDetail.members")}</h2>
         {canManageMembers && (
           <form onSubmit={handleAddMember} className="mb-4 flex gap-2">
-            <input
-              type="number"
+            <select
               required
-              placeholder="User ID"
               value={newMemberId}
               onChange={(e) => setNewMemberId(e.target.value)}
               className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">{t("teamsDetail.selectMember")}</option>
+              {directory
+                .filter((u) => !(team?.members || []).some((m) => m.id === u.id))
+                .map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name} ({u.email})
+                  </option>
+                ))}
+            </select>
             <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
               {t("actions.add")}
             </button>

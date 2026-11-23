@@ -60,7 +60,7 @@ export default function TeamsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete team?")) return;
+    if (!confirm(t("confirmDeleteTeam"))) return;
     try {
       await deleteTeam(id);
       await load();

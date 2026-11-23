@@ -22,7 +22,8 @@ import {
   deleteTask,
   getTimeline,
 } from "@/lib/projects/api";
-import { assignTeamToProject, removeTeamFromProject } from "@/lib/team/api";
+import { assignTeamToProject, listTeams, removeTeamFromProject } from "@/lib/team/api";
+import type { Team } from "@/lib/team/types";
 import type {
   Project,
   ProjectStatus,
@@ -71,6 +72,15 @@ export default function ProjectDetailPage() {
   const [showTask, setShowTask] = useState(false);
   const [teamAssignId, setTeamAssignId] = useState("");
   const [teamResult, setTeamResult] = useState<string | null>(null);
+  const [assignTeams, setAssignTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    if (session?.user.permissions.includes("projects.update")) {
+      listTeams()
+        .then(setAssignTeams)
+        .catch(() => setAssignTeams([]));
+    }
+  }, [session]);
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -247,7 +257,7 @@ export default function ProjectDetailPage() {
     try {
       const res = await assignTeamToProject(id, Number(teamAssignId));
       const added = res.added_user_ids?.length ?? 0;
-      setTeamResult(`Team assigned: ${added} added`);
+      setTeamResult(t("teamAssignment.resultAssigned", { added }));
       const p = await getProject(id);
       setProject(p);
       const m = await listMembers(id);
@@ -264,7 +274,7 @@ export default function ProjectDetailPage() {
       const res = await removeTeamFromProject(id, Number(teamAssignId));
       const removed = res.removed_user_ids?.length ?? 0;
       const kept = res.kept_user_ids?.length ?? 0;
-      setTeamResult(`Removed ${removed}, kept ${kept}`);
+      setTeamResult(t("teamAssignment.resultRemoved", { removed, kept }));
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
@@ -454,28 +464,35 @@ export default function ProjectDetailPage() {
       {/* Team assignment (FE-009) */}
       {session.user.permissions.includes("projects.update") && (
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold">Team assignment</h2>
+          <h2 className="mb-4 text-lg font-semibold">{t("teamAssignment.title")}</h2>
           <div className="flex flex-wrap gap-2">
-            <input
-              type="number"
-              placeholder="Team ID"
+            <select
               value={teamAssignId}
               onChange={(e) => setTeamAssignId(e.target.value)}
-              className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm"
-            />
+              className="w-56 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("teamAssignment.selectTeam")}</option>
+              {assignTeams.map((tm) => (
+                <option key={tm.id} value={tm.id}>
+                  {tm.name}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               onClick={handleAssignTeam}
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+              disabled={!teamAssignId}
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
             >
-              Assign team
+              {t("teamAssignment.assign")}
             </button>
             <button
               type="button"
               onClick={handleRemoveTeam}
-              className="rounded-md border border-red-200 px-3 py-2 text-sm text-red-600"
+              disabled={!teamAssignId}
+              className="rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 disabled:opacity-60"
             >
-              Remove team
+              {t("teamAssignment.remove")}
             </button>
           </div>
           {teamResult && (
