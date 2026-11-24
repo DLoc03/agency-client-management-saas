@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   createContact,
   createNote,
@@ -398,34 +399,24 @@ export default function ClientDetailPage() {
               </div>
               <div>
                 <label className={labelCls}>{t("fields.status")}</label>
-                <select
+                <Select
                   value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className={inputCls}
-                >
-                  {CLIENT_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`statuses.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, status: v })}
+                  options={CLIENT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                  className="w-full"
+                />
               </div>
               <div>
                 <label className={labelCls}>{t("fields.manager")}</label>
-                <select
+                <Select
                   value={form.account_manager_id}
-                  onChange={(e) =>
-                    setForm({ ...form, account_manager_id: e.target.value })
-                  }
-                  className={inputCls}
-                >
-                  <option value="">—</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, account_manager_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...users.map((u) => ({ value: String(u.id), label: u.name })),
+                  ]}
+                  className="w-full"
+                />
               </div>
               <div>
                 <label className={labelCls}>{t("fields.email")}</label>
@@ -857,16 +848,15 @@ export default function ClientDetailPage() {
               }
               className={inputCls}
             />
-            <select
+            <Select
               value={accountForm.locale}
-              onChange={(e) =>
-                setAccountForm({ ...accountForm, locale: e.target.value })
-              }
-              className={inputCls}
-            >
-              <option value="en">English</option>
-              <option value="vi">Tiếng Việt</option>
-            </select>
+              onValueChange={(v) => setAccountForm({ ...accountForm, locale: v })}
+              options={[
+                { value: "en", label: "English" },
+                { value: "vi", label: "Tiếng Việt" },
+              ]}
+              className="w-full"
+            />
             <div>
               <button
                 type="submit"

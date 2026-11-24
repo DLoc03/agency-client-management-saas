@@ -21,7 +21,7 @@ export function AppShell({ children }: AppShellProps) {
   }, [mobileOpen]);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex h-dvh overflow-hidden bg-background text-foreground">
       {/* Desktop sidebar */}
       <div className="hidden md:flex md:shrink-0">
         <Sidebar />
@@ -43,9 +43,9 @@ export function AppShell({ children }: AppShellProps) {
       )}
 
       {/* Main column */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 px-4 py-6 md:px-6 lg:px-8">
+        <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl space-y-6">{children}</div>
         </main>
       </div>

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   getTask,
   updateTask,
@@ -177,17 +178,12 @@ export default function TaskDetailPage() {
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.status")}</p>
             {canUpdate ? (
-              <select
+              <Select
                 value={task.status}
-                onChange={(e) => handleStatusChange(e.target.value as TaskStatus)}
-                className="mt-1 rounded-md border border-border bg-background px-2 py-1 text-sm"
-              >
-                {TASK_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`taskStatuses.${s}`)}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => handleStatusChange(v as TaskStatus)}
+                options={TASK_STATUSES.map((s) => ({ value: s, label: t(`taskStatuses.${s}`) }))}
+                className="mt-1 w-[170px]"
+              />
             ) : (
               <p className="font-medium">{t(`taskStatuses.${task.status}`)}</p>
             )}

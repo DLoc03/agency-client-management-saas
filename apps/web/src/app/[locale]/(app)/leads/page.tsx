@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   createLead,
   getPipelineSummary,
@@ -204,34 +205,24 @@ export default function LeadsPage() {
           onChange={(e) => setQ(e.target.value)}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
-        <select
+        <Select
           value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">
-            {t("filters.all")} {t("filters.source")}
-          </option>
-          {LEAD_SOURCES.map((s) => (
-            <option key={s} value={s}>
-              {t(`sources.${s}`)}
-            </option>
-          ))}
-        </select>
-        <select
+          onValueChange={setSource}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.source")}` },
+            ...LEAD_SOURCES.map((s) => ({ value: s, label: t(`sources.${s}`) })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
           value={ownerId}
-          onChange={(e) => setOwnerId(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">
-            {t("filters.all")} {t("filters.owner")}
-          </option>
-          {users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
+          onValueChange={setOwnerId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.owner")}` },
+            ...users.map((u) => ({ value: String(u.id), label: u.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
       </div>
 
       {error && (
@@ -294,31 +285,21 @@ export default function LeadsPage() {
             </div>
             <div>
               <label className={labelCls}>{t("fields.source")}</label>
-              <select
+              <Select
                 value={form.source}
-                onChange={(e) => setForm({ ...form, source: e.target.value })}
-                className={inputCls}
-              >
-                {LEAD_SOURCES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`sources.${s}`)}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => setForm({ ...form, source: v })}
+                options={LEAD_SOURCES.map((s) => ({ value: s, label: t(`sources.${s}`) }))}
+                className="w-full"
+              />
             </div>
             <div>
               <label className={labelCls}>{t("fields.status")}</label>
-              <select
+              <Select
                 value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className={inputCls}
-              >
-                {LEAD_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`statuses.${s}`)}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => setForm({ ...form, status: v })}
+                options={LEAD_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                className="w-full"
+              />
             </div>
             <div>
               <label className={labelCls}>{t("fields.estimatedValue")}</label>
@@ -334,18 +315,15 @@ export default function LeadsPage() {
             </div>
             <div>
               <label className={labelCls}>{t("fields.owner")}</label>
-              <select
+              <Select
                 value={form.owner_id}
-                onChange={(e) => setForm({ ...form, owner_id: e.target.value })}
-                className={inputCls}
-              >
-                <option value="">—</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => setForm({ ...form, owner_id: v })}
+                options={[
+                  { value: "", label: "—" },
+                  ...users.map((u) => ({ value: String(u.id), label: u.name })),
+                ]}
+                className="w-full"
+              />
             </div>
             {form.status === "unqualified" && (
               <div>

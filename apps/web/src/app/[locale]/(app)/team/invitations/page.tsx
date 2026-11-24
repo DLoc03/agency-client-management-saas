@@ -100,7 +100,7 @@ export default function InvitationsPage() {
   if (isLoading || !session) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">{useTranslations("Common")("loading")}</p>
+        <p className="text-sm text-muted-foreground">{c("loading")}</p>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function InvitationsPage() {
 
       <div className="min-h-[320px]">
         {loading ? (
-          <p className="text-sm text-muted-foreground">{useTranslations("Common")("loading")}</p>
+          <p className="text-sm text-muted-foreground">{c("loading")}</p>
         ) : invitations.length === 0 ? (
           <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-8 text-center">
             <Icon name="users" className="mb-3 h-8 w-8 text-muted-foreground" />
