@@ -1,0 +1,9 @@
+import { proxyToBackend } from "@/lib/bff/proxy";
+import { NextRequest } from "next/server";
+
+type Ctx = { params: Promise<{ id: string; noteId: string }> };
+
+export async function DELETE(request: NextRequest, ctx: Ctx) {
+  const { id, noteId } = await ctx.params;
+  return proxyToBackend(request, `clients/${id}/notes/${noteId}`);
+}
