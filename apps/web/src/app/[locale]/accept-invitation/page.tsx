@@ -62,8 +62,9 @@ function AcceptInvitationInner() {
           <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         )}
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t("accept.name")}</label>
+          <label htmlFor="accept-name" className="text-sm font-medium">{t("accept.name")}</label>
           <input
+            id="accept-name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -71,8 +72,9 @@ function AcceptInvitationInner() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t("accept.password")}</label>
+          <label htmlFor="accept-password" className="text-sm font-medium">{t("accept.password")}</label>
           <input
+            id="accept-password"
             type="password"
             required
             minLength={8}

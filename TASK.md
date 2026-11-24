@@ -220,6 +220,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-21 — Muse đã xoá trên branch `fix/FIX-007-cleanup-compiled-view`; chờ Nguyen merge.
 - Blockers: Không có.
 
+## FIX-008 — Hai finding FE-009 từ QA-005: thiếu key `Shell.nav.team` + label accept-invitation chưa gắn input
+- Status: IN_REVIEW
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: QA-005 ghi nhận 2 lỗi nhỏ không chặn của FE-009: (1) `apps/web/messages/{en,vi}.json` thiếu key `Shell.nav.team` khiến Sidebar log `MISSING_MESSAGE` trên mọi trang Team; (2) form `accept-invitation` dùng `<label>` rời không `htmlFor`/id, phá truy cập theo label (accessibility + E2E `getByLabel`). Muse xử lý theo quy ước thay vai FE (PO chốt 2026-11-23): bổ sung `Shell.nav.team` (EN "Team" / VI "Nhóm"), gắn `htmlFor` + `id` cho 2 cặp label/input (accept-name, accept-password).
+- Acceptance Criteria: Mở trang Team không còn log MISSING_MESSAGE cho `Shell.nav.team`; `getByLabel` truy cập được 2 ô nhập của form accept-invitation; typecheck/build/test đạt; vi.json U+FFFD = 0 và không thêm dấu hiệu mã hoá đôi.
+- Progress: 2026-11-24 — Muse đã sửa trên branch `fix/FIX-008-qa005-findings`; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
+- Blockers: Không có.
+
 ## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
 - Status: DONE
 - Assignee: OpenCode · Reviewer: Muse
