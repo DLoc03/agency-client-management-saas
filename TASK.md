@@ -221,11 +221,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-008 — Hai finding FE-009 từ QA-005: thiếu key `Shell.nav.team` + label accept-invitation chưa gắn input
-- Status: IN_REVIEW
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: QA-005 ghi nhận 2 lỗi nhỏ không chặn của FE-009: (1) `apps/web/messages/{en,vi}.json` thiếu key `Shell.nav.team` khiến Sidebar log `MISSING_MESSAGE` trên mọi trang Team; (2) form `accept-invitation` dùng `<label>` rời không `htmlFor`/id, phá truy cập theo label (accessibility + E2E `getByLabel`). Muse xử lý theo quy ước thay vai FE (PO chốt 2026-11-23): bổ sung `Shell.nav.team` (EN "Team" / VI "Nhóm"), gắn `htmlFor` + `id` cho 2 cặp label/input (accept-name, accept-password).
 - Acceptance Criteria: Mở trang Team không còn log MISSING_MESSAGE cho `Shell.nav.team`; `getByLabel` truy cập được 2 ô nhập của form accept-invitation; typecheck/build/test đạt; vi.json U+FFFD = 0 và không thêm dấu hiệu mã hoá đôi.
 - Progress: 2026-11-24 — Muse đã sửa trên branch `fix/FIX-008-qa005-findings`; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
+- Progress: Đã merge vào main và đóng gói trong bản 0.5.0.
 - Blockers: Không có.
 
 ## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
@@ -261,11 +262,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
 
 ## FE-010 — Màn hình Client Management (Nhóm 2) theo CLIENT_CONTRACT
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: fe/FE-010-client-screens · PR: (mở PR vào main)
 - Blocked by: BE-004 (đã merge)
 - Acceptance Criteria: Bật mục Clients trên sidebar + route guard; danh sách Clients với bộ lọc trạng thái/tag/người phụ trách/tìm kiếm, thẻ hiển thị trạng thái/loại/tag/người phụ trách/số tài khoản Portal, empty state; tạo Client (kèm Organization khi type=company, kèm tag_ids) và tạo Tag; chi tiết Client gồm tổng quan + sửa hồ sơ/trạng thái/người phụ trách/tags/organization, Contacts thêm/sửa/xoá + cờ người liên hệ chính, Notes nội bộ thêm/xoá theo quy tắc tác giả (hoặc Owner/Admin), Portal accounts tạo mới + khoá/mở; xoá Client chỉ Agency Owner; BFF proxy tới /clients, /tags, /users; i18n namespace Clients EN/VI; quyền hiển thị theo ma trận DEC-009.
 - Progress: Muse hoàn thành 2026-11-24 (theo quy ước PO chốt 2026-11-23: Muse thay vai FE khi cần, OpenCode ưu tiên QA): bật nav Clients + route guard, trang danh sách + chi tiết Client, BFF routes, i18n Clients (vi.json U+FFFD = 0, dấu hiệu mã hoá đôi Ã = 0, đủ 70/70 key EN/VI). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en+vi), pnpm test PASS (27/27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): lưới thẻ sm:2 xl:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Progress: Đã merge vào main và đóng gói trong bản 0.5.0.
 - Handoff: Chờ Nguyen nghiệm thu trực quan + merge (Muse không tự duyệt FE của chính mình); ca UI QA bổ sung khi OpenCode có quota.
 
 
@@ -303,7 +305,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-009 - Màn hình Team & Resource (Nhóm 4) theo TEAM_CONTRACT
-- Assignee: OpenCode · Level: L3 · Status: IN_REVIEW
+- Assignee: OpenCode · Level: L3 · Status: DONE
 - Branch: fe/FE-009-team-resource · PR: (mở PR vào main)
 - Blocked by: BE-007 (đã merge)
 - Acceptance Criteria: Thêm mục Team sidebar + route guard; Members danh bạ với lọc vai trò/team/trạng thái/tìm kiếm, chi tiết nhân viên với sửa hồ sơ, đổi vai, khoá/mở; Teams CRUD + thành viên; Invitations danh sách + form mời mới (email + vai trò, ẩn Owner/Admin theo quyền) + resend/revoke; Workload theo người; trang công khai nhận lời mời; bổ sung team assignment vào chi tiết Project (added/removed/kept); BFF proxy; i18n Teams EN/VI.
@@ -314,19 +316,21 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FE-011 — Màn hình CRM / Lead (Nhóm 1) theo CRM_CONTRACT
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: fe/FE-011-lead-screens-v2 · PR: (mở PR vào main; phát hành lại từ main sau khi PR #44 merge, thay thế PR #45)
 - Blocked by: BE-005 (đã merge)
 - Acceptance Criteria: Bật mục Leads trên sidebar + route guard; board Pipeline Kanban theo DEC-013 (4 cột trạng thái cố định new/contacted/qualified/unqualified, kéo-thả đổi trạng thái, thẻ lead có giá trị ước tính/nguồn/người phụ trách) + dải tổng hợp pipeline (số lead + tổng giá trị theo trạng thái, từ /leads/pipeline-summary) + danh sách follow-up đến hạn (/lead-activities/due); bộ lọc tìm kiếm/nguồn/người phụ trách; tạo Lead; chi tiết Lead gồm tổng quan + sửa hồ sơ (khoá trường chính sau khi convert), Contacts dùng chung thêm/sửa/xoá + cờ chính, Notes nội bộ theo quy tắc tác giả, Activities thêm/đánh dấu xong/mở lại/xoá, chuyển đổi Lead → Client (chọn người phụ trách; gặp 422 DUPLICATE_CLIENT_CANDIDATE thì cảnh báo + nút force convert; 409 hiển thị đã chuyển đổi; thành công chuyển sang trang Client); BFF proxy tới /leads, /lead-activities; i18n namespace Leads EN/VI; quyền hiển thị theo ma trận DEC-014 (leads.*).
 - Progress: Muse hoàn thành 2026-11-24 (theo quy ước PO chốt 2026-11-23: Muse thay vai FE khi cần, OpenCode ưu tiên QA): bật nav Leads + route guard, board Kanban + chi tiết Lead, BFF routes, i18n Leads (vi.json U+FFFD = 0, dấu hiệu mã hoá đôi Ã = 0, đủ 82/82 key EN/VI). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en+vi), pnpm test PASS (27/27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): board grid md:2 xl:4, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Progress: Đã merge vào main và đóng gói trong bản 0.5.0.
 - Handoff: Chờ Nguyen nghiệm thu trực quan + merge (Muse không tự duyệt FE của chính mình); ca UI QA bổ sung khi OpenCode có quota.
 ## QA-005 — Bộ test Team & Resource theo TEAM_CONTRACT + chạy thật trên BE-007
-- Status: IN_REVIEW
+- Status: DONE
 - Assignee: OpenCode · Reviewer: Muse
 - Mô tả: Viết test case từ Acceptance Criteria của `docs/TEAM_CONTRACT.md` (teams CRUD + thành viên + ma trận quyền, directory/hồ sơ/lọc, đổi vai hiệu lực ngay + giới hạn Admin/Owner, activation thu hồi token, invitation lifecycle gồm expired/resend/revoke, snapshot team→project added/removed/kept, workload-lite, cô lập tenant 404/422) tại `tests/e2e/team.spec.ts`; bổ sung `tests/e2e/team-ui.spec.ts` cho UI FE-009 (Members + lọc, Teams list, chi tiết team + members, Workload, accept-invitation token sai). Chạy thật trên Docker/MySQL 8 với seed demo đầy đủ (owner/admin/sales/PM/accountant/team member + agency thứ hai, Mailpit bật).
 - Kết quả: API **16/16 PASS**, UI **5/5 PASS** — tổng **21 PASS / 0 SKIP / 0 FAIL**. Các ca API gồm TC-TEAM-01…16 (duplicate name 422, PM tạo nhưng không xoá được team, Sales chỉ đọc, Team Member chỉ thấy team của mình + team khác 404, member idempotent + cross-tenant 422/404, lọc directory + open task count, đổi vai hiệu lực ngay trên token cũ, Admin không quản Admin, Owner invariant 403/422, deactivate thu hồi token + `ACCOUNT_DISABLED` + reactivate, invitation pending/registered/Owner-role/Admin guards, accept + login đúng vai, second accept 422, invalid token 404, expired 422 `INVITATION_EXPIRED`, resend vô hiệu token cũ, revoke giết link, snapshot không lan truyền thành viên mới, detach giữ người có task + `via_team_id=null`, workload + Team Member chỉ thấy dòng mình, cô lập tenant). Mail invitation token lấy qua Mailpit; tài khoản mời là disposable, không sửa tài khoản seed dùng chung. Verdict: PASS → BE-007 DONE.
 - Ghi nhận ngoài phạm vi (FE-009, không chặn BE-007): thiếu message `Shell.nav.team` khiến web log `MISSING_MESSAGE` trên các trang Team; label form accept-invitation không gắn với input (test dùng selector vị trí). Đã ghi Inbox.
 - Progress: PR mở vào main chờ Muse review; CHANGELOG `[Unreleased]` → QA & Fixes đã cập nhật; không bump VERSION (0.5.0 do prompt đóng gói riêng).
+- Progress: Đã merge vào main và đóng gói trong bản 0.5.0.
 - Handoff: Muse review PR; không tự merge.
 
 ---

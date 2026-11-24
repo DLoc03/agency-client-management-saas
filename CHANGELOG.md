@@ -6,6 +6,8 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-24
+
 ### Backend
 - Team & Resource Management contract published (BE-007): `docs/TEAM_CONTRACT.md` approved by the Product Owner (DEC-017) — teams and membership, employee directory, role assignment, account activation/deactivation, email invitations, snapshot team-to-project assignment, workload-lite. Implementation follows in BE-007.
 - Team & Resource Management module (BE-007): teams CRUD with membership and Team-Member scoping, employee directory with role/team/active filters, role assignment and account activation (deactivation revokes all tokens) with the DEC-017 Admin limits, email invitations (hashed token, 7-day expiry, public accept, resend/revoke), snapshot team-to-project assignment via `project_members.via_team_id`, and `GET /workload` (open/overdue/due-in-7-days task counts computed at read time).
