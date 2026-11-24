@@ -5,7 +5,8 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
-import { listTeams, createTeam, deleteTeam } from "@/lib/team/api";
+import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
+import { Select } from "@/components/ui/Select";
 import type { Team } from "@/lib/team/types";
 
 export default function TeamsPage() {
@@ -19,6 +20,7 @@ export default function TeamsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
+  const [directory, setDirectory] = useState<{ id: number; name: string; email: string }[]>([]);
 
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
@@ -29,6 +31,9 @@ export default function TeamsPage() {
     setError(null);
     try {
       setTeams(await listTeams());
+      listUsers()
+        .then((users) => setDirectory(users.map((u) => ({ id: u.id, name: u.name, email: u.email }))))
+        .catch(() => undefined);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
@@ -88,8 +93,9 @@ export default function TeamsPage() {
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
+            <Icon name="plus" className="h-4 w-4" />
             {t("newTeam")}
           </button>
         )}
@@ -153,7 +159,7 @@ export default function TeamsPage() {
           <form onSubmit={handleCreate} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("newTeam")}</h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("fields.teamName")}</label>
+              <label className="text-sm font-medium">{t("fields.teamName")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
                 required
                 value={form.name}
@@ -172,11 +178,14 @@ export default function TeamsPage() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.lead")}</label>
-              <input
-                type="number"
+              <Select
                 value={form.lead_id}
-                onChange={(e) => setForm({ ...form, lead_id: e.target.value })}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                onValueChange={(v) => setForm({ ...form, lead_id: v })}
+                options={[
+                  { value: "", label: "—" },
+                  ...directory.map((u) => ({ value: String(u.id), label: `${u.name} (${u.email})` })),
+                ]}
+                className="w-full"
               />
             </div>
             <div className="flex justify-end gap-2">

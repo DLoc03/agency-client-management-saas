@@ -275,7 +275,12 @@
       "remove": "Gỡ team",
       "resultAssigned": "Đã gán team: thêm {added} thành viên.",
       "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
-    }
+    },
+    "timelineTypes": {
+      "task": "Công việc",
+      "milestone": "Cột mốc"
+    },
+    "selectMember": "Chọn thành viên"
   },
   "Leads": {
     "title": "Lead",
@@ -566,7 +571,11 @@
     "invitationsForm": {
       "email": "Email",
       "roles": "Vai trò",
-      "send": "Gửi lời mời"
+      "send": "Gửi lời mời",
+      "validation": {
+        "emailRequired": "Chưa nhập email.",
+        "roleRequired": "Chưa chọn vai trò."
+      }
     },
     "accept": {
       "title": "Nhận lời mời",

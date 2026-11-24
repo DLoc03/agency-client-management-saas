@@ -24,6 +24,7 @@ import {
   updateLeadActivity,
   updateLeadContact,
 } from "@/lib/leads/api";
+import { statusBadgeClass } from "@/lib/status-colors";
 import { LeadApiError } from "@/lib/leads/types";
 import type {
   DirectoryUser,
@@ -367,7 +368,7 @@ export default function LeadDetailPage() {
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight">{lead.name}</h1>
-          <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+          <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(lead.status)}`}>
             {t(`statuses.${lead.status}`)}
           </span>
           {lead.source && (
