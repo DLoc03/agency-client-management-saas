@@ -302,6 +302,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 
+## FE-011 — Màn hình CRM / Lead (Nhóm 1) theo CRM_CONTRACT
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-011-lead-screens-v2 · PR: (mở PR vào main; phát hành lại từ main sau khi PR #44 merge, thay thế PR #45)
+- Blocked by: BE-005 (đã merge)
+- Acceptance Criteria: Bật mục Leads trên sidebar + route guard; board Pipeline Kanban theo DEC-013 (4 cột trạng thái cố định new/contacted/qualified/unqualified, kéo-thả đổi trạng thái, thẻ lead có giá trị ước tính/nguồn/người phụ trách) + dải tổng hợp pipeline (số lead + tổng giá trị theo trạng thái, từ /leads/pipeline-summary) + danh sách follow-up đến hạn (/lead-activities/due); bộ lọc tìm kiếm/nguồn/người phụ trách; tạo Lead; chi tiết Lead gồm tổng quan + sửa hồ sơ (khoá trường chính sau khi convert), Contacts dùng chung thêm/sửa/xoá + cờ chính, Notes nội bộ theo quy tắc tác giả, Activities thêm/đánh dấu xong/mở lại/xoá, chuyển đổi Lead → Client (chọn người phụ trách; gặp 422 DUPLICATE_CLIENT_CANDIDATE thì cảnh báo + nút force convert; 409 hiển thị đã chuyển đổi; thành công chuyển sang trang Client); BFF proxy tới /leads, /lead-activities; i18n namespace Leads EN/VI; quyền hiển thị theo ma trận DEC-014 (leads.*).
+- Progress: Muse hoàn thành 2026-11-24 (theo quy ước PO chốt 2026-11-23: Muse thay vai FE khi cần, OpenCode ưu tiên QA): bật nav Leads + route guard, board Kanban + chi tiết Lead, BFF routes, i18n Leads (vi.json U+FFFD = 0, dấu hiệu mã hoá đôi Ã = 0, đủ 82/82 key EN/VI). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en+vi), pnpm test PASS (27/27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): board grid md:2 xl:4, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Handoff: Chờ Nguyen nghiệm thu trực quan + merge (Muse không tự duyệt FE của chính mình); ca UI QA bổ sung khi OpenCode có quota.
 ## QA-005 — Bộ test Team & Resource theo TEAM_CONTRACT + chạy thật trên BE-007
 - Assignee: OpenCode · Level: L3 · Status: TODO
 - Blocked by: ⏸ chờ BE-007 merge
