@@ -7,6 +7,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { usePortalAuth } from "@/lib/portal-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -139,9 +140,8 @@ export function PortalResetPasswordForm({
         >
           {t("passwordLabel")}
         </label>
-        <input
+        <PasswordInput
           id="new-password"
-          type="password"
           autoComplete="new-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={!!errors.password}

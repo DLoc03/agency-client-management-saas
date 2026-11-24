@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Avatar } from "@/components/ui/Avatar";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -69,9 +70,7 @@ export default function WorkloadPage() {
               <div key={r.user_id} className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                      {r.name.split(" ").map((part) => part.charAt(0)).join("").slice(0, 2).toUpperCase()}
-                    </span>
+                    <Avatar name={r.name} seed={r.user_id ?? r.name} className="h-10 w-10 text-sm" />
                     <div className="min-w-0">
                       <p className="truncate font-medium">{r.name}</p>
                       <p className="truncate text-xs text-muted-foreground">{r.email}</p>

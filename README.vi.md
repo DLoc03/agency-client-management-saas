@@ -1,4 +1,4 @@
-# Agency & Client Management SaaS
+# Brewbase — Quản lý Agency & Khách hàng
 
 Hệ thống SaaS giúp agency quản lý toàn bộ hoạt động kinh doanh và vận hành — từ tiếp cận khách hàng tiềm năng, triển khai dự án và bàn giao sản phẩm, đến chăm sóc quan hệ khách hàng lâu dài.
 

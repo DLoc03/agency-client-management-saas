@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Avatar } from "@/components/ui/Avatar";
 import { Select } from "@/components/ui/Select";
 import { listUsers, listTeams } from "@/lib/team/api";
 import type { DirectoryUser } from "@/lib/team/types";
@@ -143,7 +144,8 @@ export default function MembersPage() {
             {users.map((u) => (
               <div key={u.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
+                  <Avatar name={u.name} seed={u.id} className="h-10 w-10 text-sm" />
+                  <div className="min-w-0 flex-1">
                     <h3 className="truncate font-semibold">{u.name}</h3>
                     <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                     {u.job_title && <p className="truncate text-xs text-muted-foreground">{u.job_title}</p>}

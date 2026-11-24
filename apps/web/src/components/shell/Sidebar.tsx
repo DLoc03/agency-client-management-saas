@@ -6,6 +6,8 @@ import { Link, useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth";
 import { Icon } from "./Icon";
+import { Avatar } from "@/components/ui/Avatar";
+import { Logo } from "./Logo";
 import { useNavItems } from "./nav-items";
 
 type SidebarProps = {
@@ -41,12 +43,6 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     }
   };
 
-  const initials = (session?.user.name ?? "?")
-    .split(" ")
-    .map((p) => p.charAt(0))
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <aside
@@ -55,9 +51,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     >
       {/* Brand */}
       <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-bold">
-          A
-        </div>
+        <Logo variant="violet" className="h-8 w-8 shrink-0" />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold leading-tight">{t("brand")}</p>
           <p className="truncate text-xs text-sidebar-muted">{t("brandSubtitle")}</p>
@@ -115,9 +109,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           aria-haspopup="menu"
           aria-expanded={menuOpen}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-semibold text-sidebar-accent-foreground">
-            {initials}
-          </div>
+          <Avatar name={session?.user.name ?? "?"} seed={session?.user.id} className="h-9 w-9 text-sm" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-sidebar-foreground">
               {session?.user.name ?? t("brand")}

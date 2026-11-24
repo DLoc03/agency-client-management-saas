@@ -7,6 +7,7 @@
 "use client";
 
 import { Link, useRouter } from "@/i18n/routing";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { usePortalAuth } from "@/lib/portal-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -137,9 +138,8 @@ export function PortalLoginForm() {
             {t("forgotPassword")}
           </Link>
         </div>
-        <input
+        <PasswordInput
           id="portal-password"
-          type="password"
           autoComplete="current-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={!!errors.password}

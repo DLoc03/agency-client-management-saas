@@ -30,7 +30,7 @@ import type {
 interface PortalAuthContextValue {
   session: PortalAuthSession | null;
   login: (req: PortalLoginRequest) => Promise<PortalLoginResult>;
-  logout: () => void;
+  logout: () => Promise<void>;
   forgotPassword: (
     req: PortalForgotPasswordRequest
   ) => Promise<{ success: boolean; message: string }>;
@@ -105,10 +105,17 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Await the BFF logout so the portal_token cookie is actually cleared
+    // before the caller navigates: the middleware redirects /portal/login
+    // back to /portal while the cookie still exists, which stranded the
+    // user on a blank page until reload (acceptance round 3, item P6).
+    try {
+      await fetch("/api/portal/auth/logout", { method: "POST" });
+    } catch {
+      // Best effort — the local session ends regardless.
+    }
     setSession(null);
-    // Fire and forget: revoke at the backend + clear the cookie.
-    void fetch("/api/portal/auth/logout", { method: "POST" }).catch(() => undefined);
   }, []);
 
   const forgotPassword = useCallback(

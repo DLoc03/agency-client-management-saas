@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { Select } from "@/components/ui/Select";
 import {
   createContact,
@@ -838,10 +839,9 @@ export default function ClientDetailPage() {
               }
               className={inputCls}
             />
-            <input
+            <PasswordInput
               required
-              type="password"
-              minLength={8}
+                minLength={8}
               placeholder={`${t("portal.password")} *`}
               value={accountForm.password}
               onChange={(e) =>
