@@ -18,7 +18,7 @@ import { PORTAL_TOKEN_STORAGE_KEY } from "./lib/portal-auth/types";
 const intlMiddleware = createIntlMiddleware(routing);
 
 /** Internal app paths */
-const INTERNAL_PROTECTED_PATHS = ["/dashboard", "/projects"];
+const INTERNAL_PROTECTED_PATHS = ["/dashboard", "/projects", "/clients"];
 const INTERNAL_AUTH_ONLY_PATHS = ["/login"];
 
 /** Client portal paths */

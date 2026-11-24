@@ -19,7 +19,7 @@ export function useNavItems(): NavItem[] {
   return [
     { key: "dashboard", href: "/dashboard", icon: "layout-dashboard" },
     { key: "leads", href: "/leads", icon: "users", disabled: true },
-    { key: "clients", href: "/clients", icon: "building-2", disabled: true },
+    { key: "clients", href: "/clients", icon: "building-2" },
     { key: "projects", href: "/projects", icon: "folder-kanban" },
     { key: "tasks", href: "/tasks", icon: "check-square", disabled: true },
     { key: "invoices", href: "/invoices", icon: "receipt", disabled: true },

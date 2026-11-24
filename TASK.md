@@ -252,6 +252,15 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: OpenCode hoàn thành 2026-11-22: bật nav Projects, trang danh sách + chi tiết dự án + chi tiết công việc, BFF proxy routes, i18n Projects (U+FFFD vi.json = 0). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en/vi), pnpm test PASS (27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): sidebar drawer, grid sm:2 lg:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
 - Handoff: Chờ Muse review chéo (DEC-011); không tự merge.
 
+## FE-010 — Màn hình Client Management (Nhóm 2) theo CLIENT_CONTRACT
+- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Branch: fe/FE-010-client-screens · PR: (mở PR vào main)
+- Blocked by: BE-004 (đã merge)
+- Acceptance Criteria: Bật mục Clients trên sidebar + route guard; danh sách Clients với bộ lọc trạng thái/tag/người phụ trách/tìm kiếm, thẻ hiển thị trạng thái/loại/tag/người phụ trách/số tài khoản Portal, empty state; tạo Client (kèm Organization khi type=company, kèm tag_ids) và tạo Tag; chi tiết Client gồm tổng quan + sửa hồ sơ/trạng thái/người phụ trách/tags/organization, Contacts thêm/sửa/xoá + cờ người liên hệ chính, Notes nội bộ thêm/xoá theo quy tắc tác giả (hoặc Owner/Admin), Portal accounts tạo mới + khoá/mở; xoá Client chỉ Agency Owner; BFF proxy tới /clients, /tags, /users; i18n namespace Clients EN/VI; quyền hiển thị theo ma trận DEC-009.
+- Progress: Muse hoàn thành 2026-11-24 (theo quy ước PO chốt 2026-11-23: Muse thay vai FE khi cần, OpenCode ưu tiên QA): bật nav Clients + route guard, trang danh sách + chi tiết Client, BFF routes, i18n Clients (vi.json U+FFFD = 0, dấu hiệu mã hoá đôi Ã = 0, đủ 70/70 key EN/VI). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en+vi), pnpm test PASS (27/27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): lưới thẻ sm:2 xl:3, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
+- Handoff: Chờ Nguyen nghiệm thu trực quan + merge (Muse không tự duyệt FE của chính mình); ca UI QA bổ sung khi OpenCode có quota.
+
+
 ---
 
 ## QA-004 — Bộ test Project Management theo PROJECT_CONTRACT + chạy thật trên BE-006

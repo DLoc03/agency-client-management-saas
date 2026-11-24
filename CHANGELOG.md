@@ -10,6 +10,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Team & Resource Management contract published (BE-007): `docs/TEAM_CONTRACT.md` approved by the Product Owner (DEC-017) — teams and membership, employee directory, role assignment, account activation/deactivation, email invitations, snapshot team-to-project assignment, workload-lite. Implementation follows in BE-007.
 - Team & Resource Management module (BE-007): teams CRUD with membership and Team-Member scoping, employee directory with role/team/active filters, role assignment and account activation (deactivation revokes all tokens) with the DEC-017 Admin limits, email invitations (hashed token, 7-day expiry, public accept, resend/revoke), snapshot team-to-project assignment via `project_members.via_team_id`, and `GET /workload` (open/overdue/due-in-7-days task counts computed at read time).
 
+### Frontend
+- Client Management screens (FE-010): enabled Clients nav item + route guard; list page with status/tag/account-manager/search filters, cards with single-line status/type/tag chips and portal-account counts, empty state, create-client form (Organization block for company clients, tag selection) and inline tag creation; client detail with overview and profile editing (status, account manager, tags, organization), contacts CRUD with primary flag, internal notes with author-rule deletion, portal account creation and activate/deactivate; client deletion restricted to the Agency Owner; BFF proxy routes to /clients, /tags and /users; Clients i18n namespace EN/VI (vi.json U+FFFD = 0, double-encoding markers = 0). Self-check: typecheck, build (en+vi), tests pass; responsive classes reviewed at 390/768/1280.
+
 ## [0.4.0] - 2026-11-22
 
 ### Backend

@@ -253,5 +253,101 @@
       "deleteFailed": "Failed to delete project.",
       "notFound": "Project not found."
     }
+  },
+  "Clients": {
+    "title": "Clients",
+    "subtitle": "Manage client profiles, contacts and portal access.",
+    "newClient": "New client",
+    "newTag": "New tag",
+    "empty": {
+      "title": "No clients yet",
+      "description": "Create your first client to get started."
+    },
+    "filters": {
+      "status": "Status",
+      "tag": "Tag",
+      "manager": "Account manager",
+      "search": "Search clients",
+      "all": "All"
+    },
+    "statuses": {
+      "active": "Active",
+      "paused": "Paused",
+      "churned": "Churned"
+    },
+    "types": {
+      "company": "Company",
+      "individual": "Individual"
+    },
+    "fields": {
+      "name": "Name",
+      "type": "Type",
+      "status": "Status",
+      "manager": "Account manager",
+      "email": "Email",
+      "phone": "Phone",
+      "website": "Website",
+      "address": "Address",
+      "taxCode": "Tax code",
+      "tags": "Tags",
+      "organization": "Organization",
+      "legalName": "Legal name",
+      "industry": "Industry",
+      "size": "Company size",
+      "portalAccounts": "Portal accounts"
+    },
+    "actions": {
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "remove": "Remove",
+      "back": "Back to clients",
+      "addContact": "Add contact",
+      "addNote": "Add note",
+      "createAccount": "Create account",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "detail": {
+      "overview": "Overview",
+      "contacts": "Contacts",
+      "notes": "Notes",
+      "portalAccounts": "Portal accounts",
+      "noContacts": "No contacts yet.",
+      "noNotes": "No notes yet.",
+      "noPortalAccounts": "No portal accounts yet.",
+      "notesHint": "Internal notes — clients never see these."
+    },
+    "contacts": {
+      "fullName": "Full name",
+      "position": "Position",
+      "primary": "Primary"
+    },
+    "notes": {
+      "placeholder": "Write an internal note…"
+    },
+    "portal": {
+      "name": "Name",
+      "password": "Password",
+      "locale": "Locale",
+      "active": "Active",
+      "disabled": "Disabled",
+      "lastLogin": "Last login",
+      "never": "Never"
+    },
+    "tags": {
+      "name": "Tag name",
+      "color": "Color"
+    },
+    "confirmDelete": "Delete this client? Linked portal accounts will be disabled.",
+    "confirmDeleteContact": "Delete this contact?",
+    "errors": {
+      "loadFailed": "Failed to load clients.",
+      "saveFailed": "Failed to save.",
+      "createFailed": "Failed to create client.",
+      "deleteFailed": "Failed to delete."
+    }
   }
 }
