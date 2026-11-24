@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Link, useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { acceptInvitation } from "@/lib/team/api";
 
 function AcceptInvitationInner() {
@@ -73,9 +74,8 @@ function AcceptInvitationInner() {
         </div>
         <div className="space-y-2">
           <label htmlFor="accept-password" className="text-sm font-medium">{t("accept.password")}</label>
-          <input
+          <PasswordInput
             id="accept-password"
-            type="password"
             required
             minLength={8}
             value={password}

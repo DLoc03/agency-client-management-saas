@@ -9,6 +9,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/routing";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { useAuth } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -145,9 +146,8 @@ export function LoginForm() {
             {t("forgotPassword")}
           </a>
         </div>
-        <input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="current-password"
           placeholder={t("passwordPlaceholder")}
           aria-invalid={!!errors.password}

@@ -1,4 +1,4 @@
-# Agency & Client Management SaaS
+# Brewbase — Agency & Client Management
 
 A SaaS system that helps agencies manage their entire business and operational activities — from initial outreach to potential clients, through project completion and product delivery, to ongoing client relationship management.
 

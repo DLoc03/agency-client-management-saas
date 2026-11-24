@@ -252,6 +252,20 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-24 — Muse đã làm trên branch `fix/FIX-010-round2-findings` (theo quy ước thay vai FE, PO chốt 2026-11-23): web typecheck PASS, test 27/27, build 48 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
 - Blockers: Không có. (Riêng D4 vòng 2 — tài khoản portal tạo ở Clients không đăng nhập được ở cổng Portal — nguyên nhân là cổng Portal vẫn là bản mock của FE-003, chưa từng nối API thật; xử lý ở task riêng FE-013 nối Portal vào API thật, chờ PO chốt thứ tự.)
 
+## FIX-011 — Đăng xuất Portal kẹt ở trang trắng (nghiệm thu vòng 3, mục P6)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: Vòng 3 đạt mọi mục trừ P6: bấm Đăng xuất ở Portal thì phiên đăng xuất nhưng không về được trang đăng nhập, phải tải lại trang. Nguyên nhân: `logout()` của portal (từ thời mock) gọi BFF xoá cookie kiểu "bắn rồi quên" rồi chuyển trang ngay; middleware thấy cookie `portal_token` vẫn còn nên đá `/portal/login` ngược về `/portal`, trong khi trang chủ Portal lúc đó không còn phiên nên render trắng và hiệu ứng chuyển trang không chạy lại. App nội bộ không dính vì logout của FE-004 vốn là async. Sửa: `logout()` của portal chuyển thành async — chờ BFF xoá cookie xong mới `setSession(null)`, nút Đăng xuất ở trang chủ Portal `await logout()` rồi mới chuyển trang.
+- Acceptance Criteria: Bấm Đăng xuất ở Portal về thẳng trang đăng nhập, không cần tải lại; các mục vòng 3 còn lại không hồi quy; typecheck/test/build đạt.
+
+## FE-012 — Branding Brewbase: tên site, logo + biến thể màu, nút hiện mật khẩu, avatar mặc định
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: Lô branding để dành sau nghiệm thu (PO nhắc lại 2026-11-24): (1) Tên site: tiêu đề trang (tab trình duyệt) "Brewbase - Agency & Client Management" / "Brewbase - Quản lý Agency & Khách hàng" qua metadata theo locale (key `Shell.siteTitle`), brand ở sidebar và Portal đổi thành "Brewbase", favicon là logo. (2) Logo nền tảng mới: ký hiệu chữ B hình học trên nền ô bo góc (`components/shell/Logo.tsx` + file SVG ở `apps/web/public/`), 4 biến thể màu theo bề mặt: violet (chính, dùng ở sidebar app nội bộ), emerald (Portal), dark, light. (3) Nút Eye/EyeClosed hiện/ẩn mật khẩu: component dùng chung `components/ui/PasswordInput.tsx` (kèm nhãn i18n `Common.showPassword`/`hidePassword`), gắn ở cả 5 ô mật khẩu: đăng nhập nội bộ, đăng nhập Portal, đặt lại mật khẩu Portal, chấp nhận lời mời, tạo tài khoản portal ở Clients. (4) Avatar mặc định cho người dùng: component `components/ui/Avatar.tsx` — chữ cái đầu của TỪ CUỐI trong họ tên (tên gọi theo thứ tự tên Việt) trên nền tròn, màu chọn xác định theo id người dùng (8 màu, cùng một người luôn cùng màu) để nhận diện nhanh cạnh các tên hiển thị nhỏ; gắn ở khối người dùng dưới sidebar, thẻ thành viên ở Danh bạ, hàng Workload (thay vòng tròn cũ) và chip thành viên trong chi tiết dự án. Màu primary của UI: PO chốt tím thương hiệu #7B61FF (2026-11-24) — token `--primary`/`--ring` ở globals.css đổi sang HSL 250 100% 69% cho cả light và dark, chữ trên nền primary là trắng; Portal giữ emerald theo DEC-013.
+- Acceptance Criteria: Tab trình duyệt hiện đúng tiêu đề Brewbase theo ngôn ngữ; sidebar/Portal hiện logo mới đúng biến thể; cả 5 ô mật khẩu có nút con mắt bấm đổi qua lại được; avatar hiển thị đúng chữ cái tên cuối + màu ổn định theo từng người ở 4 vị trí đã gắn; typecheck/test/build đạt; file tiếng Việt sạch 2 lớp kiểm tra byte.
+- Progress: 2026-11-24 — Muse đã làm cả FIX-011 + FE-012 trên branch `fix/FIX-011-logout-branding` (theo quy ước thay vai FE): web typecheck PASS, test 17/17, build 54 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
+- Blockers: Không có.
+
 ## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
 - Status: DONE
 - Assignee: OpenCode · Reviewer: Muse

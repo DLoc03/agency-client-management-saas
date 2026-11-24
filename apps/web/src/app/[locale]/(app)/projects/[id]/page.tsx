@@ -7,6 +7,7 @@ import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
+import { Avatar } from "@/components/ui/Avatar";
 import {
   getProject,
   updateProject,
@@ -451,8 +452,9 @@ export default function ProjectDetailPage() {
             {members.map((m) => (
               <span
                 key={m.id}
-                className="inline-flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+                className="inline-flex items-center gap-1.5 rounded-full bg-secondary py-1 pl-1 pr-3 text-xs font-medium text-secondary-foreground"
               >
+                <Avatar name={m.name} seed={m.id} className="h-5 w-5 text-[10px]" />
                 <span className="whitespace-nowrap">{m.name}</span>
                 {canManageMembers && (
                   <button

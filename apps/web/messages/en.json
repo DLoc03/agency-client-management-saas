@@ -2,7 +2,9 @@
   "Common": {
     "language": "Language",
     "loading": "Loading…",
-    "or": "or"
+    "or": "or",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "Home": {
     "status": "Foundation phase — the application is being initialized.",
@@ -40,7 +42,7 @@
     }
   },
   "Shell": {
-    "brand": "Agency SaaS",
+    "brand": "Brewbase",
     "brandSubtitle": "Internal workspace",
     "sidebarLabel": "Primary navigation",
     "openMenu": "Open navigation menu",
@@ -82,10 +84,11 @@
       "profile": "Profile",
       "workspaceSettings": "Workspace settings",
       "signOut": "Sign out"
-    }
+    },
+    "siteTitle": "Brewbase - Agency & Client Management"
   },
   "Portal": {
-    "brand": "Client Portal",
+    "brand": "Brewbase",
     "login": {
       "title": "Sign in to Client Portal",
       "subtitle": "Review projects, tasks, and billing from your agency.",

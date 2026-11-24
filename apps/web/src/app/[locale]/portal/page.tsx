@@ -72,8 +72,8 @@ export default function PortalDashboardPage() {
           </div>
 
           <button
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               router.replace("/portal/login");
             }}
             className="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 sm:mt-0"

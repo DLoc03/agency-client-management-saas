@@ -2,7 +2,9 @@
   "Common": {
     "language": "Ngôn ngữ",
     "loading": "Đang tải…",
-    "or": "hoặc"
+    "or": "hoặc",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu"
   },
   "Home": {
     "status": "Giai đoạn nền tảng — ứng dụng đang được khởi tạo.",
@@ -40,7 +42,7 @@
     }
   },
   "Shell": {
-    "brand": "Agency SaaS",
+    "brand": "Brewbase",
     "brandSubtitle": "Không gian nội bộ",
     "sidebarLabel": "Điều hướng chính",
     "openMenu": "Mở menu điều hướng",
@@ -82,10 +84,11 @@
       "profile": "Hồ sơ",
       "workspaceSettings": "Cài đặt workspace",
       "signOut": "Đăng xuất"
-    }
+    },
+    "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },
   "Portal": {
-    "brand": "Cổng Khách Hàng",
+    "brand": "Brewbase",
     "login": {
       "title": "Đăng nhập Cổng Khách Hàng",
       "subtitle": "Theo dõi dự án, công việc và hoá đơn từ đơn vị cung cấp dịch vụ.",
