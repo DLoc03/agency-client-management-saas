@@ -1,20 +1,8 @@
 /**
- * Portal Auth barrel export — FE-003
+ * Portal Auth barrel export — FE-003, real-API wiring FE-013
  */
 
 export { PortalAuthProvider, usePortalAuth } from "./context";
-export {
-  mockPortalForgotPassword,
-  mockPortalGetMe,
-  mockPortalLogin,
-  mockPortalResetPassword,
-} from "./mock";
-export {
-  clearPortalSession,
-  hasPortalSession,
-  loadPortalSession,
-  savePortalSession,
-} from "./storage";
 export { PORTAL_TOKEN_STORAGE_KEY } from "./types";
 export type {
   PortalAgency,
@@ -25,6 +13,7 @@ export type {
   PortalLoginResponse,
   PortalLoginResult,
   PortalMeResponse,
+  PortalProject,
   PortalResetPasswordRequest,
   PortalResetResult,
 } from "./types";

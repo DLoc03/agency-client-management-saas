@@ -1,6 +1,10 @@
 /**
- * Client Portal Auth Context — FE-003
+ * Client Portal Auth Context — FE-003, real-API wiring FE-013
  * Provides { session, login, logout, forgotPassword, resetPassword, isLoading }
+ *
+ * All calls go through the BFF (/api/portal/auth/*); the Sanctum token
+ * lives in the httpOnly portal_token cookie and is never seen by this
+ * code. The session holds identity only (client + agency).
  */
 
 "use client";
@@ -13,21 +17,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  mockPortalForgotPassword,
-  mockPortalLogin,
-  mockPortalResetPassword,
-} from "./mock";
-import {
-  clearPortalSession,
-  loadPortalSession,
-  savePortalSession,
-} from "./storage";
 import type {
   PortalAuthSession,
   PortalForgotPasswordRequest,
   PortalLoginRequest,
   PortalLoginResult,
+  PortalMeResponse,
   PortalResetPasswordRequest,
   PortalResetResult,
 } from "./types";
@@ -45,55 +40,114 @@ interface PortalAuthContextValue {
 
 const PortalAuthContext = createContext<PortalAuthContextValue | null>(null);
 
+async function readErrorCode(res: Response): Promise<string> {
+  const body = await res.json().catch(() => null);
+  return body?.error?.code || "REQUEST_FAILED";
+}
+
+async function readMessage(res: Response): Promise<string> {
+  const body = await res.json().catch(() => null);
+  return body?.data?.message || body?.message || "";
+}
+
 export function PortalAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<PortalAuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Bootstrap the session from the httpOnly cookie via the BFF.
   useEffect(() => {
-    setSession(loadPortalSession());
-    setIsLoading(false);
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/portal/auth/me", {
+          headers: { Accept: "application/json" },
+        });
+        if (!cancelled && res.ok) {
+          const body = (await res.json()) as PortalMeResponse;
+          setSession({ client: body.data.client, agency: body.data.agency });
+        }
+      } catch {
+        // No session — the route guards handle redirection.
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(
     async (req: PortalLoginRequest): Promise<PortalLoginResult> => {
-      const result = await mockPortalLogin(req);
-
-      if ("status" in result) {
-        return {
-          success: false,
-          code: result.code,
+      try {
+        const res = await fetch("/api/portal/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(req),
+        });
+        if (!res.ok) {
+          return { success: false, code: await readErrorCode(res) };
+        }
+        const body = (await res.json()) as PortalMeResponse;
+        const newSession: PortalAuthSession = {
+          client: body.data.client,
+          agency: body.data.agency,
         };
+        setSession(newSession);
+        return { success: true, session: newSession };
+      } catch {
+        return { success: false, code: "NETWORK_ERROR" };
       }
-
-      const newSession: PortalAuthSession = {
-        token: result.data.token,
-        client: result.data.client,
-        agency: result.data.agency,
-      };
-
-      savePortalSession(newSession);
-      setSession(newSession);
-      return { success: true, session: newSession };
     },
     []
   );
 
   const logout = useCallback(() => {
-    clearPortalSession();
     setSession(null);
+    // Fire and forget: revoke at the backend + clear the cookie.
+    void fetch("/api/portal/auth/logout", { method: "POST" }).catch(() => undefined);
   }, []);
 
   const forgotPassword = useCallback(
     async (req: PortalForgotPasswordRequest) => {
-      const res = await mockPortalForgotPassword(req);
-      return { success: true, message: res.data.message };
+      try {
+        const res = await fetch("/api/portal/auth/forgot-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(req),
+        });
+        return { success: res.ok, message: await readMessage(res) };
+      } catch {
+        return { success: false, message: "" };
+      }
     },
     []
   );
 
   const resetPassword = useCallback(
     async (req: PortalResetPasswordRequest): Promise<PortalResetResult> => {
-      return await mockPortalResetPassword(req);
+      try {
+        const res = await fetch("/api/portal/auth/reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(req),
+        });
+        if (!res.ok) {
+          return { success: false, code: await readErrorCode(res) };
+        }
+        return { success: true, message: await readMessage(res) };
+      } catch {
+        return { success: false, code: "NETWORK_ERROR" };
+      }
     },
     []
   );

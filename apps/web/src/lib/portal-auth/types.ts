@@ -1,6 +1,10 @@
 /**
- * Client Portal Auth Types — FE-003
+ * Client Portal Auth Types — FE-003, real-API wiring FE-013
  * Derived from docs/AUTH_CONTRACT.md §3 (Portal) & DEC-008
+ *
+ * The portal token lives only in an httpOnly cookie set by the BFF
+ * (same pattern as the internal app, FE-004) — it never reaches
+ * client-side storage or JavaScript-readable cookies.
  */
 
 export const PORTAL_TOKEN_STORAGE_KEY = "portal_token";
@@ -24,6 +28,7 @@ export interface PortalAgency {
   slug: string;
 }
 
+/** Raw backend response of POST /api/v1/portal/auth/login (server-side only). */
 export interface PortalLoginResponse {
   data: {
     token: string;
@@ -49,8 +54,8 @@ export interface PortalResetPasswordRequest {
   password: string;
 }
 
+/** Client-side session: identity only, the token stays in the BFF cookie. */
 export interface PortalAuthSession {
-  token: string;
   client: PortalClient;
   agency: PortalAgency;
 }
@@ -62,3 +67,30 @@ export type PortalLoginResult =
 export type PortalResetResult =
   | { success: true; message: string }
   | { success: false; code: string; message?: string };
+
+export interface PortalProject {
+  id: number;
+  name: string;
+  description: string | null;
+  status: string;
+  start_date: string | null;
+  due_date: string | null;
+  tasks_count?: number;
+  tasks_done_count?: number;
+  progress_percent?: number;
+  milestones?: {
+    id: number;
+    name: string;
+    due_date: string | null;
+    status: string;
+    progress_percent: number;
+  }[];
+  tasks?: {
+    id: number;
+    title: string;
+    status: string;
+    priority: string;
+    due_date: string | null;
+    completed_at: string | null;
+  }[];
+}

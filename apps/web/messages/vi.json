@@ -144,9 +144,23 @@
       "welcome": "Kính chào quý khách, {name}!",
       "agency": "Đơn vị phụ trách: {agency}",
       "clientId": "Mã khách hàng: #{id}",
-      "emptyNotice": "Chưa có dự án hoặc hoá đơn nào. Các cập nhật mới từ agency sẽ hiển thị tại đây.",
-      "signOut": "Đăng xuất khỏi Portal",
-      "mockNotice": "⚠️ Chế độ Mock Portal — phiên đăng nhập và token độc lập với ứng dụng nội bộ."
+      "signOut": "Đăng xuất khỏi Portal"
+    },
+    "projects": {
+      "title": "Dự án của bạn",
+      "empty": "Chưa có dự án nào",
+      "emptyHint": "Các dự án agency đang thực hiện cho bạn sẽ hiện ở đây.",
+      "progress": "Tiến độ",
+      "tasksDone": "{done}/{total} công việc đã xong",
+      "due": "Hạn {date}",
+      "loadError": "Không tải được dữ liệu dự án. Vui lòng thử lại.",
+      "back": "Về danh sách dự án",
+      "startDate": "Bắt đầu",
+      "dueDate": "Hạn chót",
+      "milestones": "Cột mốc",
+      "noMilestones": "Chưa có cột mốc nào.",
+      "tasks": "Công việc",
+      "noTasks": "Chưa có công việc nào."
     }
   },
   "Projects": {
