@@ -7,7 +7,7 @@ const TABS = [
   { segment: "teams", href: "/team/teams", labelKey: "teams" },
   { segment: "members", href: "/team/members", labelKey: "members" },
   { segment: "invitations", href: "/team/invitations", labelKey: "invitations" },
-  { segment: "workload", href: "/team/workload", labelKey: "workload" },
+  { segment: "workload", href: "/team/workload", labelKey: "workload.title" },
 ] as const;
 
 export default function TeamLayout({ children }: { children: React.ReactNode }) {

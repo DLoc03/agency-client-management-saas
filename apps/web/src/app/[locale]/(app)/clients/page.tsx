@@ -15,6 +15,7 @@ import {
   listDirectoryUsers,
   listTags,
 } from "@/lib/clients/api";
+import { statusBadgeClass } from "@/lib/status-colors";
 import type {
   Client,
   ClientStatus,
@@ -480,7 +481,8 @@ export default function ClientsPage() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                className="flex flex-col gap-3 rounded-lg border border-border bg-card p-5"
+                onClick={() => router.push(`/clients/${client.id}`)}
+                className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-5 transition-shadow hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-2">
                   <Link
@@ -489,7 +491,7 @@ export default function ClientsPage() {
                   >
                     {client.name}
                   </Link>
-                  <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+                  <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(client.status)}`}>
                     {t(`statuses.${client.status}`)}
                   </span>
                 </div>
@@ -542,7 +544,10 @@ export default function ClientsPage() {
                   <div className="mt-auto pt-1">
                     <button
                       type="button"
-                      onClick={() => handleDelete(client)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(client);
+                      }}
                       className="text-sm font-medium text-red-600 hover:underline"
                     >
                       {t("actions.delete")}

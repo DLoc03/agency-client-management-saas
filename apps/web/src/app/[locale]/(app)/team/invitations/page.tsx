@@ -26,6 +26,7 @@ export default function InvitationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ email: "", roleIds: [] as number[] });
+  const [formError, setFormError] = useState<string | null>(null);
 
   const isOwner = !!session?.user.roles.includes("agency_owner");
   const isAdmin = !!session?.user.roles.includes("admin") && !isOwner;
@@ -68,6 +69,15 @@ export default function InvitationsPage() {
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.email.trim()) {
+      setFormError(t("invitationsForm.validation.emailRequired"));
+      return;
+    }
+    if (form.roleIds.length === 0) {
+      setFormError(t("invitationsForm.validation.roleRequired"));
+      return;
+    }
+    setFormError(null);
     try {
       await createInvitation({ email: form.email, role_ids: form.roleIds });
       setShowForm(false);
@@ -116,8 +126,9 @@ export default function InvitationsPage() {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
+            <Icon name="user-plus" className="h-4 w-4" />
             {t("invite")}
           </button>
         )}
@@ -167,7 +178,7 @@ export default function InvitationsPage() {
           <form onSubmit={handleInvite} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("invite")}</h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("invitationsForm.email")}</label>
+              <label className="text-sm font-medium">{t("invitationsForm.email")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
                 type="email"
                 required
@@ -177,7 +188,7 @@ export default function InvitationsPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("invitationsForm.roles")}</label>
+              <label className="text-sm font-medium">{t("invitationsForm.roles")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <div className="flex flex-wrap gap-3">
                 {visibleRoles.map((r) => (
                   <label key={r.id} className="inline-flex items-center gap-2 text-sm">
@@ -194,6 +205,11 @@ export default function InvitationsPage() {
                 ))}
               </div>
             </div>
+            {formError && (
+              <p role="alert" className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {formError}
+              </p>
+            )}
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowForm(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}

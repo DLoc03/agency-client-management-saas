@@ -23,7 +23,7 @@ import {
   deleteTask,
   getTimeline,
 } from "@/lib/projects/api";
-import { assignTeamToProject, listTeams, removeTeamFromProject } from "@/lib/team/api";
+import { assignTeamToProject, listTeams, listUsers, removeTeamFromProject } from "@/lib/team/api";
 import type { Team } from "@/lib/team/types";
 import type {
   Project,
@@ -52,6 +52,7 @@ export default function ProjectDetailPage() {
 
   const [project, setProject] = useState<Project | null>(null);
   const [members, setMembers] = useState<{ id: number; name: string; email: string }[]>([]);
+  const [directory, setDirectory] = useState<{ id: number; name: string; email: string }[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
@@ -311,8 +312,9 @@ export default function ProjectDetailPage() {
           <button
             type="button"
             onClick={() => router.push("/projects")}
-            className="rounded-md border border-border px-3 py-1.5 text-sm"
+            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
+            <Icon name="chevron-left" className="h-4 w-4" />
             {t("actions.back")}
           </button>
           <div>
@@ -424,9 +426,20 @@ export default function ProjectDetailPage() {
           {canManageMembers && (
             <button
               type="button"
-              onClick={() => setShowMember(true)}
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+              onClick={async () => {
+                setShowMember(true);
+                if (directory.length === 0) {
+                  try {
+                    const users = await listUsers();
+                    setDirectory(users.map((u) => ({ id: u.id, name: u.name, email: u.email })));
+                  } catch {
+                    /* directory unavailable — the picker stays empty */
+                  }
+                }
+              }}
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
+              <Icon name="user-plus" className="h-3.5 w-3.5" />
               {t("actions.addMember")}
             </button>
           )}
@@ -445,10 +458,10 @@ export default function ProjectDetailPage() {
                   <button
                     type="button"
                     onClick={() => handleRemoveMember(m.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="rounded-full p-1 text-red-600 transition-colors hover:bg-red-100 hover:text-red-800"
                     aria-label={t("actions.remove")}
                   >
-                    ×
+                    <Icon name="x" className="h-3.5 w-3.5" />
                   </button>
                 )}
               </span>
@@ -506,8 +519,9 @@ export default function ProjectDetailPage() {
                 setMilestoneForm({ name: "", description: "", due_date: "", status: "planned" });
                 setShowMilestone(true);
               }}
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
+              <Icon name="plus" className="h-3.5 w-3.5" />
               {t("actions.addMilestone")}
             </button>
           )}
@@ -583,8 +597,9 @@ export default function ProjectDetailPage() {
             <button
               type="button"
               onClick={() => setShowTask(true)}
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
+              <Icon name="plus" className="h-3.5 w-3.5" />
               {t("actions.addTask")}
             </button>
           )}
@@ -608,12 +623,14 @@ export default function ProjectDetailPage() {
             ]}
             className="w-[190px] max-w-full"
           />
-          <input
-            type="number"
-            placeholder={t("fields.assignee")}
+          <Select
             value={taskAssignee}
-            onChange={(e) => setTaskAssignee(e.target.value)}
-            className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            onValueChange={setTaskAssignee}
+            options={[
+              { value: "", label: `${t("filters.all")} ${t("fields.assignee")}` },
+              ...members.map((m) => ({ value: String(m.id), label: m.name })),
+            ]}
+            className="w-[190px] max-w-full"
           />
           <Select
             value={taskMilestone}
@@ -682,7 +699,7 @@ export default function ProjectDetailPage() {
                       : "bg-secondary text-secondary-foreground"
                   }`}
                 >
-                  {item.type}
+                  {t(`timelineTypes.${item.type}`)}
                 </span>
                 <span className="truncate">{item.name}</span>
                 {item.type === "milestone" && item.progress_percent != null && (
@@ -701,19 +718,20 @@ export default function ProjectDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleAddMember} className="w-full max-w-sm space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addMember")}</h2>
-            <input
-              type="number"
-              required
-              placeholder="User ID"
+            <Select
               value={memberUserId}
-              onChange={(e) => setMemberUserId(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              onValueChange={setMemberUserId}
+              placeholder={t("selectMember")}
+              options={directory
+                .filter((u) => !members.some((m) => m.id === u.id))
+                .map((u) => ({ value: String(u.id), label: `${u.name} (${u.email})` }))}
+              className="w-full"
             />
             <div className="flex justify-end gap-2">
               <button type="button" onClick={() => setShowMember(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" disabled={!memberUserId} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
                 {t("actions.addMember")}
               </button>
             </div>
@@ -729,7 +747,7 @@ export default function ProjectDetailPage() {
               {editingMilestone ? t("actions.edit") : t("actions.addMilestone")}
             </h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("fields.name")}</label>
+              <label className="text-sm font-medium">{t("fields.name")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
                 required
                 value={milestoneForm.name}
@@ -784,7 +802,7 @@ export default function ProjectDetailPage() {
           <form onSubmit={handleCreateTask} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addTask")}</h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("fields.title")}</label>
+              <label className="text-sm font-medium">{t("fields.title")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
                 required
                 value={taskForm.title}
@@ -822,11 +840,14 @@ export default function ProjectDetailPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.assignee")}</label>
-                <input
-                  type="number"
+                <Select
                   value={taskForm.assignee_id}
-                  onChange={(e) => setTaskForm({ ...taskForm, assignee_id: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  onValueChange={(v) => setTaskForm({ ...taskForm, assignee_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...members.map((m) => ({ value: String(m.id), label: m.name })),
+                  ]}
+                  className="w-full"
                 />
               </div>
               <div className="space-y-2">

@@ -67,16 +67,33 @@ export default function WorkloadPage() {
           <div className="space-y-3">
             {rows.map((r) => (
               <div key={r.user_id} className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="font-medium">{r.name}</p>
-                    <p className="text-xs text-muted-foreground">{r.email}</p>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                      {r.name.split(" ").map((part) => part.charAt(0)).join("").slice(0, 2).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{r.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{r.email}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-3 text-sm">
-                    <span>{t("fields.openTasks")}: <strong>{r.open_tasks}</strong></span>
-                    <span className="text-red-600">{t("fields.overdue")}: <strong>{r.overdue_tasks}</strong></span>
-                    <span>{t("fields.dueNext7")}: <strong>{r.due_next_7_days}</strong></span>
-                    <span>{t("fields.projects")}: <strong>{r.projects_count}</strong></span>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    <span className="rounded-md bg-accent px-2.5 py-1.5 text-center">
+                      <span className="block text-[11px] uppercase tracking-wide text-muted-foreground">{t("fields.openTasks")}</span>
+                      <strong className="text-base">{r.open_tasks}</strong>
+                    </span>
+                    <span className={`rounded-md px-2.5 py-1.5 text-center ${r.overdue_tasks > 0 ? "bg-red-100 text-red-800" : "bg-accent"}`}>
+                      <span className="block text-[11px] uppercase tracking-wide text-muted-foreground">{t("fields.overdue")}</span>
+                      <strong className="text-base">{r.overdue_tasks}</strong>
+                    </span>
+                    <span className="rounded-md bg-accent px-2.5 py-1.5 text-center">
+                      <span className="block text-[11px] uppercase tracking-wide text-muted-foreground">{t("fields.dueNext7")}</span>
+                      <strong className="text-base">{r.due_next_7_days}</strong>
+                    </span>
+                    <span className="rounded-md bg-accent px-2.5 py-1.5 text-center">
+                      <span className="block text-[11px] uppercase tracking-wide text-muted-foreground">{t("fields.projects")}</span>
+                      <strong className="text-base">{r.projects_count}</strong>
+                    </span>
                   </div>
                 </div>
               </div>
