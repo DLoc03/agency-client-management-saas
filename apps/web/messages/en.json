@@ -144,9 +144,23 @@
       "welcome": "Welcome, {name}!",
       "agency": "Servicing Agency: {agency}",
       "clientId": "Client ID: #{id}",
-      "emptyNotice": "No active projects or invoices yet. New updates from your agency will appear here.",
-      "signOut": "Sign out of Portal",
-      "mockNotice": "⚠️ Portal Mock Mode — separate session and token from internal agency app."
+      "signOut": "Sign out of Portal"
+    },
+    "projects": {
+      "title": "Your projects",
+      "empty": "No projects yet",
+      "emptyHint": "Projects the agency is running for you will appear here.",
+      "progress": "Progress",
+      "tasksDone": "{done}/{total} tasks done",
+      "due": "Due {date}",
+      "loadError": "Could not load your projects. Please try again.",
+      "back": "Back to projects",
+      "startDate": "Start",
+      "dueDate": "Due date",
+      "milestones": "Milestones",
+      "noMilestones": "No milestones yet.",
+      "tasks": "Tasks",
+      "noTasks": "No tasks yet."
     }
   },
   "Projects": {
