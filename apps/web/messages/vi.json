@@ -262,6 +262,120 @@
       "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
     }
   },
+  "Leads": {
+    "title": "Lead",
+    "subtitle": "Theo dõi khách hàng tiềm năng qua các giai đoạn của pipeline.",
+    "newLead": "Thêm lead",
+    "empty": {
+      "title": "Chưa có lead nào",
+      "description": "Tạo lead đầu tiên để bắt đầu lấp pipeline."
+    },
+    "filters": {
+      "status": "Trạng thái",
+      "source": "Nguồn",
+      "owner": "Người phụ trách",
+      "search": "Tìm lead",
+      "all": "Tất cả"
+    },
+    "statuses": {
+      "new": "Mới",
+      "contacted": "Đã liên hệ",
+      "qualified": "Đạt chuẩn",
+      "unqualified": "Không đạt chuẩn"
+    },
+    "sources": {
+      "website": "Website",
+      "referral": "Giới thiệu",
+      "social": "Mạng xã hội",
+      "cold_outreach": "Tiếp cận lạnh",
+      "other": "Khác"
+    },
+    "fields": {
+      "name": "Tên",
+      "company": "Công ty",
+      "contactName": "Người liên hệ",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "source": "Nguồn",
+      "status": "Trạng thái",
+      "estimatedValue": "Giá trị ước tính",
+      "owner": "Người phụ trách",
+      "unqualifiedReason": "Lý do không đạt chuẩn",
+      "lastContacted": "Liên hệ gần nhất"
+    },
+    "actions": {
+      "create": "Tạo",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "edit": "Sửa",
+      "back": "Quay lại pipeline",
+      "addContact": "Thêm người liên hệ",
+      "addNote": "Thêm ghi chú",
+      "addActivity": "Thêm hoạt động",
+      "convert": "Chuyển thành khách hàng",
+      "forceConvert": "Vẫn chuyển đổi",
+      "markDone": "Đánh dấu xong",
+      "reopen": "Mở lại"
+    },
+    "board": {
+      "total": "Tổng giá trị"
+    },
+    "due": {
+      "title": "Việc follow-up đến hạn"
+    },
+    "detail": {
+      "overview": "Tổng quan",
+      "contacts": "Người liên hệ",
+      "notes": "Ghi chú nội bộ",
+      "activities": "Hoạt động follow-up",
+      "convert": "Chuyển đổi",
+      "noContacts": "Chưa có người liên hệ nào.",
+      "noNotes": "Chưa có ghi chú nào.",
+      "noActivities": "Chưa có hoạt động nào.",
+      "notesHint": "Ghi chú nội bộ — lead không bao giờ thấy.",
+      "convertedBanner": "Lead này đã được chuyển thành khách hàng.",
+      "viewClient": "Xem khách hàng",
+      "mainFieldsLocked": "Các trường chính bị khóa sau khi chuyển đổi."
+    },
+    "contacts": {
+      "fullName": "Họ tên",
+      "position": "Chức vụ",
+      "primary": "Chính"
+    },
+    "notes": {
+      "placeholder": "Viết ghi chú nội bộ…"
+    },
+    "activities": {
+      "type": "Loại",
+      "types": {
+        "call": "Cuộc gọi",
+        "message": "Tin nhắn",
+        "meeting": "Cuộc họp",
+        "other": "Khác"
+      },
+      "scheduledAt": "Thời gian hẹn",
+      "note": "Ghi chú",
+      "done": "Đã xong",
+      "pending": "Chưa xong"
+    },
+    "convert": {
+      "title": "Chuyển thành khách hàng",
+      "description": "Tạo khách hàng (kèm tổ chức và người liên hệ chính) từ lead này.",
+      "manager": "Người phụ trách",
+      "duplicateWarning": "Có thể đã tồn tại khách hàng trùng email. Vẫn có thể chuyển đổi nếu đây là khách hàng khác.",
+      "alreadyConverted": "Lead này đã được chuyển đổi rồi."
+    },
+    "confirmDelete": "Xóa lead này?",
+    "confirmDeleteContact": "Xóa người liên hệ này?",
+    "errors": {
+      "loadFailed": "Không tải được danh sách lead.",
+      "saveFailed": "Lưu thất bại.",
+      "createFailed": "Tạo lead thất bại.",
+      "deleteFailed": "Xóa thất bại.",
+      "convertFailed": "Chuyển đổi thất bại."
+    }
+  },
   "Clients": {
     "title": "Khách hàng",
     "subtitle": "Quản lý hồ sơ khách hàng, người liên hệ và quyền truy cập Portal.",

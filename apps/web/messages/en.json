@@ -262,6 +262,120 @@
       "resultRemoved": "Removed {removed} member(s), kept {kept}."
     }
   },
+  "Leads": {
+    "title": "Leads",
+    "subtitle": "Track potential clients through the pipeline.",
+    "newLead": "New lead",
+    "empty": {
+      "title": "No leads yet",
+      "description": "Create your first lead to start filling the pipeline."
+    },
+    "filters": {
+      "status": "Status",
+      "source": "Source",
+      "owner": "Owner",
+      "search": "Search leads",
+      "all": "All"
+    },
+    "statuses": {
+      "new": "New",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "unqualified": "Unqualified"
+    },
+    "sources": {
+      "website": "Website",
+      "referral": "Referral",
+      "social": "Social",
+      "cold_outreach": "Cold outreach",
+      "other": "Other"
+    },
+    "fields": {
+      "name": "Name",
+      "company": "Company",
+      "contactName": "Contact name",
+      "email": "Email",
+      "phone": "Phone",
+      "source": "Source",
+      "status": "Status",
+      "estimatedValue": "Estimated value",
+      "owner": "Owner",
+      "unqualifiedReason": "Unqualified reason",
+      "lastContacted": "Last contacted"
+    },
+    "actions": {
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "back": "Back to pipeline",
+      "addContact": "Add contact",
+      "addNote": "Add note",
+      "addActivity": "Add activity",
+      "convert": "Convert to client",
+      "forceConvert": "Force convert",
+      "markDone": "Mark done",
+      "reopen": "Reopen"
+    },
+    "board": {
+      "total": "Total value"
+    },
+    "due": {
+      "title": "Due follow-ups"
+    },
+    "detail": {
+      "overview": "Overview",
+      "contacts": "Contacts",
+      "notes": "Notes",
+      "activities": "Activities",
+      "convert": "Convert",
+      "noContacts": "No contacts yet.",
+      "noNotes": "No notes yet.",
+      "noActivities": "No activities yet.",
+      "notesHint": "Internal notes — leads never see these.",
+      "convertedBanner": "This lead was converted to a client.",
+      "viewClient": "View client",
+      "mainFieldsLocked": "Main fields are locked after conversion."
+    },
+    "contacts": {
+      "fullName": "Full name",
+      "position": "Position",
+      "primary": "Primary"
+    },
+    "notes": {
+      "placeholder": "Write an internal note…"
+    },
+    "activities": {
+      "type": "Type",
+      "types": {
+        "call": "Call",
+        "message": "Message",
+        "meeting": "Meeting",
+        "other": "Other"
+      },
+      "scheduledAt": "Scheduled at",
+      "note": "Note",
+      "done": "Done",
+      "pending": "Pending"
+    },
+    "convert": {
+      "title": "Convert to client",
+      "description": "Creates a client (plus its organization and primary contact) from this lead.",
+      "manager": "Account manager",
+      "duplicateWarning": "A client with the same email may already exist. You can still force the conversion if this is a different client.",
+      "alreadyConverted": "This lead has already been converted."
+    },
+    "confirmDelete": "Delete this lead?",
+    "confirmDeleteContact": "Delete this contact?",
+    "errors": {
+      "loadFailed": "Failed to load leads.",
+      "saveFailed": "Failed to save.",
+      "createFailed": "Failed to create lead.",
+      "deleteFailed": "Failed to delete.",
+      "convertFailed": "Conversion failed."
+    }
+  },
   "Clients": {
     "title": "Clients",
     "subtitle": "Manage client profiles, contacts and portal access.",
