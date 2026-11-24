@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   listProjects,
   createProject,
@@ -177,42 +178,33 @@ export default function ProjectsPage() {
           onChange={(e) => setQ(e.target.value)}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
-        <select
+        <Select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">{t("filters.all")} {t("filters.status")}</option>
-          {PROJECT_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {t(`statuses.${s}`)}
-            </option>
-          ))}
-        </select>
-        <select
+          onValueChange={setStatus}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
+            ...PROJECT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
           value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">{t("filters.all")} {t("filters.client")}</option>
-          {clients.map((cl) => (
-            <option key={cl.id} value={cl.id}>
-              {cl.name}
-            </option>
-          ))}
-        </select>
-        <select
+          onValueChange={setClientId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.client")}` },
+            ...clients.map((cl) => ({ value: String(cl.id), label: cl.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
           value={managerId}
-          onChange={(e) => setManagerId(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">{t("filters.all")} {t("filters.manager")}</option>
-          {managers.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name}
-            </option>
-          ))}
-        </select>
+          onValueChange={setManagerId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.manager")}` },
+            ...managers.map((m) => ({ value: String(m.id), label: m.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
       </div>
 
       {error && (
@@ -324,19 +316,15 @@ export default function ProjectsPage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.client")}</label>
                 {clients.length > 0 ? (
-                  <select
-                    required
+                  <Select
                     value={form.client_id}
-                    onChange={(e) => setForm({ ...form, client_id: e.target.value })}
-                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">—</option>
-                    {clients.map((cl) => (
-                      <option key={cl.id} value={cl.id}>
-                        {cl.name}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={(v) => setForm({ ...form, client_id: v })}
+                    options={[
+                      { value: "", label: "—" },
+                      ...clients.map((cl) => ({ value: String(cl.id), label: cl.name })),
+                    ]}
+                    className="w-full"
+                  />
                 ) : (
                   <input
                     required
@@ -349,17 +337,12 @@ export default function ProjectsPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.status")}</label>
-                <select
+                <Select
                   value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                >
-                  {PROJECT_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`statuses.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, status: v })}
+                  options={PROJECT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                  className="w-full"
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.manager")}</label>

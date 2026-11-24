@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import { listUsers, listTeams } from "@/lib/team/api";
 import type { DirectoryUser } from "@/lib/team/types";
 
@@ -93,27 +94,34 @@ export default function MembersPage() {
           onChange={(e) => setQ(e.target.value)}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
-        <select value={role} onChange={(e) => setRole(e.target.value)} className="rounded-md border border-border bg-background px-3 py-2 text-sm">
-          <option value="">{t("filters.all")} {t("filters.role")}</option>
-          {ROLE_KEYS.map((r) => (
-            <option key={r} value={r}>
-              {t(`roles.${r}`)}
-            </option>
-          ))}
-        </select>
-        <select value={teamId} onChange={(e) => setTeamId(e.target.value)} className="rounded-md border border-border bg-background px-3 py-2 text-sm">
-          <option value="">{t("filters.all")} {t("filters.team")}</option>
-          {teams.map((tm) => (
-            <option key={tm.id} value={tm.id}>
-              {tm.name}
-            </option>
-          ))}
-        </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-md border border-border bg-background px-3 py-2 text-sm">
-          <option value="">{t("filters.all")} {t("filters.status")}</option>
-          <option value="active">{t("filters.active")}</option>
-          <option value="inactive">{t("filters.inactive")}</option>
-        </select>
+        <Select
+          value={role}
+          onValueChange={setRole}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.role")}` },
+            ...ROLE_KEYS.map((r) => ({ value: r, label: t(`roles.${r}`) })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
+          value={teamId}
+          onValueChange={setTeamId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.team")}` },
+            ...teams.map((tm) => ({ value: String(tm.id), label: tm.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
+          value={status}
+          onValueChange={setStatus}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
+            { value: "active", label: t("filters.active") },
+            { value: "inactive", label: t("filters.inactive") },
+          ]}
+          className="w-[190px] max-w-full"
+        />
       </div>
 
       {error && (

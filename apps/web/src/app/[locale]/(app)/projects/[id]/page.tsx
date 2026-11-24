@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   getProject,
   updateProject,
@@ -379,24 +380,19 @@ export default function ProjectDetailPage() {
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.status")}</p>
             {canUpdateProject ? (
-              <select
+              <Select
                 value={project.status}
-                onChange={async (e) => {
+                onValueChange={async (v) => {
                   try {
-                    const updated = await updateProject(id, { status: e.target.value });
+                    const updated = await updateProject(id, { status: v });
                     setProject(updated);
                   } catch (err) {
                     setError(err instanceof Error ? err.message : t("errors.updateFailed"));
                   }
                 }}
-                className="mt-1 rounded-md border border-border bg-background px-2 py-1 text-sm"
-              >
-                {PROJECT_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`statuses.${s}`)}
-                  </option>
-                ))}
-              </select>
+                options={PROJECT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                className="mt-1 w-[170px]"
+              />
             ) : (
               <p className="font-medium">{t(`statuses.${project.status}`)}</p>
             )}
@@ -466,18 +462,15 @@ export default function ProjectDetailPage() {
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("teamAssignment.title")}</h2>
           <div className="flex flex-wrap gap-2">
-            <select
+            <Select
               value={teamAssignId}
-              onChange={(e) => setTeamAssignId(e.target.value)}
-              className="w-56 rounded-md border border-border bg-background px-3 py-2 text-sm"
-            >
-              <option value="">{t("teamAssignment.selectTeam")}</option>
-              {assignTeams.map((tm) => (
-                <option key={tm.id} value={tm.id}>
-                  {tm.name}
-                </option>
-              ))}
-            </select>
+              onValueChange={setTeamAssignId}
+              options={[
+                { value: "", label: t("teamAssignment.selectTeam") },
+                ...assignTeams.map((tm) => ({ value: String(tm.id), label: tm.name })),
+              ]}
+              className="w-56"
+            />
             <button
               type="button"
               onClick={handleAssignTeam}
@@ -597,30 +590,24 @@ export default function ProjectDetailPage() {
           )}
         </div>
         <div className="mb-4 flex flex-wrap gap-3">
-          <select
+          <Select
             value={taskStatus}
-            onChange={(e) => setTaskStatus(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-          >
-            <option value="">{t("filters.all")} {t("fields.status")}</option>
-            {TASK_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {t(`taskStatuses.${s}`)}
-              </option>
-            ))}
-          </select>
-          <select
+            onValueChange={setTaskStatus}
+            options={[
+              { value: "", label: `${t("filters.all")} ${t("fields.status")}` },
+              ...TASK_STATUSES.map((s) => ({ value: s, label: t(`taskStatuses.${s}`) })),
+            ]}
+            className="w-[190px] max-w-full"
+          />
+          <Select
             value={taskPriority}
-            onChange={(e) => setTaskPriority(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-          >
-            <option value="">{t("filters.all")} {t("fields.priority")}</option>
-            {TASK_PRIORITIES.map((p) => (
-              <option key={p} value={p}>
-                {t(`priorities.${p}`)}
-              </option>
-            ))}
-          </select>
+            onValueChange={setTaskPriority}
+            options={[
+              { value: "", label: `${t("filters.all")} ${t("fields.priority")}` },
+              ...TASK_PRIORITIES.map((p) => ({ value: p, label: t(`priorities.${p}`) })),
+            ]}
+            className="w-[190px] max-w-full"
+          />
           <input
             type="number"
             placeholder={t("fields.assignee")}
@@ -628,18 +615,15 @@ export default function ProjectDetailPage() {
             onChange={(e) => setTaskAssignee(e.target.value)}
             className="w-32 rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
-          <select
+          <Select
             value={taskMilestone}
-            onChange={(e) => setTaskMilestone(e.target.value)}
-            className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-          >
-            <option value="">{t("filters.all")} {t("fields.milestone")}</option>
-            {milestones.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
+            onValueChange={setTaskMilestone}
+            options={[
+              { value: "", label: `${t("filters.all")} ${t("fields.milestone")}` },
+              ...milestones.map((m) => ({ value: String(m.id), label: m.name })),
+            ]}
+            className="w-[190px] max-w-full"
+          />
         </div>
         {tasks.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("detail.noTasks")}</p>
@@ -774,17 +758,12 @@ export default function ProjectDetailPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.status")}</label>
-                <select
+                <Select
                   value={milestoneForm.status}
-                  onChange={(e) => setMilestoneForm({ ...milestoneForm, status: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                >
-                  {MILESTONE_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`milestoneStatuses.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setMilestoneForm({ ...milestoneForm, status: v })}
+                  options={MILESTONE_STATUSES.map((s) => ({ value: s, label: t(`milestoneStatuses.${s}`) }))}
+                  className="w-full"
+                />
               </div>
             </div>
             <div className="flex justify-end gap-2">
@@ -825,31 +804,21 @@ export default function ProjectDetailPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.status")}</label>
-                <select
+                <Select
                   value={taskForm.status}
-                  onChange={(e) => setTaskForm({ ...taskForm, status: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                >
-                  {TASK_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`taskStatuses.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setTaskForm({ ...taskForm, status: v })}
+                  options={TASK_STATUSES.map((s) => ({ value: s, label: t(`taskStatuses.${s}`) }))}
+                  className="w-full"
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.priority")}</label>
-                <select
+                <Select
                   value={taskForm.priority}
-                  onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                >
-                  {TASK_PRIORITIES.map((p) => (
-                    <option key={p} value={p}>
-                      {t(`priorities.${p}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setTaskForm({ ...taskForm, priority: v })}
+                  options={TASK_PRIORITIES.map((p) => ({ value: p, label: t(`priorities.${p}`) }))}
+                  className="w-full"
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.assignee")}</label>
@@ -862,18 +831,15 @@ export default function ProjectDetailPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.milestone")}</label>
-                <select
+                <Select
                   value={taskForm.milestone_id}
-                  onChange={(e) => setTaskForm({ ...taskForm, milestone_id: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">—</option>
-                  {milestones.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setTaskForm({ ...taskForm, milestone_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...milestones.map((m) => ({ value: String(m.id), label: m.name })),
+                  ]}
+                  className="w-full"
+                />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <label className="text-sm font-medium">{t("fields.dueDate")}</label>

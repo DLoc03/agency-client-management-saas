@@ -1,0 +1,12 @@
+# Acceptance mode: run the web app as a production build instead of `next dev`.
+#
+# Dev mode compiles every route per locale on first visit, which feels laggy
+# during manual acceptance and does not reflect real performance.
+#
+# Usage (from the repo root):
+#   docker compose -f docker-compose.yml -f docker-compose.acceptance.yml up -d web
+# Back to dev mode:
+#   docker compose up -d web
+services:
+  web:
+    command: sh -c "pnpm install && pnpm build && pnpm start"

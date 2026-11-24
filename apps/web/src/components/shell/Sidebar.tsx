@@ -50,7 +50,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <aside
-      className="sticky top-0 flex h-screen w-64 shrink-0 flex-col bg-sidebar-background text-sidebar-foreground"
+      className="flex h-full w-64 shrink-0 flex-col bg-sidebar-background text-sidebar-foreground"
       aria-label={t("sidebarLabel")}
     >
       {/* Brand */}

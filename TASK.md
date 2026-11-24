@@ -229,6 +229,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: Đã merge vào main và đóng gói trong bản 0.5.0.
 - Blockers: Không có.
 
+## FIX-009 — Lô sửa nghiệm thu tổng hợp vòng 1: crash Invitations + sidebar + điều hướng Team + Select shadcn + seed demo đầy đủ
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: Từ buổi nghiệm thu tổng hợp vòng 1 (2026-11-24, chưa đạt, gián đoạn tại mục C3): (1) Trang `/team/invitations` crash "Rendered fewer hooks than expected" vì `useTranslations` bị gọi trong JSX (2 chỗ) — sửa dùng hook đã khai báo ở đầu component; đã rà soát toàn bộ khu vực (app), chỉ file này dính mẫu lỗi này. (2) Sidebar không giữ hết chiều cao khi cuộn trang dài — cấu trúc lại AppShell: khung `h-dvh`, chỉ cột nội dung cuộn, Sidebar cao theo khung. (3) Điều hướng khu vực Team gây hiểu nhầm Member/Team (PO đối chiếu prompt: prompt FE-009 của Muse thiếu đặc tả điều hướng — lỗi chính ở phía Muse): thêm `team/layout.tsx` với thanh tab chung [Nhóm | Thành viên | Lời mời | Khối lượng công việc] cho mọi trang `/team/*`, mục sidebar "Nhóm" vào trang danh sách team trước (PO chốt 2026-11-24). (4) Dropdown `<select>` HTML thô tại Projects/Clients/Leads/Team (38 chỗ, 9 file) → component `components/ui/Select.tsx` kiểu shadcn/ui (button + listbox theo design token, hỗ trợ bàn phím và đóng khi bấm ra ngoài). (5) Mở rộng `DemoDataSeeder`: thêm 5 tài khoản theo vai trò (admin/sales/pm/accountant/member@demo.test, mật khẩu "password"), client demo + gắn `client_id` cho tài khoản portal demo, 1 team demo, 2 project demo kèm milestone + task (có task quá hạn để kiểm tra workload) — seeder idempotent. (6) Thêm `docker-compose.acceptance.yml` để chạy web ở bản production khi nghiệm thu (bản dev biên dịch từng route theo từng ngôn ngữ ở lần mở đầu tiên nên có cảm giác lag như PO phản ánh — không phải lỗi của i18n).
+- Acceptance Criteria: Trang Invitations mở bình thường không crash; sidebar phủ hết chiều cao viewport ở trang dài; sidebar "Nhóm" vào danh sách team và có thanh tab chuyển đủ 4 trang con; không còn `<select>` HTML thô trong khu vực (app); seed lại trên DB cũ tạo đủ tài khoản vai trò + 2 project demo mà không trùng lặp; web typecheck/test/build đạt, suite API không hồi quy.
+- Progress: 2026-11-24 — Muse đã làm trên branch `fix/FIX-009-acceptance-round1` (theo quy ước thay vai FE, PO chốt 2026-11-23): web typecheck PASS, test 27/27, build 48 trang PASS; seeder chạy thử bằng test tạm (seed 2 lần: 6 user đúng vai trò, portal có client_id, 2 project, 5 task, team 3 thành viên), suite API 86/86 PASS (4 test auth báo lỗi khi thiếu APP_KEY trong worktree mới — lỗi môi trường, đã xác nhận đạt khi có APP_KEY); chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
+- Blockers: Không có.
+
 ## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
 - Status: DONE
 - Assignee: OpenCode · Reviewer: Muse

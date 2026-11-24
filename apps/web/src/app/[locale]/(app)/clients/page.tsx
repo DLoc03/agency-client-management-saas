@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Select } from "@/components/ui/Select";
 import {
   createClient,
   createTag,
@@ -204,48 +205,33 @@ export default function ClientsPage() {
           onChange={(e) => setQ(e.target.value)}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
-        <select
+        <Select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">
-            {t("filters.all")} {t("filters.status")}
-          </option>
-          {CLIENT_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {t(`statuses.${s}`)}
-            </option>
-          ))}
-        </select>
-        <select
+          onValueChange={setStatus}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
+            ...CLIENT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
           value={tagId}
-          onChange={(e) => setTagId(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">
-            {t("filters.all")} {t("filters.tag")}
-          </option>
-          {tags.map((tag) => (
-            <option key={tag.id} value={tag.id}>
-              {tag.name}
-            </option>
-          ))}
-        </select>
-        <select
+          onValueChange={setTagId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.tag")}` },
+            ...tags.map((tag) => ({ value: String(tag.id), label: tag.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
+        <Select
           value={managerId}
-          onChange={(e) => setManagerId(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm"
-        >
-          <option value="">
-            {t("filters.all")} {t("filters.manager")}
-          </option>
-          {users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
+          onValueChange={setManagerId}
+          options={[
+            { value: "", label: `${t("filters.all")} ${t("filters.manager")}` },
+            ...users.map((u) => ({ value: String(u.id), label: u.name })),
+          ]}
+          className="w-[190px] max-w-full"
+        />
       </div>
 
       {canCreate && (
@@ -291,45 +277,36 @@ export default function ClientsPage() {
             </div>
             <div>
               <label className={labelCls}>{t("fields.type")}</label>
-              <select
+              <Select
                 value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
-                className={inputCls}
-              >
-                <option value="company">{t("types.company")}</option>
-                <option value="individual">{t("types.individual")}</option>
-              </select>
+                onValueChange={(v) => setForm({ ...form, type: v })}
+                options={[
+                  { value: "company", label: t("types.company") },
+                  { value: "individual", label: t("types.individual") },
+                ]}
+                className="w-full"
+              />
             </div>
             <div>
               <label className={labelCls}>{t("fields.status")}</label>
-              <select
+              <Select
                 value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className={inputCls}
-              >
-                {CLIENT_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`statuses.${s}`)}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => setForm({ ...form, status: v })}
+                options={CLIENT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                className="w-full"
+              />
             </div>
             <div>
               <label className={labelCls}>{t("fields.manager")}</label>
-              <select
+              <Select
                 value={form.account_manager_id}
-                onChange={(e) =>
-                  setForm({ ...form, account_manager_id: e.target.value })
-                }
-                className={inputCls}
-              >
-                <option value="">—</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                onValueChange={(v) => setForm({ ...form, account_manager_id: v })}
+                options={[
+                  { value: "", label: "—" },
+                  ...users.map((u) => ({ value: String(u.id), label: u.name })),
+                ]}
+                className="w-full"
+              />
             </div>
             <div>
               <label className={labelCls}>{t("fields.email")}</label>

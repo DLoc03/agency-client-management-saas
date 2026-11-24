@@ -6,6 +6,14 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Fixed
+- Team invitations page crash ("Rendered fewer hooks than expected") caused by calling `useTranslations` inside JSX; the same pattern was checked across the whole app area and occurred only there.
+- App shell layout: the sidebar now always spans the full viewport height and only the content column scrolls, instead of the sidebar ending mid-page on long screens.
+- Team section navigation: added a shared tab bar (Teams / Members / Invitations / Workload) to every Team page and pointed the sidebar "Team" item at the Teams list first, so members are no longer mistaken for teams.
+- Replaced all native HTML `<select>` dropdowns in the Projects, Clients, Leads and Team screens (38 usages across 9 files) with a shadcn-style `Select` component (design-token listbox, keyboard support, closes on outside click).
+- Demo seeder now creates one account per role (admin/sales/pm/accountant/member@demo.test), a demo client linked to the demo portal account, a demo team, and two demo projects with milestones and tasks, so manual acceptance always has standard data; the seeder stays idempotent.
+- Added `docker-compose.acceptance.yml` to run the web app as a production build during acceptance sessions (dev mode compiles each route per locale on first visit and feels laggy).
+
 ## [0.5.0] - 2026-11-24
 
 ### Backend

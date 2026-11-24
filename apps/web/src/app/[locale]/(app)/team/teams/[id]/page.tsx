@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Select } from "@/components/ui/Select";
 import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
 import type { DirectoryUser, Team } from "@/lib/team/types";
 
@@ -183,21 +184,17 @@ export default function TeamDetailPage() {
         <h2 className="mb-4 text-lg font-semibold">{t("teamsDetail.members")}</h2>
         {canManageMembers && (
           <form onSubmit={handleAddMember} className="mb-4 flex gap-2">
-            <select
-              required
+            <Select
               value={newMemberId}
-              onChange={(e) => setNewMemberId(e.target.value)}
-              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
-            >
-              <option value="">{t("teamsDetail.selectMember")}</option>
-              {directory
-                .filter((u) => !(team?.members || []).some((m) => m.id === u.id))
-                .map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name} ({u.email})
-                  </option>
-                ))}
-            </select>
+              onValueChange={setNewMemberId}
+              options={[
+                { value: "", label: t("teamsDetail.selectMember") },
+                ...directory
+                  .filter((u) => !(team?.members || []).some((m) => m.id === u.id))
+                  .map((u) => ({ value: String(u.id), label: `${u.name} (${u.email})` })),
+              ]}
+              className="flex-1"
+            />
             <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
               {t("actions.add")}
             </button>

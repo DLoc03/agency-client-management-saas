@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
+import { Select } from "@/components/ui/Select";
 import {
   convertLead,
   createLeadActivity,
@@ -501,31 +502,21 @@ export default function LeadDetailPage() {
               </div>
               <div>
                 <label className={labelCls}>{t("fields.source")}</label>
-                <select
+                <Select
                   value={form.source}
-                  onChange={(e) => setForm({ ...form, source: e.target.value })}
-                  className={inputCls}
-                >
-                  {LEAD_SOURCES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`sources.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, source: v })}
+                  options={LEAD_SOURCES.map((s) => ({ value: s, label: t(`sources.${s}`) }))}
+                  className="w-full"
+                />
               </div>
               <div>
                 <label className={labelCls}>{t("fields.status")}</label>
-                <select
+                <Select
                   value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className={inputCls}
-                >
-                  {LEAD_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {t(`statuses.${s}`)}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, status: v })}
+                  options={LEAD_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))}
+                  className="w-full"
+                />
               </div>
               <div>
                 <label className={labelCls}>
@@ -543,20 +534,15 @@ export default function LeadDetailPage() {
               </div>
               <div>
                 <label className={labelCls}>{t("fields.owner")}</label>
-                <select
+                <Select
                   value={form.owner_id}
-                  onChange={(e) =>
-                    setForm({ ...form, owner_id: e.target.value })
-                  }
-                  className={inputCls}
-                >
-                  <option value="">—</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={(v) => setForm({ ...form, owner_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...users.map((u) => ({ value: String(u.id), label: u.name })),
+                  ]}
+                  className="w-full"
+                />
               </div>
               {form.status === "unqualified" && (
                 <div>
@@ -608,18 +594,15 @@ export default function LeadDetailPage() {
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[220px]">
               <label className={labelCls}>{t("convert.manager")}</label>
-              <select
+              <Select
                 value={convertManagerId}
-                onChange={(e) => setConvertManagerId(e.target.value)}
-                className={inputCls}
-              >
-                <option value="">—</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setConvertManagerId}
+                options={[
+                  { value: "", label: "—" },
+                  ...users.map((u) => ({ value: String(u.id), label: u.name })),
+                ]}
+                className="w-full"
+              />
             </div>
             <button
               type="button"
@@ -847,19 +830,12 @@ export default function LeadDetailPage() {
             onSubmit={handleActivitySubmit}
             className="grid gap-3 border-t border-border pt-4 sm:grid-cols-2"
           >
-            <select
+            <Select
               value={activityForm.type}
-              onChange={(e) =>
-                setActivityForm({ ...activityForm, type: e.target.value })
-              }
-              className={inputCls}
-            >
-              {ACTIVITY_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {t(`activities.types.${type}`)}
-                </option>
-              ))}
-            </select>
+              onValueChange={(v) => setActivityForm({ ...activityForm, type: v })}
+              options={ACTIVITY_TYPES.map((type) => ({ value: type, label: t(`activities.types.${type}`) }))}
+              className="w-full"
+            />
             <input
               type="datetime-local"
               value={activityForm.scheduled_at}
