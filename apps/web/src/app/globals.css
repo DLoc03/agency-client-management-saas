@@ -94,6 +94,15 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  /* Tailwind v4 resets buttons to the default cursor — restore the pointer
+     so clickable elements read as clickable (Product Owner feedback). */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  a,
+  label:has(input[type="checkbox"]),
+  label:has(input[type="radio"]) {
+    cursor: pointer;
+  }
   /* Prevent horizontal overflow at the app shell level (UI_GUIDELINES 3) */
   html,
   body {

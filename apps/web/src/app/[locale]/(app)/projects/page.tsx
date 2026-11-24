@@ -12,6 +12,7 @@ import {
   deleteProject,
   listClients,
 } from "@/lib/projects/api";
+import { statusBadgeClass } from "@/lib/status-colors";
 import type { Project, ProjectStatus } from "@/lib/projects/types";
 
 const PROJECT_STATUSES: ProjectStatus[] = [
@@ -243,7 +244,7 @@ export default function ProjectsPage() {
                         {p.client?.name ?? "—"}
                       </p>
                     </div>
-                    <span className="whitespace-nowrap rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(p.status)}`}>
                       {t(`statuses.${p.status}`)}
                     </span>
                   </div>
@@ -295,7 +296,7 @@ export default function ProjectsPage() {
           >
             <h2 className="text-lg font-semibold">{t("newProject")}</h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">{t("fields.name")}</label>
+              <label className="text-sm font-medium">{t("fields.name")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
                 required
                 value={form.name}
@@ -314,7 +315,7 @@ export default function ProjectsPage() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("fields.client")}</label>
+                <label className="text-sm font-medium">{t("fields.client")} <span className="text-red-500" aria-hidden="true">*</span></label>
                 {clients.length > 0 ? (
                   <Select
                     value={form.client_id}
@@ -346,13 +347,14 @@ export default function ProjectsPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.manager")}</label>
-                <input
-                  type="number"
+                <Select
                   value={form.project_manager_id}
-                  onChange={(e) =>
-                    setForm({ ...form, project_manager_id: e.target.value })
-                  }
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  onValueChange={(v) => setForm({ ...form, project_manager_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...managers.map((m) => ({ value: String(m.id), label: m.name })),
+                  ]}
+                  className="w-full"
                 />
               </div>
               <div className="space-y-2">

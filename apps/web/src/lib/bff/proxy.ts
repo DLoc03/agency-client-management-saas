@@ -39,6 +39,11 @@ export async function proxyToBackend(
 
   try {
     const res = await fetch(url.toString(), { method, headers, body });
+    // Null-body statuses must not carry a body: constructing a Response with
+    // one throws "Invalid response status code 204" in Node's fetch stack.
+    if (res.status === 204 || res.status === 205 || res.status === 304) {
+      return new NextResponse(null, { status: res.status });
+    }
     const text = await res.text();
     const contentType = res.headers.get("content-type") || "application/json";
     return new NextResponse(text, {

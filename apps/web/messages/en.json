@@ -261,7 +261,12 @@
       "remove": "Remove team",
       "resultAssigned": "Team assigned: {added} member(s) added.",
       "resultRemoved": "Removed {removed} member(s), kept {kept}."
-    }
+    },
+    "timelineTypes": {
+      "task": "Task",
+      "milestone": "Milestone"
+    },
+    "selectMember": "Select a member"
   },
   "Leads": {
     "title": "Leads",
@@ -552,7 +557,11 @@
     "invitationsForm": {
       "email": "Email",
       "roles": "Roles",
-      "send": "Send invitation"
+      "send": "Send invitation",
+      "validation": {
+        "emailRequired": "Email is required.",
+        "roleRequired": "Select at least one role."
+      }
     },
     "accept": {
       "title": "Accept invitation",

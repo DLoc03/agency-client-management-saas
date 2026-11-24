@@ -79,8 +79,9 @@ export default function MembersPage() {
           <button
             type="button"
             onClick={() => router.push("/team/invitations")}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
+            <Icon name="user-plus" className="h-4 w-4" />
             {t("invite")}
           </button>
         )}

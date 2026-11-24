@@ -127,7 +127,7 @@ export default function TeamDetailPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">{t("fields.teamName")}</label>
+                <label className="text-sm font-medium">{t("fields.teamName")} <span className="text-red-500" aria-hidden="true">*</span></label>
                 <input
                   required
                   value={form.name}
@@ -137,11 +137,14 @@ export default function TeamDetailPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.lead")}</label>
-                <input
-                  type="number"
+                <Select
                   value={form.lead_id}
-                  onChange={(e) => setForm({ ...form, lead_id: e.target.value })}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  onValueChange={(v) => setForm({ ...form, lead_id: v })}
+                  options={[
+                    { value: "", label: "—" },
+                    ...(team?.members ?? []).map((u) => ({ value: String(u.id), label: `${u.name} (${u.email})` })),
+                  ]}
+                  className="w-full"
                 />
               </div>
             </div>

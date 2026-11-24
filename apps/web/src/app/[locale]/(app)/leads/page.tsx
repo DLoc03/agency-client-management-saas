@@ -461,7 +461,9 @@ export default function LeadsPage() {
                           setDragLeadId(null);
                           setDragOver(null);
                         }}
-                        className="space-y-2 rounded-md border border-border bg-card p-3 shadow-sm"
+                        className={`space-y-2 rounded-md border border-border bg-card p-3 shadow-sm ${
+                          canUpdate && !lead.converted_client_id ? "cursor-grab active:cursor-grabbing" : ""
+                        }`}
                       >
                         <Link
                           href={`/leads/${lead.id}`}

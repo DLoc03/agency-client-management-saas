@@ -24,6 +24,7 @@ import {
   updateClient,
   updateContact,
 } from "@/lib/clients/api";
+import { statusBadgeClass } from "@/lib/status-colors";
 import type {
   Client,
   ClientNote,
@@ -312,7 +313,7 @@ export default function ClientDetailPage() {
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight">{client.name}</h1>
-          <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+          <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(client.status)}`}>
             {t(`statuses.${client.status}`)}
           </span>
           <span className="whitespace-nowrap rounded-full bg-accent px-2 py-0.5 text-xs">
@@ -645,7 +646,7 @@ export default function ClientDetailPage() {
           >
             <input
               required
-              placeholder={t("contacts.fullName")}
+              placeholder={`${t("contacts.fullName")} *`}
               value={contactForm.full_name}
               onChange={(e) =>
                 setContactForm({ ...contactForm, full_name: e.target.value })
@@ -820,7 +821,7 @@ export default function ClientDetailPage() {
           >
             <input
               required
-              placeholder={t("portal.name")}
+              placeholder={`${t("portal.name")} *`}
               value={accountForm.name}
               onChange={(e) =>
                 setAccountForm({ ...accountForm, name: e.target.value })
@@ -841,7 +842,7 @@ export default function ClientDetailPage() {
               required
               type="password"
               minLength={8}
-              placeholder={t("portal.password")}
+              placeholder={`${t("portal.password")} *`}
               value={accountForm.password}
               onChange={(e) =>
                 setAccountForm({ ...accountForm, ["password"]: e.target.value })

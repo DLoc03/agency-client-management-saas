@@ -13,6 +13,12 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Replaced all native HTML `<select>` dropdowns in the Projects, Clients, Leads and Team screens (38 usages across 9 files) with a shadcn-style `Select` component (design-token listbox, keyboard support, closes on outside click).
 - Demo seeder now creates one account per role (admin/sales/pm/accountant/member@demo.test), a demo client linked to the demo portal account, a demo team, and two demo projects with milestones and tasks, so manual acceptance always has standard data; the seeder stays idempotent.
 - Added `docker-compose.acceptance.yml` to run the web app as a production build during acceptance sessions (dev mode compiles each route per locale on first visit and feels laggy).
+- BFF proxy returned "Invalid response status code 204" for every API call answered with a null-body status (invitation revoke and other deletes) — the proxy now returns an empty body for 204/205/304, fixing all such endpoints at once.
+- Team tab bar showed the raw key `Teams.workload` for the fourth tab (the key is a group, not a string) — the tab now uses the workload title string.
+- Project timeline badges showed the raw type strings "task"/"milestone" — they now use localized labels (`Projects.timelineTypes`).
+- Replaced the remaining raw user-ID/number inputs with member pickers (shared `Select` fed by the employee directory): task assignee filter and task form assignee, add-member dialog, project manager on project creation, and team lead on team create/edit.
+- Invitation form validation (missing email or role) is now reported inline inside the form instead of the page-level banner.
+- Status badges gained semantic colors via a shared map (active/done green, in-progress blue, qualified violet, waiting slate, on-hold amber, overdue/cancelled red) on the Clients, Projects and Lead screens; client cards navigate to the detail page when clicked anywhere (delete button excluded); Kanban cards show grab/grabbing cursors; workload rows gained initial avatars and metric tiles with overdue highlighted; primary action buttons gained icons, back buttons became text buttons with a chevron, member-chip remove buttons got a larger round hit area, clickable elements show the pointer cursor again, and required fields are marked with * across the main forms.
 
 ## [0.5.0] - 2026-11-24
 
