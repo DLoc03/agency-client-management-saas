@@ -16,6 +16,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### QA & Fixes
 - FIX-008 (Muse): resolved the two non-blocking FE-009 findings logged by QA-005 — added the missing `Shell.nav.team` message (EN "Team" / VI "Nhóm") so the Sidebar no longer logs MISSING_MESSAGE on Team pages, and associated the accept-invitation form labels with their inputs (`htmlFor`/`id`: accept-name, accept-password) for accessibility and label-based test access. Self-check: typecheck, build (en+vi), tests pass; vi.json U+FFFD = 0, no new double-encoding markers.
+- QA-005 (OpenCode): authored Playwright coverage for Team & Resource from `docs/TEAM_CONTRACT.md` in `tests/e2e/team.spec.ts` (16 API cases) plus `tests/e2e/team-ui.spec.ts` (5 UI cases on FE-009 screens). Real run on Docker/MySQL 8 + full demo seed and Mailpit: **21/21 passed, 0 skipped** — teams CRUD/permission matrix, Team-Member scoping, directory filters, role changes with immediate effect and Admin/Owner guards, activation/token revocation, invitation lifecycle incl. expired/resend/revoke, snapshot team-to-project add/remove/keep, workload numbers, and tenant isolation. Verdict: BE-007 → DONE per QA authority. Two non-blocking FE-009 findings logged in `TASK.md` Inbox (missing `Shell.nav.team` message; accept-invitation labels not associated with inputs).
 
 ## [0.4.0] - 2026-11-22
 

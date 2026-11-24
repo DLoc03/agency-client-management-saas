@@ -288,14 +288,17 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - [QA-002 · 2026-11-20] `apps/api/bootstrap/app.php` / `auth:sanctum`: sau logout hoặc đổi mật khẩu, token bị xoá khiến `GET /api/v1/auth/me` trả **500** (`Route [login] not defined`) thay vì 401 `UNAUTHENTICATED`. Cần cấu hình `redirectTo` trả null cho API hoặc xử lý unauthenticated JSON trong Authenticate middleware. Ảnh hưởng TC-AUTH-14, 15 (FAIL).
 - [QA-002 · 2026-11-20] `apps/api` setup: thiếu `storage/framework/views` trên checkout sạch khiến forgot-password/reset-password (gửi mail markdown) trả 500 "Please provide a valid cache path"; cần tạo thư mục hoặc chạy `php artisan view:cache` trong entrypoint Docker.
 - [QA-002 · 2026-11-20] `docs/AUTH_CONTRACT.md` vs `apps/api`: contract nội bộ ghi reset password dùng `new_password`, nhưng implementation/tests dùng `password` (Portal cũng dùng `password`). Cần Muse + Nguyen thống nhất tên field.
+- [QA-005 · 2026-11-24] FE-009: `apps/web/messages/{en,vi}.json` thiếu key `Shell.nav.team`, nên mở bất kỳ trang Team nào cũng log `MISSING_MESSAGE: Could not resolve 'Shell.nav.team'` (Sidebar). Cần bổ sung nhãn Team EN/VI và kiểm tra lại sidebar. Không chặn BE-007 (QA-005 UI vẫn PASS).
+- [QA-005 · 2026-11-24] FE-009: form `accept-invitation` dùng `<label>` rời, không `htmlFor`/id nên `getByLabel` không truy cập được (lỗi accessibility + E2E). Cần gắn id/`htmlFor` (hoặc bọc input trong label). QA-005 tạm dùng selector vị trí.
 
 ## BE-007 — Module Team & Resource Management (Nhóm 4) theo hợp đồng TEAM_CONTRACT
-- Assignee: Muse · Level: L3 · Status: IN_REVIEW
+- Assignee: Muse · Level: L3 · Status: DONE
 - Branch: be/BE-007-team-resource · PR: (PR triển khai BE-007)
 - Blocked by: —
 - Acceptance Criteria: Đủ endpoints và quy tắc trong docs/TEAM_CONTRACT.md: teams CRUD + thành viên, danh bạ nhân viên (users) + hồ sơ, gán/đổi vai, khoá/mở tài khoản (thu hồi token), invitations (mời/accept/resend/thu hồi, token hash, hạn 7 ngày), gán project theo team kiểu snapshot (via_team_id), GET /workload-lite, ma trận quyền teams.*/users.*/invitations.* theo DEC-017 kèm giới hạn Admin, cách ly tenant. Test: bộ test Feature cho module Team đạt, Pint PASS, OpenAPI cập nhật.
 - Progress: Hợp đồng đã được Nguyen duyệt theo đề xuất ngày 2026-11-22 và công bố trong PR #40 (DEC-017, đã merge). Muse đã triển khai xong trong PR này: 4 migration (teams + team_user, invitations, users.job_title/phone, project_members.via_team_id), teams CRUD + thành viên, danh bạ nhân viên + quản trị tài khoản (đổi vai, khoá/mở kèm thu hồi token, giới hạn Admin theo DEC-017), invitations (token hash, hạn 7 ngày, accept công khai, resend/thu hồi), gán project theo team kiểu snapshot, GET /workload-lite; bộ test toàn cục 86 passed, Pint PASS, OpenAPI 63 paths.
-- Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 4: ⏸ chờ BE-007 merge.
+- QA: QA-005 chạy thật 2026-11-24 trên Docker/MySQL 8 + seed demo đầy đủ — 21/21 PASS (16 API + 5 UI), 0 SKIP, 0 FAIL. Verdict PASS → BE-007 chuyển DONE theo thẩm quyền QA.
+- Handoff: OpenCode review theo ma trận G.3 sau khi Muse mở PR triển khai. Task FE/QA cho Nhóm 4: BE-007 đã merge và QA-005 PASS.
 
 ---
 
@@ -318,9 +321,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: Muse hoàn thành 2026-11-24 (theo quy ước PO chốt 2026-11-23: Muse thay vai FE khi cần, OpenCode ưu tiên QA): bật nav Leads + route guard, board Kanban + chi tiết Lead, BFF routes, i18n Leads (vi.json U+FFFD = 0, dấu hiệu mã hoá đôi Ã = 0, đủ 82/82 key EN/VI). Tự kiểm: pnpm typecheck PASS, pnpm build PASS (en+vi), pnpm test PASS (27/27). Responsive rà soát class cho 3 bề rộng (mobile 390, tablet 768, desktop 1280): board grid md:2 xl:4, form grid sm:2, filter wrap; chip/badge whitespace-nowrap; min-height vùng nội dung + empty state.
 - Handoff: Chờ Nguyen nghiệm thu trực quan + merge (Muse không tự duyệt FE của chính mình); ca UI QA bổ sung khi OpenCode có quota.
 ## QA-005 — Bộ test Team & Resource theo TEAM_CONTRACT + chạy thật trên BE-007
-- Assignee: OpenCode · Level: L3 · Status: TODO
-- Blocked by: ⏸ chờ BE-007 merge
-- Acceptance Criteria: (soạn chi tiết khi mở khoá) Test case từ Acceptance Criteria của docs/TEAM_CONTRACT.md tại tests/e2e/team.spec.ts + chạy thật trên Docker/MySQL.
-- Handoff: Chưa gửi prompt — chờ BE-007 merge theo kỷ luật prompt.
+- Status: IN_REVIEW
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Viết test case từ Acceptance Criteria của `docs/TEAM_CONTRACT.md` (teams CRUD + thành viên + ma trận quyền, directory/hồ sơ/lọc, đổi vai hiệu lực ngay + giới hạn Admin/Owner, activation thu hồi token, invitation lifecycle gồm expired/resend/revoke, snapshot team→project added/removed/kept, workload-lite, cô lập tenant 404/422) tại `tests/e2e/team.spec.ts`; bổ sung `tests/e2e/team-ui.spec.ts` cho UI FE-009 (Members + lọc, Teams list, chi tiết team + members, Workload, accept-invitation token sai). Chạy thật trên Docker/MySQL 8 với seed demo đầy đủ (owner/admin/sales/PM/accountant/team member + agency thứ hai, Mailpit bật).
+- Kết quả: API **16/16 PASS**, UI **5/5 PASS** — tổng **21 PASS / 0 SKIP / 0 FAIL**. Các ca API gồm TC-TEAM-01…16 (duplicate name 422, PM tạo nhưng không xoá được team, Sales chỉ đọc, Team Member chỉ thấy team của mình + team khác 404, member idempotent + cross-tenant 422/404, lọc directory + open task count, đổi vai hiệu lực ngay trên token cũ, Admin không quản Admin, Owner invariant 403/422, deactivate thu hồi token + `ACCOUNT_DISABLED` + reactivate, invitation pending/registered/Owner-role/Admin guards, accept + login đúng vai, second accept 422, invalid token 404, expired 422 `INVITATION_EXPIRED`, resend vô hiệu token cũ, revoke giết link, snapshot không lan truyền thành viên mới, detach giữ người có task + `via_team_id=null`, workload + Team Member chỉ thấy dòng mình, cô lập tenant). Mail invitation token lấy qua Mailpit; tài khoản mời là disposable, không sửa tài khoản seed dùng chung. Verdict: PASS → BE-007 DONE.
+- Ghi nhận ngoài phạm vi (FE-009, không chặn BE-007): thiếu message `Shell.nav.team` khiến web log `MISSING_MESSAGE` trên các trang Team; label form accept-invitation không gắn với input (test dùng selector vị trí). Đã ghi Inbox.
+- Progress: PR mở vào main chờ Muse review; CHANGELOG `[Unreleased]` → QA & Fixes đã cập nhật; không bump VERSION (0.5.0 do prompt đóng gói riêng).
+- Handoff: Muse review PR; không tự merge.
 
 ---
