@@ -18,8 +18,8 @@ export function useNavItems(): NavItem[] {
   const t = useTranslations("Shell.nav");
   return [
     { key: "dashboard", href: "/dashboard", icon: "layout-dashboard" },
-    { key: "leads", href: "/leads", icon: "users", disabled: true },
-    { key: "clients", href: "/clients", icon: "building-2" },
+    { key: "leads", href: "/leads", icon: "users" },
+    { key: "clients", href: "/clients", icon: "building-2", disabled: true },
     { key: "projects", href: "/projects", icon: "folder-kanban" },
     { key: "team", href: "/team/members", icon: "users" },
     { key: "tasks", href: "/tasks", icon: "check-square", disabled: true },
