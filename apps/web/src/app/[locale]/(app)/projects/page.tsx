@@ -252,13 +252,15 @@ export default function ProjectsPage() {
                       <ActionMenu
                         items={[
                           {
-                            label: t("actions.edit"),
+                            label: t("actions.detail"),
+                            icon: "eye",
                             onClick: () => router.push(`/projects/${p.id}`),
                           },
                           ...(canDelete
                             ? [
                                 {
                                   label: t("actions.delete"),
+                                  icon: "trash-2",
                                   danger: true,
                                   onClick: () => handleDelete(p.id),
                                 },

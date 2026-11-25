@@ -616,6 +616,7 @@ export default function ClientDetailPage() {
                     items={[
                       {
                         label: t("actions.edit"),
+                        icon: "pencil",
                         onClick: () => {
                           setEditingContact(contact);
                           setContactForm({
@@ -629,6 +630,7 @@ export default function ClientDetailPage() {
                       },
                       {
                         label: t("actions.delete"),
+                        icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteContact(contact),
                       },
@@ -745,6 +747,7 @@ export default function ClientDetailPage() {
                         items={[
                           {
                             label: t("actions.delete"),
+                            icon: "trash-2",
                             danger: true,
                             onClick: () => handleDeleteNote(note),
                           },

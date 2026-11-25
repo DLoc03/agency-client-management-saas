@@ -162,7 +162,8 @@ export default function MembersPage() {
                     <ActionMenu
                       items={[
                         {
-                          label: t("actions.edit"),
+                          label: t("actions.detail"),
+                          icon: "eye",
                           onClick: () => router.push(`/team/members/${u.id}`),
                         },
                       ]}

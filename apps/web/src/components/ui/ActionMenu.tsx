@@ -8,6 +8,8 @@ export type ActionMenuItem = {
   label: string;
   onClick: () => void;
   danger?: boolean;
+  /** Icon name from the shared Icon set (eye, pencil, trash-2, ...). */
+  icon?: string;
 };
 
 /**
@@ -77,10 +79,11 @@ export function ActionMenu({
                 setOpen(false);
                 item.onClick();
               }}
-              className={`block w-full rounded px-3 py-2 text-left text-sm transition-colors hover:bg-secondary ${
+              className={`flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm transition-colors hover:bg-secondary ${
                 item.danger ? "font-medium text-red-600" : ""
               }`}
             >
+              {item.icon && <Icon name={item.icon} className="h-4 w-4 shrink-0" />}
               {item.label}
             </button>
           ))}

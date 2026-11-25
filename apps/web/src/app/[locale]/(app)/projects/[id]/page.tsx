@@ -309,8 +309,8 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => router.push("/projects")}
@@ -319,13 +319,6 @@ export default function ProjectDetailPage() {
             <Icon name="chevron-left" className="h-4 w-4" />
             {t("actions.back")}
           </button>
-          <div className="min-w-0">
-            <h1 className="break-words text-2xl font-bold tracking-tight">{project.name}</h1>
-            <p className="text-sm text-muted-foreground">
-              {project.client?.name ?? "—"} · {t(`statuses.${project.status}`)}
-            </p>
-          </div>
-        </div>
         {canDeleteProject && (
           <button
             type="button"
@@ -343,6 +336,13 @@ export default function ProjectDetailPage() {
             {t("actions.delete")}
           </button>
         )}
+        </div>
+        <div className="min-w-0">
+          <h1 className="break-words text-2xl font-bold tracking-tight">{project.name}</h1>
+          <p className="text-sm text-muted-foreground">
+            {project.client?.name ?? "—"} · {t(`statuses.${project.status}`)}
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -551,6 +551,7 @@ export default function ProjectDetailPage() {
                         items={[
                           {
                             label: t("actions.edit"),
+                            icon: "pencil",
                             onClick: () => {
                               setEditingMilestone(m);
                               setMilestoneForm({
@@ -564,6 +565,7 @@ export default function ProjectDetailPage() {
                           },
                           {
                             label: t("actions.delete"),
+                            icon: "trash-2",
                             danger: true,
                             onClick: () => handleDeleteMilestone(m.id),
                           },
@@ -655,7 +657,7 @@ export default function ProjectDetailPage() {
                   <button
                     type="button"
                     onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                    className="block max-w-full truncate text-left font-medium text-primary-text hover:underline"
+                    className="block max-w-full truncate text-left font-medium text-foreground hover:underline"
                   >
                     {task.title}
                   </button>
@@ -670,6 +672,7 @@ export default function ProjectDetailPage() {
                     items={[
                       {
                         label: t("actions.delete"),
+                        icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteTask(task.id),
                       },

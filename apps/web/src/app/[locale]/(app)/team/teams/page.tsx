@@ -131,13 +131,15 @@ export default function TeamsPage() {
                     <ActionMenu
                       items={[
                         {
-                          label: t("actions.edit"),
+                          label: t("actions.detail"),
+                          icon: "eye",
                           onClick: () => router.push(`/team/teams/${team.id}`),
                         },
                         ...(canDelete
                           ? [
                               {
                                 label: t("actions.delete"),
+                                icon: "trash-2",
                                 danger: true,
                                 onClick: () => handleDelete(team.id),
                               },
