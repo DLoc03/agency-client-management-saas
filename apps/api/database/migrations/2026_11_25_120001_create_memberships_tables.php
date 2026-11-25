@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\Schema;
  * to memberships via `membership_role` (replacing `role_user`).
  *
  * The table is created with raw SQL because the design requires a
- * stored generated column (client_key, so the unique index works with
- * NULL client_id) and a CHECK constraint for the kind/client_id rule —
- * both must exist identically on MySQL (production) and SQLite (tests).
+ * CHECK constraint for the kind/client_id rule and a unique index
+ * that also covers NULL client_id — via the client_key column
+ * (client_id, or 0 when NULL), maintained by the Membership model.
+ * client_key is deliberately NOT a generated column: InnoDB refuses
+ * a foreign key on a column used by a generated column (error 1215,
+ * found by acceptance on MySQL — SQLite accepts it).
  */
 return new class extends Migration
 {
@@ -29,7 +32,7 @@ return new class extends Migration
                     agency_id BIGINT UNSIGNED NOT NULL,
                     kind ENUM('staff', 'client') NOT NULL DEFAULT 'staff',
                     client_id BIGINT UNSIGNED NULL,
-                    client_key BIGINT UNSIGNED GENERATED ALWAYS AS (IFNULL(client_id, 0)) STORED,
+                    client_key BIGINT UNSIGNED NOT NULL DEFAULT 0,
                     is_active TINYINT(1) NOT NULL DEFAULT 1,
                     job_title VARCHAR(255) NULL,
                     phone VARCHAR(255) NULL,
@@ -58,7 +61,7 @@ return new class extends Migration
                     agency_id INTEGER NOT NULL REFERENCES agencies (id) ON DELETE CASCADE,
                     kind VARCHAR NOT NULL DEFAULT 'staff',
                     client_id INTEGER NULL REFERENCES clients (id) ON DELETE CASCADE,
-                    client_key INTEGER GENERATED ALWAYS AS (IFNULL(client_id, 0)) STORED,
+                    client_key INTEGER NOT NULL DEFAULT 0,
                     is_active INTEGER NOT NULL DEFAULT 1,
                     job_title VARCHAR(255) NULL,
                     phone VARCHAR(255) NULL,
