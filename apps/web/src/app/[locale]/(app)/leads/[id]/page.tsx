@@ -671,6 +671,7 @@ export default function LeadDetailPage() {
                     items={[
                       {
                         label: t("actions.edit"),
+                        icon: "pencil",
                         onClick: () => {
                           setEditingContact(contact);
                           setContactForm({
@@ -684,6 +685,7 @@ export default function LeadDetailPage() {
                       },
                       {
                         label: t("actions.delete"),
+                        icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteContact(contact),
                       },
@@ -809,10 +811,12 @@ export default function LeadDetailPage() {
                         label: activity.is_done
                           ? t("actions.reopen")
                           : t("actions.markDone"),
+                        icon: activity.is_done ? "rotate-ccw" : "check",
                         onClick: () => handleToggleActivity(activity),
                       },
                       {
                         label: t("actions.delete"),
+                        icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteActivity(activity),
                       },
@@ -894,6 +898,7 @@ export default function LeadDetailPage() {
                         items={[
                           {
                             label: t("actions.delete"),
+                            icon: "trash-2",
                             danger: true,
                             onClick: () => handleDeleteNote(note),
                           },

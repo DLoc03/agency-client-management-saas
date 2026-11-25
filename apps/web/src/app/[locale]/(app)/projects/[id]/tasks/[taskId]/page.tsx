@@ -251,6 +251,7 @@ export default function TaskDetailPage() {
                     items={[
                       {
                         label: t("actions.delete"),
+                        icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteChecklist(item.id),
                       },
@@ -301,6 +302,7 @@ export default function TaskDetailPage() {
                       items={[
                         {
                           label: t("actions.delete"),
+                          icon: "trash-2",
                           danger: true,
                           onClick: () => handleDeleteComment(comment.id),
                         },

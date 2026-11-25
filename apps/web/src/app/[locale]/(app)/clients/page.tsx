@@ -501,6 +501,7 @@ export default function ClientsPage() {
                         items={[
                           {
                             label: t("actions.delete"),
+                            icon: "trash-2",
                             danger: true,
                             onClick: () => handleDelete(client),
                           },
