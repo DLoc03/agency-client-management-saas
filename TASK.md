@@ -280,18 +280,18 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Chờ PR docs công bố hợp đồng (docs/BE-008-finance-contract) merge.
 - Ghi chú: Task FE/QA cho Nhóm 5 chỉ soạn SAU khi BE-008 merge (kỷ luật prompt — không soạn prompt phụ thuộc trước).
 
+## FE-016 — Landing page theo mẫu Editorial (PO duyệt mẫu 4, 2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Thay trang gốc tạm thời ("Giai đoạn nền tảng") bằng landing page theo mẫu 4 "Editorial" do PO chọn trong 6 mẫu Muse sinh (3 mẫu đầu bị chê hơi trẻ con; hướng chốt: chững chạc kiểu SaaS B2B, không emoji/hiệu ứng, tím chỉ làm điểm nhấn, có mô phỏng giao diện app thật). Gồm: header (logo + chuyển ngữ EN/VI + nút Đăng nhập), khối giới thiệu + 3 số liệu (8 nhóm nghiệp vụ, song ngữ, đa agency), nút Đăng nhập vào `/login` và liên kết Cổng khách hàng vào `/portal/login` (trước đây phải gõ tay URL), mô phỏng sản phẩm bằng CSS thuần (sidebar tím than + card dự án), footer. Toàn bộ chuỗi qua i18n namespace Home (EN + VI đầy đủ).
+- Acceptance Criteria: Nguyen mở trang gốc ở cả 2 ngôn ngữ kiểm tra bằng mắt; nút Đăng nhập/Portal chuyển đúng trang. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: (1) Quy ước mới của PO: mọi hành động trên card dữ liệu (Sửa/Xoá/Đánh dấu xong...) thu gọn vào một nút icon three-dot (component dùng chung mới `ActionMenu` + icon `more-vertical`, đóng khi bấm ra ngoài/Esc), bấm mới hiện danh sách hành động — không hiển thị nút chữ trực tiếp trên card nữa; đã áp cho card danh sách Projects/Clients/Teams/Members, cột mốc + công việc (chi tiết dự án), checklist + bình luận (chi tiết công việc), người liên hệ + hoạt động + ghi chú (chi tiết Lead/Client). Hành động cấp trang giữ nguyên. Quy ước đã ghi vào `docs/UI_GUIDELINES.md` mục 7. (2) Sửa tràn ngang trên mobile ở trang chi tiết dự án: tiêu đề dự án thiếu `min-w-0`/ngắt chữ khiến hàng header bị đẩy rộng hơn màn hình; thêm `min-w-0` + `break-words` cho tiêu đề và các giá trị ở khối tổng quan, nút tiêu đề công việc chặn rộng tối đa. (3) Ghi chú kèm theo: bản FIX-012 đã có trên main (PR #59) — nếu máy chạy không thấy thay đổi thì kiểm tra `git pull` đã cập nhật chưa và recreate container web (xem hướng dẫn trong PR).
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: mọi card có nút three-dot mở menu hành động đúng chức năng; trang chi tiết dự án trên mobile không còn thanh cuộn ngang. Typecheck + build PASS.
-- Blockers: Không có.
-
-## FIX-014 — Feedback UI vòng 2 của PO (2026-11-25)
-- Status: IN_PROGRESS
-- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
-- Mô tả: Bốn chỉnh sửa từ ảnh nghiệm thu của PO sau FIX-013: (1) Trang chi tiết dự án: nút "Về danh sách" đứng một hàng riêng ở trên, tên dự án + tên khách + trạng thái xuống dưới nút (trước đây nằm cùng hàng). (2) Tiêu đề card công việc: màu primary vẫn hơi sáng — đổi sang màu chữ chính (foreground, gần đen) cho dễ đọc. (3) Menu three-dot thêm icon cho từng mục (mắt = Chi tiết, bút chì = Sửa thật, thùng rác = Xoá, check = Đánh dấu xong, xoay ngược = Mở lại); các nút "Sửa" trên card danh sách thực chất là vào xem chi tiết nên đổi tên thành "Chi tiết/Detail" (khoá i18n mới `actions.detail` ở namespace Projects + Teams) — mục Sửa mở form thật (cột mốc, người liên hệ) giữ nguyên nhãn Sửa. (4) Trang vào app đầu tiên (landing): PO yêu cầu Muse sinh vài mẫu thiết kế để duyệt chọn trước, mẫu được chọn mới triển khai kèm nút chuyển sang trang đăng nhập — phần này làm riêng sau khi PO chọn mẫu.
-- Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt các điểm trên. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## QA-006 — Bộ test quét cách ly dữ liệu giữa các agency (cross-tenant isolation sweep)
