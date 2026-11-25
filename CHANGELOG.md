@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Added
+- Portal sign-in UI refresh (FE-018): the Client Portal login now follows the PO-approved "P2 — Bento glass" design — an emerald gradient panel with a frosted-glass sign-in card, three glass tiles (Projects / Tasks / Invoices), and a cross-link back to the internal sign-in; full EN/VI copy.
 - Landing page (FE-016): the root page is now an "Editorial" product landing (design approved by the PO from six samples) with routes into the internal sign-in and the Client Portal, a CSS mock of the real app as the product preview, and full EN/VI copy — replacing the foundation-phase placeholder.
 - Multi-agency identity (DEC-018, BE-009): `POST /api/v1/auth/select-agency` and `POST /api/v1/auth/switch-agency` (plus the Portal equivalents), `GET /api/v1/auth/memberships`, and a short-lived selection token returned by login when an identity belongs to several agencies; the last-used agency is remembered for the next login.
 - Tenant rules for agents in the new repo-root `AGENTS.md` (explicit bypass comments, agency-scoped cache keys, job payloads carrying `agency_id`).
