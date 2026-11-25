@@ -7,6 +7,7 @@ import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Avatar } from "@/components/ui/Avatar";
 import {
   getProject,
@@ -318,8 +319,8 @@ export default function ProjectDetailPage() {
             <Icon name="chevron-left" className="h-4 w-4" />
             {t("actions.back")}
           </button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
+          <div className="min-w-0">
+            <h1 className="break-words text-2xl font-bold tracking-tight">{project.name}</h1>
             <p className="text-sm text-muted-foreground">
               {project.client?.name ?? "—"} · {t(`statuses.${project.status}`)}
             </p>
@@ -362,23 +363,23 @@ export default function ProjectDetailPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.client")}</p>
-            <p className="font-medium">{project.client?.name ?? "—"}</p>
+            <p className="break-words font-medium">{project.client?.name ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.manager")}</p>
-            <p className="font-medium">{project.project_manager?.name ?? "—"}</p>
+            <p className="break-words font-medium">{project.project_manager?.name ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.startDate")}</p>
-            <p className="font-medium">{project.start_date ?? "—"}</p>
+            <p className="break-words font-medium">{project.start_date ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.dueDate")}</p>
-            <p className="font-medium">{project.due_date ?? "—"}</p>
+            <p className="break-words font-medium">{project.due_date ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.budget")}</p>
-            <p className="font-medium">{project.budget ?? "—"}</p>
+            <p className="break-words font-medium">{project.budget ?? "—"}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.status")}</p>
@@ -546,31 +547,28 @@ export default function ProjectDetailPage() {
                       </p>
                     </div>
                     {canManageMilestones && (
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingMilestone(m);
-                            setMilestoneForm({
-                              name: m.name,
-                              description: m.description ?? "",
-                              due_date: m.due_date ?? "",
-                              status: m.status,
-                            });
-                            setShowMilestone(true);
-                          }}
-                          className="text-xs text-primary-text hover:underline"
-                        >
-                          {t("actions.edit")}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteMilestone(m.id)}
-                          className="text-xs text-red-600 hover:underline"
-                        >
-                          {t("actions.delete")}
-                        </button>
-                      </div>
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("actions.edit"),
+                            onClick: () => {
+                              setEditingMilestone(m);
+                              setMilestoneForm({
+                                name: m.name,
+                                description: m.description ?? "",
+                                due_date: m.due_date ?? "",
+                                status: m.status,
+                              });
+                              setShowMilestone(true);
+                            },
+                          },
+                          {
+                            label: t("actions.delete"),
+                            danger: true,
+                            onClick: () => handleDeleteMilestone(m.id),
+                          },
+                        ]}
+                      />
                     )}
                   </div>
                   <div className="mt-2 flex items-center gap-3">
@@ -657,7 +655,7 @@ export default function ProjectDetailPage() {
                   <button
                     type="button"
                     onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                    className="truncate font-medium text-primary-text hover:underline"
+                    className="block max-w-full truncate text-left font-medium text-primary-text hover:underline"
                   >
                     {task.title}
                   </button>
@@ -668,13 +666,15 @@ export default function ProjectDetailPage() {
                   </p>
                 </div>
                 {canDeleteTask && (
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-xs text-red-600 hover:underline"
-                  >
-                    {t("actions.delete")}
-                  </button>
+                  <ActionMenu
+                    items={[
+                      {
+                        label: t("actions.delete"),
+                        danger: true,
+                        onClick: () => handleDeleteTask(task.id),
+                      },
+                    ]}
+                  />
                 )}
               </div>
             ))}

@@ -38,7 +38,12 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Khu vực nội dung cần có chiều cao tối thiểu (min-height) hợp lý để khi dữ liệu chưa có, footer/khung trang **không bị nhảy lên**.
 - Màn hình chưa có dữ liệu phải hiển thị empty state có chủ đích, giữ nguyên khung, thay vì trang trắng sụp khung.
 
-## 7. Quy trình nghiệm thu UI
+## 7. Hành động trên card dữ liệu (FIX-013, PO chốt 2026-11-25)
+- Mọi hành động của một card dữ liệu (Sửa, Xoá, Đánh dấu xong, ...) phải thu gọn vào **một nút icon three-dot (kebab menu)** ở góc card — dùng component dùng chung `ActionMenu` (`components/ui/ActionMenu.tsx`) — bấm vào mới hiện danh sách hành động. KHÔNG hiển thị các nút chữ Sửa/Xoá trực tiếp trên card: khi số hành động tăng lên, card sẽ rối và thay đổi kích thước.
+- Quy ước áp dụng cho toàn bộ card dữ liệu (danh sách dự án/khách hàng/nhóm/thành viên, cột mốc, công việc, checklist, bình luận, người liên hệ, hoạt động, ghi chú). Hành động cấp trang (nút Xoá ở header trang chi tiết, nút Sửa mở form của section) không thuộc quy ước này.
+- Mục hành động nguy hiểm (Xoá) hiển thị chữ đỏ trong menu.
+
+## 8. Quy trình nghiệm thu UI
 
 - Các điểm 2–6 chỉ kiểm chứng đáng tin bằng mắt: agent làm FE tự kiểm ở nhiều bề rộng và nhiều trạng thái dữ liệu (có dữ liệu, rỗng, lỗi) trước khi báo cáo, và nêu rõ đã kiểm ở những bề rộng/trạng thái nào.
 - Nguyen nghiệm thu UI trực tiếp; phản hồi của Nguyen tại nghiệm thu là tín hiệu chính để sửa các vấn đề thị giác mà kiểm thử tự động không bắt được.

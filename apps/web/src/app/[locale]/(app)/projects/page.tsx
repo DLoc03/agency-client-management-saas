@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import {
   listProjects,
   createProject,
@@ -244,9 +245,28 @@ export default function ProjectsPage() {
                         {p.client?.name ?? "—"}
                       </p>
                     </div>
-                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(p.status)}`}>
-                      {t(`statuses.${p.status}`)}
-                    </span>
+                    <div className="flex shrink-0 items-start gap-1">
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(p.status)}`}>
+                        {t(`statuses.${p.status}`)}
+                      </span>
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("actions.edit"),
+                            onClick: () => router.push(`/projects/${p.id}`),
+                          },
+                          ...(canDelete
+                            ? [
+                                {
+                                  label: t("actions.delete"),
+                                  danger: true,
+                                  onClick: () => handleDelete(p.id),
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
+                    </div>
                   </div>
                   <div>
                     <div className="mb-1 flex items-center justify-between text-xs">
@@ -261,24 +281,6 @@ export default function ProjectsPage() {
                         style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
                       />
                     </div>
-                  </div>
-                  <div className="mt-auto flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => router.push(`/projects/${p.id}`)}
-                      className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary"
-                    >
-                      {t("actions.edit")}
-                    </button>
-                    {canDelete && (
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(p.id)}
-                        className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                      >
-                        {t("actions.delete")}
-                      </button>
-                    )}
                   </div>
                 </div>
               );

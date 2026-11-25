@@ -4,7 +4,8 @@
     "loading": "Loading…",
     "or": "or",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "moreActions": "More actions"
   },
   "Home": {
     "status": "Foundation phase — the application is being initialized.",

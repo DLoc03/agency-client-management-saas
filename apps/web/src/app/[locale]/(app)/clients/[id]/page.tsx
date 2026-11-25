@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { PasswordInput } from "@/components/ui/PasswordInput";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Select } from "@/components/ui/Select";
 import {
   createContact,
@@ -610,31 +611,29 @@ export default function ClientDetailPage() {
                   </span>
                 )}
                 {canUpdate && (
-                  <span className="ml-auto flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingContact(contact);
-                        setContactForm({
-                          full_name: contact.full_name,
-                          email: contact.email || "",
-                          phone: contact.phone || "",
-                          position: contact.position || "",
-                        });
-                        setContactPrimary(contact.is_primary);
-                      }}
-                      className="text-sm font-medium hover:underline"
-                    >
-                      {t("actions.edit")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteContact(contact)}
-                      className="text-sm font-medium text-red-600 hover:underline"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  </span>
+                  <ActionMenu
+                    className="ml-auto"
+                    items={[
+                      {
+                        label: t("actions.edit"),
+                        onClick: () => {
+                          setEditingContact(contact);
+                          setContactForm({
+                            full_name: contact.full_name,
+                            email: contact.email || "",
+                            phone: contact.phone || "",
+                            position: contact.position || "",
+                          });
+                          setContactPrimary(contact.is_primary);
+                        },
+                      },
+                      {
+                        label: t("actions.delete"),
+                        danger: true,
+                        onClick: () => handleDeleteContact(contact),
+                      },
+                    ]}
+                  />
                 )}
               </li>
             ))}
@@ -741,13 +740,16 @@ export default function ClientDetailPage() {
                   <span>{fmtDate(note.created_at)}</span>
                   {canNotes &&
                     (isPrivileged || note.author?.id === session?.user.id) && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteNote(note)}
-                        className="ml-auto font-medium text-red-600 hover:underline"
-                      >
-                        {t("actions.delete")}
-                      </button>
+                      <ActionMenu
+                        className="ml-auto"
+                        items={[
+                          {
+                            label: t("actions.delete"),
+                            danger: true,
+                            onClick: () => handleDeleteNote(note),
+                          },
+                        ]}
+                      />
                     )}
                 </div>
                 <p className="whitespace-pre-wrap text-foreground">{note.body}</p>
