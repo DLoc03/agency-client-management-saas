@@ -11,6 +11,10 @@
     --popover-foreground: 240 10% 3.9%;
     --primary: 250 100% 69%;
     --primary-foreground: 0 0% 100%;
+    /* Primary as TEXT (links, titles): the surface primary is too light to
+       read as text on white, so text uses a deeper shade of the same hue
+       (PO feedback, FIX-012). Surfaces keep --primary unchanged. */
+    --primary-text: 250 84% 60%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
@@ -24,12 +28,15 @@
     --ring: 250 100% 69%;
     --radius: 0.5rem;
 
-    --sidebar-background: 240 5.9% 10%;
+    /* Sidebar: deep violet-charcoal (cool, brand-tinted) instead of the old
+       warm brown-black, so it sits in tone with the violet brand and with
+       the many colors of future dashboards (PO feedback, FIX-012). */
+    --sidebar-background: 250 24% 11%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-muted: 240 5% 64.9%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-muted: 250 12% 68%;
+    --sidebar-accent: 250 20% 17%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-border: 250 18% 19%;
   }
 
   .dark {
@@ -41,6 +48,7 @@
     --popover-foreground: 0 0% 98%;
     --primary: 250 100% 69%;
     --primary-foreground: 0 0% 100%;
+    --primary-text: 250 100% 76%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -64,6 +72,7 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-text: hsl(var(--primary-text));
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));

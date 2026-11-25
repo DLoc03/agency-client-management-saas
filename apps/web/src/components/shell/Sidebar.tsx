@@ -51,7 +51,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     >
       {/* Brand */}
       <div className="flex h-16 items-center gap-3 border-b border-sidebar-border px-4">
-        <Logo variant="violet" className="h-8 w-8 shrink-0" />
+        <Logo variant="light" className="h-8 w-8 shrink-0" />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold leading-tight">{t("brand")}</p>
           <p className="truncate text-xs text-sidebar-muted">{t("brandSubtitle")}</p>

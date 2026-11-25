@@ -559,7 +559,7 @@ export default function ProjectDetailPage() {
                             });
                             setShowMilestone(true);
                           }}
-                          className="text-xs text-primary hover:underline"
+                          className="text-xs text-primary-text hover:underline"
                         >
                           {t("actions.edit")}
                         </button>
@@ -657,7 +657,7 @@ export default function ProjectDetailPage() {
                   <button
                     type="button"
                     onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                    className="truncate font-medium text-primary hover:underline"
+                    className="truncate font-medium text-primary-text hover:underline"
                   >
                     {task.title}
                   </button>

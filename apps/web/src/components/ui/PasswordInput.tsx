@@ -17,11 +17,11 @@ export const PasswordInput = forwardRef<
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
         ref={ref}
         type={visible ? "text" : "password"}
-        className={`${className ?? ""} pr-10`}
+        className={`${className ?? ""} w-full pr-10`}
         {...props}
       />
       <button
