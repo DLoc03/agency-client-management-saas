@@ -294,6 +294,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở menu ⋮ ở danh sách dự án/nhóm/thành viên, mục đầu tiên hiện "Chi tiết" (VI) / "Detail" (EN) kèm icon mắt, không còn mã khóa. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FE-018 — UI đăng nhập Portal theo mẫu P2 Bento kính mờ (PO duyệt 2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Trang `/portal/login` làm lại theo mẫu P2 "Bento kính mờ" do PO chọn trong 3 mẫu Muse sinh (P1 Card Emerald, P2 Bento kính mờ, P3 Chia đôi): nền panel gradient xanh ngọc, card đăng nhập kính mờ (logo emerald + tiêu đề chào mừng), 3 ô bento dưới card giới thiệu Dự án/Công việc/Hoá đơn, liên kết quay về đăng nhập nội bộ cho nhân viên agency. Header/footer của portal layout giữ nguyên (áp dụng cho mọi trang Portal). Form đăng nhập Portal giữ nguyên logic và palette emerald sẵn có. Thêm 9 khóa i18n vào `Portal.login` EN + VI.
+- Acceptance Criteria: Nguyen mở `/portal/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản client demo vẫn vào Portal như cũ; link Đăng nhập nội bộ hoạt động. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
