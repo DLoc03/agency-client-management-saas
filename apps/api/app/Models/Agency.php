@@ -18,13 +18,9 @@ class Agency extends Model
         return ['is_locked' => 'boolean'];
     }
 
-    public function users(): HasMany
+    /** DEC-018: people belong to agencies through memberships. */
+    public function memberships(): HasMany
     {
-        return $this->hasMany(User::class);
-    }
-
-    public function clientAccounts(): HasMany
-    {
-        return $this->hasMany(ClientAccount::class);
+        return $this->hasMany(Membership::class);
     }
 }

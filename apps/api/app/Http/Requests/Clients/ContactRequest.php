@@ -4,6 +4,7 @@ namespace App\Http\Requests\Clients;
 
 use App\Exceptions\ApiException;
 use App\Models\Organization;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -42,7 +43,7 @@ abstract class ContactRequest extends FormRequest
 
                 return;
             }
-            if ($organization->agency_id !== $this->user()->agency_id) {
+            if ($organization->agency_id !== Tenant::id()) {
                 throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'organization_id']);
             }
             // Same agency but another client's organization: plain bad reference.

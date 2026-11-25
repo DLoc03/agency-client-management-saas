@@ -32,15 +32,12 @@ class TeamModuleTest extends TestCase
 
     private function makeUser(array $roles = [Role::OWNER], ?int $agencyId = null): User
     {
-        $user = User::factory()->create($agencyId ? ['agency_id' => $agencyId] : []);
-        $user->roles()->sync(Role::whereIn('key', $roles)->pluck('id'));
-
-        return $user;
+        return $this->makeMembershipUser($roles, $agencyId);
     }
 
     private function as(User $user): static
     {
-        return $this->withFreshToken($user->createToken('test', ['app'])->plainTextToken);
+        return $this->withFreshToken($this->boundTokenFor($user));
     }
 
     private function roleId(string $key): int
@@ -169,17 +166,18 @@ class TeamModuleTest extends TestCase
     {
         $owner = $this->makeUser();
         $member = $this->makeUser([Role::TEAM_MEMBER], $owner->agency_id);
-        $memberToken = $member->createToken('test', ['app'])->plainTextToken;
+        $memberToken = $this->boundTokenFor($member);
 
         $this->withFreshToken($memberToken)->getJson('/api/v1/users')->assertOk();
 
         $this->as($owner)->patchJson("/api/v1/users/{$member->id}/activation", ['is_active' => false])
             ->assertOk()->assertJsonPath('data.is_active', false);
 
-        // Existing token revoked; login refused while deactivated.
+        // Existing token revoked; while the membership is inactive
+        // the identity has no active membership to sign in with.
         $this->withFreshToken($memberToken)->getJson('/api/v1/users')->assertUnauthorized();
         $this->postJson('/api/v1/auth/login', ['email' => $member->email, 'password' => 'password'])
-            ->assertStatus(403)->assertJsonPath('error.code', 'ACCOUNT_DISABLED');
+            ->assertStatus(403)->assertJsonPath('error.code', 'NO_ACTIVE_MEMBERSHIP');
 
         // Self-deactivation is refused; reactivation restores login.
         $this->as($owner)->patchJson("/api/v1/users/{$owner->id}/activation", ['is_active' => false])
@@ -222,11 +220,12 @@ class TeamModuleTest extends TestCase
             'role_ids' => [$this->roleId(Role::TEAM_MEMBER)],
         ])->assertStatus(422)->assertJsonPath('error.code', 'INVITATION_PENDING');
 
-        // Already-registered email -> 422.
+        // Inviting someone who is already an active staff member of
+        // this agency -> 422 ALREADY_MEMBER (DEC-018).
         $this->as($owner)->postJson('/api/v1/invitations', [
             'email' => $existing->email,
             'role_ids' => [$this->roleId(Role::TEAM_MEMBER)],
-        ])->assertStatus(422)->assertJsonPath('error.code', 'EMAIL_ALREADY_REGISTERED');
+        ])->assertStatus(422)->assertJsonPath('error.code', 'ALREADY_MEMBER');
 
         // Admin may not invite with the Admin role (DEC-017).
         $this->as($admin)->postJson('/api/v1/invitations', [
@@ -251,8 +250,9 @@ class TeamModuleTest extends TestCase
             'token' => $token, 'name' => 'Join Me', 'password' => 'password123',
         ])->assertCreated()->assertJsonPath('data.email', 'join.me@example.com');
         $newUser = User::where('email', 'join.me@example.com')->first();
-        $this->assertTrue($newUser->hasRole(Role::TEAM_MEMBER));
-        $this->assertSame($owner->agency_id, $newUser->agency_id);
+        $membership = $newUser->membershipIn($owner->agency_id);
+        $this->assertNotNull($membership);
+        $this->assertTrue($membership->hasRole(Role::TEAM_MEMBER));
         $this->postJson('/api/v1/auth/login', ['email' => 'join.me@example.com', 'password' => 'password123'])->assertOk();
 
         // Second accept -> 422.

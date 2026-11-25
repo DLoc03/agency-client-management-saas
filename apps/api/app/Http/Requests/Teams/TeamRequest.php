@@ -4,6 +4,7 @@ namespace App\Http\Requests\Teams;
 
 use App\Exceptions\ApiException;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -24,7 +25,7 @@ abstract class TeamRequest extends FormRequest
     public function rules(): array
     {
         $required = $this->creating() ? ['required'] : ['sometimes'];
-        $agencyId = $this->user()->agency_id;
+        $agencyId = Tenant::id();
 
         $uniqueName = Rule::unique('teams', 'name')
             ->where('agency_id', $agencyId)
@@ -49,7 +50,7 @@ abstract class TeamRequest extends FormRequest
             $lead = User::withoutGlobalScopes()->find($this->input('lead_id'));
             if (! $lead) {
                 $validator->errors()->add('lead_id', 'User not found.');
-            } elseif ($lead->agency_id !== $this->user()->agency_id) {
+            } elseif (! $lead->hasActiveMembershipIn(Tenant::id())) {
                 throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'lead_id']);
             }
         });

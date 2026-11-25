@@ -35,10 +35,17 @@ Route::prefix('v1/auth')->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1');
 
+    Route::post('/select-agency', [AuthController::class, 'selectAgency'])
+        ->middleware(['auth:sanctum', 'ability:select']);
+    Route::post('/switch-agency', [AuthController::class, 'switchAgency'])
+        ->middleware(['auth:sanctum', 'abilities:app,portal']);
+    Route::get('/memberships', [AuthController::class, 'memberships'])
+        ->middleware('auth:sanctum');
+
     Route::middleware(['auth:sanctum', 'ability:app'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me', [AuthController::class, 'me']);
-        Route::post('/change-password', [AuthController::class, 'changePassword']);
+        Route::get('/me', [AuthController::class, 'me'])->middleware('tenant');
+        Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('tenant');
     });
 });
 
@@ -48,9 +55,14 @@ Route::prefix('v1/portal/auth')->group(function () {
     Route::post('/forgot-password', [PortalAuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
     Route::post('/reset-password', [PortalAuthController::class, 'resetPassword'])->middleware('throttle:5,1');
 
+    Route::post('/select-agency', [PortalAuthController::class, 'selectAgency'])
+        ->middleware(['auth:sanctum', 'ability:select']);
+    Route::post('/switch-agency', [PortalAuthController::class, 'switchAgency'])
+        ->middleware(['auth:sanctum', 'ability:portal']);
+
     Route::middleware(['auth:sanctum', 'ability:portal'])->group(function () {
         Route::post('/logout', [PortalAuthController::class, 'logout']);
-        Route::get('/me', [PortalAuthController::class, 'me']);
+        Route::get('/me', [PortalAuthController::class, 'me'])->middleware('tenant');
     });
 });
 
@@ -60,7 +72,7 @@ Route::post('/v1/invitations/accept', [InvitationController::class, 'accept'])->
 
 // Client module (docs/CLIENT_CONTRACT.md) — internal app only, RBAC
 // permissions enforced per route; tenancy via the BelongsToAgency scope.
-Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
     Route::get('/clients', [ClientController::class, 'index'])->middleware('permission:clients.view');
     Route::post('/clients', [ClientController::class, 'store'])->middleware('permission:clients.create');
     Route::get('/clients/{client}', [ClientController::class, 'show'])->middleware('permission:clients.view');
@@ -87,7 +99,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
 // CRM module (docs/CRM_CONTRACT.md) — same tenancy and permission model.
 // The fixed-path routes (pipeline-summary, lead-activities/due) are
 // registered before /leads/{lead} so they are not swallowed by binding.
-Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
     Route::get('/leads/pipeline-summary', [LeadController::class, 'pipelineSummary'])->middleware('permission:leads.view');
     Route::get('/lead-activities/due', [LeadActivityController::class, 'due'])->middleware('permission:leads.view');
 
@@ -116,7 +128,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
 // Project module (docs/PROJECT_CONTRACT.md, DEC-016) — same tenancy and
 // permission model. The fixed-path route /tasks/due is registered before
 // /tasks/{task} so it is not swallowed by binding.
-Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->middleware('permission:projects.view');
     Route::post('/projects', [ProjectController::class, 'store'])->middleware('permission:projects.create');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->middleware('permission:projects.view');
@@ -177,7 +189,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app'])->group(function
 
 // Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —
 // read-only, scoped to the signed-in client's own projects.
-Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal'])->group(function () {
+Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal', 'tenant'])->group(function () {
     Route::get('/projects', [PortalProjectController::class, 'index']);
     Route::get('/projects/{projectId}', [PortalProjectController::class, 'show']);
 

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Projects;
 
 use App\Models\Client;
-use App\Models\ClientAccount;
 use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Role;
@@ -31,15 +30,12 @@ class ProjectModuleTest extends TestCase
 
     private function makeUser(array $roles = [Role::OWNER], ?int $agencyId = null): User
     {
-        $user = User::factory()->create($agencyId ? ['agency_id' => $agencyId] : []);
-        $user->roles()->sync(Role::whereIn('key', $roles)->pluck('id'));
-
-        return $user;
+        return $this->makeMembershipUser($roles, $agencyId);
     }
 
     private function as(User $user): static
     {
-        return $this->withFreshToken($user->createToken('test', ['app'])->plainTextToken);
+        return $this->withFreshToken($this->boundTokenFor($user));
     }
 
     private function makeClient(User $owner, array $attrs = []): Client
@@ -369,10 +365,8 @@ class ProjectModuleTest extends TestCase
         // owner token is active; the helper shares one test instance).
         $this->as($owner)->getJson('/api/v1/portal/projects')->assertForbidden();
 
-        $account = ClientAccount::factory()->create([
-            'agency_id' => $owner->agency_id, 'client_id' => $client->id,
-        ]);
-        $portal = $this->withFreshToken($account->createToken('portal', ['portal'])->plainTextToken);
+        $identity = $this->makePortalIdentity($owner->agency_id, $client->id);
+        $portal = $this->withFreshToken($this->boundTokenFor($identity, 'portal'));
 
         $portal->getJson('/api/v1/portal/projects')
             ->assertOk()->assertJsonCount(1, 'data')

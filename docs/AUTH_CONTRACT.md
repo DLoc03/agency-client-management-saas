@@ -1,5 +1,7 @@
 # BE-003 — Hợp đồng: Auth + Multi-tenancy + RBAC
 
+> **Cập nhật DEC-018 (2026-11-25, BE-009):** mô hình danh tính trong hợp đồng này đã thay đổi — `users` không còn `agency_id`, tài khoản Portal riêng (`client_accounts`) bị xoá và gộp vào danh tính chung qua bảng `memberships`; token gắn `agency_id` + `membership_id`, có thêm luồng chọn agency (selection token) khi một danh tính thuộc nhiều agency. Các phần bị thay thế: mục 1 (mô hình `users`/`client_accounts`), nguyên tắc tenancy ở mục 2 giữ nguyên tinh thần và được siết thành fail-closed. Chi tiết: DEC-018 trong `DECISIONS.md`. Các phần còn lại của hợp đồng (RBAC, định dạng lỗi, quy tắc token app/portal) vẫn hiệu lực.
+
 > Trạng thái: **ĐÃ DUYỆT** bởi Nguyen (Product Owner) ngày 2026-11-20 — ghi tại DEC-008. Đây là bản chính thức phổ biến cho Antigravity và OpenCode. OpenAPI sinh từ code (Scramble) sẽ vào `packages/contracts/` khi BE-003 triển khai; khi có mâu thuẫn, tài liệu này là căn cứ nghiệp vụ, OpenAPI là căn cứ kỹ thuật.
 > Căn cứ: DEC-001 (stack), DEC-004 (shared DB + agency_id), DEC-005 (RBAC 7 vai trò + 5 điều chỉnh), DEC-006 (i18n).
 

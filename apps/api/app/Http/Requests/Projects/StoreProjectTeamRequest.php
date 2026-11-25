@@ -4,6 +4,7 @@ namespace App\Http\Requests\Projects;
 
 use App\Exceptions\ApiException;
 use App\Models\Team;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -28,7 +29,7 @@ class StoreProjectTeamRequest extends FormRequest
             $team = Team::withoutGlobalScopes()->find($this->input('team_id'));
             if (! $team) {
                 $validator->errors()->add('team_id', 'Team not found.');
-            } elseif ($team->agency_id !== $this->user()->agency_id) {
+            } elseif ($team->agency_id !== Tenant::id()) {
                 throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'team_id']);
             }
         });

@@ -2,62 +2,65 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\ApiException;
 use App\Http\Controllers\Api\Concerns\HandlesPasswordReset;
+use App\Http\Controllers\Api\Concerns\IssuesMembershipTokens;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\ClientAccount;
+use App\Models\Membership;
+use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 /**
- * Client Portal authentication (contract §3). Separate account type and
- * `portal` token ability — portal tokens cannot call internal endpoints.
+ * Client Portal authentication (DEC-018). The Portal no longer has
+ * its own account table: clients sign in with the same single
+ * identity, and Portal access is a client membership. Portal tokens
+ * carry the `portal` ability and are bound to that membership.
  */
 class PortalAuthController extends Controller
 {
-    use HandlesPasswordReset;
+    use HandlesPasswordReset, IssuesMembershipTokens;
 
     protected function passwordBroker(): string
     {
-        return 'clients';
+        return 'users';
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $account = ClientAccount::with('agency')->where('email', $request->email)->first();
+        $user = $this->authenticateIdentity($request);
 
-        if (! $account || ! Hash::check($request->password, $account->password)) {
-            throw new ApiException('INVALID_CREDENTIALS', 401);
-        }
-        if (! $account->is_active) {
-            throw new ApiException('ACCOUNT_DISABLED', 403);
-        }
-        if ($account->agency->is_locked) {
-            throw new ApiException('AGENCY_LOCKED', 403);
-        }
+        $data = $this->loginOutcome(
+            $user,
+            Membership::KIND_CLIENT,
+            fn (User $u, Membership $m, string $token) => $this->sessionPayload($u, $m, $token),
+            $this->identityPayload($user),
+        );
 
-        $account->forceFill(['last_login_at' => now()])->save();
-        $token = $account->createToken('portal', ['portal'])->plainTextToken;
+        return response()->json(['data' => $data]);
+    }
 
-        return response()->json([
-            'data' => [
-                'token' => $token,
-                'client' => [
-                    'id' => $account->id,
-                    'client_id' => $account->client_id,
-                    'name' => $account->name,
-                    'email' => $account->email,
-                    'locale' => $account->locale,
-                ],
-                'agency' => [
-                    'id' => $account->agency->id,
-                    'name' => $account->agency->name,
-                    'slug' => $account->agency->slug,
-                ],
-            ],
-        ]);
+    public function selectAgency(Request $request): JsonResponse
+    {
+        $data = $this->selectMembership(
+            $request,
+            Membership::KIND_CLIENT,
+            fn (User $u, Membership $m, string $token) => $this->sessionPayload($u, $m, $token),
+        );
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function switchAgency(Request $request): JsonResponse
+    {
+        $data = $this->selectMembership(
+            $request,
+            Membership::KIND_CLIENT,
+            fn (User $u, Membership $m, string $token) => $this->sessionPayload($u, $m, $token),
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     public function logout(Request $request): JsonResponse
@@ -69,23 +72,44 @@ class PortalAuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        $account = $request->user()->load('agency');
+        $user = $request->user();
+        $membership = Tenant::membership();
 
         return response()->json([
             'data' => [
-                'client' => [
-                    'id' => $account->id,
-                    'client_id' => $account->client_id,
-                    'name' => $account->name,
-                    'email' => $account->email,
-                    'locale' => $account->locale,
-                ],
+                'client' => $this->identityPayload($user, $membership),
                 'agency' => [
-                    'id' => $account->agency->id,
-                    'name' => $account->agency->name,
-                    'slug' => $account->agency->slug,
+                    'id' => $membership->agency->id,
+                    'name' => $membership->agency->name,
+                    'slug' => $membership->agency->slug,
                 ],
+                'membership' => $this->membershipPayload($membership),
             ],
         ]);
+    }
+
+    private function sessionPayload(User $user, Membership $membership, string $token): array
+    {
+        return [
+            'token' => $token,
+            'client' => $this->identityPayload($user, $membership),
+            'agency' => [
+                'id' => $membership->agency->id,
+                'name' => $membership->agency->name,
+                'slug' => $membership->agency->slug,
+            ],
+            'membership' => $this->membershipPayload($membership),
+        ];
+    }
+
+    private function identityPayload(User $user, ?Membership $membership = null): array
+    {
+        return [
+            'id' => $user->id,
+            'client_id' => $membership?->client_id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'locale' => $user->locale,
+        ];
     }
 }

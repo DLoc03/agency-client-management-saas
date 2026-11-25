@@ -23,12 +23,12 @@ class AuthTest extends TestCase
 
     private function makeUser(array $attrs = [], array $roles = [Role::TEAM_MEMBER]): User
     {
-        $user = User::factory()->create(array_merge([
+        $agencyId = $attrs['agency_id'] ?? null;
+        unset($attrs['agency_id']);
+
+        return $this->makeMembershipUser($roles, $agencyId, array_merge([
             'password' => Hash::make('secret123'),
         ], $attrs));
-        $user->roles()->sync(Role::whereIn('key', $roles)->pluck('id'));
-
-        return $user;
     }
 
     public function test_login_success_returns_token_roles_and_permissions(): void
@@ -86,7 +86,7 @@ class AuthTest extends TestCase
         $this->getJson('/api/v1/auth/me')
             ->assertStatus(401)->assertJsonPath('error.code', 'UNAUTHENTICATED');
 
-        $token = $user->createToken('app', ['app'])->plainTextToken;
+        $token = $this->boundTokenFor($user);
         $this->withFreshToken($token)
             ->getJson('/api/v1/auth/me')
             ->assertOk()
@@ -109,8 +109,8 @@ class AuthTest extends TestCase
     public function test_change_password_validates_current_and_revokes_other_tokens(): void
     {
         $user = $this->makeUser();
-        $tokenA = $user->createToken('app', ['app'])->plainTextToken;
-        $tokenB = $user->createToken('app', ['app'])->plainTextToken;
+        $tokenA = $this->boundTokenFor($user);
+        $tokenB = $this->boundTokenFor($user);
 
         $this->withFreshToken($tokenA)
             ->postJson('/api/v1/auth/change-password', [

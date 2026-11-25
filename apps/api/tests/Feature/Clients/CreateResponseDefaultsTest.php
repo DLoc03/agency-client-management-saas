@@ -26,15 +26,12 @@ class CreateResponseDefaultsTest extends TestCase
 
     private function owner(): User
     {
-        $user = User::factory()->create();
-        $user->roles()->sync(Role::where('key', Role::OWNER)->pluck('id'));
-
-        return $user;
+        return $this->makeMembershipUser([Role::OWNER]);
     }
 
     private function as(User $user): static
     {
-        return $this->withFreshToken($user->createToken('test', ['app'])->plainTextToken);
+        return $this->withFreshToken($this->boundTokenFor($user));
     }
 
     public function test_create_client_response_reflects_database_defaults(): void

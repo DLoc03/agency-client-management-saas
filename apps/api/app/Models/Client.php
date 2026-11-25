@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * A client of the agency (docs/CLIENT_CONTRACT.md). Internal record only —
- * the people logging into the Portal are ClientAccount rows linked here.
+ * the people logging into the Portal hold client Memberships linked here.
  */
 class Client extends Model
 {
@@ -61,7 +61,9 @@ class Client extends Model
 
     public function portalAccounts(): HasMany
     {
-        return $this->hasMany(ClientAccount::class);
+        // DEC-018: Portal access = client memberships on the single
+        // identity (the ClientAccount table no longer exists).
+        return $this->hasMany(Membership::class)->where('kind', Membership::KIND_CLIENT);
     }
 
     public function accountManager(): BelongsTo

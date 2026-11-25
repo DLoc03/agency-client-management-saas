@@ -4,6 +4,7 @@ namespace App\Http\Requests\Teams;
 
 use App\Exceptions\ApiException;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -28,7 +29,7 @@ class StoreTeamMemberRequest extends FormRequest
             $member = User::withoutGlobalScopes()->find($this->input('user_id'));
             if (! $member) {
                 $validator->errors()->add('user_id', 'User not found.');
-            } elseif ($member->agency_id !== $this->user()->agency_id) {
+            } elseif (! $member->hasActiveMembershipIn(Tenant::id())) {
                 throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'user_id']);
             }
         });

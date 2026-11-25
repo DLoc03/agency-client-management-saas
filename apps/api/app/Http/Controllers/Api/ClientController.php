@@ -90,11 +90,11 @@ class ClientController extends Controller
     public function destroy(Client $client): Response
     {
         DB::transaction(function () use ($client) {
-            // DEC-009.4: deleting a client disables its Portal accounts
-            // (and revokes their tokens) instead of orphaning them.
-            $client->portalAccounts()->each(function ($account) {
-                $account->tokens()->delete();
-                $account->update(['is_active' => false]);
+            // DEC-009.4 + DEC-018: deleting a client deactivates its
+            // Portal memberships and revokes their tokens instead of
+            // orphaning live Portal access.
+            $client->portalAccounts()->get()->each(function ($membership) {
+                $membership->deactivate();
             });
             $client->delete();
         });
