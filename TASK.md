@@ -266,6 +266,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-24 — Muse đã làm cả FIX-011 + FE-012 trên branch `fix/FIX-011-logout-branding` (theo quy ước thay vai FE): web typecheck PASS, test 17/17, build 54 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
 - Blockers: Không có.
 
+## BE-008 — Module Finance & Billing (Nhóm 5) theo hợp đồng FINANCE_CONTRACT
+- Status: TODO
+- Assignee: Muse · Reviewer: OpenCode
+- Mô tả: Triển khai module Finance & Billing theo `docs/FINANCE_CONTRACT.md` (DEC-019, Nguyen duyệt theo đề xuất 2026-11-25): invoices + invoice_items + payments (BelongsToAgency), số hoá đơn tự sinh INV-{YYYY}-{4 số} theo agency cấp lúc tạo và bất biến, tổng tiền lưu sẵn, trạng thái draft/sent/paid/cancelled + Overdue suy ra lúc đọc, thanh toán thủ công nhiều lần (không trả thừa), PDF qua barryvdh/laravel-dompdf, endpoint sửa thông tin chuyển khoản/VietQR của agency, Portal chỉ đọc invoice của client mình, ProjectResource thêm invoiced_total/collected_total tính lúc đọc. Ma trận quyền invoices.*/payments.* theo hợp đồng (Accountant toàn quyền Finance; Sales/PM chỉ xem; delete chỉ Owner + chỉ Draft).
+- Acceptance Criteria: Toàn bộ tiêu chí mục 7 của FINANCE_CONTRACT; test PHPUnit cho CRUD + tiền/thuế + trạng thái + thanh toán + PDF + Portal scope + cách ly tenant; Pint PASS; xác minh migration trên MySQL 8 (bài học PR #57).
+- Blockers: Chờ PR docs công bố hợp đồng (docs/BE-008-finance-contract) merge.
+- Ghi chú: Task FE/QA cho Nhóm 5 chỉ soạn SAU khi BE-008 merge (kỷ luật prompt — không soạn prompt phụ thuộc trước).
+
 ## QA-006 — Bộ test quét cách ly dữ liệu giữa các agency (cross-tenant isolation sweep)
 - Status: IN_PROGRESS
 - Assignee: Muse · Reviewer: Nguyen
