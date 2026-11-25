@@ -266,6 +266,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-24 — Muse đã làm cả FIX-011 + FE-012 trên branch `fix/FIX-011-logout-branding` (theo quy ước thay vai FE): web typecheck PASS, test 17/17, build 54 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
 - Blockers: Không có.
 
+## QA-006 — Bộ test quét cách ly dữ liệu giữa các agency (cross-tenant isolation sweep)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen
+- Mô tả: Từ yêu cầu rà soát cơ chế cách ly tenant của PO (2026-11-25): các module test hiện có chỉ kiểm tra truy cập chéo ở vài endpoint chính (client/lead/project show + tham chiếu lạ khi tạo). QA-006 bổ sung `tests/Feature/Security/CrossTenantIsolationTest.php` quét TOÀN BỘ endpoint có nhận ID: đăng nhập bằng Owner của agency A rồi gọi mọi route theo ID của agency B (clients + contacts/notes/portal-accounts, leads + contacts/notes/activities/convert, projects + timeline/members/milestones/tasks/teams, tasks + comments/checklist, teams + members, users + roles/activation, invitations resend/revoke) — kỳ vọng 404; các ID con của B đặt dưới ID cha của A — kỳ vọng 404; tham chiếu bản ghi của B trong body — kỳ vọng 422 CROSS_TENANT_REFERENCE; danh sách không rò bản ghi của agency khác; Portal chỉ thấy project của đúng client mình. Kết quả chạy đầu: 10 test / 106 assertion PASS, toàn bộ suite 96 test PASS, Pint PASS — không phát hiện rò rỉ nào.
+- Acceptance Criteria: File test nằm trong repo, chạy PASS trong suite; mọi endpoint có ID đều có ít nhất một probe truy cập chéo.
+- Progress: 2026-11-25 — Muse đã viết + chạy PASS trên branch `qa/QA-006-cross-tenant-isolation`; chờ Nguyen review + merge.
+- Blockers: Không có.
+
 ## QA-003 — Bộ test CRM/Lead theo CRM_CONTRACT + chạy thật trên BE-005
 - Status: DONE
 - Assignee: OpenCode · Reviewer: Muse
