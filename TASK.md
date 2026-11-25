@@ -301,6 +301,20 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/portal/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản client demo vẫn vào Portal như cũ; link Đăng nhập nội bộ hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-014 — Feedback UI vòng 2 của PO (2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Bốn chỉnh sửa từ ảnh nghiệm thu của PO sau FIX-013: (1) Trang chi tiết dự án: nút "Về danh sách" đứng một hàng riêng ở trên, tên dự án + tên khách + trạng thái xuống dưới nút (trước đây nằm cùng hàng). (2) Tiêu đề card công việc: màu primary vẫn hơi sáng — đổi sang màu chữ chính (foreground, gần đen) cho dễ đọc. (3) Menu three-dot thêm icon cho từng mục (mắt = Chi tiết, bút chì = Sửa thật, thùng rác = Xoá, check = Đánh dấu xong, xoay ngược = Mở lại); các nút "Sửa" trên card danh sách thực chất là vào xem chi tiết nên đổi tên thành "Chi tiết/Detail" (khoá i18n mới `actions.detail` ở namespace Projects + Teams) — mục Sửa mở form thật (cột mốc, người liên hệ) giữ nguyên nhãn Sửa. (4) Trang vào app đầu tiên (landing): PO yêu cầu Muse sinh vài mẫu thiết kế để duyệt chọn trước, mẫu được chọn mới triển khai kèm nút chuyển sang trang đăng nhập — phần này làm riêng sau khi PO chọn mẫu.
+- Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt các điểm trên. Typecheck + build PASS.
+- Blockers: Không có.
+
+## FE-017 — UI trang đăng nhập theo mẫu L2 Card trung tâm (PO duyệt 2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Trang `/login` làm lại theo mẫu L2 "Card trung tâm" do PO chọn trong 3 mẫu Muse sinh (L1 Chia đôi Editorial, L2 Card trung tâm, L3 Panel tối): header mảnh (liên kết Về trang chủ + chuyển ngữ EN/VI), một card giữa trang (logo Brewbase ở trên, tiêu đề, form), cuối card có lối sang Cổng khách hàng; footer tối giản. Đồng thời `LoginForm` chuyển từ palette indigo/neutral cũ (từ FE-002, chưa từng qua design token) sang design token hiện hành (primary/border-input/muted) cho đồng bộ app — chỉ đổi class trình bày, không đổi logic/validate/luồng đăng nhập. Thêm 4 khóa i18n vào `Auth.login` (heading, backHome, portalPrompt, portalLink) EN + VI. Trang đăng nhập Portal giữ nguyên bản sắc emerald riêng.
+- Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
