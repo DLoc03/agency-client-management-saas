@@ -17,6 +17,7 @@ class Invitation extends Model
 
     protected $fillable = [
         'agency_id',
+        'user_id',
         'email',
         'role_ids',
         'token_hash',
@@ -34,6 +35,11 @@ class Invitation extends Model
             'accepted_at' => 'datetime',
             'revoked_at' => 'datetime',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function inviter(): BelongsTo

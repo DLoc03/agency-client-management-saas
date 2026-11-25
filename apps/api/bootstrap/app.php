@@ -1,11 +1,14 @@
 <?php
 
 use App\Exceptions\ApiException;
+use App\Exceptions\TenantContextMissing;
 use App\Http\Middleware\EnsurePermission;
+use App\Http\Middleware\ResolveTenant;
 use App\Http\Middleware\SetApiLocale;
 use App\Support\ApiError;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -30,8 +33,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'ability' => CheckAbilities::class,
             'abilities' => CheckForAnyAbility::class,
             'permission' => EnsurePermission::class,
+            'tenant' => ResolveTenant::class,
         ]);
         $middleware->api(append: [SetApiLocale::class]);
+
+        // DEC-018: ResolveTenant must run right after authentication
+        // and BEFORE SubstituteBindings, because implicit route-model
+        // binding already queries tenant-scoped models.
+        $middleware->appendToPriorityList(AuthenticatesRequests::class, ResolveTenant::class);
 
         // API-only backend: there is no web `login` route to redirect guests
         // to. Laravel's default guest redirect calls route('login') eagerly
@@ -82,6 +91,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ModelNotFoundException|NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return ApiError::respond('NOT_FOUND', 404);
+            }
+        });
+        // A missing tenant context is a programming error (DEC-018
+        // fail-closed), surfaced as a 500 so it is impossible to miss.
+        $exceptions->render(function (TenantContextMissing $e, Request $request) {
+            if ($request->is('api/*')) {
+                return ApiError::respond('TENANT_CONTEXT_MISSING', 500);
             }
         });
         $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {

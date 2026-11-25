@@ -7,6 +7,7 @@ use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -56,7 +57,7 @@ abstract class TaskRequest extends FormRequest
                 $assignee = User::find($this->input('assignee_id'));
                 if (! $assignee) {
                     $validator->errors()->add('assignee_id', 'User not found.');
-                } elseif ($assignee->agency_id !== $this->user()->agency_id) {
+                } elseif (! $assignee->hasActiveMembershipIn(Tenant::id())) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'assignee_id']);
                 }
             }
@@ -65,7 +66,7 @@ abstract class TaskRequest extends FormRequest
                 $milestone = Milestone::withoutGlobalScopes()->find($this->input('milestone_id'));
                 if (! $milestone) {
                     $validator->errors()->add('milestone_id', 'Milestone not found.');
-                } elseif ($milestone->agency_id !== $this->user()->agency_id
+                } elseif ($milestone->agency_id !== Tenant::id()
                     || $milestone->project_id !== $this->project()?->id) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'milestone_id']);
                 }

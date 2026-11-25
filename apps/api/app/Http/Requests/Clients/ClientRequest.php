@@ -5,6 +5,7 @@ namespace App\Http\Requests\Clients;
 use App\Exceptions\ApiException;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -56,13 +57,13 @@ abstract class ClientRequest extends FormRequest
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }
-            $agencyId = $this->user()->agency_id;
+            $agencyId = Tenant::id();
 
             if ($this->filled('account_manager_id')) {
                 $manager = User::find($this->input('account_manager_id'));
                 if (! $manager) {
                     $validator->errors()->add('account_manager_id', 'User not found.');
-                } elseif ($manager->agency_id !== $agencyId) {
+                } elseif (! $manager->hasActiveMembershipIn($agencyId)) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'account_manager_id']);
                 }
             }

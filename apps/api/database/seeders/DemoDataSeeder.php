@@ -4,13 +4,14 @@ namespace Database\Seeders;
 
 use App\Models\Agency;
 use App\Models\Client;
-use App\Models\ClientAccount;
+use App\Models\Membership;
 use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Role;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +24,10 @@ use Illuminate\Support\Facades\Hash;
  *   PM:         pm@demo.test         (project_manager)
  *   Accountant: accountant@demo.test (accountant)
  *   Member:     member@demo.test     (team_member)
- *   Client:     client@demo.test     (portal account, linked to the demo client)
+ *   Client:     client@demo.test     (Portal identity with a client
+ *                                     membership on the demo client)
+ * Since DEC-018 each account is one identity plus a staff membership
+ * in the demo agency (the client account: a client membership).
  * Also seeds one demo client, one demo team and two demo projects with
  * milestones and tasks so every module has data for manual acceptance.
  */
@@ -31,22 +35,22 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
+        // The agency itself is tenant-agnostic reference data; all of
+        // its tenant data is seeded inside Tenant::run (DEC-018).
         $agency = Agency::firstOrCreate(
             ['slug' => 'demo-agency'],
             ['name' => 'Demo Agency', 'base_currency' => 'USD', 'timezone' => 'Asia/Ho_Chi_Minh']
         );
 
-        $owner = User::firstOrCreate(
-            ['email' => 'owner@demo.test'],
-            [
-                'agency_id' => $agency->id,
-                'name' => 'Demo Owner',
-                'password' => Hash::make('password'),
-                'locale' => 'en',
-            ]
-        );
-        $owner->roles()->syncWithoutDetaching(
-            Role::whereIn('key', [Role::OWNER])->pluck('id')
+        Tenant::run($agency->id, function () use ($agency) {
+            $this->seedTenantData($agency);
+        });
+    }
+
+    private function seedTenantData(Agency $agency): void
+    {
+        $owner = $this->identityWithMembership(
+            'owner@demo.test', 'Demo Owner', $agency, [Role::OWNER], null
         );
 
         $roleAccounts = [
@@ -59,20 +63,9 @@ class DemoDataSeeder extends Seeder
 
         $users = ['owner@demo.test' => $owner];
         foreach ($roleAccounts as $email => [$name, $roleKey, $jobTitle]) {
-            $user = User::firstOrCreate(
-                ['email' => $email],
-                [
-                    'agency_id' => $agency->id,
-                    'name' => $name,
-                    'password' => Hash::make('password'),
-                    'locale' => 'en',
-                    'job_title' => $jobTitle,
-                ]
+            $users[$email] = $this->identityWithMembership(
+                $email, $name, $agency, [$roleKey], $jobTitle
             );
-            $user->roles()->syncWithoutDetaching(
-                Role::whereIn('key', [$roleKey])->pluck('id')
-            );
-            $users[$email] = $user;
         }
 
         $pm = $users['pm@demo.test'];
@@ -88,15 +81,23 @@ class DemoDataSeeder extends Seeder
             ]
         );
 
-        ClientAccount::updateOrCreate(
+        // Portal demo account: an identity + a client membership.
+        $portalIdentity = User::firstOrCreate(
             ['email' => 'client@demo.test'],
             [
-                'agency_id' => $agency->id,
-                'client_id' => $client->id,
                 'name' => 'Demo Client',
                 'password' => Hash::make('password'),
                 'locale' => 'en',
             ]
+        );
+        Membership::firstOrCreate(
+            [
+                'user_id' => $portalIdentity->id,
+                'agency_id' => $agency->id,
+                'kind' => Membership::KIND_CLIENT,
+                'client_id' => $client->id,
+            ],
+            ['is_active' => true]
         );
 
         $team = Team::firstOrCreate(
@@ -183,5 +184,38 @@ class DemoDataSeeder extends Seeder
                 'position' => 0,
             ]
         );
+    }
+
+    /** Create (or fetch) an identity plus its staff membership + roles. */
+    private function identityWithMembership(
+        string $email,
+        string $name,
+        Agency $agency,
+        array $roleKeys,
+        ?string $jobTitle
+    ): User {
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => $name,
+                'password' => Hash::make('password'),
+                'locale' => 'en',
+            ]
+        );
+
+        $membership = Membership::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'agency_id' => $agency->id,
+                'kind' => Membership::KIND_STAFF,
+                'client_id' => null,
+            ],
+            ['is_active' => true, 'job_title' => $jobTitle]
+        );
+        $membership->roles()->syncWithoutDetaching(
+            Role::whereIn('key', $roleKeys)->pluck('id')
+        );
+
+        return $user;
     }
 }

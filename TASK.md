@@ -371,3 +371,20 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Muse review PR; không tự merge.
 
 ---
+
+## BE-009 — Tái cấu trúc danh tính: một identity cho nhiều agency (DEC-018)
+- Assignee: Muse · Level: L5 (DEC-018) · Status: IN_PROGRESS
+- Branch: be/BE-009-identity-memberships · PR: (Muse mở PR vào main, chờ Nguyen review)
+- Blocked by: —
+- Acceptance Criteria: Schema memberships + membership_role (CHECK constraint kind/client_id, unique theo agency/user/kind/client); users bỏ agency_id/job_title/phone, thêm last_membership_id; bỏ role_user + client_accounts; token gắn agency_id + membership_id; Tenant context fail-closed (TenantContextMissing) + ResolveTenant kiểm tra membership mỗi request (MEMBERSHIP_INACTIVE, AGENCY_LOCKED); login/select-agency/switch-agency cho cả app và Portal trên một danh tính; selection token chỉ dùng được cho select/switch; Portal gộp vào identity (bỏ provider clients); invitations liên kết identity có sẵn (ALREADY_MEMBER, STAFF_CLIENT_MEMBERSHIP_CONFLICT); xoá client vô hiệu hoá client memberships + thu hồi token; toàn bộ test cũ thích ứng + test mới cho các kịch bản DEC-018; Pint PASS; DEC-018 ghi vào DECISIONS.md; AGENTS.md bổ sung quy tắc tenant.
+- Progress: Muse triển khai xong 2026-11-25: 5 migration mới, Tenant v2 fail-closed, ResolveTenant + ưu tiên middleware trước SubstituteBindings, auth app/Portal viết lại theo login/select/switch, directory/workload/invitations/portal-accounts thích ứng theo membership, DemoDataSeeder + factory viết lại (giữ nguyên tài khoản demo). Tự kiểm: toàn bộ suite 94 passed (87 cũ đã thích ứng + 7 test mới MultiAgencyIdentityTest), Pint PASS.
+- Handoff: DỪNG chờ Nguyen review PR này; không bắt đầu BE-010 trước khi BE-009 được merge.
+
+---
+
+## BE-010 — Hoàn thiện membership: invitations v2 + portal invite-link + Owner-invariant tests
+- Assignee: Muse · Level: L3 · Status: BLOCKED
+- Branch: (chưa tạo)
+- Blocked by: ⏸ chờ BE-009 merge
+- Acceptance Criteria: Luồng invitation khớp danh tính đầy đủ (mời người đã có identity ở agency khác, ALREADY_MEMBER xử lý trọn vẹn); Portal chuyển sang link mời đặt mật khẩu thay cho agency đặt mật khẩu (thay đường parity của BE-009); bộ test Owner-invariant (Owner duy nhất, không tự hạ/xoá Owner qua membership); trau chuốt directory (job_title/phone theo membership hiển thị đủ các màn phụ).
+- Handoff: Chỉ bắt đầu sau khi BE-009 merge và Nguyen ra hiệu.

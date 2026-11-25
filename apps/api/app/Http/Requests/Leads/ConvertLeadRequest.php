@@ -4,6 +4,7 @@ namespace App\Http\Requests\Leads;
 
 use App\Exceptions\ApiException;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -39,7 +40,7 @@ class ConvertLeadRequest extends FormRequest
                 $manager = User::find($this->input('account_manager_id'));
                 if (! $manager) {
                     $validator->errors()->add('account_manager_id', 'User not found.');
-                } elseif ($manager->agency_id !== $this->user()->agency_id) {
+                } elseif (! $manager->hasActiveMembershipIn(Tenant::id())) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'account_manager_id']);
                 }
             }

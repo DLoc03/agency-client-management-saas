@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -52,7 +53,7 @@ abstract class ProjectRequest extends FormRequest
                 $client = Client::withoutGlobalScopes()->find($this->input('client_id'));
                 if (! $client) {
                     $validator->errors()->add('client_id', 'Client not found.');
-                } elseif ($client->agency_id !== $this->user()->agency_id) {
+                } elseif ($client->agency_id !== Tenant::id()) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'client_id']);
                 }
             }
@@ -61,7 +62,7 @@ abstract class ProjectRequest extends FormRequest
                 $manager = User::find($this->input('project_manager_id'));
                 if (! $manager) {
                     $validator->errors()->add('project_manager_id', 'User not found.');
-                } elseif ($manager->agency_id !== $this->user()->agency_id) {
+                } elseif (! $manager->hasActiveMembershipIn(Tenant::id())) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'project_manager_id']);
                 }
             }

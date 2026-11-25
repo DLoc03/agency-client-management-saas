@@ -3,7 +3,6 @@
 namespace Tests\Feature\Clients;
 
 use App\Models\Client;
-use App\Models\ClientAccount;
 use App\Models\Role;
 use App\Models\Tag;
 use App\Models\User;
@@ -28,15 +27,12 @@ class ClientModuleTest extends TestCase
 
     private function makeUser(array $roles = [Role::OWNER], ?int $agencyId = null): User
     {
-        $user = User::factory()->create($agencyId ? ['agency_id' => $agencyId] : []);
-        $user->roles()->sync(Role::whereIn('key', $roles)->pluck('id'));
-
-        return $user;
+        return $this->makeMembershipUser($roles, $agencyId);
     }
 
     private function as(User $user): static
     {
-        return $this->withFreshToken($user->createToken('test', ['app'])->plainTextToken);
+        return $this->withFreshToken($this->boundTokenFor($user));
     }
 
     private function makeClient(User $owner, array $attrs = []): Client
@@ -206,54 +202,54 @@ class ClientModuleTest extends TestCase
             'name' => 'Acme Client', 'email' => 'boss@acme.test', 'password' => 'secret123',
         ])->assertCreated()->assertJsonPath('data.client_id', $client->id)->json('data.id');
 
-        // Duplicate email (DEC-008 global uniqueness) is rejected.
+        // Granting the same client access twice is rejected (DEC-018:
+        // the email now resolves to the existing identity's access).
         $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
             'name' => 'Copy', 'email' => 'boss@acme.test', 'password' => 'secret123',
-        ])->assertStatus(422)->assertJsonPath('error.code', 'VALIDATION_FAILED');
+        ])->assertStatus(422)->assertJsonPath('error.code', 'EMAIL_ALREADY_REGISTERED');
 
         // The created account can log into the Portal right away (BE-003).
         $this->postJson('/api/v1/portal/auth/login', [
             'email' => 'boss@acme.test', 'password' => 'secret123',
         ])->assertOk();
 
-        // Disabling blocks login with ACCOUNT_DISABLED.
+        // Disabling the access leaves the identity without any
+        // active membership, so login answers NO_ACTIVE_MEMBERSHIP.
         $this->as($owner)->patchJson('/api/v1/clients/'.$client->id.'/portal-accounts/'.$accountId, [
             'is_active' => false,
         ])->assertOk()->assertJsonPath('data.is_active', false);
         $this->postJson('/api/v1/portal/auth/login', [
             'email' => 'boss@acme.test', 'password' => 'secret123',
-        ])->assertForbidden()->assertJsonPath('error.code', 'ACCOUNT_DISABLED');
+        ])->assertForbidden()->assertJsonPath('error.code', 'NO_ACTIVE_MEMBERSHIP');
     }
 
     public function test_deleting_client_disables_its_portal_accounts(): void
     {
         $owner = $this->makeUser();
         $client = $this->makeClient($owner);
-        $account = ClientAccount::factory()->create([
-            'agency_id' => $owner->agency_id,
-            'client_id' => $client->id,
+        $identity = $this->makePortalIdentity($owner->agency_id, $client->id, [
             'email' => 'boss@acme.test',
             'password' => Hash::make('secret123'),
-            'is_active' => true,
         ]);
+        $membership = $identity->testMembership;
 
         $this->as($owner)->deleteJson('/api/v1/clients/'.$client->id)->assertNoContent();
 
-        $this->assertFalse($account->fresh()->is_active);
+        // DEC-018 addition: deleting a client deactivates its Portal
+        // memberships (and revokes their tokens).
+        $this->assertFalse($membership->fresh()->is_active);
         $this->assertSoftDeleted('clients', ['id' => $client->id]);
         $this->postJson('/api/v1/portal/auth/login', [
             'email' => 'boss@acme.test', 'password' => 'secret123',
-        ])->assertForbidden()->assertJsonPath('error.code', 'ACCOUNT_DISABLED');
+        ])->assertForbidden()->assertJsonPath('error.code', 'NO_ACTIVE_MEMBERSHIP');
     }
 
     public function test_portal_token_cannot_use_client_module(): void
     {
         $owner = $this->makeUser();
         $client = $this->makeClient($owner);
-        $account = ClientAccount::factory()->create([
-            'agency_id' => $owner->agency_id, 'client_id' => $client->id,
-        ]);
-        $portalToken = $account->createToken('portal', ['portal'])->plainTextToken;
+        $identity = $this->makePortalIdentity($owner->agency_id, $client->id);
+        $portalToken = $this->boundTokenFor($identity, 'portal');
 
         $this->withFreshToken($portalToken)->getJson('/api/v1/clients')->assertForbidden();
     }

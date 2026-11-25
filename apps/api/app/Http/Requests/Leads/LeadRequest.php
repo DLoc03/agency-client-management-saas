@@ -5,6 +5,7 @@ namespace App\Http\Requests\Leads;
 use App\Exceptions\ApiException;
 use App\Models\Lead;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -54,7 +55,7 @@ abstract class LeadRequest extends FormRequest
                 $owner = User::find($this->input('owner_id'));
                 if (! $owner) {
                     $validator->errors()->add('owner_id', 'User not found.');
-                } elseif ($owner->agency_id !== $this->user()->agency_id) {
+                } elseif (! $owner->hasActiveMembershipIn(Tenant::id())) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'owner_id']);
                 }
             }

@@ -10,8 +10,10 @@ use App\Http\Requests\Invitations\StoreInvitationRequest;
 use App\Http\Resources\InvitationResource;
 use App\Mail\InvitationMail;
 use App\Models\Invitation;
+use App\Models\Membership;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -45,8 +47,18 @@ class InvitationController extends Controller
         $this->guardAdminManagement($actor, null, $roleIds);
         $this->guardOwnerRoleNotInvited($roleIds);
 
-        if (User::where('email', $email)->exists()) {
-            throw new ApiException('EMAIL_ALREADY_REGISTERED', 422);
+        // DEC-018: inviting an email that already has an identity is
+        // the normal path now — the invitation links to that identity
+        // and accepting creates a membership only. It is rejected
+        // only when the person is already an active staff member of
+        // THIS agency, or holds a client membership here (rule Q3).
+        $identity = User::where('email', $email)->first();
+        if ($identity) {
+            $alreadyStaff = $identity->hasActiveMembershipIn($actor->currentMembership()->agency_id);
+            if ($alreadyStaff) {
+                throw new ApiException('ALREADY_MEMBER', 422);
+            }
+            Membership::ensureNoKindConflict($identity->id, $actor->currentMembership()->agency_id, Membership::KIND_STAFF);
         }
         $pending = Invitation::where('email', $email)
             ->whereNull('accepted_at')->whereNull('revoked_at')->exists();
@@ -56,6 +68,7 @@ class InvitationController extends Controller
 
         $invitation = new Invitation([
             'email' => $email,
+            'user_id' => $identity?->id,
             'role_ids' => $roleIds,
             'invited_by' => $actor->id,
         ]);
@@ -104,26 +117,48 @@ class InvitationController extends Controller
         if ($invitation->isExpired()) {
             throw new ApiException('INVITATION_EXPIRED', 422);
         }
-        if (User::where('email', $invitation->email)->exists()) {
-            throw new ApiException('EMAIL_ALREADY_REGISTERED', 422);
-        }
+        // DEC-018: accepting creates (or reuses) the identity and
+        // adds a staff membership in the invitation's agency. When
+        // the email already has an identity, no new user and no new
+        // password are created — the membership is the only result.
+        $result = Tenant::run($invitation->agency_id, function () use ($invitation, $request) {
+            $user = $invitation->user_id
+                ? User::find($invitation->user_id)
+                : User::where('email', $invitation->email)->first();
 
-        $user = User::create([
-            'agency_id' => $invitation->agency_id,
-            'name' => $request->validated('name'),
-            'email' => $invitation->email,
-            'password' => Hash::make($request->validated('password')),
-            'locale' => 'en',
-            'is_active' => true,
-        ]);
-        $user->roles()->sync($invitation->role_ids);
-        $invitation->update(['accepted_at' => now()]);
+            Membership::ensureNoKindConflict(
+                $user?->id ?? 0,
+                $invitation->agency_id,
+                Membership::KIND_STAFF
+            );
+
+            if (! $user) {
+                $user = User::create([
+                    'name' => $request->validated('name'),
+                    'email' => $invitation->email,
+                    'password' => Hash::make($request->validated('password')),
+                    'locale' => 'en',
+                    'is_active' => true,
+                ]);
+            }
+
+            $membership = Membership::create([
+                'user_id' => $user->id,
+                'agency_id' => $invitation->agency_id,
+                'kind' => Membership::KIND_STAFF,
+                'is_active' => true,
+            ]);
+            $membership->roles()->sync($invitation->role_ids);
+            $invitation->update(['accepted_at' => now(), 'user_id' => $user->id]);
+
+            return $user;
+        });
 
         return response()->json([
             'data' => [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'agency_id' => $user->agency_id,
+                'user_id' => $result->id,
+                'email' => $result->email,
+                'agency_id' => $invitation->agency_id,
             ],
         ], 201);
     }

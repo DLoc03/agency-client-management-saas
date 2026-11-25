@@ -6,6 +6,16 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Added
+- Multi-agency identity (DEC-018, BE-009): `POST /api/v1/auth/select-agency` and `POST /api/v1/auth/switch-agency` (plus the Portal equivalents), `GET /api/v1/auth/memberships`, and a short-lived selection token returned by login when an identity belongs to several agencies; the last-used agency is remembered for the next login.
+- Tenant rules for agents in the new repo-root `AGENTS.md` (explicit bypass comments, agency-scoped cache keys, job payloads carrying `agency_id`).
+
+### Changed
+- One identity for everything (DEC-018, BE-009): users no longer belong to a single agency — memberships carry the per-agency kind (`staff`/`client`), roles, job title, phone and active flag. Portal access is a client membership on the same identity (same email and password as the internal app); Sanctum tokens are bound to a membership and the active agency is always derived from the token server-side. Tenant scoping is now fail-closed: business models throw `TenantContextMissing` when queried without a tenant context instead of running unscoped. Inviting an email that already has an identity now links the invitation to that identity (`ALREADY_MEMBER` when already an active staff member here); granting Portal access to an existing identity no longer creates a second account. New error codes: `NO_ACTIVE_MEMBERSHIP`, `MEMBERSHIP_INACTIVE`, `TENANT_CONTEXT_REQUIRED`, `STAFF_CLIENT_MEMBERSHIP_CONFLICT`, `ALREADY_MEMBER`. Deleting a client now deactivates its Portal memberships and revokes their tokens.
+
+### Removed
+- The separate `client_accounts` table and `clients` auth provider/broker (DEC-018): Portal sign-in, forgot/reset password run on the single identity via the `users` broker.
+
 ### Fixed
 - Team invitations page crash ("Rendered fewer hooks than expected") caused by calling `useTranslations` inside JSX; the same pattern was checked across the whole app area and occurred only there.
 - App shell layout: the sidebar now always spans the full viewport height and only the content column scrolls, instead of the sidebar ending mid-page on long screens.

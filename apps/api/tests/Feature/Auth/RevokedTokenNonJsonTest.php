@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\Role;
-use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -22,8 +21,9 @@ class RevokedTokenNonJsonTest extends TestCase
     public function test_revoked_token_with_browser_like_accept_header_returns_401(): void
     {
         $this->seed(RoleSeeder::class);
-        $user = User::factory()->create(['password' => Hash::make('secret123')]);
-        $user->roles()->sync(Role::where('key', Role::TEAM_MEMBER)->pluck('id'));
+        $user = $this->makeMembershipUser([Role::TEAM_MEMBER], null, [
+            'password' => Hash::make('secret123'),
+        ]);
 
         $token = $this->postJson('/api/v1/auth/login', [
             'email' => $user->email, 'password' => 'secret123',

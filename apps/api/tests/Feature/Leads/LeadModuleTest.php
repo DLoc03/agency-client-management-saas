@@ -3,7 +3,6 @@
 namespace Tests\Feature\Leads;
 
 use App\Models\Client;
-use App\Models\ClientAccount;
 use App\Models\Contact;
 use App\Models\Lead;
 use App\Models\Role;
@@ -29,15 +28,12 @@ class LeadModuleTest extends TestCase
 
     private function makeUser(array $roles = [Role::OWNER], ?int $agencyId = null): User
     {
-        $user = User::factory()->create($agencyId ? ['agency_id' => $agencyId] : []);
-        $user->roles()->sync(Role::whereIn('key', $roles)->pluck('id'));
-
-        return $user;
+        return $this->makeMembershipUser($roles, $agencyId);
     }
 
     private function as(User $user): static
     {
-        return $this->withFreshToken($user->createToken('test', ['app'])->plainTextToken);
+        return $this->withFreshToken($this->boundTokenFor($user));
     }
 
     private function makeLead(User $owner, array $attrs = []): Lead
@@ -372,10 +368,8 @@ class LeadModuleTest extends TestCase
     {
         $owner = $this->makeUser();
         $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
-        $account = ClientAccount::factory()->create([
-            'agency_id' => $owner->agency_id, 'client_id' => $client->id,
-        ]);
-        $portalToken = $account->createToken('portal', ['portal'])->plainTextToken;
+        $identity = $this->makePortalIdentity($owner->agency_id, $client->id);
+        $portalToken = $this->boundTokenFor($identity, 'portal');
 
         $this->withFreshToken($portalToken)->getJson('/api/v1/leads')->assertForbidden();
     }
