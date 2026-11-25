@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Added
+- Login page UI refresh (FE-017): the internal sign-in page now follows the PO-approved "L2 — Centered card" design (logo-headed card, back-to-home and language links in a slim header, Client Portal cross-link inside the card), and the login form moves from its legacy indigo/neutral palette to the shared design tokens.
 - Landing page (FE-016): the root page is now an "Editorial" product landing (design approved by the PO from six samples) with routes into the internal sign-in and the Client Portal, a CSS mock of the real app as the product preview, and full EN/VI copy — replacing the foundation-phase placeholder.
 - Multi-agency identity (DEC-018, BE-009): `POST /api/v1/auth/select-agency` and `POST /api/v1/auth/switch-agency` (plus the Portal equivalents), `GET /api/v1/auth/memberships`, and a short-lived selection token returned by login when an identity belongs to several agencies; the last-used agency is remembered for the next login.
 - Tenant rules for agents in the new repo-root `AGENTS.md` (explicit bypass comments, agency-scoped cache keys, job payloads carrying `agency_id`).

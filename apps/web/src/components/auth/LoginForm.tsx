@@ -103,7 +103,7 @@ export function LoginForm() {
       <div className="flex flex-col gap-1.5">
         <label
           htmlFor="email"
-          className="text-sm font-medium text-neutral-700"
+          className="text-sm font-medium"
         >
           {t("emailLabel")}
         </label>
@@ -116,10 +116,10 @@ export function LoginForm() {
           aria-describedby={errors.email ? "email-error" : undefined}
           className={[
             "rounded-lg border px-3.5 py-2.5 text-sm shadow-sm outline-none transition",
-            "placeholder:text-neutral-400 focus:ring-2",
+            "placeholder:text-muted-foreground focus:ring-2",
             errors.email
               ? "border-red-400 focus:ring-red-300"
-              : "border-neutral-300 focus:border-indigo-500 focus:ring-indigo-200",
+              : "border-input bg-background focus:border-primary focus:ring-primary/25",
           ].join(" ")}
           {...register("email")}
         />
@@ -135,13 +135,13 @@ export function LoginForm() {
         <div className="flex items-center justify-between">
           <label
             htmlFor="password"
-            className="text-sm font-medium text-neutral-700"
+            className="text-sm font-medium"
           >
             {t("passwordLabel")}
           </label>
           <a
             href="#"
-            className="text-xs text-indigo-600 hover:underline focus:outline-none focus-visible:underline"
+            className="text-xs font-medium text-primary-text hover:underline focus:outline-none focus-visible:underline"
           >
             {t("forgotPassword")}
           </a>
@@ -154,10 +154,10 @@ export function LoginForm() {
           aria-describedby={errors.password ? "password-error" : undefined}
           className={[
             "rounded-lg border px-3.5 py-2.5 text-sm shadow-sm outline-none transition",
-            "placeholder:text-neutral-400 focus:ring-2",
+            "placeholder:text-muted-foreground focus:ring-2",
             errors.password
               ? "border-red-400 focus:ring-red-300"
-              : "border-neutral-300 focus:border-indigo-500 focus:ring-indigo-200",
+              : "border-input bg-background focus:border-primary focus:ring-primary/25",
           ].join(" ")}
           {...register("password")}
         />
@@ -178,10 +178,10 @@ export function LoginForm() {
         disabled={isSubmitting}
         className={[
           "mt-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           isSubmitting
-            ? "cursor-not-allowed bg-indigo-400"
-            : "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800",
+            ? "cursor-not-allowed bg-primary/60"
+            : "bg-primary hover:opacity-90 active:opacity-95",
         ].join(" ")}
       >
         {isSubmitting ? t("submitting") : t("submit")}
