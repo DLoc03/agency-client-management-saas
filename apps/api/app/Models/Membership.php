@@ -42,6 +42,18 @@ class Membership extends Model
         'deactivated_by',
     ];
 
+    protected static function booted(): void
+    {
+        // client_key mirrors client_id (0 when NULL) so the unique
+        // index (agency_id, user_id, kind, client_key) also rejects
+        // duplicate staff memberships, whose client_id is NULL.
+        // Maintained here because InnoDB forbids an FK on a column
+        // used by a generated column (see the migration).
+        static::saving(function (Membership $membership) {
+            $membership->client_key = $membership->client_id ?? 0;
+        });
+    }
+
     protected function casts(): array
     {
         return [

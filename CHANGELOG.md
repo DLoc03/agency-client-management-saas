@@ -17,6 +17,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - The separate `client_accounts` table and `clients` auth provider/broker (DEC-018): Portal sign-in, forgot/reset password run on the single identity via the `users` broker.
 
 ### Fixed
+- BE-009 memberships migration failed on MySQL with error 1215 (InnoDB refuses a foreign key on a column used by a stored generated column — SQLite accepts it, so the test suite missed it). `memberships.client_key` is now a plain column maintained by the Membership model; the unique index, CHECK constraint and all foreign keys are unchanged. Verified: migrations + demo seed on MySQL 8 and the full test suite on both SQLite and MySQL (94 passed each).
 - Team invitations page crash ("Rendered fewer hooks than expected") caused by calling `useTranslations` inside JSX; the same pattern was checked across the whole app area and occurred only there.
 - App shell layout: the sidebar now always spans the full viewport height and only the content column scrolls, instead of the sidebar ending mid-page on long screens.
 - Team section navigation: added a shared tab bar (Teams / Members / Invitations / Workload) to every Team page and pointed the sidebar "Team" item at the Teams list first, so members are no longer mistaken for teams.
