@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import {
   convertLead,
   createLeadActivity,
@@ -665,31 +666,29 @@ export default function LeadDetailPage() {
                   </span>
                 )}
                 {canUpdate && !converted && (
-                  <span className="ml-auto flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingContact(contact);
-                        setContactForm({
-                          full_name: contact.full_name,
-                          email: contact.email || "",
-                          phone: contact.phone || "",
-                          position: contact.position || "",
-                        });
-                        setContactPrimary(contact.is_primary);
-                      }}
-                      className="text-sm font-medium hover:underline"
-                    >
-                      {t("actions.edit")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteContact(contact)}
-                      className="text-sm font-medium text-red-600 hover:underline"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  </span>
+                  <ActionMenu
+                    className="ml-auto"
+                    items={[
+                      {
+                        label: t("actions.edit"),
+                        onClick: () => {
+                          setEditingContact(contact);
+                          setContactForm({
+                            full_name: contact.full_name,
+                            email: contact.email || "",
+                            phone: contact.phone || "",
+                            position: contact.position || "",
+                          });
+                          setContactPrimary(contact.is_primary);
+                        },
+                      },
+                      {
+                        label: t("actions.delete"),
+                        danger: true,
+                        onClick: () => handleDeleteContact(contact),
+                      },
+                    ]}
+                  />
                 )}
               </li>
             ))}
@@ -803,24 +802,22 @@ export default function LeadDetailPage() {
                     : t("activities.pending")}
                 </span>
                 {canActivities && (
-                  <span className="ml-auto flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleActivity(activity)}
-                      className="text-sm font-medium hover:underline"
-                    >
-                      {activity.is_done
-                        ? t("actions.reopen")
-                        : t("actions.markDone")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteActivity(activity)}
-                      className="text-sm font-medium text-red-600 hover:underline"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  </span>
+                  <ActionMenu
+                    className="ml-auto"
+                    items={[
+                      {
+                        label: activity.is_done
+                          ? t("actions.reopen")
+                          : t("actions.markDone"),
+                        onClick: () => handleToggleActivity(activity),
+                      },
+                      {
+                        label: t("actions.delete"),
+                        danger: true,
+                        onClick: () => handleDeleteActivity(activity),
+                      },
+                    ]}
+                  />
                 )}
               </li>
             ))}
@@ -892,13 +889,16 @@ export default function LeadDetailPage() {
                   <span>{fmtDate(note.created_at)}</span>
                   {canNotes &&
                     (isPrivileged || note.author?.id === session?.user.id) && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteNote(note)}
-                        className="ml-auto font-medium text-red-600 hover:underline"
-                      >
-                        {t("actions.delete")}
-                      </button>
+                      <ActionMenu
+                        className="ml-auto"
+                        items={[
+                          {
+                            label: t("actions.delete"),
+                            danger: true,
+                            onClick: () => handleDeleteNote(note),
+                          },
+                        ]}
+                      />
                     )}
                 </div>
                 <p className="whitespace-pre-wrap text-foreground">{note.body}</p>

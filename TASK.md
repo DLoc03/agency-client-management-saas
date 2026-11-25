@@ -280,6 +280,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Chờ PR docs công bố hợp đồng (docs/BE-008-finance-contract) merge.
 - Ghi chú: Task FE/QA cho Nhóm 5 chỉ soạn SAU khi BE-008 merge (kỷ luật prompt — không soạn prompt phụ thuộc trước).
 
+## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: (1) Quy ước mới của PO: mọi hành động trên card dữ liệu (Sửa/Xoá/Đánh dấu xong...) thu gọn vào một nút icon three-dot (component dùng chung mới `ActionMenu` + icon `more-vertical`, đóng khi bấm ra ngoài/Esc), bấm mới hiện danh sách hành động — không hiển thị nút chữ trực tiếp trên card nữa; đã áp cho card danh sách Projects/Clients/Teams/Members, cột mốc + công việc (chi tiết dự án), checklist + bình luận (chi tiết công việc), người liên hệ + hoạt động + ghi chú (chi tiết Lead/Client). Hành động cấp trang giữ nguyên. Quy ước đã ghi vào `docs/UI_GUIDELINES.md` mục 7. (2) Sửa tràn ngang trên mobile ở trang chi tiết dự án: tiêu đề dự án thiếu `min-w-0`/ngắt chữ khiến hàng header bị đẩy rộng hơn màn hình; thêm `min-w-0` + `break-words` cho tiêu đề và các giá trị ở khối tổng quan, nút tiêu đề công việc chặn rộng tối đa. (3) Ghi chú kèm theo: bản FIX-012 đã có trên main (PR #59) — nếu máy chạy không thấy thay đổi thì kiểm tra `git pull` đã cập nhật chưa và recreate container web (xem hướng dẫn trong PR).
+- Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: mọi card có nút three-dot mở menu hành động đúng chức năng; trang chi tiết dự án trên mobile không còn thanh cuộn ngang. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## QA-006 — Bộ test quét cách ly dữ liệu giữa các agency (cross-tenant isolation sweep)
 - Status: IN_PROGRESS
 - Assignee: Muse · Reviewer: Nguyen

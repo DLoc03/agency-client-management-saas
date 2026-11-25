@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import type { Team } from "@/lib/team/types";
 
 export default function TeamsPage() {
@@ -123,30 +124,31 @@ export default function TeamsPage() {
                     <h3 className="truncate font-semibold">{team.name}</h3>
                     <p className="truncate text-xs text-muted-foreground">{team.description ?? "—"}</p>
                   </div>
-                  <span className="whitespace-nowrap rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
-                    {team.members_count ?? 0} {t("fields.membersCount")}
-                  </span>
+                  <div className="flex shrink-0 items-start gap-1">
+                    <span className="whitespace-nowrap rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                      {team.members_count ?? 0} {t("fields.membersCount")}
+                    </span>
+                    <ActionMenu
+                      items={[
+                        {
+                          label: t("actions.edit"),
+                          onClick: () => router.push(`/team/teams/${team.id}`),
+                        },
+                        ...(canDelete
+                          ? [
+                              {
+                                label: t("actions.delete"),
+                                danger: true,
+                                onClick: () => handleDelete(team.id),
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
+                  </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {t("fields.lead")}: {team.lead?.name ?? "—"}
-                </div>
-                <div className="mt-auto flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push(`/team/teams/${team.id}`)}
-                    className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary"
-                  >
-                    {t("actions.edit")}
-                  </button>
-                  {canDelete && (
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(team.id)}
-                      className="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  )}
                 </div>
               </div>
             ))}

@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Avatar } from "@/components/ui/Avatar";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Select } from "@/components/ui/Select";
 import { listUsers, listTeams } from "@/lib/team/api";
 import type { DirectoryUser } from "@/lib/team/types";
@@ -150,13 +151,23 @@ export default function MembersPage() {
                     <p className="truncate text-xs text-muted-foreground">{u.email}</p>
                     {u.job_title && <p className="truncate text-xs text-muted-foreground">{u.job_title}</p>}
                   </div>
-                  <span
-                    className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${
-                      u.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {u.is_active ? t("filters.active") : t("filters.inactive")}
-                  </span>
+                  <div className="flex shrink-0 items-start gap-1">
+                    <span
+                      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${
+                        u.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {u.is_active ? t("filters.active") : t("filters.inactive")}
+                    </span>
+                    <ActionMenu
+                      items={[
+                        {
+                          label: t("actions.edit"),
+                          onClick: () => router.push(`/team/members/${u.id}`),
+                        },
+                      ]}
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {u.roles.map((r) => (
@@ -168,13 +179,6 @@ export default function MembersPage() {
                 <div className="text-xs text-muted-foreground">
                   {u.teams.length ? u.teams.map((tm) => tm.name).join(", ") : t("membersDetail.noTeams")}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => router.push(`/team/members/${u.id}`)}
-                  className="mt-auto rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary"
-                >
-                  {t("actions.edit")}
-                </button>
               </div>
             ))}
           </div>

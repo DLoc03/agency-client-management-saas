@@ -4,7 +4,8 @@
     "loading": "Đang tải…",
     "or": "hoặc",
     "showPassword": "Hiện mật khẩu",
-    "hidePassword": "Ẩn mật khẩu"
+    "hidePassword": "Ẩn mật khẩu",
+    "moreActions": "Thao tác khác"
   },
   "Home": {
     "status": "Giai đoạn nền tảng — ứng dụng đang được khởi tạo.",

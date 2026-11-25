@@ -86,6 +86,13 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M16 17l5-5-5-5M21 12H9" />
     </>
   ),
+  "more-vertical": (
+    <>
+      <circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none" />
+    </>
+  ),
 };
 
 export function Icon({ name, className }: { name: string; className?: string }) {

@@ -7,6 +7,7 @@ import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import {
   getTask,
   updateTask,
@@ -245,13 +246,16 @@ export default function TaskDetailPage() {
                   {item.title}
                 </span>
                 {canUpdate && (
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteChecklist(item.id)}
-                    className="ml-auto text-xs text-red-600 hover:underline"
-                  >
-                    {t("actions.delete")}
-                  </button>
+                  <ActionMenu
+                    className="ml-auto"
+                    items={[
+                      {
+                        label: t("actions.delete"),
+                        danger: true,
+                        onClick: () => handleDeleteChecklist(item.id),
+                      },
+                    ]}
+                  />
                 )}
               </li>
             ))}
@@ -293,13 +297,15 @@ export default function TaskDetailPage() {
                     {comment.created_at ? ` · ${comment.created_at.slice(0, 10)}` : ""}
                   </p>
                   {canDeleteComment(comment) && (
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteComment(comment.id)}
-                      className="text-xs text-red-600 hover:underline"
-                    >
-                      {t("actions.delete")}
-                    </button>
+                    <ActionMenu
+                      items={[
+                        {
+                          label: t("actions.delete"),
+                          danger: true,
+                          onClick: () => handleDeleteComment(comment.id),
+                        },
+                      ]}
+                    />
                   )}
                 </div>
                 <p className="mt-1 text-sm whitespace-pre-wrap">{comment.body}</p>

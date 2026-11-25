@@ -7,6 +7,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 import {
   createClient,
   createTag,
@@ -491,9 +492,22 @@ export default function ClientsPage() {
                   >
                     {client.name}
                   </Link>
-                  <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(client.status)}`}>
-                    {t(`statuses.${client.status}`)}
-                  </span>
+                  <div className="flex shrink-0 items-start gap-1">
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(client.status)}`}>
+                      {t(`statuses.${client.status}`)}
+                    </span>
+                    {canDelete && (
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("actions.delete"),
+                            danger: true,
+                            onClick: () => handleDelete(client),
+                          },
+                        ]}
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                   <span className="whitespace-nowrap rounded-full bg-accent px-2 py-0.5">
@@ -540,20 +554,6 @@ export default function ClientsPage() {
                     <dd>{client.portal_accounts_count ?? 0}</dd>
                   </div>
                 </dl>
-                {canDelete && (
-                  <div className="mt-auto pt-1">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(client);
-                      }}
-                      className="text-sm font-medium text-red-600 hover:underline"
-                    >
-                      {t("actions.delete")}
-                    </button>
-                  </div>
-                )}
               </div>
             ))}
           </div>
