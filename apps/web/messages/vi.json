@@ -43,6 +43,10 @@
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập…",
       "forgotPassword": "Quên mật khẩu?",
+        "heading": "Đăng nhập Brewbase",
+        "backHome": "Về trang chủ",
+        "portalPrompt": "Bạn là khách hàng?",
+        "portalLink": "Vào Cổng khách hàng",
       "errors": {
         "emailRequired": "Email là bắt buộc.",
         "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
