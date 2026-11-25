@@ -272,6 +272,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Mô tả: Ba chỉnh sửa từ feedback của PO khi nghiệm thu tại công ty: (1) PasswordInput — nút Eye/EyeClosed phải nằm TRONG ô input: nguyên nhân nút nằm ngoài là input thiếu `w-full` (wrapper `relative` rộng hết cột, input co theo nội dung nên nút absolute ở mép phải của wrapper rơi ra ngoài khung input); sửa ở component dùng chung — wrapper `w-full`, input luôn `w-full pr-10` — áp cho cả 5 ô mật khẩu. (2) Màu primary dùng cho CHỮ hơi sáng khó đọc: thêm token `--primary-text` (250 84% 60% ở light, 250 100% 76% ở dark) và class `text-primary-text` cho các chữ/link màu primary; màu primary cho nền/nút giữ nguyên #7B61FF. (3) Sidebar: đổi nền từ nâu đen ấm (240 5.9% 10%) sang tím than lạnh (250 24% 11%, accent/border/muted cùng tông tím) cho hợp tông logo violet và không lệch tông với dashboard nhiều màu về sau; logo trên sidebar đổi sang biến thể `light` (màu logo gốc giữ nguyên ở mọi nơi khác).
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: icon Eye nằm trong khung input ở trang đăng nhập; chữ màu primary đậm dễ đọc hơn; sidebar tông tím than + logo biến thể light hài hoà. Typecheck + build PASS.
 - Blockers: Không có.
+## BE-008 — Module Finance & Billing (Nhóm 5) theo hợp đồng FINANCE_CONTRACT
+- Status: TODO
+- Assignee: Muse · Reviewer: OpenCode
+- Mô tả: Triển khai module Finance & Billing theo `docs/FINANCE_CONTRACT.md` (DEC-019, Nguyen duyệt theo đề xuất 2026-11-25): invoices + invoice_items + payments (BelongsToAgency), số hoá đơn tự sinh INV-{YYYY}-{4 số} theo agency cấp lúc tạo và bất biến, tổng tiền lưu sẵn, trạng thái draft/sent/paid/cancelled + Overdue suy ra lúc đọc, thanh toán thủ công nhiều lần (không trả thừa), PDF qua barryvdh/laravel-dompdf, endpoint sửa thông tin chuyển khoản/VietQR của agency, Portal chỉ đọc invoice của client mình, ProjectResource thêm invoiced_total/collected_total tính lúc đọc. Ma trận quyền invoices.*/payments.* theo hợp đồng (Accountant toàn quyền Finance; Sales/PM chỉ xem; delete chỉ Owner + chỉ Draft).
+- Acceptance Criteria: Toàn bộ tiêu chí mục 7 của FINANCE_CONTRACT; test PHPUnit cho CRUD + tiền/thuế + trạng thái + thanh toán + PDF + Portal scope + cách ly tenant; Pint PASS; xác minh migration trên MySQL 8 (bài học PR #57).
+- Blockers: Chờ PR docs công bố hợp đồng (docs/BE-008-finance-contract) merge.
+- Ghi chú: Task FE/QA cho Nhóm 5 chỉ soạn SAU khi BE-008 merge (kỷ luật prompt — không soạn prompt phụ thuộc trước).
 
 ## QA-006 — Bộ test quét cách ly dữ liệu giữa các agency (cross-tenant isolation sweep)
 - Status: IN_PROGRESS
