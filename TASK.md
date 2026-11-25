@@ -287,11 +287,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở trang gốc ở cả 2 ngôn ngữ kiểm tra bằng mắt; nút Đăng nhập/Portal chuyển đúng trang. Typecheck + build PASS.
 - Blockers: Không có.
 
-## FE-017 — UI trang đăng nhập theo mẫu L2 Card trung tâm (PO duyệt 2026-11-25)
+## FIX-015 — Thiếu khóa i18n `actions.detail` khiến menu hiện mã khóa (PO báo 2026-11-25)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
-- Mô tả: Trang `/login` làm lại theo mẫu L2 "Card trung tâm" do PO chọn trong 3 mẫu Muse sinh (L1 Chia đôi Editorial, L2 Card trung tâm, L3 Panel tối): header mảnh (liên kết Về trang chủ + chuyển ngữ EN/VI), một card giữa trang (logo Brewbase ở trên, tiêu đề, form), cuối card có lối sang Cổng khách hàng; footer tối giản. Đồng thời `LoginForm` chuyển từ palette indigo/neutral cũ (từ FE-002, chưa từng qua design token) sang design token hiện hành (primary/border-input/muted) cho đồng bộ app — chỉ đổi class trình bày, không đổi logic/validate/luồng đăng nhập. Thêm 4 khóa i18n vào `Auth.login` (heading, backHome, portalPrompt, portalLink) EN + VI. Trang đăng nhập Portal giữ nguyên bản sắc emerald riêng.
-- Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
+- Mô tả: FIX-014 đổi nhãn action mở xem thành Chi tiết/Detail và code tham chiếu `t("actions.detail")` ở 3 nơi (danh sách dự án, danh sách nhóm, danh sách thành viên) nhưng khóa `detail` chưa từng được thêm vào `Projects.actions` và `Teams.actions` — next-intl hiển thị nguyên mã khóa trong menu. Lỗi ở khâu triển khai FIX-014 của Muse (báo cáo PR lúc đó ghi đã thêm khóa nhưng thực tế không có). Sửa: thêm `detail` = "Detail" / "Chi tiết" vào cả 2 namespace, EN + VI; đã quét lại toàn bộ khóa `actions.*` mà 3 file trên tham chiếu — tất cả đều phân giải được.
+- Acceptance Criteria: Nguyen mở menu ⋮ ở danh sách dự án/nhóm/thành viên, mục đầu tiên hiện "Chi tiết" (VI) / "Detail" (EN) kèm icon mắt, không còn mã khóa. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
