@@ -266,6 +266,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-24 — Muse đã làm cả FIX-011 + FE-012 trên branch `fix/FIX-011-logout-branding` (theo quy ước thay vai FE): web typecheck PASS, test 17/17, build 54 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình).
 - Blockers: Không có.
 
+## FIX-012 — Polish UI theo feedback nghiệm thu của PO (2026-11-25)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Ba chỉnh sửa từ feedback của PO khi nghiệm thu tại công ty: (1) PasswordInput — nút Eye/EyeClosed phải nằm TRONG ô input: nguyên nhân nút nằm ngoài là input thiếu `w-full` (wrapper `relative` rộng hết cột, input co theo nội dung nên nút absolute ở mép phải của wrapper rơi ra ngoài khung input); sửa ở component dùng chung — wrapper `w-full`, input luôn `w-full pr-10` — áp cho cả 5 ô mật khẩu. (2) Màu primary dùng cho CHỮ hơi sáng khó đọc: thêm token `--primary-text` (250 84% 60% ở light, 250 100% 76% ở dark) và class `text-primary-text` cho các chữ/link màu primary; màu primary cho nền/nút giữ nguyên #7B61FF. (3) Sidebar: đổi nền từ nâu đen ấm (240 5.9% 10%) sang tím than lạnh (250 24% 11%, accent/border/muted cùng tông tím) cho hợp tông logo violet và không lệch tông với dashboard nhiều màu về sau; logo trên sidebar đổi sang biến thể `light` (màu logo gốc giữ nguyên ở mọi nơi khác).
+- Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: icon Eye nằm trong khung input ở trang đăng nhập; chữ màu primary đậm dễ đọc hơn; sidebar tông tím than + logo biến thể light hài hoà. Typecheck + build PASS.
+- Blockers: Không có.
 ## BE-008 — Module Finance & Billing (Nhóm 5) theo hợp đồng FINANCE_CONTRACT
 - Status: TODO
 - Assignee: Muse · Reviewer: OpenCode
