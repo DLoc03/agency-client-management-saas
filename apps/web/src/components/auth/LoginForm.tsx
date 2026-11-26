@@ -21,6 +21,7 @@ type ErrorCode =
   | "INVALID_CREDENTIALS"
   | "AGENCY_LOCKED"
   | "ACCOUNT_DISABLED"
+  | "NO_ACTIVE_MEMBERSHIP"
   | "UNKNOWN";
 
 interface FormServerError {
@@ -60,10 +61,10 @@ export function LoginForm() {
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
-    const error = await login(values);
+    const result = await login(values);
 
-    if (!error) {
-      router.replace("/dashboard");
+    if (result.success) {
+      router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
       return;
     }
 
@@ -71,13 +72,16 @@ export function LoginForm() {
       "INVALID_CREDENTIALS",
       "AGENCY_LOCKED",
       "ACCOUNT_DISABLED",
+      "NO_ACTIVE_MEMBERSHIP",
     ];
 
+    const code = knownCodes.includes(result.code as ErrorCode)
+      ? (result.code as ErrorCode)
+      : "UNKNOWN";
+
     setServerError({
-      code: knownCodes.includes(error.code as ErrorCode)
-        ? (error.code as ErrorCode)
-        : "UNKNOWN",
-      message: error.message,
+      code,
+      message: code === "NO_ACTIVE_MEMBERSHIP" ? undefined : result.message,
     });
   };
 

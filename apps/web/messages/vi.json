@@ -55,7 +55,20 @@
         "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
         "AGENCY_LOCKED": "Không gian làm việc của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.",
         "ACCOUNT_DISABLED": "Tài khoản của bạn đã bị vô hiệu hoá. Vui lòng liên hệ chủ sở hữu không gian làm việc.",
+        "NO_ACTIVE_MEMBERSHIP": "Tài khoản của bạn không có tư cách thành viên nào còn hoạt động. Vui lòng liên hệ chủ sở hữu không gian làm việc.",
         "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+      }
+    },
+    "selectAgency": {
+      "heading": "Chọn không gian làm việc",
+      "subtitle": "Tài khoản của bạn có thể truy cập nhiều không gian làm việc. Chọn một nơi để tiếp tục.",
+      "backHome": "Về trang chủ",
+      "backToLogin": "Về trang đăng nhập",
+      "choicesLabel": "Các không gian làm việc bạn có thể dùng",
+      "opening": "Đang mở không gian làm việc…",
+      "errors": {
+        "expired": "Phiên chọn không gian làm việc đã hết hạn hoặc không còn hợp lệ. Vui lòng đăng nhập lại.",
+        "failed": "Không thể mở không gian làm việc đó. Vui lòng đăng nhập lại."
       }
     },
     "dashboard": {
@@ -109,6 +122,13 @@
       "profile": "Hồ sơ",
       "workspaceSettings": "Cài đặt workspace",
       "signOut": "Đăng xuất"
+    },
+    "agencySwitcher": {
+      "label": "Đổi không gian làm việc",
+      "current": "Hiện tại",
+      "loading": "Đang tải không gian làm việc…",
+      "error": "Không thể tải danh sách không gian làm việc.",
+      "switching": "Đang chuyển…"
     },
     "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },

@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { Icon } from "./Icon";
 import { Avatar } from "@/components/ui/Avatar";
 import { Logo } from "./Logo";
+import { AgencySwitcher } from "./AgencySwitcher";
 import { useNavItems } from "./nav-items";
 
 type SidebarProps = {
@@ -57,6 +58,9 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           <p className="truncate text-xs text-sidebar-muted">{t("brandSubtitle")}</p>
         </div>
       </div>
+
+      {/* Agency context switcher — FE-014 */}
+      <AgencySwitcher />
 
       {/* Nav (scrolls internally) */}
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

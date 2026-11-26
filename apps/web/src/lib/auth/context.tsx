@@ -1,7 +1,7 @@
 /**
  * Auth context — FE-004
- * Provides real authentication state { session, login, logout, isLoading }
- * with httpOnly cookie token management and /api/v1/auth/me revalidation.
+ * Provides real authentication state with httpOnly cookie token management
+ * and /api/v1/auth/me revalidation. FE-014 adds agency selection/switching.
  */
 
 "use client";
@@ -15,14 +15,31 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { clientGetMe, clientLogin, clientLogout } from "./api";
-import { clearSession, loadSession, saveSession } from "./storage";
-import type { AuthSession, LoginError, LoginRequest } from "./types";
+import {
+  clientGetMe,
+  clientLogin,
+  clientLogout,
+  clientSelectAgency,
+  clientSwitchAgency,
+} from "./api";
+import {
+  clearCachedSession,
+  clearSelection,
+  clearSession,
+  loadSession,
+  saveSelection,
+  saveSession,
+} from "./storage";
+import type { AuthSession, LoginError, LoginRequest, LoginResult } from "./types";
 
 interface AuthContextValue {
   session: AuthSession | null;
-  /** Returns LoginError on failure, null on success */
-  login: (req: LoginRequest) => Promise<LoginError | null>;
+  login: (req: LoginRequest) => Promise<LoginResult>;
+  selectAgency: (
+    selectionToken: string,
+    membershipId: number
+  ) => Promise<LoginError | null>;
+  switchAgency: (membershipId: number) => Promise<LoginError | null>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -34,18 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const locale = useLocale();
 
-  // Rehydrate and revalidate session on mount via /api/auth/me
   useEffect(() => {
     let isMounted = true;
 
     async function initSession() {
-      // 1. Instant rehydration from client storage cache if available
       const cached = loadSession();
       if (cached && isMounted) {
         setSession(cached);
       }
 
-      // 2. Authoritative check with backend /api/v1/auth/me via httpOnly cookie
       const meResult = await clientGetMe(locale);
       if (!isMounted) return;
 
@@ -58,8 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(validatedSession);
         saveSession(validatedSession);
       } else if (cached) {
-        // Token expired, revoked, or invalid on backend
-        clearSession();
+        clearCachedSession();
         setSession(null);
       }
 
@@ -74,14 +87,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [locale]);
 
   const login = useCallback(
-    async (req: LoginRequest): Promise<LoginError | null> => {
+    async (req: LoginRequest): Promise<LoginResult> => {
       const result = await clientLogin(req, locale);
 
       if (!result.success) {
-        return {
-          code: result.code,
-          message: result.message,
-        };
+        return result;
+      }
+
+      if (result.requiresSelection) {
+        clearCachedSession();
+        saveSelection(result.selection);
+        setSession(null);
+        return result;
+      }
+
+      clearSelection();
+      saveSession(result.session);
+      setSession(result.session);
+      return result;
+    },
+    [locale]
+  );
+
+  const selectAgency = useCallback(
+    async (
+      selectionToken: string,
+      membershipId: number
+    ): Promise<LoginError | null> => {
+      const result = await clientSelectAgency(selectionToken, membershipId, locale);
+
+      if (!result.success) {
+        return { code: result.code, message: result.message, details: result.details };
+      }
+
+      clearSelection();
+      saveSession(result.session);
+      setSession(result.session);
+      return null;
+    },
+    [locale]
+  );
+
+  const switchAgency = useCallback(
+    async (membershipId: number): Promise<LoginError | null> => {
+      const result = await clientSwitchAgency(membershipId, locale);
+
+      if (!result.success) {
+        return { code: result.code, message: result.message, details: result.details };
       }
 
       saveSession(result.session);
@@ -98,7 +150,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ session, login, selectAgency, switchAgency, logout, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

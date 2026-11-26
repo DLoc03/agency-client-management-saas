@@ -1,16 +1,21 @@
 /**
  * Real API client for Internal Auth — FE-004
  * Implements calls to Laravel API per docs/AUTH_CONTRACT.md §3 & §4
+ * FE-014: select/switch agency and memberships via the same BFF pattern.
  */
 
 import type {
+  AgencyMembership,
+  AgencySelection,
   ApiErrorPayload,
   ApiErrorResponse,
   AuthSession,
+  BackendSession,
   LoginRequest,
   LoginResponse,
   LoginResult,
   MeResponse,
+  SessionResult,
 } from "./types";
 
 export function normalizeBackendBaseUrl(url: string): string {
@@ -164,9 +169,124 @@ export async function backendLogout(token: string): Promise<boolean> {
   }
 }
 
+type BackendCall<T> =
+  | { success: true; data: T }
+  | { success: false; status: number; error: ApiErrorPayload };
+
+async function callBackendAuth<T>(
+  path: string,
+  token: string,
+  options: { method: "GET" | "POST"; body?: Record<string, unknown> },
+  locale: string
+): Promise<BackendCall<T>> {
+  try {
+    const res = await fetch(`${getBackendApiUrl()}/v1/auth${path}`, {
+      method: options.method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": locale,
+      },
+      ...(options.body ? { body: JSON.stringify(options.body) } : {}),
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      const error: ApiErrorPayload = (body as ApiErrorResponse | null)?.error || {
+        code:
+          res.status === 401
+            ? "UNAUTHENTICATED"
+            : res.status === 403
+            ? "FORBIDDEN"
+            : res.status === 404
+            ? "NOT_FOUND"
+            : res.status === 422
+            ? "VALIDATION_FAILED"
+            : "UNKNOWN",
+        message: "An unexpected error occurred.",
+      };
+      return { success: false, status: res.status, error };
+    }
+
+    return { success: true, data: (body as { data: T }).data };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      status: 500,
+      error: {
+        code: "NETWORK_ERROR",
+        message: err instanceof Error ? err.message : "Network error.",
+      },
+    };
+  }
+}
+
+export function backendSelectAgency(
+  selectionToken: string,
+  membershipId: number,
+  locale = "en"
+): Promise<BackendCall<BackendSession>> {
+  return callBackendAuth<BackendSession>(
+    "/select-agency",
+    selectionToken,
+    { method: "POST", body: { membership_id: membershipId } },
+    locale
+  );
+}
+
+export function backendSwitchAgency(
+  token: string,
+  membershipId: number,
+  locale = "en"
+): Promise<BackendCall<BackendSession>> {
+  return callBackendAuth<BackendSession>(
+    "/switch-agency",
+    token,
+    { method: "POST", body: { membership_id: membershipId } },
+    locale
+  );
+}
+
+export function backendGetMemberships(
+  token: string,
+  locale = "en"
+): Promise<BackendCall<AgencyMembership[]>> {
+  return callBackendAuth<AgencyMembership[]>(
+    "/memberships",
+    token,
+    { method: "GET" },
+    locale
+  );
+}
+
+function clientSessionFromData(data: {
+  user: AuthSession["user"];
+  agency: AuthSession["agency"];
+}): AuthSession {
+  return {
+    token: "httpOnly",
+    user: data.user,
+    agency: data.agency,
+  };
+}
+
+function clientError(data: ApiErrorResponse | null): {
+  code: string;
+  message?: string;
+  details?: Record<string, string[]> | null;
+} {
+  return {
+    code: data?.error?.code || "UNKNOWN",
+    message: data?.error?.message,
+    details: data?.error?.details,
+  };
+}
+
 /**
  * Client-side call to Next.js BFF: POST /api/auth/login
- * Sets httpOnly cookie on response.
+ * Sets httpOnly cookie on response only when a full session is returned.
  */
 export async function clientLogin(
   req: LoginRequest,
@@ -186,26 +306,24 @@ export async function clientLogin(
     const body = await res.json().catch(() => null);
 
     if (!res.ok) {
-      const error = (body as ApiErrorResponse | null)?.error;
-      return {
-        success: false,
-        code: error?.code || "UNKNOWN",
-        message: error?.message,
-        details: error?.details,
-      };
+      return { success: false, ...clientError(body as ApiErrorResponse | null) };
     }
 
-    const sessionData = body as {
-      data: { user: AuthSession["user"]; agency: AuthSession["agency"] };
-    };
+    const data = (body as { data: BackendSession | AgencySelection }).data;
+
+    if ("selection_token" in data) {
+      const selection: AgencySelection = {
+        selection_token: data.selection_token,
+        identity: data.identity,
+        memberships: data.memberships,
+      };
+      return { success: true, requiresSelection: true, selection };
+    }
 
     return {
       success: true,
-      session: {
-        token: "httpOnly", // token securely stored in httpOnly cookie
-        user: sessionData.data.user,
-        agency: sessionData.data.agency,
-      },
+      requiresSelection: false,
+      session: clientSessionFromData(data),
     };
   } catch (err: unknown) {
     return {
@@ -215,6 +333,126 @@ export async function clientLogin(
         err instanceof Error
           ? err.message
           : "Cannot connect to authentication service.",
+    };
+  }
+}
+
+/**
+ * Client-side call to Next.js BFF: POST /api/auth/select-agency
+ * The short-lived selection token is sent in the request body; the BFF
+ * forwards it to Laravel as an Authorization header.
+ */
+export async function clientSelectAgency(
+  selectionToken: string,
+  membershipId: number,
+  locale = "en"
+): Promise<SessionResult> {
+  try {
+    const res = await fetch("/api/auth/select-agency", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": locale,
+      },
+      body: JSON.stringify({ selection_token: selectionToken, membership_id: membershipId }),
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      return { success: false, ...clientError(body as ApiErrorResponse | null) };
+    }
+
+    return {
+      success: true,
+      session: clientSessionFromData(
+        (body as { data: BackendSession }).data
+      ),
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      code: "NETWORK_ERROR",
+      message: err instanceof Error ? err.message : "Network error.",
+    };
+  }
+}
+
+/**
+ * Client-side call to Next.js BFF: POST /api/auth/switch-agency
+ */
+export async function clientSwitchAgency(
+  membershipId: number,
+  locale = "en"
+): Promise<SessionResult> {
+  try {
+    const res = await fetch("/api/auth/switch-agency", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Accept-Language": locale,
+      },
+      body: JSON.stringify({ membership_id: membershipId }),
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      return { success: false, ...clientError(body as ApiErrorResponse | null) };
+    }
+
+    return {
+      success: true,
+      session: clientSessionFromData(
+        (body as { data: BackendSession }).data
+      ),
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      code: "NETWORK_ERROR",
+      message: err instanceof Error ? err.message : "Network error.",
+    };
+  }
+}
+
+/**
+ * Client-side call to Next.js BFF: GET /api/auth/memberships
+ */
+export async function clientGetMemberships(
+  locale = "en"
+): Promise<
+  | { success: true; memberships: AgencyMembership[] }
+  | { success: false; code: string; message?: string }
+> {
+  try {
+    const res = await fetch("/api/auth/memberships", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Accept-Language": locale,
+      },
+    });
+
+    const body = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      const error = clientError(body as ApiErrorResponse | null);
+      return { success: false, code: error.code, message: error.message };
+    }
+
+    const memberships = (body as { data: AgencyMembership[] }).data;
+    return {
+      success: true,
+      memberships: memberships.filter((membership) => membership.kind === "staff"),
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      code: "NETWORK_ERROR",
+      message: err instanceof Error ? err.message : "Network error.",
     };
   }
 }
