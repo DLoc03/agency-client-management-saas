@@ -36,7 +36,7 @@ export default function PortalLayout({ children }: { children: ReactNode }) {
         </header>
 
         {/* Content */}
-        <div className="flex-1">{children}</div>
+        <div className="flex flex-1 flex-col">{children}</div>
 
         {/* Portal-specific footer */}
         <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
