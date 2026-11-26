@@ -11,12 +11,14 @@ import { usePortalAuth, type PortalProject } from "@/lib/portal-auth";
 import { statusBadgeClass } from "@/lib/status-colors";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/shell/Icon";
 
 export default function PortalDashboardPage() {
   const { session, logout, isLoading } = usePortalAuth();
   const router = useRouter();
   const t = useTranslations("Portal.dashboard");
   const tp = useTranslations("Portal.projects");
+  const ti = useTranslations("Portal.invoices");
   const ts = useTranslations("Projects.statuses");
 
   const [projects, setProjects] = useState<PortalProject[] | null>(null);
@@ -71,6 +73,13 @@ export default function PortalDashboardPage() {
             </p>
           </div>
 
+          <Link
+            href="/portal/invoices"
+            className="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 sm:mt-0"
+          >
+            <Icon name="receipt" className="mr-2 h-4 w-4" />
+            {ti("title")}
+          </Link>
           <button
             onClick={async () => {
               await logout();
