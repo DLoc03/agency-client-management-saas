@@ -88,7 +88,7 @@ export default function PortalInvoiceDetailPage() {
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="rounded-2xl border border-red-200 bg-red-50 p-8 shadow-sm text-center">
           <h2 className="text-lg font-bold text-red-800">
-            {t("notFound") || "Không tìm thấy hoá đơn."}
+            {t("notFound")}
           </h2>
           <p className="mt-2 text-sm text-red-700">{t("loadError")}</p>
         </div>
@@ -238,7 +238,7 @@ export default function PortalInvoiceDetailPage() {
               )}
             </dl>
             <p className="mt-3 text-xs text-emerald-600">
-              {t("portalPayHint") || "Vui lòng chuyển số tiền đúng hoá đơn vào tài khoản trên."}
+              {t("portalPayHint")}
             </p>
           </div>
         )}
@@ -249,7 +249,7 @@ export default function PortalInvoiceDetailPage() {
           className="text-sm font-medium text-emerald-700 hover:underline flex items-center gap-1"
         >
           <Icon name="chevron-left" className="h-4 w-4" />
-          {t("detail.back") || "Về danh sách hoá đơn"}
+          {t("detail.back")}
         </Link>
       </div>
     </main>

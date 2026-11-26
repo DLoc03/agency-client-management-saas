@@ -55,10 +55,10 @@
       "submit": "Sign in",
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
-        "heading": "Sign in to Brewbase",
-        "backHome": "Back to home",
-        "portalPrompt": "Are you a client?",
-        "portalLink": "Open the Client Portal",
+      "heading": "Sign in to Brewbase",
+      "backHome": "Back to home",
+      "portalPrompt": "Are you a client?",
+      "portalLink": "Open the Client Portal",
       "errors": {
         "emailRequired": "Email is required.",
         "emailInvalid": "Enter a valid email address.",
@@ -156,15 +156,15 @@
       "submit": "Sign in to Portal",
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
-        "heading": "Welcome back",
-        "staffPrompt": "Agency staff?",
-        "staffLink": "Internal sign in",
-        "tileProjectsTitle": "Projects",
-        "tileProjectsText": "Real-time progress",
-        "tileTasksTitle": "Tasks",
-        "tileTasksText": "Milestones & to-dos",
-        "tileInvoicesTitle": "Invoices",
-        "tileInvoicesText": "Payment history",
+      "heading": "Welcome back",
+      "staffPrompt": "Agency staff?",
+      "staffLink": "Internal sign in",
+      "tileProjectsTitle": "Projects",
+      "tileProjectsText": "Real-time progress",
+      "tileTasksTitle": "Tasks",
+      "tileTasksText": "Milestones & to-dos",
+      "tileInvoicesTitle": "Invoices",
+      "tileInvoicesText": "Payment history",
       "errors": {
         "emailRequired": "Email is required.",
         "emailInvalid": "Enter a valid email address.",
@@ -265,44 +265,44 @@
       "tasks": "Tasks",
       "noTasks": "No tasks yet."
     },
-      "invoices": {
-            "title": "Your invoices",
-            "subtitle": "Invoices the agency has issued to you.",
-            "loadError": "Could not load your invoices. Please try again.",
-            "empty": "No invoices yet",
-            "emptyHint": "Invoices the agency issues to you will appear here.",
-            "notFound": "Invoice not found.",
-            "portalPayHint": "Please transfer the exact invoice amount to the account above.",
-            "fields": {
-                  "amount": "Amount",
-                  "balanceDue": "Balance due",
-                  "customer": "Customer",
-                  "description": "Description",
-                  "dueDate": "Due date",
-                  "issueDate": "Issue date",
-                  "notes": "Notes",
-                  "project": "Project",
-                  "quantity": "Quantity"
-            },
-            "statuses": {
-                  "draft": "Draft",
-                  "sent": "Sent",
-                  "paid": "Paid",
-                  "overdue": "Overdue",
-                  "cancelled": "Cancelled"
-            },
-            "detail": {
-                  "back": "Back to invoices",
-                  "bankDetails": "Bank transfer details",
-                  "lineItems": "Line items"
-            },
-            "paymentDetails": {
-                  "bankName": "Bank name",
-                  "bankAccountNumber": "Bank account number",
-                  "bankAccountHolder": "Account holder",
-                  "vietqrPayload": "VietQR payload"
-            }
+    "invoices": {
+      "title": "Your invoices",
+      "subtitle": "Invoices the agency has issued to you.",
+      "loadError": "Could not load your invoices. Please try again.",
+      "empty": "No invoices yet",
+      "emptyHint": "Invoices the agency issues to you will appear here.",
+      "notFound": "Invoice not found.",
+      "portalPayHint": "Please transfer the exact invoice amount to the account above.",
+      "fields": {
+        "amount": "Amount",
+        "balanceDue": "Balance due",
+        "customer": "Customer",
+        "description": "Description",
+        "dueDate": "Due date",
+        "issueDate": "Issue date",
+        "notes": "Notes",
+        "project": "Project",
+        "quantity": "Quantity"
+      },
+      "statuses": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "paid": "Paid",
+        "overdue": "Overdue",
+        "cancelled": "Cancelled"
+      },
+      "detail": {
+        "back": "Back to invoices",
+        "bankDetails": "Bank transfer details",
+        "lineItems": "Line items"
+      },
+      "paymentDetails": {
+        "bankName": "Bank name",
+        "bankAccountNumber": "Bank account number",
+        "bankAccountHolder": "Account holder",
+        "vietqrPayload": "VietQR payload"
       }
+    }
   },
   "Projects": {
     "title": "Projects",
@@ -370,7 +370,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
-        "detail": "Detail",
+      "detail": "Detail",
       "addMember": "Add member",
       "remove": "Remove",
       "addMilestone": "Add milestone",
@@ -388,9 +388,9 @@
       "noMembers": "No members yet.",
       "noMilestones": "No milestones yet.",
       "noTasks": "No tasks yet.",
-      "progressWarning": "Some tasks are still open."
-    ,
-      "budgetReconciliation": "Budget reconciliation"},
+      "progressWarning": "Some tasks are still open.",
+      "budgetReconciliation": "Budget reconciliation"
+    },
     "task": {
       "title": "Task",
       "comments": "Comments",
@@ -431,15 +431,15 @@
       "task": "Task",
       "milestone": "Milestone"
     },
-    "selectMember": "Select a member"
-  ,
+    "selectMember": "Select a member",
     "budget": {
       "invoiced": "Invoiced",
       "collected": "Collected",
       "remaining": "Remaining",
       "reconciliationHint": "Figures computed at read time; budget is not edited here.",
       "note": "Invoiced = sum of non-cancelled invoices; Collected = sum of payments on those invoices."
-    }},
+    }
+  },
   "Leads": {
     "title": "Leads",
     "subtitle": "Track potential clients through the pipeline.",
@@ -711,7 +711,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
-        "detail": "Detail",
+      "detail": "Detail",
       "add": "Add",
       "remove": "Remove",
       "resend": "Resend",
@@ -903,7 +903,20 @@
       "PAYMENT_NOT_ALLOWED": "Payments can only be recorded on Sent / Overdue invoices.",
       "OVERPAYMENT_NOT_ALLOWED": "Amount exceeds the remaining balance.",
       "CROSS_TENANT_REFERENCE": "Customer or project does not belong to this agency.",
-      "notFound": "Invoice not found."
+      "notFound": "Invoice not found.",
+      "pdfFailed": "Failed to download PDF."
+    },
+    "validation": {
+      "clientRequired": "Please select a client.",
+      "itemsRequired": "An invoice must have at least one item.",
+      "itemDescriptionRequired": "Please enter a description for every item.",
+      "itemQuantityPositive": "Quantity must be greater than 0.",
+      "itemUnitPriceNonNegative": "Unit price cannot be less than 0.",
+      "taxRateRange": "Tax rate must be between 0 and 100.",
+      "amountInvalid": "Please enter a valid amount."
+    },
+    "hints": {
+      "noProjectsForClient": "No projects belong to this client."
     }
   }
 }

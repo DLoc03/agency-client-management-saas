@@ -129,12 +129,12 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     const amount = Number(payAmount);
     if (!payAmount || Number.isNaN(amount) || amount <= 0) {
-      setPayError(t("errors.paymentFailed") || "Số tiền không hợp lệ.");
+      setPayError(t("validation.amountInvalid"));
       return;
     }
     // Client-side overpayment guard (FINANCE_CONTRACT 4.4): never exceed balance due.
     if (amount > balanceDue) {
-      setPayError(t("errors.OVERPAYMENT_NOT_ALLOWED") || "Số tiền vượt quá số dư còn lại.");
+      setPayError(t("errors.OVERPAYMENT_NOT_ALLOWED"));
       return;
     }
     setRecording(true);
@@ -154,11 +154,11 @@ export default function InvoiceDetailPage() {
       const err = e as { code?: string; message?: string };
       // Inline error shown inside the form, keyed by error code (DEC-025).
       if (err?.code === "OVERPAYMENT_NOT_ALLOWED") {
-        setPayError(t("errors.OVERPAYMENT_NOT_ALLOWED") || "Số tiền vượt quá số dư còn lại.");
+        setPayError(t("errors.OVERPAYMENT_NOT_ALLOWED"));
       } else if (err?.code === "PAYMENT_NOT_ALLOWED") {
-        setPayError(t("errors.PAYMENT_NOT_ALLOWED") || "Chỉ ghi nhận thanh toán cho hoá đơn Đã gửi / Quá hạn.");
+        setPayError(t("errors.PAYMENT_NOT_ALLOWED"));
       } else {
-        setPayError(err?.message || t("errors.paymentFailed") || "Ghi nhận thanh toán thất bại.");
+        setPayError(err?.message || t("errors.paymentFailed"));
       }
     } finally {
       setRecording(false);
@@ -226,7 +226,7 @@ export default function InvoiceDetailPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Tải PDF thất bại.");
+      setError(e instanceof Error ? e.message : t("errors.pdfFailed"));
     }
   };
 
@@ -259,79 +259,125 @@ export default function InvoiceDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {invoice.number}
-          </h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span
-              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusBadgeClass(invoice.status)}`}
-            >
-              {t(`statuses.${invoice.status}`)}
-              {invoice.status === "overdue" && (
-                <span className="ml-1 text-[10px] opacity-80 whitespace-nowrap">
-                  ({t("statuses.overdue")})
-                </span>
-              )}
-              {invoice.status === "overdue" && invoice.stored_status && (
-                <span className="ml-1 text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">
-                  {t("storedStatus", {
-                    status: t(`statuses.${invoice.stored_status as any}`),
-                  })}
-                </span>
-              )}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {invoice.notes || "—"}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-          <Link
-            href={`/clients/${invoice.client.id}`}
-            className="text-sm font-medium text-foreground hover:underline"
+      <div className="space-y-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">{invoice.number}</h1>
+          <span
+            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusBadgeClass(invoice.status)}`}
           >
-            {invoice.client.name}
-          </Link>
-          {invoice.project && (
+            {t(`statuses.${invoice.status}`)}
+            {invoice.status === "overdue" && (
+              <span className="ml-1 text-[10px] opacity-80 whitespace-nowrap">
+                ({t("statuses.overdue")})
+              </span>
+            )}
+            {invoice.status === "overdue" && invoice.stored_status && (
+              <span className="ml-1 text-[10px] text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                {t("storedStatus", {
+                  status: t(`statuses.${invoice.stored_status as any}`),
+                })}
+              </span>
+            )}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.customer")}</span>
             <Link
-              href={`/projects/${invoice.project.id}`}
-              className="text-sm font-medium text-foreground hover:underline"
+              href={`/clients/${invoice.client.id}`}
+              className="text-sm font-medium text-foreground hover:underline truncate"
             >
-              {invoice.project.name}
+              {invoice.client.name}
             </Link>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.project")}</span>
+            {invoice.project ? (
+              <Link
+                href={`/projects/${invoice.project.id}`}
+                className="text-sm font-medium text-foreground hover:underline truncate"
+              >
+                {invoice.project.name}
+              </Link>
+            ) : (
+              <span className="text-sm text-foreground">—</span>
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.issueDate")}</span>
+            <span className="text-sm text-foreground">{fmtDate(invoice.issue_date)}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.dueDate")}</span>
+            <span className="text-sm text-foreground">{fmtDate(invoice.due_date)}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.total")}</span>
+            <span className="text-sm font-medium text-foreground">{fmtMoney(total)}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">{t("fields.balanceDue")}</span>
+            <span className="text-sm font-medium text-foreground">{fmtMoney(balanceDue)}</span>
+          </div>
+        </div>
+        {invoice.notes && (
+          <p className="text-sm text-muted-foreground">{invoice.notes}</p>
+        )}
+        <div className="flex flex-wrap gap-2">
+          {invoice.status === "draft" && (
+            <button
+              type="button"
+              disabled={!invoice.items.length || sending}
+              onClick={handleSend}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            >
+              {sending ? c("loading") : t("actions.send")}
+            </button>
           )}
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {t("fields.issueDate")}
-              </span>
-              <span className="text-foreground">{fmtDate(invoice.issue_date)}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {t("fields.dueDate")}
-              </span>
-              <span className="text-foreground">{fmtDate(invoice.due_date)}</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-sm mt-2">
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {t("fields.total")}
-              </span>
-              <span className="text-foreground font-medium">{fmtMoney(total)}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-muted-foreground text-xs">
-                {t("fields.balanceDue")}
-              </span>
-              <span className="text-foreground font-medium">
-                {fmtMoney(balanceDue)}
-              </span>
-            </div>
-          </div>
+          {canPdf && (
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent"
+            >
+              <Icon name="download" className="h-4 w-4" />
+              {t("actions.downloadPdf")}
+            </button>
+          )}
+          {invoice.status === "sent" && canCancel && (
+            <button
+              type="button"
+              disabled={canceling}
+              onClick={async () => {
+                if (
+                  await confirmAction(t("confirmCancel"), {
+                    confirmLabel: t("actions.cancelInvoice"),
+                  })
+                ) {
+                  await handleCancel();
+                }
+              }}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+            >
+              {t("actions.cancel")}
+            </button>
+          )}
+          {invoice.status === "draft" && canDelete && (
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={async () => {
+                if (
+                  await confirmAction(t("confirmDelete"), { intent: "delete" })
+                ) {
+                  await handleDelete();
+                }
+              }}
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+            >
+              {t("actions.delete")}
+            </button>
+          )}
         </div>
       </div>
 
@@ -343,13 +389,13 @@ export default function InvoiceDetailPage() {
         <table className="w-full text-sm divide-y divide-border">
           <thead>
             <tr>
-              <th className="p-3 text-left text-muted-foreground font-medium">
+              <th className="p-3 text-left text-muted-foreground font-medium text-[11px] uppercase tracking-wide">
                 {t("fields.description")}
               </th>
-              <th className="p-3 text-right text-muted-foreground font-medium w-[80px]">
+              <th className="p-3 text-right text-muted-foreground font-medium text-[11px] uppercase tracking-wide w-[80px]">
                 {t("fields.quantity")}
               </th>
-              <th className="p-3 text-right text-muted-foreground font-medium w-[100px]">
+              <th className="p-3 text-right text-muted-foreground font-medium text-[11px] uppercase tracking-wide w-[100px]">
                 {t("fields.unitPrice")}
               </th>
               <th className="p-3 text-right text-muted-foreground font-medium w-[100px]">
@@ -382,14 +428,14 @@ export default function InvoiceDetailPage() {
           </tbody>
           <tfoot className="bg-muted/50">
             <tr>
-              <td className="p-3 text-right text-muted-foreground font-medium colSpan={3}">
+              <td colSpan={3} className="p-3 text-right text-muted-foreground font-medium">
                 {t("fields.subtotal")}
               </td>
               <td className="p-3 text-right text-foreground">{fmtMoney(subtotal)}</td>
             </tr>
             {invoice.tax_rate != null && (
               <tr>
-                <td className="p-3 text-right text-muted-foreground font-medium colSpan={3}">
+                <td colSpan={3} className="p-3 text-right text-muted-foreground font-medium">
                   {t("fields.taxAmount")}
                 </td>
                 <td className="p-3 text-right text-foreground">
@@ -398,7 +444,7 @@ export default function InvoiceDetailPage() {
               </tr>
             )}
             <tr>
-              <td className="p-3 text-right text-muted-foreground font-medium colSpan={3}">
+              <td colSpan={3} className="p-3 text-right text-muted-foreground font-medium">
                 {t("fields.total")}
               </td>
               <td className="p-3 text-right text-foreground font-bold">
@@ -595,65 +641,7 @@ export default function InvoiceDetailPage() {
         </section>
       )}
 
-      {/* Actions */}
-      <div className="flex flex-wrap gap-3">
-        {invoice.status === "draft" && (
-          <>
-            <button
-              type="button"
-              disabled={!invoice.items.length || sending}
-              onClick={handleSend}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            >
-              {sending ? c("loading") : t("actions.send")}
-            </button>
-            {canDelete && (
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={async () => {
-                  if (
-                    await confirmAction(t("confirmDelete"), { intent: "delete" })
-                  ) {
-                    await handleDelete();
-                  }
-                }}
-                className="rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
-              >
-                {t("actions.delete")}
-              </button>
-            )}
-          </>
-        )}
-        {invoice.status === "sent" && canCancel && (
-          <button
-            type="button"
-            disabled={canceling}
-            onClick={async () => {
-              if (
-                await confirmAction(t("confirmCancel"), {
-                  confirmLabel: t("actions.cancelInvoice"),
-                })
-              ) {
-                await handleCancel();
-              }
-            }}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
-          >
-            {t("actions.cancel")}
-          </button>
-        )}
-        {canPdf && (
-          <button
-            type="button"
-            onClick={handleDownloadPdf}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent"
-          >
-            <Icon name="download" className="h-4 w-4 mr-2" />
-            {t("actions.downloadPdf")}
-          </button>
-        )}
-      </div>
+
 
     </div>
   );
