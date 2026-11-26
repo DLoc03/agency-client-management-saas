@@ -11,7 +11,11 @@ class Agency extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'slug', 'base_currency', 'timezone', 'is_locked'];
+    protected $fillable = [
+        'name', 'slug', 'base_currency', 'timezone', 'is_locked',
+        // Static payment details shown on invoices/PDFs (BE-008).
+        'bank_name', 'bank_account_number', 'bank_account_holder', 'vietqr_payload',
+    ];
 
     protected function casts(): array
     {

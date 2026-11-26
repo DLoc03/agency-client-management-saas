@@ -56,6 +56,16 @@ return [
         'users.activation',
         'invitations.manage',
         'workload.view',
+        // Finance & Billing module (docs/FINANCE_CONTRACT.md, DEC-019).
+        'invoices.view',
+        'invoices.create',
+        'invoices.update',
+        'invoices.send',
+        'invoices.cancel',
+        'invoices.delete',
+        'invoices.pdf',
+        'payments.manage',
+        'agencies.payment-details.update',
     ],
 
     'roles' => [
@@ -102,6 +112,17 @@ return [
             'users.activation',
             'invitations.manage',
             'workload.view',
+            // DEC-019: Admin runs Finance end to end except deleting
+            // invoices (Owner-only, like clients/projects) and holds
+            // the agency payment-details permission with the Owner.
+            'invoices.view',
+            'invoices.create',
+            'invoices.update',
+            'invoices.send',
+            'invoices.cancel',
+            'invoices.pdf',
+            'payments.manage',
+            'agencies.payment-details.update',
         ],
         Role::SALES_MANAGER => [
             'workspace.view',
@@ -123,6 +144,10 @@ return [
             // DEC-017: directory lookups only.
             'teams.view',
             'users.view',
+            // DEC-019: Sales is view-only on Finance (no creating,
+            // no payments) but may export the PDF for handovers.
+            'invoices.view',
+            'invoices.pdf',
         ],
         Role::PROJECT_MANAGER => [
             'workspace.view', 'clients.view', 'leads.view',
@@ -144,6 +169,9 @@ return [
             'teams.members.manage',
             'users.view',
             'workload.view',
+            // DEC-019: PM is view-only on Finance, PDF export included.
+            'invoices.view',
+            'invoices.pdf',
         ],
         // DEC-009.3: Team Members hold no clients.* permission in the MVP.
         // DEC-014: and no leads.* permission either.
@@ -161,6 +189,18 @@ return [
             'users.view',
             'workload.view',
         ],
-        Role::ACCOUNTANT => ['workspace.view', 'clients.view', 'leads.view', 'projects.view', 'teams.view', 'users.view'],
+        // DEC-019: the Accountant runs Finance (create/update/send/
+        // cancel invoices, record payments) but may not delete
+        // invoices (Owner-only) nor edit agency payment details.
+        Role::ACCOUNTANT => [
+            'workspace.view', 'clients.view', 'leads.view', 'projects.view', 'teams.view', 'users.view',
+            'invoices.view',
+            'invoices.create',
+            'invoices.update',
+            'invoices.send',
+            'invoices.cancel',
+            'invoices.pdf',
+            'payments.manage',
+        ],
     ],
 ];

@@ -34,4 +34,10 @@ return [
     'CANNOT_MODIFY_OWNER' => 'Không thể sửa chủ sở hữu workspace theo cách này.',
     'PASSWORD_RESET_SENT' => 'Nếu tài khoản tồn tại, email đặt lại mật khẩu đã được gửi.',
     'PASSWORD_RESET_DONE' => 'Mật khẩu của bạn đã được đặt lại.',
+    'INVOICE_EMPTY' => 'Hoá đơn cần ít nhất một dòng hạng mục trước khi gửi.',
+    'INVOICE_NOT_EDITABLE' => 'Hoá đơn không thể thay đổi ở trạng thái hiện tại.',
+    'CANNOT_CANCEL_INVOICE' => 'Không thể huỷ hoá đơn này.',
+    'CANNOT_DELETE_INVOICE' => 'Chỉ hoá đơn nháp mới có thể xoá.',
+    'PAYMENT_NOT_ALLOWED' => 'Chỉ có thể ghi thanh toán cho hoá đơn đã gửi.',
+    'OVERPAYMENT_NOT_ALLOWED' => 'Số tiền thanh toán vượt quá số dư còn phải thu của hoá đơn này.',
 ];
