@@ -56,7 +56,7 @@ export default function ProjectDetailPage() {
   const c = useTranslations("Common");
 
   const [project, setProject] = useState<Project | null>(null);
-  const [members, setMembers] = useState<{ id: number; name: string; email: string }[]>([]);
+  const [members, setMembers] = useState<{ id: number; name: string; email: string; via_team_id: number | null }[]>([]);
   const [directory, setDirectory] = useState<{ id: number; name: string; email: string }[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -81,8 +81,11 @@ export default function ProjectDetailPage() {
   const [teamResult, setTeamResult] = useState<string | null>(null);
   const [assignTeams, setAssignTeams] = useState<Team[]>([]);
 
+  // The team list also resolves the names behind each member's via_team_id
+  // (FIX-021 labels), so load it for every viewer, not only project managers;
+  // a failed load just leaves the labels unresolved.
   useEffect(() => {
-    if (session?.user.permissions.includes("projects.update")) {
+    if (session) {
       listTeams()
         .then(setAssignTeams)
         .catch(() => setAssignTeams([]));
@@ -156,6 +159,15 @@ export default function ProjectDetailPage() {
   const canDeleteTask = !!session?.user.permissions.includes("tasks.delete");
   const canUpdateProject = !!session?.user.permissions.includes("projects.update");
   const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
+  // FIX-021 (option A): surface which teams currently contribute members.
+  const teamNameFor = (teamId: number) =>
+    assignTeams.find((tm) => tm.id === teamId)?.name ?? t("teamAssignment.deletedTeam");
+  const assignedTeams = Array.from(
+    members.reduce((acc, m) => {
+      if (m.via_team_id != null) acc.set(m.via_team_id, (acc.get(m.via_team_id) ?? 0) + 1);
+      return acc;
+    }, new Map<number, number>()),
+  ).map(([teamId, count]) => ({ id: teamId, name: teamNameFor(teamId), count }));
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -512,6 +524,11 @@ export default function ProjectDetailPage() {
               >
                 <Avatar name={m.name} seed={m.id} className="h-5 w-5 text-[10px]" />
                 <span className="whitespace-nowrap">{m.name}</span>
+                {m.via_team_id != null && (
+                  <span className="whitespace-nowrap rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary-text">
+                    {teamNameFor(m.via_team_id)}
+                  </span>
+                )}
                 {canManageMembers && (
                   <button
                     type="button"
@@ -532,6 +549,22 @@ export default function ProjectDetailPage() {
       {session.user.permissions.includes("projects.update") && (
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("teamAssignment.title")}</h2>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium">{t("teamAssignment.assignedTeams")}:</span>
+            {assignedTeams.length === 0 ? (
+              <span className="text-sm text-muted-foreground">{t("teamAssignment.noTeamsAssigned")}</span>
+            ) : (
+              assignedTeams.map((tm) => (
+                <span
+                  key={tm.id}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground"
+                >
+                  {tm.name}
+                  <span className="text-muted-foreground">· {t("teamAssignment.teamMembersCount", { count: tm.count })}</span>
+                </span>
+              ))
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             <Select
               value={teamAssignId}

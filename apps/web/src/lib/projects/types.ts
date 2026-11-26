@@ -18,6 +18,7 @@ export interface ProjectMember {
   id: number;
   name: string;
   email: string;
+  via_team_id: number | null;
 }
 
 export interface Project {

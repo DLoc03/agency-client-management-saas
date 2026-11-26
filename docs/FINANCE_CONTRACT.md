@@ -69,6 +69,7 @@ Approved by the Product Owner as proposed on 2026-11-25 (DEC-019). This contract
   - Sent → Paid: **automatic** when total payments reach `total` (sets `paid_at`); there is no manual mark-paid endpoint (avoids Paid without a matching payment).
   - Sent → Cancelled: `POST /invoices/{id}/cancel` — only when **no payment exists yet** (with payments → 422 `CANNOT_CANCEL_INVOICE`); Paid can never be cancelled (no refunds in the MVP).
   - Draft → Delete: Owner only, soft delete; Sent/Paid/Cancelled cannot be deleted (422 `CANNOT_DELETE_INVOICE`) — cancel first instead.
+  - Any other mutation of a non-Draft invoice (PATCH on Sent/Paid/Cancelled, send on a non-Draft invoice) → 422 `INVOICE_NOT_EDITABLE`. (Code named at implementation time in BE-008; this contract originally specified the Draft-only rule in §4.2 without naming the rejection code.)
 
 ### 4.4 Manual payments
 - Recordable only on Sent/Overdue invoices (Draft/Cancelled → 422 `PAYMENT_NOT_ALLOWED`).
