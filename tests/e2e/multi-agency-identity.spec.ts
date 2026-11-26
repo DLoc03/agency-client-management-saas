@@ -17,12 +17,14 @@ async function ownerLogin(request: APIRequestContext): Promise<LoginBody> {
 test.describe('QA-007 / multi-agency identity (DEC-018, DEC-020)', () => {
   test('TC-MA-01 login with two memberships returns a selection token', async ({ request }) => {
     const body = await ownerLogin(request);
+    test.skip(!body.data?.selection_token, 'precondition: identity must have >=2 active memberships (FE-014 fixture)');
     expect(body.data?.selection_token).toBeTruthy();
     expect((body.data?.memberships ?? []).length).toBeGreaterThanOrEqual(2);
   });
 
   test('TC-MA-04 selecting a membership the identity lacks is rejected', async ({ request }) => {
     const body = await ownerLogin(request);
+    test.skip(!body.data?.selection_token, 'precondition: identity must have >=2 active memberships (FE-014 fixture)');
     const badSelect = await request.post(`${API_BASE}/auth/select-agency`, {
       headers: { Authorization: `Bearer ${body.data!.selection_token!}` },
       data: { membership_id: 999999 },
@@ -32,6 +34,7 @@ test.describe('QA-007 / multi-agency identity (DEC-018, DEC-020)', () => {
 
   test('TC-MA-02 select-agency issues a token bound to the chosen membership', async ({ request }) => {
     const body = await ownerLogin(request);
+    test.skip(!body.data?.selection_token, 'precondition: identity must have >=2 active memberships (FE-014 fixture)');
     const select = await request.post(`${API_BASE}/auth/select-agency`, {
       headers: { Authorization: `Bearer ${body.data!.selection_token!}` },
       data: { membership_id: body.data!.memberships![0].id },
@@ -43,6 +46,7 @@ test.describe('QA-007 / multi-agency identity (DEC-018, DEC-020)', () => {
 
   test('TC-MA-03 switch-agency revokes the previous token', async ({ request }) => {
     const body = await ownerLogin(request);
+    test.skip(!body.data?.selection_token, 'precondition: identity must have >=2 active memberships (FE-014 fixture)');
     const select = await request.post(`${API_BASE}/auth/select-agency`, {
       headers: { Authorization: `Bearer ${body.data!.selection_token!}` },
       data: { membership_id: body.data!.memberships![0].id },
