@@ -88,7 +88,12 @@ export default function InvitationsPage() {
       setForm({ email: "", roleIds: [] });
       await load();
     } catch (e) {
-      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
+      const code = (e as { code?: string } | null)?.code;
+      if (code === "INVITATION_PENDING" || code === "ALREADY_MEMBER") {
+        setFormError(t(`errors.${code}`));
+      } else {
+        setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
+      }
     }
   };
 
@@ -97,7 +102,12 @@ export default function InvitationsPage() {
       await resendInvitation(id);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      const code = (e as { code?: string } | null)?.code;
+      if (code === "INVITATION_ALREADY_ACCEPTED") {
+        setError(t(`errors.${code}`));
+      } else {
+        setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      }
     }
   };
 
