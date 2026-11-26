@@ -14,14 +14,13 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Mọi màn hình phải dùng tốt ở các bề rộng phổ biến, từ điện thoại tới desktop: không vỡ bố cục, không tràn ngang ngoài ý muốn, không che khuất nội dung.
 - Tự kiểm tra ít nhất ở 3 bề rộng đại diện (nhỏ, trung bình, lớn) trước khi báo cáo hoàn thành.
 
-## 3. Bảng dữ liệu nhiều cột — không dùng scroll ngang làm giải pháp chính
+## 3. Hiển thị dữ liệu danh sách: table trên desktop, card trên mobile (DEC-021, PO chốt 2026-11-26)
 
-- Khi bảng có quá nhiều dữ liệu/cột, **không** thiết kế để người dùng phải kéo ngang (scroll ngang) mới xem hết dữ liệu. Nguyen đánh giá cách này thiếu chỉn chu và gây khó chịu, nhất là trên cảm ứng.
-- Giải pháp ưu tiên, theo thứ tự:
-  1. Chuyển mỗi hàng thành **card dữ liệu ngang** ở bề rộng hẹp.
-  2. Dùng **lưới card thu gọn**, nhiều card trên cùng một hàng.
-  3. Chỉ giữ các cột cốt lõi trên bảng, phần còn lại đưa vào vùng mở rộng/xem chi tiết.
-- Scroll ngang chỉ chấp nhận khi thật sự không còn cách khác, và khi đó phải có chỉ dấu trực quan rõ ràng là còn nội dung ngoài màn hình.
+- **Desktop — ưu tiên table** khi đủ cả 3 điều kiện: (a) số cột cốt lõi ≤ 6 (không tính cột menu kebab hành động); (b) nội dung từng ô ngắn (mã, tên, ngày, số tiền, chip trạng thái); (c) dữ liệu mang tính quét / so sánh giữa các dòng. Table theo phong cách hiện đại: chỉ kẻ ngang mảnh giữa các dòng, header dính khi danh sách dài, hover sáng dòng; hành động của từng dòng thu vào menu kebab theo §7 (áp dụng cho cả dòng table).
+- **Chiều ngang bị khống chế tuyệt đối**: mỗi cột có max-width rõ ràng, nội dung dài phải rút gọn bằng ellipsis trong một dòng. Table KHÔNG bao giờ tràn hay phải cuộn ngang trên desktop. Nếu có cột phụ vượt ngưỡng: hoặc đưa cột phụ sang vùng chi tiết / dòng mở rộng, hoặc toàn bộ danh sách chuyển sang card.
+- **Desktop — dùng card** khi: số cột cốt lõi vượt 6, nội dung dài hoặc không đồng nhất (mô tả, ghi chú), hoặc bản ghi cần trình bày trực quan riêng (thanh tiến độ, ảnh). Nấc trung gian: table giữ cột cốt lõi + dòng mở rộng để xem phần còn lại.
+- **Mobile: luôn hiển thị card** cho mọi danh sách — cùng một dữ liệu, hai cách trình bày theo breakpoint.
+- Mục này thay thế cách tiếp cận "card là mặc định" trước đây. Ngưỡng 6 cột là mức tạm: PO nghiệm thu thực tế rồi quyết định chỉnh sau. Quy ước áp dụng ngược cho mọi màn danh sách đã làm (task FE-019) và là chuẩn cho mọi màn mới.
 
 ## 4. Độ tương phản của chữ
 
@@ -47,3 +46,11 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 
 - Các điểm 2–6 chỉ kiểm chứng đáng tin bằng mắt: agent làm FE tự kiểm ở nhiều bề rộng và nhiều trạng thái dữ liệu (có dữ liệu, rỗng, lỗi) trước khi báo cáo, và nêu rõ đã kiểm ở những bề rộng/trạng thái nào.
 - Nguyen nghiệm thu UI trực tiếp; phản hồi của Nguyen tại nghiệm thu là tín hiệu chính để sửa các vấn đề thị giác mà kiểm thử tự động không bắt được.
+
+## 9. Trạng thái tải và skeleton (DEC-021, PO chốt 2026-11-26)
+
+- Mọi vùng render dữ liệu từ API phải có skeleton khi tải lần đầu hoặc chuyển trang lạnh. Skeleton là **bản sao hình học** của nội dung thật (cùng khung thẻ / dòng, cùng chiều cao, cùng vị trí avatar và chip) để khi dữ liệu về, nội dung thay tại chỗ và layout không xê dịch.
+- Số lượng skeleton **cố định theo thiết kế** (bằng pageSize của danh sách, hoặc đủ lấp màn hình đầu tiên) — không phụ thuộc vào số bản ghi response trả về.
+- Thời điểm hiển thị: chỉ hiện skeleton khi việc tải kéo dài hơn ~200ms (tránh "nháy skeleton" khi dữ liệu về nhanh); một khi đã hiện thì giữ tối thiểu ~300–400ms trước khi thay bằng dữ liệu (tránh chớp tắt). KHÔNG giữ dữ liệu thật lại thêm sau khi dữ liệu đã về.
+- Đổi filter, phân trang, tải lại tại chỗ: **giữ dữ liệu cũ hiển thị** (cơ chế placeholderData của TanStack Query) kèm một chỉ dấu tải nhẹ — không thay toàn bộ bằng skeleton.
+- Hiệu ứng shimmer / pulse của skeleton phải tắt theo `prefers-reduced-motion`.
