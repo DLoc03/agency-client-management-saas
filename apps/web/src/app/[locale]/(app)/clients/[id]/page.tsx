@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Select } from "@/components/ui/Select";
 import {
   createContact,
@@ -55,6 +56,7 @@ export default function ClientDetailPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Clients");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [client, setClient] = useState<Client | null>(null);
@@ -219,7 +221,7 @@ export default function ClientDetailPage() {
   };
 
   const handleDeleteClient = async () => {
-    if (!window.confirm(t("confirmDelete"))) return;
+    if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
     try {
       await deleteClient(id);
       router.replace("/clients");
@@ -254,7 +256,7 @@ export default function ClientDetailPage() {
   };
 
   const handleDeleteContact = async (contact: Contact) => {
-    if (!window.confirm(t("confirmDeleteContact"))) return;
+    if (!(await confirmAction(t("confirmDeleteContact"), { intent: "delete" }))) return;
     try {
       await deleteContact(id, contact.id);
       await loadAll();

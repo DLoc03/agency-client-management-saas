@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
@@ -36,6 +37,7 @@ export default function ClientsPage() {
   const { session, isLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations("Clients");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [clients, setClients] = useState<Client[]>([]);
@@ -179,7 +181,7 @@ export default function ClientsPage() {
   };
 
   const handleDelete = async (client: Client) => {
-    if (!window.confirm(t("confirmDelete"))) return;
+    if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
     try {
       await deleteClient(client.id);
       await load();

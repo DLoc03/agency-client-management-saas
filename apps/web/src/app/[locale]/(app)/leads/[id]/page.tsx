@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import {
   convertLead,
   createLeadActivity,
@@ -66,6 +67,7 @@ export default function LeadDetailPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Leads");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [lead, setLead] = useState<Lead | null>(null);
@@ -218,7 +220,7 @@ export default function LeadDetailPage() {
   };
 
   const handleDeleteLead = async () => {
-    if (!window.confirm(t("confirmDelete"))) return;
+    if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
     try {
       await deleteLead(id);
       router.replace("/leads");
@@ -252,7 +254,7 @@ export default function LeadDetailPage() {
   };
 
   const handleDeleteContact = async (contact: LeadContact) => {
-    if (!window.confirm(t("confirmDeleteContact"))) return;
+    if (!(await confirmAction(t("confirmDeleteContact"), { intent: "delete" }))) return;
     try {
       await deleteLeadContact(id, contact.id);
       await loadAll();

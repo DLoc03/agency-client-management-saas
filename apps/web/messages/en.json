@@ -6,6 +6,11 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "moreActions": "More actions",
+    "actions": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "revoke": "Revoke"
+    },
     "forbidden": {
       "title": "You don't have access to this page",
       "body": "Your current role doesn't include permission to view this section. If you think this is a mistake, contact your workspace owner.",

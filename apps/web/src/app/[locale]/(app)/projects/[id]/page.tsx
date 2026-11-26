@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { priorityBadgeClass, statusBadgeClass } from "@/lib/status-colors";
@@ -54,6 +55,7 @@ export default function ProjectDetailPage() {
   const router = useI18nRouter();
   const locale = useLocale();
   const t = useTranslations("Projects");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [project, setProject] = useState<Project | null>(null);
@@ -228,7 +230,7 @@ export default function ProjectDetailPage() {
   };
 
   const handleDeleteMilestone = async (milestoneId: number) => {
-    if (!confirm(t("confirmDeleteMilestone"))) return;
+    if (!(await confirmAction(t("confirmDeleteMilestone"), { intent: "delete" }))) return;
     try {
       await deleteMilestone(id, milestoneId);
       setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
@@ -270,7 +272,7 @@ export default function ProjectDetailPage() {
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    if (!confirm(t("confirmDeleteTask"))) return;
+    if (!(await confirmAction(t("confirmDeleteTask"), { intent: "delete" }))) return;
     try {
       await deleteTask(taskId);
       await loadTasks();
@@ -401,7 +403,7 @@ export default function ProjectDetailPage() {
           <button
             type="button"
             onClick={async () => {
-              if (!confirm(t("confirmDelete"))) return;
+              if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
               try {
                 await deleteProject(id);
                 router.push("/projects");

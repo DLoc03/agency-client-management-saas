@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
@@ -32,6 +33,7 @@ export default function ProjectsPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Projects");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -139,7 +141,7 @@ export default function ProjectsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm(t("confirmDelete"))) return;
+    if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
     try {
       await deleteProject(id);
       await load();
