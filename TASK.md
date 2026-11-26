@@ -230,7 +230,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-009 — Lô sửa nghiệm thu tổng hợp vòng 1: crash Invitations + sidebar + điều hướng Team + Select shadcn + seed demo đầy đủ
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: Từ buổi nghiệm thu tổng hợp vòng 1 (2026-11-24, chưa đạt, gián đoạn tại mục C3): (1) Trang `/team/invitations` crash "Rendered fewer hooks than expected" vì `useTranslations` bị gọi trong JSX (2 chỗ) — sửa dùng hook đã khai báo ở đầu component; đã rà soát toàn bộ khu vực (app), chỉ file này dính mẫu lỗi này. (2) Sidebar không giữ hết chiều cao khi cuộn trang dài — cấu trúc lại AppShell: khung `h-dvh`, chỉ cột nội dung cuộn, Sidebar cao theo khung. (3) Điều hướng khu vực Team gây hiểu nhầm Member/Team (PO đối chiếu prompt: prompt FE-009 của Muse thiếu đặc tả điều hướng — lỗi chính ở phía Muse): thêm `team/layout.tsx` với thanh tab chung [Nhóm | Thành viên | Lời mời | Khối lượng công việc] cho mọi trang `/team/*`, mục sidebar "Nhóm" vào trang danh sách team trước (PO chốt 2026-11-24). (4) Dropdown `<select>` HTML thô tại Projects/Clients/Leads/Team (38 chỗ, 9 file) → component `components/ui/Select.tsx` kiểu shadcn/ui (button + listbox theo design token, hỗ trợ bàn phím và đóng khi bấm ra ngoài). (5) Mở rộng `DemoDataSeeder`: thêm 5 tài khoản theo vai trò (admin/sales/pm/accountant/member@demo.test, mật khẩu "password"), client demo + gắn `client_id` cho tài khoản portal demo, 1 team demo, 2 project demo kèm milestone + task (có task quá hạn để kiểm tra workload) — seeder idempotent. (6) Thêm `docker-compose.acceptance.yml` để chạy web ở bản production khi nghiệm thu (bản dev biên dịch từng route theo từng ngôn ngữ ở lần mở đầu tiên nên có cảm giác lag như PO phản ánh — không phải lỗi của i18n).
 - Acceptance Criteria: Trang Invitations mở bình thường không crash; sidebar phủ hết chiều cao viewport ở trang dài; sidebar "Nhóm" vào danh sách team và có thanh tab chuyển đủ 4 trang con; không còn `<select>` HTML thô trong khu vực (app); seed lại trên DB cũ tạo đủ tài khoản vai trò + 2 project demo mà không trùng lặp; web typecheck/test/build đạt, suite API không hồi quy.
@@ -238,14 +238,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FE-013 — Nối Client Portal vào API thật (thay bản mock của FE-003)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: Nghiệm thu vòng 2 mục D4 phát hiện tài khoản portal tạo ở Clients không đăng nhập được ở cổng Portal — nguyên nhân: Portal vẫn là bản mock của FE-003 (đăng nhập đối chiếu tài khoản cứng trong `lib/portal-auth/mock.ts`, token giữ ở sessionStorage + cookie JS), chưa từng nối API thật. Task này nối Portal vào API thật đã có sẵn từ BE-003 (portal auth) và BE-006 (portal projects read-only): (1) BFF routes `/api/portal/auth/login|logout|me|forgot-password|reset-password` — token Sanctum lưu trong httpOnly cookie `portal_token` đúng mẫu FE-004 của app nội bộ, tách biệt hoàn toàn với `app_token`; proxy portal riêng `lib/bff/portal-proxy.ts` (kèm xử lý status không body 204/205/304). (2) `portal-auth` viết lại: context gọi BFF (bootstrap phiên bằng `/me`), session chỉ giữ danh tính client + agency, xoá hẳn `mock.ts`, `storage.ts` và bộ test mock (web test 27 → 17 vì 10 test mock bị xoá theo). (3) Trang chủ Portal thay khối placeholder bằng danh sách dự án thật của chính khách hàng đó (trạng thái, % tiến độ, số task xong/tổng, hạn) và thêm trang chi tiết `/portal/projects/[id]` chỉ-đọc (mô tả, mốc thời gian, cột mốc, công việc) — dữ liệu từ PortalProjectResource, không lộ ngân sách/hồ sơ nội bộ. Điều hướng: đăng nhập → `/portal` (danh sách) → bấm thẻ dự án → chi tiết → link quay lại danh sách. Thêm namespace i18n `Portal.projects` EN/VI và gỡ 2 key placeholder `dashboard.mockNotice`/`emptyNotice`; màu chip trạng thái dùng chung bản đồ `lib/status-colors.ts` của FIX-010 (nội dung giống hệt, chờ hợp nhất khi cả hai PR vào main).
 - Acceptance Criteria: Tài khoản portal tạo ở Clients (kể cả tài khoản seed `client@demo.test`) đăng nhập được ở Portal cả EN lẫn VI; đăng nhập sai báo đúng mã lỗi; quên/đặt lại mật khẩu chạy qua API thật (mail ở Mailpit); danh sách + chi tiết dự án khớp dữ liệu của client đó (client khác không thấy); token không xuất hiện trong JS storage; typecheck/test/build đạt; file tiếng Việt sạch 2 lớp kiểm tra byte.
 - Progress: 2026-11-24 — Muse đã làm trên branch `fe/FE-013-portal-real-api` (theo quy ước thay vai FE, PO chốt thứ tự 2026-11-24): web typecheck PASS, test 17/17 (sau khi xoá 10 test mock), build 54 trang PASS; chờ Nguyen nghiệm thu + merge (Muse không tự duyệt FE của chính mình). Nên merge PR #51 (FIX-010) trước; nếu TASK.md/CHANGELOG.md xung đột khi merge PR này thì chỉ là xung đột sổ sách, Muse sẽ phát hành lại PR sạch.
 - Blockers: Không có.
 ## FIX-010 — Lô sửa nghiệm thu tổng hợp vòng 2: lỗi 204 ở BFF proxy + picker thành viên + validation form Mời + polish UI theo feedback PO
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: Từ buổi nghiệm thu vòng 2 (2026-11-24; R1/R2/R4/R5, B2/B4/B5, D1–D3, E2–E4 đạt; R5 xác nhận bản production nhanh và ổn định hơn hẳn bản dev — cảm giác "lag đa ngôn ngữ" là do dev mode biên dịch theo route/locale, không phải lỗi i18n): (1) Tab thứ 4 của khu vực Team hiện key thô `Teams.workload` vì key đó là nhóm key con — tab chuyển sang dùng `workload.title`. (2) Thu hồi lời mời (và mọi thao tác API trả 204) báo lỗi "Invalid response status code 204": BFF proxy gắn body vào Response có status 204 — sửa proxy trả body rỗng đúng chuẩn cho 204/205/304, hết toàn cục cho mọi endpoint DELETE trả 204. (3) Badge loại trong Dòng thời gian của project hiện chuỗi thô "task"/"milestone" — bổ sung key `Projects.timelineTypes` EN/VI và hiển thị nhãn đã dịch. (4) Gốc rễ B3/C1/C2 — các ô nhập userID/số còn sót: lọc task theo người được gán, người được gán trong form task, thêm thành viên vào project, người phụ trách khi tạo project, trưởng nhóm khi tạo/sửa team — tất cả chuyển thành dropdown chọn từ danh sách thành viên (Select của FIX-009). Chỉ còn 2 ô số hợp lệ: ngân sách và ID khách hàng dự phòng khi chưa có khách hàng nào. (5) Form Mời thành viên: thiếu vai trò/email nay báo lỗi ngay trong form thay vì banner ngoài trang (key `Teams.invitationsForm.validation`). (6) Polish theo feedback: chip trạng thái có màu ngữ nghĩa dùng chung (`lib/status-colors.ts`: Active xanh lá, Đang xử lý xanh dương, Đủ điều kiện tím, Chờ xám, Tạm dừng vàng, Quá hạn/ huỷ đỏ) áp cho Clients/Projects/Leads; card Client bấm cả card để vào chi tiết (nút Xoá không bị ảnh hưởng); thẻ Kanban có cursor grab/grabbing khi kéo được; hàng Workload thêm avatar chữ cái + ô số liệu riêng, quá hạn tô đỏ; nút chính có icon (user-plus/plus qua bộ Icon), nút Quay lại dạng text kèm icon chevron, nút × gỡ thành viên có vùng bấm tròn lớn hơn; cursor pointer cho mọi phần tử bấm được (globals.css — Tailwind v4 mặc định bỏ pointer ở button); dấu * cho trường bắt buộc ở các form chính (một số form Clients/Leads đã có sẵn từ FE-010/FE-011, nay đồng bộ thêm Projects/Team/Mời + placeholder của form liên hệ/tài khoản portal).
 - Acceptance Criteria: Tab Workload hiện đúng nhãn; thu hồi lời mời và các thao tác xoá trả 204 không còn báo lỗi; không còn ô nhập userID ở các luồng thành viên (trừ 2 ngoại lệ đã ghi); badge timeline hiển thị "Công việc/Cột mốc"; các polish ở mục (6) hiện diện trên các màn hình đã liệt kê; typecheck/test/build đạt; file tiếng Việt sạch 2 lớp kiểm tra byte.
@@ -253,13 +253,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có. (Riêng D4 vòng 2 — tài khoản portal tạo ở Clients không đăng nhập được ở cổng Portal — nguyên nhân là cổng Portal vẫn là bản mock của FE-003, chưa từng nối API thật; xử lý ở task riêng FE-013 nối Portal vào API thật, chờ PO chốt thứ tự.)
 
 ## FIX-011 — Đăng xuất Portal kẹt ở trang trắng (nghiệm thu vòng 3, mục P6)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: Vòng 3 đạt mọi mục trừ P6: bấm Đăng xuất ở Portal thì phiên đăng xuất nhưng không về được trang đăng nhập, phải tải lại trang. Nguyên nhân: `logout()` của portal (từ thời mock) gọi BFF xoá cookie kiểu "bắn rồi quên" rồi chuyển trang ngay; middleware thấy cookie `portal_token` vẫn còn nên đá `/portal/login` ngược về `/portal`, trong khi trang chủ Portal lúc đó không còn phiên nên render trắng và hiệu ứng chuyển trang không chạy lại. App nội bộ không dính vì logout của FE-004 vốn là async. Sửa: `logout()` của portal chuyển thành async — chờ BFF xoá cookie xong mới `setSession(null)`, nút Đăng xuất ở trang chủ Portal `await logout()` rồi mới chuyển trang.
 - Acceptance Criteria: Bấm Đăng xuất ở Portal về thẳng trang đăng nhập, không cần tải lại; các mục vòng 3 còn lại không hồi quy; typecheck/test/build đạt.
 
 ## FE-012 — Branding Brewbase: tên site, logo + biến thể màu, nút hiện mật khẩu, avatar mặc định
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: Lô branding để dành sau nghiệm thu (PO nhắc lại 2026-11-24): (1) Tên site: tiêu đề trang (tab trình duyệt) "Brewbase - Agency & Client Management" / "Brewbase - Quản lý Agency & Khách hàng" qua metadata theo locale (key `Shell.siteTitle`), brand ở sidebar và Portal đổi thành "Brewbase", favicon là logo. (2) Logo nền tảng mới: ký hiệu chữ B hình học trên nền ô bo góc (`components/shell/Logo.tsx` + file SVG ở `apps/web/public/`), 4 biến thể màu theo bề mặt: violet (chính, dùng ở sidebar app nội bộ), emerald (Portal), dark, light. (3) Nút Eye/EyeClosed hiện/ẩn mật khẩu: component dùng chung `components/ui/PasswordInput.tsx` (kèm nhãn i18n `Common.showPassword`/`hidePassword`), gắn ở cả 5 ô mật khẩu: đăng nhập nội bộ, đăng nhập Portal, đặt lại mật khẩu Portal, chấp nhận lời mời, tạo tài khoản portal ở Clients. (4) Avatar mặc định cho người dùng: component `components/ui/Avatar.tsx` — chữ cái đầu của TỪ CUỐI trong họ tên (tên gọi theo thứ tự tên Việt) trên nền tròn, màu chọn xác định theo id người dùng (8 màu, cùng một người luôn cùng màu) để nhận diện nhanh cạnh các tên hiển thị nhỏ; gắn ở khối người dùng dưới sidebar, thẻ thành viên ở Danh bạ, hàng Workload (thay vòng tròn cũ) và chip thành viên trong chi tiết dự án. Màu primary của UI: PO chốt tím thương hiệu #7B61FF (2026-11-24) — token `--primary`/`--ring` ở globals.css đổi sang HSL 250 100% 69% cho cả light và dark, chữ trên nền primary là trắng; Portal giữ emerald theo DEC-013.
 - Acceptance Criteria: Tab trình duyệt hiện đúng tiêu đề Brewbase theo ngôn ngữ; sidebar/Portal hiện logo mới đúng biến thể; cả 5 ô mật khẩu có nút con mắt bấm đổi qua lại được; avatar hiển thị đúng chữ cái tên cuối + màu ổn định theo từng người ở 4 vị trí đã gắn; typecheck/test/build đạt; file tiếng Việt sạch 2 lớp kiểm tra byte.
@@ -267,7 +267,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-012 — Polish UI theo feedback nghiệm thu của PO (2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Ba chỉnh sửa từ feedback của PO khi nghiệm thu tại công ty: (1) PasswordInput — nút Eye/EyeClosed phải nằm TRONG ô input: nguyên nhân nút nằm ngoài là input thiếu `w-full` (wrapper `relative` rộng hết cột, input co theo nội dung nên nút absolute ở mép phải của wrapper rơi ra ngoài khung input); sửa ở component dùng chung — wrapper `w-full`, input luôn `w-full pr-10` — áp cho cả 5 ô mật khẩu. (2) Màu primary dùng cho CHỮ hơi sáng khó đọc: thêm token `--primary-text` (250 84% 60% ở light, 250 100% 76% ở dark) và class `text-primary-text` cho các chữ/link màu primary; màu primary cho nền/nút giữ nguyên #7B61FF. (3) Sidebar: đổi nền từ nâu đen ấm (240 5.9% 10%) sang tím than lạnh (250 24% 11%, accent/border/muted cùng tông tím) cho hợp tông logo violet và không lệch tông với dashboard nhiều màu về sau; logo trên sidebar đổi sang biến thể `light` (màu logo gốc giữ nguyên ở mọi nơi khác).
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: icon Eye nằm trong khung input ở trang đăng nhập; chữ màu primary đậm dễ đọc hơn; sidebar tông tím than + logo biến thể light hài hoà. Typecheck + build PASS.
@@ -281,56 +281,56 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Ghi chú: Task FE/QA cho Nhóm 5 chỉ soạn SAU khi BE-008 merge (kỷ luật prompt — không soạn prompt phụ thuộc trước).
 
 ## FE-016 — Landing page theo mẫu Editorial (PO duyệt mẫu 4, 2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Thay trang gốc tạm thời ("Giai đoạn nền tảng") bằng landing page theo mẫu 4 "Editorial" do PO chọn trong 6 mẫu Muse sinh (3 mẫu đầu bị chê hơi trẻ con; hướng chốt: chững chạc kiểu SaaS B2B, không emoji/hiệu ứng, tím chỉ làm điểm nhấn, có mô phỏng giao diện app thật). Gồm: header (logo + chuyển ngữ EN/VI + nút Đăng nhập), khối giới thiệu + 3 số liệu (8 nhóm nghiệp vụ, song ngữ, đa agency), nút Đăng nhập vào `/login` và liên kết Cổng khách hàng vào `/portal/login` (trước đây phải gõ tay URL), mô phỏng sản phẩm bằng CSS thuần (sidebar tím than + card dự án), footer. Toàn bộ chuỗi qua i18n namespace Home (EN + VI đầy đủ).
 - Acceptance Criteria: Nguyen mở trang gốc ở cả 2 ngôn ngữ kiểm tra bằng mắt; nút Đăng nhập/Portal chuyển đúng trang. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FIX-015 — Thiếu khóa i18n `actions.detail` khiến menu hiện mã khóa (PO báo 2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: FIX-014 đổi nhãn action mở xem thành Chi tiết/Detail và code tham chiếu `t("actions.detail")` ở 3 nơi (danh sách dự án, danh sách nhóm, danh sách thành viên) nhưng khóa `detail` chưa từng được thêm vào `Projects.actions` và `Teams.actions` — next-intl hiển thị nguyên mã khóa trong menu. Lỗi ở khâu triển khai FIX-014 của Muse (báo cáo PR lúc đó ghi đã thêm khóa nhưng thực tế không có). Sửa: thêm `detail` = "Detail" / "Chi tiết" vào cả 2 namespace, EN + VI; đã quét lại toàn bộ khóa `actions.*` mà 3 file trên tham chiếu — tất cả đều phân giải được.
 - Acceptance Criteria: Nguyen mở menu ⋮ ở danh sách dự án/nhóm/thành viên, mục đầu tiên hiện "Chi tiết" (VI) / "Detail" (EN) kèm icon mắt, không còn mã khóa. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FE-018 — UI đăng nhập Portal theo mẫu P2 Bento kính mờ (PO duyệt 2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Trang `/portal/login` làm lại theo mẫu P2 "Bento kính mờ" do PO chọn trong 3 mẫu Muse sinh (P1 Card Emerald, P2 Bento kính mờ, P3 Chia đôi): nền panel gradient xanh ngọc, card đăng nhập kính mờ (logo emerald + tiêu đề chào mừng), 3 ô bento dưới card giới thiệu Dự án/Công việc/Hoá đơn, liên kết quay về đăng nhập nội bộ cho nhân viên agency. Header/footer của portal layout giữ nguyên (áp dụng cho mọi trang Portal). Form đăng nhập Portal giữ nguyên logic và palette emerald sẵn có. Thêm 9 khóa i18n vào `Portal.login` EN + VI.
 - Acceptance Criteria: Nguyen mở `/portal/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản client demo vẫn vào Portal như cũ; link Đăng nhập nội bộ hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FIX-014 — Feedback UI vòng 2 của PO (2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Bốn chỉnh sửa từ ảnh nghiệm thu của PO sau FIX-013: (1) Trang chi tiết dự án: nút "Về danh sách" đứng một hàng riêng ở trên, tên dự án + tên khách + trạng thái xuống dưới nút (trước đây nằm cùng hàng). (2) Tiêu đề card công việc: màu primary vẫn hơi sáng — đổi sang màu chữ chính (foreground, gần đen) cho dễ đọc. (3) Menu three-dot thêm icon cho từng mục (mắt = Chi tiết, bút chì = Sửa thật, thùng rác = Xoá, check = Đánh dấu xong, xoay ngược = Mở lại); các nút "Sửa" trên card danh sách thực chất là vào xem chi tiết nên đổi tên thành "Chi tiết/Detail" (khoá i18n mới `actions.detail` ở namespace Projects + Teams) — mục Sửa mở form thật (cột mốc, người liên hệ) giữ nguyên nhãn Sửa. (4) Trang vào app đầu tiên (landing): PO yêu cầu Muse sinh vài mẫu thiết kế để duyệt chọn trước, mẫu được chọn mới triển khai kèm nút chuyển sang trang đăng nhập — phần này làm riêng sau khi PO chọn mẫu.
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt các điểm trên. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FE-017 — UI trang đăng nhập theo mẫu L2 Card trung tâm (PO duyệt 2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Trang `/login` làm lại theo mẫu L2 "Card trung tâm" do PO chọn trong 3 mẫu Muse sinh (L1 Chia đôi Editorial, L2 Card trung tâm, L3 Panel tối): header mảnh (liên kết Về trang chủ + chuyển ngữ EN/VI), một card giữa trang (logo Brewbase ở trên, tiêu đề, form), cuối card có lối sang Cổng khách hàng; footer tối giản. Đồng thời `LoginForm` chuyển từ palette indigo/neutral cũ (từ FE-002, chưa từng qua design token) sang design token hiện hành (primary/border-input/muted) cho đồng bộ app — chỉ đổi class trình bày, không đổi logic/validate/luồng đăng nhập. Thêm 4 khóa i18n vào `Auth.login` (heading, backHome, portalPrompt, portalLink) EN + VI. Trang đăng nhập Portal giữ nguyên bản sắc emerald riêng.
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FIX-017 — Portal login: gradient chưa phủ hết chiều cao trang (PO báo 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Sau FIX-016, gradient đã phủ kín chiều ngang nhưng còn một dải nền xám dưới chân trang trên màn hình cao: `h-full` trên thẻ main không giãn hết vùng nội dung. Sửa cơ chế giãn chiều cao: wrapper nội dung của Portal layout chuyển thành flex column, main của trang đăng nhập dùng `flex-1` để gradient phủ kín toàn bộ chiều cao giữa header và footer. Các trang Portal khác không đổi giao diện (main của chúng giữ chiều cao theo nội dung như trước).
 - Acceptance Criteria: Nguyen mở `/portal/login` trên màn hình cao: gradient phủ kín từ dưới header tới sát footer, không còn dải xám; các trang Portal khác (danh sách dự án, chi tiết) hiển thị như cũ. Typecheck + build PASS.
 - Blockers: Không có.
 
 ## FIX-016 — Mất 4 khóa Auth.login khi merge PR #63 + Portal login fill nền toàn trang (PO báo 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Hai việc. (1) Trang đăng nhập nội bộ hiện mã khóa `Auth.login.heading/backHome/portalPrompt/portalLink`: 4 khóa FE-017 thêm vào đã bị mất khỏi main khi squash merge PR #63 (cùng cơ chế mất mục tài liệu đã xử lý ở PR #66 — đợt khôi phục đó chỉ rà TASK.md/CHANGELOG.md, chưa rà file messages sau merge #63; đây là thiếu sót rà soát của Muse). Khôi phục nguyên văn 4 khóa EN + VI. Muse đã chạy rà soát toàn app: 642 tham chiếu khóa i18n, chỉ đúng 4 khóa này bị treo, mọi khóa khác (Home của FE-016, Portal.login của FE-018, actions.detail của FIX-014) đều nguyên vẹn. Từ nay sau MỖI lần merge PR đụng file messages, Muse chạy lại rà soát khóa treo trước khi báo cáo. (2) Theo feedback của PO: nền gradient của trang đăng nhập Portal trước đây chỉ là một panel bo góc nổi giữa trang — nay gradient fill toàn bộ vùng trang từ mép này sang mép kia (bỏ khung panel), header/footer Portal giữ nguyên.
 - Acceptance Criteria: Nguyen mở `/login`: tiêu đề "Đăng nhập Brewbase", link "← Về trang chủ", dòng "Bạn là khách hàng? Vào Cổng khách hàng →" hiển thị đúng chữ ở cả EN/VI, không còn mã khóa. Mở `/portal/login`: gradient phủ kín toàn trang, không còn panel nổi. Typecheck + build PASS; rà soát khóa treo = 0.
 - Blockers: Không có.
 
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: (1) Quy ước mới của PO: mọi hành động trên card dữ liệu (Sửa/Xoá/Đánh dấu xong...) thu gọn vào một nút icon three-dot (component dùng chung mới `ActionMenu` + icon `more-vertical`, đóng khi bấm ra ngoài/Esc), bấm mới hiện danh sách hành động — không hiển thị nút chữ trực tiếp trên card nữa; đã áp cho card danh sách Projects/Clients/Teams/Members, cột mốc + công việc (chi tiết dự án), checklist + bình luận (chi tiết công việc), người liên hệ + hoạt động + ghi chú (chi tiết Lead/Client). Hành động cấp trang giữ nguyên. Quy ước đã ghi vào `docs/UI_GUIDELINES.md` mục 7. (2) Sửa tràn ngang trên mobile ở trang chi tiết dự án: tiêu đề dự án thiếu `min-w-0`/ngắt chữ khiến hàng header bị đẩy rộng hơn màn hình; thêm `min-w-0` + `break-words` cho tiêu đề và các giá trị ở khối tổng quan, nút tiêu đề công việc chặn rộng tối đa. (3) Ghi chú kèm theo: bản FIX-012 đã có trên main (PR #59) — nếu máy chạy không thấy thay đổi thì kiểm tra `git pull` đã cập nhật chưa và recreate container web (xem hướng dẫn trong PR).
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: mọi card có nút three-dot mở menu hành động đúng chức năng; trang chi tiết dự án trên mobile không còn thanh cuộn ngang. Typecheck + build PASS.
@@ -452,7 +452,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-009 — Tái cấu trúc danh tính: một identity cho nhiều agency (DEC-018)
-- Assignee: Muse · Level: L5 (DEC-018) · Status: IN_PROGRESS
+- Assignee: Muse · Level: L5 (DEC-018) · Status: DONE
 - Branch: be/BE-009-identity-memberships · PR: (Muse mở PR vào main, chờ Nguyen review)
 - Blocked by: —
 - Acceptance Criteria: Schema memberships + membership_role (CHECK constraint kind/client_id, unique theo agency/user/kind/client); users bỏ agency_id/job_title/phone, thêm last_membership_id; bỏ role_user + client_accounts; token gắn agency_id + membership_id; Tenant context fail-closed (TenantContextMissing) + ResolveTenant kiểm tra membership mỗi request (MEMBERSHIP_INACTIVE, AGENCY_LOCKED); login/select-agency/switch-agency cho cả app và Portal trên một danh tính; selection token chỉ dùng được cho select/switch; Portal gộp vào identity (bỏ provider clients); invitations liên kết identity có sẵn (ALREADY_MEMBER, STAFF_CLIENT_MEMBERSHIP_CONFLICT); xoá client vô hiệu hoá client memberships + thu hồi token; toàn bộ test cũ thích ứng + test mới cho các kịch bản DEC-018; Pint PASS; DEC-018 ghi vào DECISIONS.md; AGENTS.md bổ sung quy tắc tenant.

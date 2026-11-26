@@ -6,6 +6,8 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-26
+
 ### Added
 - Portal sign-in UI refresh (FE-018): the Client Portal login now follows the PO-approved "P2 — Bento glass" design — an emerald gradient panel with a frosted-glass sign-in card, three glass tiles (Projects / Tasks / Invoices), and a cross-link back to the internal sign-in; full EN/VI copy.
 - Login page UI refresh (FE-017): the internal sign-in page now follows the PO-approved "L2 — Centered card" design (logo-headed card, back-to-home and language links in a slim header, Client Portal cross-link inside the card), and the login form moves from its legacy indigo/neutral palette to the shared design tokens.
