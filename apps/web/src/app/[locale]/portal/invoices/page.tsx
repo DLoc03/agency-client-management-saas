@@ -85,17 +85,16 @@ export default function PortalInvoicesPage() {
 
         {error ? (
           <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {t("loadError") || "Không tải được hoá đơn. Vui lòng thử lại."}
+            {t("loadError")}
           </p>
         ) : invoices.length === 0 ? (
           <div className="my-10 flex flex-col items-center justify-center text-center">
             <Icon name="receipt" className="mb-4 h-12 w-12 text-emerald-600" />
             <p className="text-sm font-medium text-slate-700">
-              {t("empty") || "Chưa có hoá đơn nào."}
+              {t("empty")}
             </p>
             <p className="mt-1 max-w-md text-sm text-slate-500">
-              {t("emptyHint") ||
-                "Hoá đơn của agency đối với bạn sẽ hiện ở đây."}
+              {t("emptyHint")}
             </p>
           </div>
         ) : (

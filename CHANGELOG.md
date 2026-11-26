@@ -77,6 +77,8 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Invitation form validation (missing email or role) is now reported inline inside the form instead of the page-level banner.
 - Status badges gained semantic colors via a shared map (active/done green, in-progress blue, qualified violet, waiting slate, on-hold amber, overdue/cancelled red) on the Clients, Projects and Lead screens; client cards navigate to the detail page when clicked anywhere (delete button excluded); Kanban cards show grab/grabbing cursors; workload rows gained initial avatars and metric tiles with overdue highlighted; primary action buttons gained icons, back buttons became text buttons with a chevron, member-chip remove buttons got a larger round hit area, clickable elements show the pointer cursor again, and required fields are marked with * across the main forms.
 
+- Invoice layout polish (FIX-028): removed hardcoded Vietnamese validation strings from InvoiceForm, regrouped invoice list header actions, and rebuilt the invoice detail header/info grid, line-item footer alignment, and action row layout.
+
 ## [0.5.0] - 2026-11-24
 
 ### Backend

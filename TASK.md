@@ -579,3 +579,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Progress: 2026-11-26 — Bổ sung QA-007: tách 5 ca API thành test() độc lập; kiểm tra bao phủ PHPUnit hiện có (MultiAgencyIdentityTest, InvitationV2Test, ClientModuleTest, CrossTenantIsolationTest) — các ca còn lại đã được phủ ở tầng PHPUnit, không viết trùng; thêm Playwright ca không cần token thô. Playwright suite PASS (5/5) khi chạy tuần tự; PHPUnit 129 PASS; Pint PASS.
 - Progress: 2026-11-26 — Bổ sung cuối QA-007: thêm PHPUnit `LastMembershipAutoSelectTest` (đăng nhập lại tự chọn agency theo last_membership_id); thêm guard skip trong spec Playwright khi identity chưa đủ 2 membership. PHPUnit PASS; Playwright PASS trên môi trường có fixture.
 - Blockers: chờ FE-014 + FE-015 merge.
+
+## FIX-028 — Layout hoá đơn: i18n validation, header danh sách, chi tiết hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: (1) Loại bỏ chuỗi tiếng Việt hardcode trong `InvoiceForm.validate()` và các fallback trong phạm vi invoices/finance, thêm nhóm khoá `Finance.validation.*` + `Finance.hints.*` + `Finance.errors.pdfFailed` (EN/VI). (2) Gom hai nút hành động trang danh sách hoá đơn vào một container bên phải, tiêu đề bên trái, nhãn một dòng. (3) Làm lại trang chi tiết: header chỉ số hoá đơn + chip, lưới thông tin 2/4 cột, notes dưới lưới, footer bảng colSpan đúng cột Amount, header bảng 11px, hàng nút hành động ngay dưới lưới với nhãn một dòng và thứ tự Send/Download PDF/Cancel/Delete.
+- Progress: 2026-11-26 — OpenCode triển khai trên branch `fix/FIX-028-invoice-layout` từ `origin/main`.
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n EN = VI khớp tuyệt đối, không khóa lơ lửng; byte-check OK; không còn chuỗi tiếng Việt hardcode trong phạm vi việc 1.
+- Blockers: Không có.

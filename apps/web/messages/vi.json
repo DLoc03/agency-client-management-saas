@@ -55,10 +55,10 @@
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập…",
       "forgotPassword": "Quên mật khẩu?",
-        "heading": "Đăng nhập Brewbase",
-        "backHome": "Về trang chủ",
-        "portalPrompt": "Bạn là khách hàng?",
-        "portalLink": "Vào Cổng khách hàng",
+      "heading": "Đăng nhập Brewbase",
+      "backHome": "Về trang chủ",
+      "portalPrompt": "Bạn là khách hàng?",
+      "portalLink": "Vào Cổng khách hàng",
       "errors": {
         "emailRequired": "Email là bắt buộc.",
         "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
@@ -156,15 +156,15 @@
       "submit": "Đăng nhập vào Portal",
       "submitting": "Đang đăng nhập…",
       "forgotPassword": "Quên mật khẩu?",
-        "heading": "Chào mừng bạn quay lại",
-        "staffPrompt": "Bạn là nhân viên agency?",
-        "staffLink": "Đăng nhập nội bộ",
-        "tileProjectsTitle": "Dự án",
-        "tileProjectsText": "Tiến độ theo thời gian thực",
-        "tileTasksTitle": "Công việc",
-        "tileTasksText": "Cột mốc & đầu việc",
-        "tileInvoicesTitle": "Hoá đơn",
-        "tileInvoicesText": "Lịch sử thanh toán",
+      "heading": "Chào mừng bạn quay lại",
+      "staffPrompt": "Bạn là nhân viên agency?",
+      "staffLink": "Đăng nhập nội bộ",
+      "tileProjectsTitle": "Dự án",
+      "tileProjectsText": "Tiến độ theo thời gian thực",
+      "tileTasksTitle": "Công việc",
+      "tileTasksText": "Cột mốc & đầu việc",
+      "tileInvoicesTitle": "Hoá đơn",
+      "tileInvoicesText": "Lịch sử thanh toán",
       "errors": {
         "emailRequired": "Email là bắt buộc.",
         "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
@@ -265,44 +265,44 @@
       "tasks": "Công việc",
       "noTasks": "Chưa có công việc nào."
     },
-      "invoices": {
-            "title": "Hoá đơn của bạn",
-            "subtitle": "Các hoá đơn agency đã phát hành cho bạn.",
-            "loadError": "Không tải được dữ liệu hoá đơn. Vui lòng thử lại.",
-            "empty": "Chưa có hoá đơn nào",
-            "emptyHint": "Các hoá đơn agency phát hành cho bạn sẽ hiện ở đây.",
-            "notFound": "Không tìm thấy hoá đơn.",
-            "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
-            "fields": {
-                  "amount": "Số tiền",
-                  "balanceDue": "Còn phải trả",
-                  "customer": "Khách hàng",
-                  "description": "Mô tả",
-                  "dueDate": "Hạn thanh toán",
-                  "issueDate": "Ngày phát hành",
-                  "notes": "Ghi chú",
-                  "project": "Dự án",
-                  "quantity": "Số lượng"
-            },
-            "statuses": {
-                  "draft": "Bản nháp",
-                  "sent": "Đã gửi",
-                  "paid": "Đã thanh toán",
-                  "overdue": "Quá hạn",
-                  "cancelled": "Đã huỷ"
-            },
-            "detail": {
-                  "back": "Quay lại danh sách hoá đơn",
-                  "bankDetails": "Thông tin chuyển khoản",
-                  "lineItems": "Chi tiết hoá đơn"
-            },
-            "paymentDetails": {
-                  "bankName": "Ngân hàng",
-                  "bankAccountNumber": "Số tài khoản",
-                  "bankAccountHolder": "Chủ tài khoản",
-                  "vietqrPayload": "Mã VietQR"
-            }
+    "invoices": {
+      "title": "Hoá đơn của bạn",
+      "subtitle": "Các hoá đơn agency đã phát hành cho bạn.",
+      "loadError": "Không tải được dữ liệu hoá đơn. Vui lòng thử lại.",
+      "empty": "Chưa có hoá đơn nào",
+      "emptyHint": "Các hoá đơn agency phát hành cho bạn sẽ hiện ở đây.",
+      "notFound": "Không tìm thấy hoá đơn.",
+      "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
+      "fields": {
+        "amount": "Số tiền",
+        "balanceDue": "Còn phải trả",
+        "customer": "Khách hàng",
+        "description": "Mô tả",
+        "dueDate": "Hạn thanh toán",
+        "issueDate": "Ngày phát hành",
+        "notes": "Ghi chú",
+        "project": "Dự án",
+        "quantity": "Số lượng"
+      },
+      "statuses": {
+        "draft": "Bản nháp",
+        "sent": "Đã gửi",
+        "paid": "Đã thanh toán",
+        "overdue": "Quá hạn",
+        "cancelled": "Đã huỷ"
+      },
+      "detail": {
+        "back": "Quay lại danh sách hoá đơn",
+        "bankDetails": "Thông tin chuyển khoản",
+        "lineItems": "Chi tiết hoá đơn"
+      },
+      "paymentDetails": {
+        "bankName": "Ngân hàng",
+        "bankAccountNumber": "Số tài khoản",
+        "bankAccountHolder": "Chủ tài khoản",
+        "vietqrPayload": "Mã VietQR"
       }
+    }
   },
   "Projects": {
     "title": "Dự án",
@@ -370,7 +370,7 @@
       "cancel": "Hủy",
       "delete": "Xóa",
       "edit": "Sửa",
-        "detail": "Chi tiết",
+      "detail": "Chi tiết",
       "addMember": "Thêm thành viên",
       "remove": "Gỡ",
       "addMilestone": "Thêm cột mốc",
@@ -388,9 +388,9 @@
       "noMembers": "Chưa có thành viên.",
       "noMilestones": "Chưa có cột mốc.",
       "noTasks": "Chưa có công việc.",
-      "progressWarning": "Vẫn còn công việc chưa hoàn thành."
-    ,
-      "budgetReconciliation": "Đối soát ngân sách"},
+      "progressWarning": "Vẫn còn công việc chưa hoàn thành.",
+      "budgetReconciliation": "Đối soát ngân sách"
+    },
     "task": {
       "title": "Công việc",
       "comments": "Bình luận",
@@ -431,15 +431,15 @@
       "task": "Công việc",
       "milestone": "Cột mốc"
     },
-    "selectMember": "Chọn thành viên"
-  ,
+    "selectMember": "Chọn thành viên",
     "budget": {
       "invoiced": "Đã lập hoá đơn",
       "collected": "Đã thu",
       "remaining": "Còn lại",
       "reconciliationHint": "Số liệu tính lúc đọc; không sửa ngân sách ở đây.",
       "note": "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."
-    }},
+    }
+  },
   "Leads": {
     "title": "Lead",
     "subtitle": "Theo dõi khách hàng tiềm năng qua các giai đoạn của pipeline.",
@@ -711,7 +711,7 @@
       "cancel": "Hủy",
       "delete": "Xóa",
       "edit": "Sửa",
-        "detail": "Chi tiết",
+      "detail": "Chi tiết",
       "add": "Thêm",
       "remove": "Gỡ",
       "resend": "Gửi lại",
@@ -903,7 +903,20 @@
       "PAYMENT_NOT_ALLOWED": "Chỉ ghi nhận thanh toán cho hoá đơn Đã gửi / Quá hạn.",
       "OVERPAYMENT_NOT_ALLOWED": "Số tiền vượt quá số dư còn lại.",
       "CROSS_TENANT_REFERENCE": "Khách hàng hoặc dự án không thuộc agency này.",
-      "notFound": "Không tìm thấy hoá đơn."
+      "notFound": "Không tìm thấy hoá đơn.",
+      "pdfFailed": "Tải PDF thất bại."
+    },
+    "validation": {
+      "clientRequired": "Vui lòng chọn khách hàng.",
+      "itemsRequired": "Hoá đơn phải có ít nhất một mục.",
+      "itemDescriptionRequired": "Vui lòng nhập mô tả cho tất cả các mục.",
+      "itemQuantityPositive": "Số lượng phải lớn hơn 0.",
+      "itemUnitPriceNonNegative": "Đơn giá không được nhỏ hơn 0.",
+      "taxRateRange": "Thuế phải nằm trong khoảng 0–100.",
+      "amountInvalid": "Số tiền không hợp lệ."
+    },
+    "hints": {
+      "noProjectsForClient": "Không có dự án nào của khách hàng này."
     }
   }
 }

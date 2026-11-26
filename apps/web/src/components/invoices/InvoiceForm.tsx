@@ -114,18 +114,18 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
   const total = subtotal + taxAmount;
 
   const validate = useCallback((): string | null => {
-    if (!clientId) return t("errors.createFailed") || "Vui lòng chọn khách hàng.";
-    if (items.length === 0) return "Hoá đơn phải có ít nhất một mục.";
+    if (!clientId) return t("validation.clientRequired");
+    if (items.length === 0) return t("validation.itemsRequired");
     for (const it of items) {
       if (!it.description.trim())
-        return "Vui lòng nhập mô tả cho tất cả các mục.";
+        return t("validation.itemDescriptionRequired");
       if (!it.quantity || Number(it.quantity) <= 0)
-        return "Số lượng phải lớn hơn 0.";
+        return t("validation.itemQuantityPositive");
       if (it.unit_price === "" || Number(it.unit_price) < 0)
-        return "Đơn giá không được nhỏ hơn 0.";
+        return t("validation.itemUnitPriceNonNegative");
     }
     if (taxRate !== "" && (Number.isNaN(taxRateNum) || taxRateNum < 0 || taxRateNum > 100))
-      return "Thuế phải nằm trong khoảng 0–100.";
+      return t("validation.taxRateRange");
     return null;
   }, [clientId, items, taxRate, taxRateNum, t]);
 
@@ -161,12 +161,12 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
     } catch (e) {
       const err = e as { code?: string; message?: string; status?: number };
       if (err.code === "INVOICE_NOT_EDITABLE") {
-        setError(t("errors.INVOICE_NOT_EDITABLE") || "Chỉ được sửa hoá đơn ở trạng thái Bản nháp.");
+        setError(t("errors.INVOICE_NOT_EDITABLE"));
       } else if (err.code === "CROSS_TENANT_REFERENCE") {
-        setError(t("errors.CROSS_TENANT_REFERENCE") || "Khách hàng hoặc dự án không thuộc agency này.");
+        setError(t("errors.CROSS_TENANT_REFERENCE"));
       } else {
         setError(
-          e instanceof Error ? e.message : t("errors.createFailed") || "Lưu hoá đơn thất bại.",
+          e instanceof Error ? e.message : t("errors.createFailed"),
         );
       }
     } finally {
@@ -205,7 +205,7 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
           />
           {clientId && filteredProjects.length === 0 && projects.length > 0 && (
             <p className="mt-1 text-xs text-red-600">
-              {t("errors.CROSS_TENANT_REFERENCE") || "Không có dự án nào của khách hàng này."}
+              {t("hints.noProjectsForClient")}
             </p>
           )}
         </div>
@@ -262,7 +262,7 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
             onClick={addRow}
             className="rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
           >
-            <IconPlus /> + {t("actions.addItem") || "Thêm mục"}
+            <IconPlus /> + {t("actions.addItem")}
           </button>
         </div>
         <div className="space-y-2">
@@ -319,7 +319,7 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
                 disabled={items.length === 1}
                 className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:pointer-events-none"
               >
-                {t("actions.remove") || "Xoá"}
+                {t("actions.remove")}
               </button>
             </div>
           ))}
