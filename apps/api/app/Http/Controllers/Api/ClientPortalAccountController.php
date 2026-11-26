@@ -6,25 +6,30 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Clients\StorePortalAccountRequest;
 use App\Http\Requests\Clients\UpdatePortalAccountRequest;
+use App\Http\Resources\InvitationResource;
 use App\Http\Resources\PortalAccountResource;
+use App\Mail\InvitationMail;
 use App\Models\Client;
+use App\Models\Invitation;
 use App\Models\Membership;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 /**
  * Agency-side management of a client's Portal access
- * (docs/CLIENT_CONTRACT.md section 4, reworked by DEC-018).
+ * (docs/CLIENT_CONTRACT.md section 4, reworked by DEC-018 + DEC-020).
  *
  * Portal access is a client Membership on the person's single
  * identity: if the email already has an identity, access is granted
- * to that identity (no second password); a brand-new email creates
- * the identity with the agency-provided initial password — the
- * invitation-link flow that replaces this arrives with BE-010.
- * Authentication itself lives in PortalAuthController.
+ * to that identity immediately (no second password). Since BE-010
+ * (DEC-020) a brand-new email no longer gets an agency-set password:
+ * the person receives a client invitation link and sets their own
+ * password when accepting, which creates the identity and the
+ * membership. Authentication itself lives in PortalAuthController.
  */
 class ClientPortalAccountController extends Controller
 {
@@ -37,41 +42,59 @@ class ClientPortalAccountController extends Controller
 
     public function store(StorePortalAccountRequest $request, Client $client): JsonResponse
     {
-        $validated = $request->validated();
-        $email = Str::lower($validated['email']);
+        $email = Str::lower($request->validated('email'));
+        $identity = User::where('email', $email)->first();
 
-        $membership = DB::transaction(function () use ($validated, $email, $client) {
-            $identity = User::where('email', $email)->first();
+        if (! $identity) {
+            // BE-010 (DEC-020): invite-link flow. One pending client
+            // invitation per email per client record.
+            $pending = Invitation::where('email', $email)
+                ->where('kind', Invitation::KIND_CLIENT)
+                ->where('client_id', $client->id)
+                ->whereNull('accepted_at')->whereNull('revoked_at')->exists();
+            if ($pending) {
+                throw new ApiException('INVITATION_PENDING', 422);
+            }
 
-            if ($identity) {
-                // Design rule Q3: never both staff and client here.
-                Membership::ensureNoKindConflict($identity->id, $client->agency_id, Membership::KIND_CLIENT);
+            $invitation = new Invitation([
+                'agency_id' => $client->agency_id,
+                'email' => $email,
+                'kind' => Invitation::KIND_CLIENT,
+                'client_id' => $client->id,
+                'role_ids' => [],
+                'invited_by' => $request->user()->id,
+            ]);
+            $rawToken = $invitation->issueToken();
+            $invitation->save();
 
-                $existing = Membership::where('user_id', $identity->id)
-                    ->where('agency_id', $client->agency_id)
-                    ->where('kind', Membership::KIND_CLIENT)
-                    ->where('client_id', $client->id)
-                    ->first();
-                if ($existing) {
-                    if ($existing->is_active) {
-                        throw new ApiException('EMAIL_ALREADY_REGISTERED', 422);
-                    }
-                    $existing->forceFill([
-                        'is_active' => true,
-                        'deactivated_at' => null,
-                        'deactivated_by' => null,
-                    ])->save();
+            $invitation->loadMissing(['agency', 'inviter']);
+            $acceptUrl = rtrim(config('app.frontend_url'), '/').'/portal/accept-invitation?token='.$rawToken;
+            Mail::to($email)->send(new InvitationMail($invitation, $acceptUrl));
 
-                    return $existing;
+            return (new InvitationResource($invitation))
+                ->response()->setStatusCode(201);
+        }
+
+        $membership = DB::transaction(function () use ($client, $identity) {
+            // Design rule Q3: never both staff and client here.
+            Membership::ensureNoKindConflict($identity->id, $client->agency_id, Membership::KIND_CLIENT);
+
+            $existing = Membership::where('user_id', $identity->id)
+                ->where('agency_id', $client->agency_id)
+                ->where('kind', Membership::KIND_CLIENT)
+                ->where('client_id', $client->id)
+                ->first();
+            if ($existing) {
+                if ($existing->is_active) {
+                    throw new ApiException('EMAIL_ALREADY_REGISTERED', 422);
                 }
-            } else {
-                $identity = User::create([
-                    'name' => $validated['name'],
-                    'email' => $email,
-                    'password' => $validated['password'],
-                    'locale' => $validated['locale'] ?? 'en',
+                $existing->forceFill([
                     'is_active' => true,
-                ]);
+                    'deactivated_at' => null,
+                    'deactivated_by' => null,
+                ])->save();
+
+                return $existing;
             }
 
             return Membership::create([

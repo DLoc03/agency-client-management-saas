@@ -88,3 +88,26 @@ Per active user in the agency, computed at read time (no counter columns): `open
 6. Team → project: snapshot copies exactly the members at assignment time; later team additions do NOT appear in the project; team removal drops task-less members and keeps members with tasks (converted to direct), with both groups listed in the response.
 7. Workload numbers match real task data (open/overdue/next-7-days); a Team Member sees only their own row.
 8. Tenant isolation: foreign-agency ids → 404 (details) / 422 (body references), as in earlier modules.
+
+
+## 8. BE-010 addendum — invitations v2, Portal invite-link, ownership transfer (DEC-020)
+
+Approved by the Product Owner on 2026-11-26 (DEC-020). This section supersedes the invitation and Portal-access passages of sections 4–5 where they conflict.
+
+### 8.1 Invitations v2 — accepting with a single identity
+
+`invitations` gains `kind` (`staff` | `client`) and a nullable `client_id`. Staff invitations behave as before at creation (email + roles, one pending per email per agency, resend replaces the token). Accepting (`POST /invitations/accept`, public) now has three modes:
+
+- **The invitee already has an identity** (the invitation's `user_id` is set, or a user with the invited email exists): no password is set at accept time. Signed out → 403 `INVITATION_LOGIN_REQUIRED`. Signed in as the invited identity → confirmation only: the staff membership and invited roles are created. Signed in as a different identity → 403 `INVITATION_IDENTITY_MISMATCH`.
+- **Brand-new email**: the original public flow — `name` + `password` create the identity, then the membership.
+- Client invitations (`kind = client`) grant a client membership bound to the invitation's `client_id` instead of roles.
+
+`GET /invitations/preview?token=…` (public) returns the agency name, invited email, kind, role keys, `has_identity`, `matches_current_user` (null when signed out) and expiry, so the accept screen can route between the sign-in, confirm and set-password states. Unknown/revoked token → 404; accepted → 422 `INVITATION_ALREADY_ACCEPTED`; expired → 422 `INVITATION_EXPIRED`. Rule Q3 is enforced again at accept time (`STAFF_CLIENT_MEMBERSHIP_CONFLICT`).
+
+### 8.2 Portal invite-link (replaces the DEC-009.6 agency-set password)
+
+`POST /clients/{client}/portal-accounts` with an email that has an identity still creates (or reactivates) the client membership immediately. With a **brand-new email** it now creates a `client` invitation and emails the link (`{FRONTEND_URL}/portal/accept-invitation?token=…`) using the standard invitation mail template with Portal wording; the response is the invitation (201, `kind: "client"`). One pending client invitation per email per client → a repeat grant answers 422 `INVITATION_PENDING`. The request fields `name` and `password` are accepted for backward compatibility and ignored.
+
+### 8.3 Ownership transfer
+
+`POST /ownership/transfer { membership_id }` (authenticated, tenant context): only the current Owner may call it (else 403 `OWNER_REQUIRED`). The target must be an active staff membership of the same agency (client, inactive or foreign memberships → 404; the Owner's own membership → 422 `VALIDATION_FAILED`). The Owner role is detached from the caller's membership and attached to the target inside one transaction; both memberships' tokens are revoked. Invariant: exactly one active staff membership per agency holds the Owner role; the role remains ungrantable through `PUT /users/{id}/roles`.

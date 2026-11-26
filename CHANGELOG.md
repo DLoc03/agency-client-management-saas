@@ -6,6 +6,11 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Added
+- Invitations v2 (BE-010, DEC-020): an invitee who already has an identity now accepts by signing in and confirming — no second password. Accepting while signed out answers 403 `INVITATION_LOGIN_REQUIRED`; accepting while signed in as a different identity answers 403 `INVITATION_IDENTITY_MISMATCH`. New public `GET /api/v1/invitations/preview` describes a pending invitation (agency, kind, roles, identity state) for the accept screen.
+- Portal invite-link (BE-010, DEC-020): granting Portal access to a brand-new email now sends a client invitation link (the invitee sets their own password when accepting) instead of the agency setting an initial password — this supersedes DEC-009 point 6. The invitation email reuses the existing template with Portal wording. Granting access to an existing identity still creates the client membership immediately, and rule Q3 is enforced at every membership-creation point.
+- Ownership transfer (BE-010, DEC-020): `POST /api/v1/ownership/transfer` — the current Owner hands the Owner role to another active staff membership atomically (role removed and granted in one transaction, both memberships' tokens revoked), keeping the invariant of exactly one Owner per agency. New tests: `InvitationV2Test` and `OwnerInvarianceTest` (13 cases).
+
 ## [0.6.0] - 2026-11-26
 
 ### Added

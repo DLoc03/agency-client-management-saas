@@ -16,6 +16,8 @@ class InvitationResource extends JsonResource
         return [
             'id' => $this->id,
             'email' => $this->email,
+            'kind' => $this->kind,
+            'client_id' => $this->client_id,
             'roles' => $roles->map(fn ($role) => [
                 'id' => $role->id,
                 'key' => $role->key,

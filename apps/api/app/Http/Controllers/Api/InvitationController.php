@@ -20,6 +20,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 /** Member invitations (docs/TEAM_CONTRACT.md endpoints 13-17). */
 class InvitationController extends Controller
@@ -69,10 +70,11 @@ class InvitationController extends Controller
         $invitation = new Invitation([
             'email' => $email,
             'user_id' => $identity?->id,
+            'kind' => Invitation::KIND_STAFF,
             'role_ids' => $roleIds,
             'invited_by' => $actor->id,
         ]);
-        $rawToken = $this->issueToken($invitation);
+        $rawToken = $invitation->issueToken();
         $invitation->save();
         $this->sendMail($invitation, $rawToken);
         $invitation->load('inviter');
@@ -85,7 +87,7 @@ class InvitationController extends Controller
         if (! $invitation->isPending()) {
             throw new ApiException('INVITATION_ALREADY_ACCEPTED', 422);
         }
-        $rawToken = $this->issueToken($invitation);
+        $rawToken = $invitation->issueToken();
         $invitation->save();
         $this->sendMail($invitation, $rawToken);
         $invitation->load('inviter');
@@ -102,34 +104,89 @@ class InvitationController extends Controller
         return response()->noContent();
     }
 
-    /** Public endpoint: the invitee sets name + password and joins. */
+    /**
+     * Public endpoint: describe a pending invitation for the accept
+     * screen (BE-010, DEC-020). Possession of the token is the
+     * credential; nothing beyond the invitation itself is exposed.
+     */
+    public function preview(Request $request): JsonResponse
+    {
+        $request->validate(['token' => ['required', 'string']]);
+        $invitation = $this->findByToken((string) $request->query('token'));
+        $invitation->load('agency');
+
+        $authUser = auth('sanctum')->user();
+
+        return response()->json([
+            'data' => [
+                'agency' => [
+                    'id' => $invitation->agency_id,
+                    'name' => $invitation->agency->name,
+                ],
+                'email' => $invitation->email,
+                'kind' => $invitation->kind,
+                'roles' => $invitation->kind === Invitation::KIND_STAFF
+                    ? Role::whereIn('id', $invitation->role_ids ?? [])->pluck('key')->values()
+                    : [],
+                'has_identity' => $invitation->user_id !== null
+                    || User::where('email', $invitation->email)->exists(),
+                'matches_current_user' => $authUser
+                    ? $authUser->email === $invitation->email
+                    : null,
+                'expires_at' => $invitation->expires_at,
+            ],
+        ]);
+    }
+
+    /**
+     * Accept an invitation (BE-010 invitations v2, DEC-020).
+     *
+     * Three modes, driven by whether the invitee already has an
+     * identity:
+     * - Signed in as the invited identity: a plain confirmation —
+     *   only the membership is created, no password is involved.
+     * - Not signed in but the email already has an identity:
+     *   403 INVITATION_LOGIN_REQUIRED — one identity, one password;
+     *   the person signs in first, then confirms.
+     * - Signed in as a DIFFERENT identity:
+     *   403 INVITATION_IDENTITY_MISMATCH.
+     * - Brand-new email (public): name + password create the
+     *   identity, then the membership — the original flow.
+     * Staff invitations grant the invited roles; client invitations
+     * grant Portal access to the invitation's client record.
+     */
     public function accept(AcceptInvitationRequest $request): JsonResponse
     {
-        $invitation = Invitation::withoutGlobalScopes()
-            ->where('token_hash', hash('sha256', $request->validated('token')))
-            ->first();
-        if (! $invitation || $invitation->revoked_at !== null) {
-            abort(404);
+        $invitation = $this->findByToken($request->validated('token'));
+
+        $identity = $invitation->user_id
+            ? User::find($invitation->user_id)
+            : User::where('email', $invitation->email)->first();
+        $authUser = auth('sanctum')->user();
+
+        if ($authUser) {
+            if (! $identity || $identity->id !== $authUser->id) {
+                throw new ApiException('INVITATION_IDENTITY_MISMATCH', 403);
+            }
+        } elseif ($identity) {
+            throw new ApiException('INVITATION_LOGIN_REQUIRED', 403);
+        } else {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'password' => ['required', Password::min(8)],
+            ]);
         }
-        if ($invitation->accepted_at !== null) {
-            throw new ApiException('INVITATION_ALREADY_ACCEPTED', 422);
-        }
-        if ($invitation->isExpired()) {
-            throw new ApiException('INVITATION_EXPIRED', 422);
-        }
-        // DEC-018: accepting creates (or reuses) the identity and
-        // adds a staff membership in the invitation's agency. When
-        // the email already has an identity, no new user and no new
-        // password are created — the membership is the only result.
-        $result = Tenant::run($invitation->agency_id, function () use ($invitation, $request) {
-            $user = $invitation->user_id
-                ? User::find($invitation->user_id)
-                : User::where('email', $invitation->email)->first();
+
+        $result = Tenant::run($invitation->agency_id, function () use ($invitation, $request, $identity) {
+            $user = $identity;
+            $kind = $invitation->kind === Invitation::KIND_CLIENT
+                ? Membership::KIND_CLIENT
+                : Membership::KIND_STAFF;
 
             Membership::ensureNoKindConflict(
                 $user?->id ?? 0,
                 $invitation->agency_id,
-                Membership::KIND_STAFF
+                $kind
             );
 
             if (! $user) {
@@ -142,13 +199,36 @@ class InvitationController extends Controller
                 ]);
             }
 
-            $membership = Membership::create([
-                'user_id' => $user->id,
-                'agency_id' => $invitation->agency_id,
-                'kind' => Membership::KIND_STAFF,
-                'is_active' => true,
-            ]);
-            $membership->roles()->sync($invitation->role_ids);
+            if ($kind === Membership::KIND_CLIENT) {
+                $existing = Membership::where('user_id', $user->id)
+                    ->where('kind', Membership::KIND_CLIENT)
+                    ->where('client_id', $invitation->client_id)
+                    ->where('is_active', true)
+                    ->exists();
+                if ($existing) {
+                    throw new ApiException('EMAIL_ALREADY_REGISTERED', 422);
+                }
+                Membership::create([
+                    'user_id' => $user->id,
+                    'agency_id' => $invitation->agency_id,
+                    'kind' => Membership::KIND_CLIENT,
+                    'client_id' => $invitation->client_id,
+                    'is_active' => true,
+                ]);
+            } else {
+                $alreadyStaff = $user->hasActiveMembershipIn($invitation->agency_id);
+                if ($alreadyStaff) {
+                    throw new ApiException('ALREADY_MEMBER', 422);
+                }
+                $membership = Membership::create([
+                    'user_id' => $user->id,
+                    'agency_id' => $invitation->agency_id,
+                    'kind' => Membership::KIND_STAFF,
+                    'is_active' => true,
+                ]);
+                $membership->roles()->sync($invitation->role_ids);
+            }
+
             $invitation->update(['accepted_at' => now(), 'user_id' => $user->id]);
 
             return $user;
@@ -159,17 +239,33 @@ class InvitationController extends Controller
                 'user_id' => $result->id,
                 'email' => $result->email,
                 'agency_id' => $invitation->agency_id,
+                'kind' => $invitation->kind,
             ],
         ], 201);
     }
 
-    private function issueToken(Invitation $invitation): string
+    /** Shared token lookup + state guards for preview and accept. */
+    private function findByToken(string $rawToken): Invitation
     {
-        $rawToken = Str::random(64);
-        $invitation->token_hash = hash('sha256', $rawToken);
-        $invitation->expires_at = now()->addDays(7);
+        // Unscoped on purpose (repo AGENTS.md rule 3): the public
+        // accept flow starts from the emailed link, before any tenant
+        // context exists. The lookup key is the SHA-256 hash of an
+        // unguessable 64-char token — the token is the credential —
+        // and the agency is taken from the invitation row itself.
+        $invitation = Invitation::withoutGlobalScopes()
+            ->where('token_hash', hash('sha256', $rawToken))
+            ->first();
+        if (! $invitation || $invitation->revoked_at !== null) {
+            abort(404);
+        }
+        if ($invitation->accepted_at !== null) {
+            throw new ApiException('INVITATION_ALREADY_ACCEPTED', 422);
+        }
+        if ($invitation->isExpired()) {
+            throw new ApiException('INVITATION_EXPIRED', 422);
+        }
 
-        return $rawToken;
+        return $invitation;
     }
 
     private function sendMail(Invitation $invitation, string $rawToken): void

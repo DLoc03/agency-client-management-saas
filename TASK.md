@@ -462,6 +462,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-010 — Hoàn thiện membership: invitations v2 + portal invite-link + Owner-invariant tests
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: OpenCode (QA)
+- Mô tả: Ba luồng theo kế hoạch đã được PO duyệt 2026-11-25, hiệu lệnh bắt đầu + chốt mẫu email 2026-11-26 (DEC-020). (1) Invitations v2: người được mời đã có danh tính thì chấp nhận bằng cách đăng nhập rồi xác nhận (không đặt mật khẩu lần hai) — chưa đăng nhập trả 403 INVITATION_LOGIN_REQUIRED, đăng nhập bằng danh tính khác trả 403 INVITATION_IDENTITY_MISMATCH; email mới giữ luồng công khai đặt tên + mật khẩu; thêm GET /invitations/preview cho màn hình xác nhận. (2) Portal invite-link thay DEC-009 điểm 6: cấp quyền Portal cho email mới = gửi invitation kind=client (link tự đặt mật khẩu, dùng lại mẫu email lời mời, câu chữ link đổi cho Portal); email đã có danh tính = tạo membership client ngay như cũ; Q3 chặn ở mọi điểm tạo membership. (3) Bất biến Owner: thêm POST /ownership/transfer (chỉ Owner; gỡ vai Owner khỏi membership cũ + gán cho membership mới trong MỘT transaction, thu hồi token cả hai); test bao phủ transfer, giới hạn Admin, và cascade xoá client → vô hiệu membership Portal + thu hồi token.
+- Acceptance Criteria: toàn bộ suite PASS trên SQLite VÀ MySQL (107 test sau BE-010); migrate:fresh sạch trên MySQL 8; Pint PASS; các ca cốt lõi trong InvitationV2Test + OwnerInvarianceTest đều xanh; hợp đồng bổ sung ghi ở docs/TEAM_CONTRACT.md §8; DEC-020 ghi vào DECISIONS.md. Không bump VERSION.md.
+- Blockers: Không có.
+
 - Assignee: Muse · Level: L3 · Status: BLOCKED
 - Branch: (chưa tạo)
 - Blocked by: ⏸ chờ BE-009 merge

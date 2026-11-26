@@ -21,7 +21,14 @@ class InvitationMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'You are invited to join '.$this->invitation->agency->name.' on Brewbase');
+        // BE-010 (DEC-020): one mail template serves both kinds; the
+        // client variant speaks about Portal access and setting a
+        // password, per the Product Owner's decision of 2026-11-26.
+        $subject = $this->invitation->kind === Invitation::KIND_CLIENT
+            ? 'You are invited to the Client Portal of '.$this->invitation->agency->name.' on Brewbase'
+            : 'You are invited to join '.$this->invitation->agency->name.' on Brewbase';
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content

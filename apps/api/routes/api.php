@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\LeadContactController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\LeadNoteController;
 use App\Http\Controllers\Api\MilestoneController;
+use App\Http\Controllers\Api\OwnershipController;
 use App\Http\Controllers\Api\PortalAuthController;
 use App\Http\Controllers\Api\PortalProjectController;
 use App\Http\Controllers\Api\ProjectController;
@@ -69,6 +70,7 @@ Route::prefix('v1/portal/auth')->group(function () {
 // Invitation acceptance is public: the emailed token is the credential
 // (docs/TEAM_CONTRACT.md section 4).
 Route::post('/v1/invitations/accept', [InvitationController::class, 'accept'])->middleware('throttle:10,1');
+Route::get('/v1/invitations/preview', [InvitationController::class, 'preview'])->middleware('throttle:30,1');
 
 // Client module (docs/CLIENT_CONTRACT.md) — internal app only, RBAC
 // permissions enforced per route; tenancy via the BelongsToAgency scope.
@@ -174,6 +176,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:users.view');
     Route::patch('/users/{user}', [UserController::class, 'update'])->middleware('permission:users.update');
     Route::put('/users/{user}/roles', [UserController::class, 'updateRoles'])->middleware('permission:users.roles.manage');
+    Route::post('/ownership/transfer', [OwnershipController::class, 'transfer']);
     Route::patch('/users/{user}/activation', [UserController::class, 'activation'])->middleware('permission:users.activation');
 
     Route::get('/invitations', [InvitationController::class, 'index'])->middleware('permission:invitations.manage');

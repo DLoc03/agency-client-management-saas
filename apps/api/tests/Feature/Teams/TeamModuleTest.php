@@ -246,7 +246,11 @@ class TeamModuleTest extends TestCase
         ])->assertNotFound();
 
         // Accept -> the user exists with the invited role and can log in.
-        $this->postJson('/api/v1/invitations/accept', [
+        // (BE-010: the accept endpoint now reads an Authorization
+        // header when one is present, so the guest flow must first
+        // drop the owner's credentials leaked by the shared test app.)
+        auth()->forgetGuards();
+        $this->withHeader('Authorization', '')->postJson('/api/v1/invitations/accept', [
             'token' => $token, 'name' => 'Join Me', 'password' => 'password123',
         ])->assertCreated()->assertJsonPath('data.email', 'join.me@example.com');
         $newUser = User::where('email', 'join.me@example.com')->first();

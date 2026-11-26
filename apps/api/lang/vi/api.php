@@ -29,6 +29,8 @@ return [
     'INVITATION_PENDING' => 'Email này đang có một lời mời chưa được chấp nhận.',
     'INVITATION_EXPIRED' => 'Lời mời này đã hết hạn.',
     'INVITATION_ALREADY_ACCEPTED' => 'Lời mời này đã được chấp nhận rồi.',
+    'INVITATION_IDENTITY_MISMATCH' => 'Lời mời này được gửi cho một tài khoản khác. Hãy đăng nhập bằng email được mời để chấp nhận.',
+    'INVITATION_LOGIN_REQUIRED' => 'Lời mời này thuộc về một tài khoản đã có. Hãy đăng nhập trước, rồi mở lại liên kết để chấp nhận.',
     'CANNOT_MODIFY_OWNER' => 'Không thể sửa chủ sở hữu workspace theo cách này.',
     'PASSWORD_RESET_SENT' => 'Nếu tài khoản tồn tại, email đặt lại mật khẩu đã được gửi.',
     'PASSWORD_RESET_DONE' => 'Mật khẩu của bạn đã được đặt lại.',

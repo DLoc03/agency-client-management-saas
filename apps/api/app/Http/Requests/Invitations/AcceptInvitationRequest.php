@@ -14,10 +14,15 @@ class AcceptInvitationRequest extends FormRequest
 
     public function rules(): array
     {
+        // BE-010 (DEC-020): name + password are only needed when the
+        // accept creates a brand-new identity. An invitee who already
+        // has an identity accepts by confirming while signed in, so
+        // both fields are optional here and the controller enforces
+        // them on the new-identity path only.
         return [
             'token' => ['required', 'string'],
-            'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', Password::min(8)],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'password' => ['sometimes', 'nullable', Password::min(8)],
         ];
     }
 }
