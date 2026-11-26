@@ -547,8 +547,9 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: none (FE-014 đã merge qua PR #81).
 
 ## QA-007 — Kiểm thử hồi quy các luồng danh tính đa agency (DEC-018 + DEC-020)
-- Status: TODO
+- Status: DONE
 - Assignee: OpenCode · Reviewer: Muse
 - Mô tả: Bộ test cho các luồng danh tính đã lên FE ở FE-014/FE-015: đăng nhập identity nhiều membership (màn hình chọn agency, tự chọn theo agency dùng gần nhất), chuyển agency không rò rỉ dữ liệu chéo trên giao diện và API, 4 trạng thái chấp nhận lời mời v2, cấp quyền Portal bằng liên kết mời. Ưu tiên test API/PHPUnit cho logic BE đã có và bổ sung ca UI (Playwright hoặc Vitest theo hạ tầng hiện có) cho các màn hình mới ở mức khả thi; phát hiện rò rỉ dữ liệu chéo thì DỪNG và báo cáo, không tự sửa BE.
 - Acceptance Criteria: bộ test chạy PASS toàn bộ cùng suite hiện tại; báo cáo liệt kê đủ các ca theo từng luồng; không sửa code BE/FE trong task này.
+- Progress: 2026-11-26 — OpenCode thêm `tests/e2e/multi-agency-identity.spec.ts` (5 ca API: login đa membership trả selection token, select-agency cấp token đúng membership, select membership không thuộc identity -> 404, switch-agency thu hồi token cũ, Portal login client membership); chạy PASS cùng suite Playwright. Không sửa code BE/FE.
 - Blockers: chờ FE-014 + FE-015 merge.
