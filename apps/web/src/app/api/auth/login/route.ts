@@ -38,7 +38,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { token, user: initialUser, agency: initialAgency } = loginResult.data;
+    const data = loginResult.data;
+
+    if ("selection_token" in data) {
+      const cookieStore = await cookies();
+      cookieStore.delete(TOKEN_STORAGE_KEY);
+      return NextResponse.json({
+        data: {
+          selection_token: data.selection_token,
+          identity: data.identity,
+          memberships: data.memberships,
+        },
+      });
+    }
+
+    const { token, user: initialUser, agency: initialAgency } = data;
 
     // 2. Call GET /api/v1/auth/me to retrieve/verify complete roles & permissions
     const meResult = await backendGetMe(token, locale);

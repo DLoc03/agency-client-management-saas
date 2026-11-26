@@ -48,7 +48,7 @@ describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
       );
 
       expect(result.success).toBe(true);
-      if (result.success) {
+      if (result.success && "token" in result.data) {
         expect(result.data.token).toBe("1|sanctum_token_123");
         expect(result.data.user.roles).toContain("agency_owner");
         expect(result.data.agency.slug).toBe("acme");

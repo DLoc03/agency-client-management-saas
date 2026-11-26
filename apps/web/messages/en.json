@@ -55,6 +55,7 @@
         "INVALID_CREDENTIALS": "Incorrect email or password. Please try again.",
         "AGENCY_LOCKED": "Your workspace has been locked. Please contact support.",
         "ACCOUNT_DISABLED": "Your account has been disabled. Please contact your workspace owner.",
+        "NO_ACTIVE_MEMBERSHIP": "Your account has no active workspace membership. Please contact your workspace owner.",
         "UNKNOWN": "An unexpected error occurred. Please try again later."
       }
     },
@@ -64,6 +65,18 @@
       "agency": "Workspace: {agency}",
       "signOut": "Sign out",
       "mockNotice": "Connected to backend API. Authenticated via secure httpOnly cookie session."
+    },
+    "selectAgency": {
+      "heading": "Choose a workspace",
+      "subtitle": "Your account can access several workspaces. Pick one to continue.",
+      "backHome": "Back to home",
+      "backToLogin": "Back to sign in",
+      "choicesLabel": "Workspaces you can access",
+      "opening": "Opening workspace…",
+      "errors": {
+        "expired": "Your workspace selection has expired or is no longer valid. Please sign in again.",
+        "failed": "We could not open that workspace. Please sign in again."
+      }
     }
   },
   "Shell": {
@@ -109,6 +122,13 @@
       "profile": "Profile",
       "workspaceSettings": "Workspace settings",
       "signOut": "Sign out"
+    },
+    "agencySwitcher": {
+      "label": "Switch workspace",
+      "current": "Current",
+      "loading": "Loading workspaces…",
+      "error": "Could not load workspaces.",
+      "switching": "Switching…"
     },
     "siteTitle": "Brewbase - Agency & Client Management"
   },

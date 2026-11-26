@@ -308,6 +308,18 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt các điểm trên. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FE-014 — Màn hình chọn agency + bộ chuyển agency (DEC-018)
+- Status: IN_PROGRESS
+- Assignee: OpenCode · Level: L2 · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Branch: fe/FE-014-agency-selection · PR: — (do Nguyen/Muse mở qua connector)
+- Blocked by: BE-009, FE-017, FE-019/FIX-020
+- Mô tả: Xử lý kết cục đăng nhập thứ ba của BE-009 (nhiều membership staff, không tự chọn được): FE nhận selection token 30 phút + danh sách membership, lưu tạm tách biệt khỏi `app_token`, đưa người dùng tới `/select-agency` (khung L2 Card trung tâm như `/login`) để chọn agency rồi vào `/dashboard`. Bổ sung BFF route cho `select-agency`, `switch-agency` và `memberships` theo mẫu proxy hiện có; token thật chỉ nằm cookie httpOnly. Sidebar thêm bộ chuyển agency ngay dưới logo: tên agency tĩnh nếu chỉ có 1 membership staff, menu click cả dòng nếu có từ 2 membership (tên agency + chip vai trò, đánh dấu agency hiện tại); chuyển agency thay token/session rồi tải lại trang `/dashboard` với dữ liệu mới. Thêm thông báo i18n cho `NO_ACTIVE_MEMBERSHIP` và toàn bộ chuỗi EN/VI cho luồng mới (DEC-021/022/023 áp dụng cho danh sách mới). Không đụng BE, migration/seeder, Portal, FE-015.
+- Acceptance Criteria: Đăng nhập 1 membership / tự chọn theo `last_membership_id` vẫn vào thẳng `/dashboard`; đăng nhập nhiều membership không tự chọn được đi `/login → /select-agency → chọn → /dashboard`; vào thẳng `/select-agency` không có selection token thì về `/login`; selection token hết hạn/lỗi API hiện thông báo rồi về `/login`; `NO_ACTIVE_MEMBERSHIP` hiện thông báo thân thiện; switcher ở sidebar hiểu đúng 1 vs 2+ membership và sau khi chuyển mọi dữ liệu cũ biến mất; EN/VI đầy đủ, không khóa lơ lửng; `pnpm build` trong `apps/web` PASS.
+- Progress: 2026-11-26 — OpenCode claim task và tạo entry theo template F.2 (entry gốc do Muse bổ sung qua docs PR chưa có trên `main` hiện tại). Đã mở rộng `lib/auth` với `LoginResult` dạng `requiresSelection`, các hàm backend/BFF/client cho `select-agency`/`switch-agency`/`memberships`; selection token lưu riêng ở sessionStorage (`auth_selection`), không bao giờ ghi vào cookie `app_token`; BFF login chỉ set cookie ở kết cục có session thật. Thêm `/select-agency` theo khung L2 Card trung tâm (tự về `/login` khi không có selection token, hiện lỗi rồi về `/login` khi token hết hạn/API lỗi), thêm `AgencySwitcher` ngay dưới logo sidebar (1 membership = tên tĩnh; 2+ = menu click cả dòng, chip vai trò một dòng, đánh dấu agency hiện tại, đổi xong tải lại `/dashboard`), thông báo `NO_ACTIVE_MEMBERSHIP` và toàn bộ i18n EN/VI. Chờ kiểm chứng build/tinker trước khi chuyển IN_REVIEW.
+- Handoff: Nguyen/Muse mở PR; reviewer duyệt UI ở 2 ngôn ngữ và 3 bề rộng. Việc chuyển `DONE` chỉ thực hiện khi đóng gói release.
+
+---
+
 ## FE-017 — UI trang đăng nhập theo mẫu L2 Card trung tâm (PO duyệt 2026-11-25)
 - Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)

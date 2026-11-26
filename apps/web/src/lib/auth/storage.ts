@@ -7,9 +7,16 @@
  * 2. Non-sensitive profile data (user, agency) is cached in sessionStorage for fast
  *    client-side UI rehydration between page transitions in the same tab.
  * 3. On page load / mount, AuthProvider revalidates with /api/auth/me.
+ * 4. FE-014: a short-lived selection token is kept under a separate key for the
+ *    /select-agency screen only. It is never written to the app_token cookie.
  */
 
-import { TOKEN_STORAGE_KEY, type AuthSession } from "./types";
+import {
+  SELECTION_STORAGE_KEY,
+  TOKEN_STORAGE_KEY,
+  type AgencySelection,
+  type AuthSession,
+} from "./types";
 
 const SESSION_KEY = "auth_session";
 
@@ -33,10 +40,36 @@ export function loadSession(): AuthSession | null {
   }
 }
 
-export function clearSession(): void {
+export function saveSelection(selection: AgencySelection): void {
+  if (!isBrowser()) return;
+  sessionStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(selection));
+}
+
+export function loadSelection(): AgencySelection | null {
+  if (!isBrowser()) return null;
+  const raw = sessionStorage.getItem(SELECTION_STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as AgencySelection;
+  } catch {
+    return null;
+  }
+}
+
+export function clearSelection(): void {
+  if (!isBrowser()) return;
+  sessionStorage.removeItem(SELECTION_STORAGE_KEY);
+}
+
+export function clearCachedSession(): void {
   if (!isBrowser()) return;
   sessionStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+}
+
+export function clearSession(): void {
+  clearCachedSession();
+  clearSelection();
 }
 
 export function hasSession(): boolean {
