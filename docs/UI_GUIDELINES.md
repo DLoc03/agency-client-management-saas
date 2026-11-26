@@ -8,6 +8,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Màn hình CRM: mẫu **D — Pipeline** (Kanban theo giai đoạn lead).
 - Khu Client Portal: hơi hướng mẫu **C — Bento Thân Thiện** (thoáng, bo góc lớn, thân thiện với khách hàng).
 - Không tự ý đổi bố cục khung, mật độ hiển thị hay phong cách component theo từng màn hình; cần thay đổi thì đề xuất lên Nguyen + Muse chốt (L3).
+- Component UI mặc định là bản tự chế trong `apps/web/src/components/ui/` theo phong cách shadcn (design tokens của app); shadcn/ui (Radix) chỉ là lựa chọn theo từng component khi bản tự chế không đạt yêu cầu — dùng "linh động", không chuyển đổi hàng loạt, và trình Nguyen duyệt theo từng trường hợp (DEC-024).
 
 ## 2. Tương thích nhiều loại màn hình (responsive)
 

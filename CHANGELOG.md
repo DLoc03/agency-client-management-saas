@@ -20,6 +20,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Fixed
 - Data display polish (FIX-019, DEC-022): table headers now render at 11 px on a single line with ellipsis instead of wrapping and inflating the header row; task Priority is a semantic colour chip (urgent red, high rose, medium amber, low slate) in the project task table, the mobile task cards and the task detail field; nested borders are removed on the project detail page (one border level per data block — the Tasks table and the milestone / mobile task items drop their own frames inside their section cards and keep hairline dividers only, via the new `framed` prop on `DataTable`); the project detail first-load skeleton is now a geometric twin of the real layout, including a true table skeleton for the Tasks section, and follows the same ~200 ms appearance rule as the list pages.
+- Kebab action menus are no longer clipped by framed tables (FIX-020 part 2, DEC-024): the shared `ActionMenu` renders its menu through a portal with fixed positioning anchored to the toggle button, flips upward near the viewport bottom and keeps its position on scroll, so menus on the last table rows display in full instead of being cut off by the table frame.
 
 ## [0.6.0] - 2026-11-26
 
