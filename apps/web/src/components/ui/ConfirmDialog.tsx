@@ -16,6 +16,7 @@ type ConfirmIntent = "delete" | "revoke";
 
 type ConfirmRequest = {
   intent?: ConfirmIntent;
+  confirmLabel?: string;
 };
 
 type ConfirmFn = (message: string, options?: ConfirmRequest) => Promise<boolean>;
@@ -23,6 +24,7 @@ type ConfirmFn = (message: string, options?: ConfirmRequest) => Promise<boolean>
 type PendingConfirm = {
   message: string;
   intent: ConfirmIntent;
+  confirmLabel?: string;
 };
 
 const ConfirmContext = createContext<ConfirmFn | null>(null);
@@ -36,7 +38,11 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
   const confirmAction = useCallback<ConfirmFn>((message, options = {}) => {
     return new Promise<boolean>((resolve) => {
       resolveRef.current = resolve;
-      setPending({ message, intent: options.intent ?? "delete" });
+      setPending({
+        message,
+        intent: options.intent ?? "delete",
+        confirmLabel: options.confirmLabel,
+      });
     });
   }, []);
 
@@ -60,7 +66,8 @@ export function ConfirmDialogProvider({ children }: { children: ReactNode }) {
   }, [pending, settle]);
 
   const confirmLabel =
-    pending?.intent === "revoke" ? t("actions.revoke") : t("actions.delete");
+    pending?.confirmLabel ??
+    (pending?.intent === "revoke" ? t("actions.revoke") : t("actions.delete"));
 
   return (
     <ConfirmContext.Provider value={confirmAction}>

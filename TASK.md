@@ -329,6 +329,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Mô tả: Tại nghiệm thu FIX-023, vị trí cảnh báo trong modal Mời đã đúng (nằm trong modal) nhưng nội dung vẫn là message thô tiếng Anh của API (API trả theo locale lưu trên tài khoản, lệch ngôn ngữ giao diện — cùng gốc rễ DEC-025 đã xử lý cho trạng thái 403). Modal Mời nay ánh xạ các mã lỗi nghiệp vụ sang khóa i18n `Teams.errors.*` (EN + VI, câu chữ khớp lang của BE): `INVITATION_PENDING` (mời trùng email đang chờ), `ALREADY_MEMBER` (email đã là thành viên); nút Gửi lại cũng ánh xạ `INVITATION_ALREADY_ACCEPTED`. Mã lạ vẫn fall back về message API như cũ.
 - Acceptance Criteria: Nguyen mở Team → Lời mời ở giao diện VI: mời trùng email đang chờ → cảnh báo tiếng Việt ngay trong modal; mời email đã là thành viên → cảnh báo tiếng Việt tương ứng; web build PASS; khóa i18n EN = VI, không khóa lơ lửng (kiểm cả khóa động `errors.${code}`).
 
+## FE-020 — Finance & Billing UI (Group 5)
+- Assignee: OpenCode · Reviewer: Muse + Nguyen (Muse+Nguyen) · Level: L3 · Status: IN_PROGRESS
+- Branch: fe/FE-020-finance-ui · PR: —
+- Blocked by: —
+- Acceptance Criteria: Sidebar có mục Invoices; danh sách hiển thị hoá đơn mẫu, filter Overdue chỉ ra hoá đơn quá hạn, bấm dòng vào chi tiết. Tạo hoá đơn: dropdown dự án chỉ hiện dự án của khách hàng đã chọn, số INV-2026-… tự sinh, sửa Draft tính lại tổng. Gửi Draft không có item cảnh báo tại nút; ghi payment vượt số dư cảnh báo ngay trong form; ghi đủ tiền → Paid. Member mở /invoices thấy Forbidden ngôn ngữ hiện tại; Sales xem + tải PDF, không thấy nút Gửi/Xoá. Portal (client@demo.test) xem hoá đơn + thông tin chuyển khoản, không tạo payment. Trang /finance/payment-details chỉ Owner/Admin. Đối soát ngân sách ở chi tiết dự án. next build PASS, vitest run PASS, i18n EN=VI, không có `confirm(` native mới.
+- Progress: OpenCode bắt đầu 2026-11-26: tạo nhánh fe/FE-020-finance-ui từ main, khám phá cấu trúc web, bắt đầu triển khai.
+- Handoff: —
+
 ## FIX-024 — (Tạm hoãn) Token giới hạn cho người được mời có danh tính nhưng chưa có membership nào
 - Status: TODO — PO chốt 2026-11-26: ghi nhận là giới hạn đã biết, hoãn triển khai, chỉ mở lại khi PO yêu cầu
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen

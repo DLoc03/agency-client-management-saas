@@ -12,6 +12,7 @@ import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { priorityBadgeClass, statusBadgeClass } from "@/lib/status-colors";
+import { formatMoney } from "@/lib/currency";
 import { Avatar } from "@/components/ui/Avatar";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
@@ -169,6 +170,7 @@ export default function ProjectDetailPage() {
   const canDeleteTask = !!session?.user.permissions.includes("tasks.delete");
   const canUpdateProject = !!session?.user.permissions.includes("projects.update");
   const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
+  const currency = session?.agency.base_currency || "USD";
   // FIX-021 (option A): surface which teams currently contribute members.
   const teamNameFor = (teamId: number) =>
     assignTeams.find((tm) => tm.id === teamId)?.name ?? t("teamAssignment.deletedTeam");
@@ -499,6 +501,45 @@ export default function ProjectDetailPage() {
         {project.description && (
           <p className="mt-4 text-sm text-muted-foreground">{project.description}</p>
         )}
+      </section>
+
+      {/* Budget reconciliation (read-only, BE-008 / FINANCE_CONTRACT §6). */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("detail.budgetReconciliation")}</h2>
+          <p className="text-xs text-muted-foreground">
+            {t("budget.reconciliationHint")}
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-4">
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.budget")}</p>
+            <p className="font-medium tabular-nums">
+              {project.budget != null ? formatMoney(project.budget, currency, locale) : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.invoiced")}</p>
+            <p className="font-medium tabular-nums text-blue-700">
+              {formatMoney(project.invoiced_total, currency, locale) || "0"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.collected")}</p>
+            <p className="font-medium tabular-nums text-green-700">
+              {formatMoney(project.collected_total, currency, locale) || "0"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.remaining")}</p>
+            <p className="font-medium tabular-nums text-foreground">
+              {formatMoney(project.remaining_budget ?? (project.budget != null ? Number(project.budget) - Number(project.invoiced_total || 0) : null), currency, locale) || "—"}
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {t("budget.note")}
+        </p>
       </section>
 
       {/* Members */}

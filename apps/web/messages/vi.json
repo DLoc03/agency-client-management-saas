@@ -2,6 +2,8 @@
   "Common": {
     "language": "Ngôn ngữ",
     "loading": "Đang tải…",
+    "prev": "Trước",
+    "next": "Tiếp",
     "or": "hoặc",
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
@@ -262,7 +264,45 @@
       "noMilestones": "Chưa có cột mốc nào.",
       "tasks": "Công việc",
       "noTasks": "Chưa có công việc nào."
-    }
+    },
+      "invoices": {
+            "title": "Hoá đơn của bạn",
+            "subtitle": "Các hoá đơn agency đã phát hành cho bạn.",
+            "loadError": "Không tải được dữ liệu hoá đơn. Vui lòng thử lại.",
+            "empty": "Chưa có hoá đơn nào",
+            "emptyHint": "Các hoá đơn agency phát hành cho bạn sẽ hiện ở đây.",
+            "notFound": "Không tìm thấy hoá đơn.",
+            "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
+            "fields": {
+                  "amount": "Số tiền",
+                  "balanceDue": "Còn phải trả",
+                  "customer": "Khách hàng",
+                  "description": "Mô tả",
+                  "dueDate": "Hạn thanh toán",
+                  "issueDate": "Ngày phát hành",
+                  "notes": "Ghi chú",
+                  "project": "Dự án",
+                  "quantity": "Số lượng"
+            },
+            "statuses": {
+                  "draft": "Bản nháp",
+                  "sent": "Đã gửi",
+                  "paid": "Đã thanh toán",
+                  "overdue": "Quá hạn",
+                  "cancelled": "Đã huỷ"
+            },
+            "detail": {
+                  "back": "Quay lại danh sách hoá đơn",
+                  "bankDetails": "Thông tin chuyển khoản",
+                  "lineItems": "Chi tiết hoá đơn"
+            },
+            "paymentDetails": {
+                  "bankName": "Ngân hàng",
+                  "bankAccountNumber": "Số tài khoản",
+                  "bankAccountHolder": "Chủ tài khoản",
+                  "vietqrPayload": "Mã VietQR"
+            }
+      }
   },
   "Projects": {
     "title": "Dự án",
@@ -349,7 +389,8 @@
       "noMilestones": "Chưa có cột mốc.",
       "noTasks": "Chưa có công việc.",
       "progressWarning": "Vẫn còn công việc chưa hoàn thành."
-    },
+    ,
+      "budgetReconciliation": "Đối soát ngân sách"},
     "task": {
       "title": "Công việc",
       "comments": "Bình luận",
@@ -391,7 +432,14 @@
       "milestone": "Cột mốc"
     },
     "selectMember": "Chọn thành viên"
-  },
+  ,
+    "budget": {
+      "invoiced": "Đã lập hoá đơn",
+      "collected": "Đã thu",
+      "remaining": "Còn lại",
+      "reconciliationHint": "Số liệu tính lúc đọc; không sửa ngân sách ở đây.",
+      "note": "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."
+    }},
   "Leads": {
     "title": "Lead",
     "subtitle": "Theo dõi khách hàng tiềm năng qua các giai đoạn của pipeline.",
@@ -750,5 +798,112 @@
     },
     "confirmDeleteTeam": "Xoá team này?",
     "confirmRevokeInvitation": "Thu hồi lời mời này?"
+  },
+  "Finance": {
+    "title": "Hoá đơn",
+    "editTitle": "Sửa hoá đơn",
+    "subtitle": "Quản lý hoá đơn và thanh toán của workspace.",
+    "empty": {
+      "title": "Chưa có hoá đơn nào",
+      "description": "Tạo hoá đơn đầu tiên để bắt đầu."
+    },
+    "filters": {
+      "status": "Trạng thái",
+      "customer": "Khách hàng",
+      "project": "Dự án",
+      "search": "Tìm số hoá đơn / khách hàng",
+      "all": "Tất cả"
+    },
+    "statuses": {
+      "draft": "Bản nháp",
+      "sent": "Đã gửi",
+      "paid": "Đã thanh toán",
+      "overdue": "Quá hạn",
+      "cancelled": "Đã hủy"
+    },
+    "storedStatus": "Lưu lại: {status}",
+    "fields": {
+      "invoiceNumber": "Số hoá đơn",
+      "customer": "Khách hàng",
+      "project": "Dự án",
+      "issueDate": "Ngày phát hành",
+      "dueDate": "Hạn thanh toán",
+      "total": "Tổng tiền",
+      "status": "Trạng thái",
+      "amount": "Số tiền",
+      "paidOn": "Ngày thanh toán",
+      "method": "Phương thức",
+      "note": "Ghi chú",
+      "description": "Mô tả",
+      "quantity": "Số lượng",
+      "unitPrice": "Đơn giá",
+      "subtotal": "Tạm tính",
+      "taxRate": "Thuế (%)",
+      "taxAmount": "Tiền thuế",
+      "balanceDue": "Số dư còn lại",
+      "notes": "Ghi chú"
+    },
+    "actions": {
+      "view": "Xem",
+      "send": "Gửi",
+      "cancel": "Hủy",
+      "cancelInvoice": "Huỷ hoá đơn",
+      "delete": "Xoá",
+      "downloadPdf": "Tải PDF",
+      "newInvoice": "Hoá đơn mới",
+      "create": "Tạo",
+      "save": "Lưu",
+      "back": "Về danh sách hoá đơn",
+      "recordPayment": "Ghi nhận thanh toán",
+      "remove": "Xoá",
+      "addItem": "Thêm mục"
+    },
+    "detail": {
+      "lineItems": "Mục hoá đơn",
+      "payments": "Thanh toán",
+      "noItems": "Chưa có mục hoá đơn nào.",
+      "bankDetails": "Thông tin chuyển khoản",
+      "back": "Về danh sách hoá đơn"
+    },
+    "payments": {
+      "methodBankTransfer": "Chuyển khoản",
+      "methodCash": "Tiền mặt",
+      "recordedBy": "Người ghi",
+      "noPayments": "Chưa có thanh toán nào."
+    },
+    "confirmDelete": "Xoá hoá đơn này?",
+    "confirmCancel": "Hủy hoá đơn này?",
+    "confirmDeletePayment": "Xoá thanh toán này?",
+    "paymentDetails": {
+      "title": "Thông tin chuyển khoản",
+      "subtitle": "Tài khoản ngân hàng và VietQR của agency hiển thị trên hoá đơn.",
+      "bankName": "Tên ngân hàng",
+      "bankAccountNumber": "Số tài khoản",
+      "bankAccountHolder": "Chủ tài khoản",
+      "vietqrPayload": "VietQR payload",
+      "onlyOwnerAdmin": "Chỉ Agency Owner và Admin được truy cập trang này.",
+      "saved": "Đã lưu thông tin chuyển khoản.",
+      "saveFailed": "Lưu thông tin chuyển khoản thất bại.",
+      "forbidden": "Bạn không có quyền truy cập trang này."
+    },
+    "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
+    "errors": {
+      "loadFailed": "Không tải được danh sách hoá đơn.",
+      "createFailed": "Không tạo được hoá đơn.",
+      "updateFailed": "Không cập nhật được hoá đơn.",
+      "deleteFailed": "Không xoá được hoá đơn.",
+      "sendFailed": "Không gửi được hoá đơn.",
+      "cancelFailed": "Không hủy được hoá đơn.",
+      "paymentFailed": "Không ghi nhận thanh toán.",
+      "paymentDeleteFailed": "Xoá thanh toán thất bại.",
+      "INVOICE_EMPTY": "Hoá đơn chưa có mục nào, không thể gửi.",
+      "INVOICE_NOT_EDITABLE": "Chỉ được sửa hoá đơn ở trạng thái Bản nháp.",
+      "CANNOT_CANCEL_INVOICE": "Không thể hủy hoá đơn đã có thanh toán.",
+      "CANNOT_DELETE_INVOICE": "Chỉ Agency Owner mới được xoá hoá đơn Bản nháp.",
+      "PAYMENT_NOT_ALLOWED": "Chỉ ghi nhận thanh toán cho hoá đơn Đã gửi / Quá hạn.",
+      "OVERPAYMENT_NOT_ALLOWED": "Số tiền vượt quá số dư còn lại.",
+      "CROSS_TENANT_REFERENCE": "Khách hàng hoặc dự án không thuộc agency này.",
+      "notFound": "Không tìm thấy hoá đơn."
+    }
   }
 }
