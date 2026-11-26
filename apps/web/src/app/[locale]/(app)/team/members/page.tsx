@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Avatar } from "@/components/ui/Avatar";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Select } from "@/components/ui/Select";
 import { listUsers, listTeams } from "@/lib/team/api";
 import type { DirectoryUser } from "@/lib/team/types";
@@ -22,6 +24,7 @@ export default function MembersPage() {
   const [users, setUsers] = useState<DirectoryUser[]>([]);
   const [teams, setTeams] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [q, setQ] = useState("");
@@ -47,6 +50,7 @@ export default function MembersPage() {
         listTeams(),
       ]);
       setUsers(u);
+      setHasLoaded(true);
       setTeams(tm.map((x) => ({ id: x.id, name: x.name })));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
@@ -59,6 +63,9 @@ export default function MembersPage() {
     if (session) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, q, role, teamId, status]);
+
+  const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
+  const refetching = loading && hasLoaded;
 
   const canManage = !!session?.user.permissions.includes("users.update");
 
@@ -132,8 +139,19 @@ export default function MembersPage() {
       )}
 
       <div className="min-h-[320px]">
-        {loading ? (
-          <p className="text-sm text-muted-foreground">{c("loading")}</p>
+        {loading && !hasLoaded ? (
+          showSkeleton ? (
+            <>
+              <div className="hidden lg:block">
+                <DataTableSkeleton columns={["w-[26%]", "w-[24%]", "w-[15%]", "w-[17%]", "w-[11%]", "w-[7%]"]} />
+              </div>
+              <div className="lg:hidden">
+                <SkeletonCardGrid variant="lg3" />
+              </div>
+            </>
+          ) : (
+            <div className="min-h-[240px]" />
+          )
         ) : users.length === 0 ? (
           <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-8 text-center">
             <Icon name="users" className="mb-3 h-8 w-8 text-muted-foreground" />
@@ -141,7 +159,88 @@ export default function MembersPage() {
             <p className="mt-1 max-w-md text-sm text-muted-foreground">{t("empty.description")}</p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div aria-busy={refetching} className={refetching ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+            <div className="hidden lg:block">
+              <DataTable
+                columns={[
+                  {
+                    key: "member",
+                    header: t("fields.name"),
+                    width: "w-[26%]",
+                    render: (u) => (
+                      <span className="flex min-w-0 items-center gap-3">
+                        <Avatar name={u.name} seed={u.id} className="h-9 w-9 shrink-0 text-xs" />
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium text-foreground">{u.name}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{u.email}</span>
+                        </span>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "roles",
+                    header: t("fields.roles"),
+                    width: "w-[24%]",
+                    render: (u) => (
+                      <span className="flex flex-wrap items-center gap-1">
+                        {u.roles.slice(0, 2).map((r) => (
+                          <span key={r.key} className="whitespace-nowrap rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                            {t(`roles.${r.key}`)}
+                          </span>
+                        ))}
+                        {u.roles.length > 2 && (
+                          <span className="text-xs text-muted-foreground">+{u.roles.length - 2}</span>
+                        )}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "jobTitle",
+                    header: t("fields.jobTitle"),
+                    width: "w-[15%]",
+                    render: (u) => <span className="block truncate">{u.job_title ?? "—"}</span>,
+                  },
+                  {
+                    key: "teams",
+                    header: t("fields.teams"),
+                    width: "w-[17%]",
+                    render: (u) => (
+                      <span className="block truncate">{u.teams.length ? u.teams.map((tm) => tm.name).join(", ") : t("membersDetail.noTeams")}</span>
+                    ),
+                  },
+                  {
+                    key: "status",
+                    header: t("fields.status"),
+                    width: "w-[11%]",
+                    render: (u) => (
+                      <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${u.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                        {u.is_active ? t("filters.active") : t("filters.inactive")}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "actions",
+                    header: "",
+                    width: "w-[7%]",
+                    render: (u) => (
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("actions.detail"),
+                            icon: "eye",
+                            onClick: () => router.push(`/team/members/${u.id}`),
+                          },
+                        ]}
+                      />
+                    ),
+                  },
+                ]}
+                rows={users}
+                rowKey={(u) => u.id}
+                onRowClick={(u) => router.push(`/team/members/${u.id}`)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:hidden">
             {users.map((u) => (
               <div key={u.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
                 <div className="flex items-start justify-between gap-2">
@@ -181,7 +280,8 @@ export default function MembersPage() {
                   {u.teams.length ? u.teams.map((tm) => tm.name).join(", ") : t("membersDetail.noTeams")}
                 </div>
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
