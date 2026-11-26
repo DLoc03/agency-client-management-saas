@@ -315,6 +315,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-027 — Vòng lặp render vô hạn ở trang danh sách hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước) · Reviewer: Nguyen (nghiệm thu bằng mắt)
+- Mô tả: Trang `/invoices` (FE-020) cho `useEffect` nạp dữ liệu phụ thuộc vào chính state `loading` mà `load()` thay đổi (deps `[session, firstLoad, loading, load]`), nên mỗi lần nạp xong lại kích hoạt nạp tiếp — trang render/fetch liên tục, dropdown filter nhảy focus và giật lag; chỉ xảy ra ở Invoices vì các trang danh sách khác dùng mẫu FE-019. Sửa theo đúng mẫu Clients/Projects: bỏ state `firstLoad`/`showSkeleton` tự chế, dùng `hasLoaded` + hook dùng chung `useDelayedSkeleton(loading && !hasLoaded)` (DEC-021 §9), effect nạp dữ liệu chỉ còn deps `[session, load]`. Không đổi giao diện, không đổi API.
+- Progress: 2026-11-26 — Muse sửa trên branch `fix/FIX-027-invoice-list-loop` từ main `2a5c97c`; chờ build/test và PR, Nguyen merge rồi nghiệm thu lại mục A.
+- Acceptance Criteria: Mở `/invoices` không còn render/fetch lặp (Network chỉ gọi 1 lần khi đổi filter/trang), dropdown filter thao tác mượt, skeleton chỉ hiện ở lần tải đầu; `build` + `vitest` PASS.
+- Blockers: Không có.
+
 ## FIX-026 — Thay hộp confirm mặc định bằng dialog dùng chung kiểu shadcn/ui (PO yêu cầu sau nghiệm thu FIX-023, 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen (nghiệm thu bằng mắt)
