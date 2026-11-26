@@ -8,6 +8,9 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { DataTable } from "@/components/ui/DataTable";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { statusBadgeClass } from "@/lib/status-colors";
 import { Avatar } from "@/components/ui/Avatar";
 import {
   getProject,
@@ -294,10 +297,37 @@ export default function ProjectDetailPage() {
     );
   }
 
-  if (loading || !project) {
+  if (!project) {
+    if (!loading) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-muted-foreground">{error ?? c("loading")}</p>
+        </div>
+      );
+    }
+    // First load: geometric skeleton of the detail layout (DEC-021).
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      <div aria-hidden className="space-y-6">
+        <Skeleton className="h-5 w-24" />
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-4 w-1/3" />
+          </div>
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+        <section className="space-y-3 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-2/3" />
+        </section>
+        <section className="space-y-3 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </section>
       </div>
     );
   }
@@ -647,7 +677,85 @@ export default function ProjectDetailPage() {
         {tasks.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("detail.noTasks")}</p>
         ) : (
-          <div className="space-y-2">
+          <div aria-busy={loading} className={loading ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+            <div className="hidden lg:block">
+              <DataTable
+                columns={[
+                  {
+                    key: "title",
+                    header: t("fields.title"),
+                    width: "w-[34%]",
+                    render: (task) => (
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
+                        className="block max-w-full truncate text-left font-medium text-foreground hover:underline"
+                      >
+                        {task.title}
+                      </button>
+                    ),
+                  },
+                  {
+                    key: "status",
+                    header: t("fields.status"),
+                    width: "w-[14%]",
+                    render: (task) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
+                        {t(`taskStatuses.${task.status}`)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "priority",
+                    header: t("fields.priority"),
+                    width: "w-[12%]",
+                    render: (task) => t(`priorities.${task.priority}`),
+                  },
+                  {
+                    key: "assignee",
+                    header: t("fields.assignee"),
+                    width: "w-[18%]",
+                    render: (task) =>
+                      task.assignee ? (
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Avatar name={task.assignee.name} seed={task.assignee.id} className="h-7 w-7 shrink-0 text-[10px]" />
+                          <span className="truncate">{task.assignee.name}</span>
+                        </span>
+                      ) : (
+                        "—"
+                      ),
+                  },
+                  {
+                    key: "dueDate",
+                    header: t("fields.dueDate"),
+                    width: "w-[12%]",
+                    cellClassName: "tabular-nums",
+                    render: (task) => task.due_date?.slice(0, 10) ?? "—",
+                  },
+                  {
+                    key: "actions",
+                    header: "",
+                    width: "w-[10%]",
+                    render: (task) =>
+                      canDeleteTask ? (
+                        <ActionMenu
+                          items={[
+                            {
+                              label: t("actions.delete"),
+                              icon: "trash-2",
+                              danger: true,
+                              onClick: () => handleDeleteTask(task.id),
+                            },
+                          ]}
+                        />
+                      ) : null,
+                  },
+                ]}
+                rows={tasks}
+                rowKey={(task) => task.id}
+              />
+            </div>
+            <div className="space-y-2 lg:hidden">
             {tasks.map((task) => (
               <div
                 key={task.id}
@@ -680,7 +788,8 @@ export default function ProjectDetailPage() {
                   />
                 )}
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </section>

@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import {
   createClient,
   createTag,
@@ -38,6 +40,7 @@ export default function ClientsPage() {
 
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [users, setUsers] = useState<DirectoryUser[]>([]);
@@ -95,6 +98,7 @@ export default function ClientsPage() {
         account_manager_id: managerId ? Number(managerId) : undefined,
       });
       setClients(data);
+      setHasLoaded(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
@@ -106,6 +110,9 @@ export default function ClientsPage() {
     if (session) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, q, status, tagId, managerId]);
+
+  const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
+  const refetching = loading && hasLoaded;
 
   const canCreate = !!session?.user.permissions.includes("clients.create");
   const canDelete = !!session?.user.permissions.includes("clients.delete");
@@ -465,8 +472,19 @@ export default function ClientsPage() {
 
       {/* Content */}
       <div className="min-h-[320px]">
-        {loading ? (
-          <p className="text-sm text-muted-foreground">{c("loading")}</p>
+        {loading && !hasLoaded ? (
+          showSkeleton ? (
+            <>
+              <div className="hidden lg:block">
+                <DataTableSkeleton columns={["w-[26%]", "w-[11%]", "w-[15%]", "w-[19%]", "w-[13%]", "w-[9%]", "w-[7%]"]} />
+              </div>
+              <div className="lg:hidden">
+                <SkeletonCardGrid variant="xl3" />
+              </div>
+            </>
+          ) : (
+            <div className="min-h-[240px]" />
+          )
         ) : clients.length === 0 ? (
           <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-8 text-center">
             <Icon name="building-2" className="mb-3 h-8 w-8 text-muted-foreground" />
@@ -478,7 +496,83 @@ export default function ClientsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div aria-busy={refetching} className={refetching ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+            <div className="hidden lg:block">
+              <DataTable
+                columns={[
+                  {
+                    key: "name",
+                    header: t("fields.name"),
+                    width: "w-[26%]",
+                    render: (client) => (
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="truncate font-medium text-foreground">{client.name}</span>
+                        <span className="shrink-0 whitespace-nowrap rounded-full bg-accent px-2 py-0.5 text-xs text-muted-foreground">
+                          {t(`types.${client.type}`)}
+                        </span>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "status",
+                    header: t("fields.status"),
+                    width: "w-[11%]",
+                    render: (client) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(client.status)}`}>
+                        {t(`statuses.${client.status}`)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "manager",
+                    header: t("fields.manager"),
+                    width: "w-[15%]",
+                    render: (client) => <span className="block truncate">{client.account_manager?.name ?? "—"}</span>,
+                  },
+                  {
+                    key: "email",
+                    header: t("fields.email"),
+                    width: "w-[19%]",
+                    render: (client) => <span className="block truncate">{client.email ?? "—"}</span>,
+                  },
+                  {
+                    key: "phone",
+                    header: t("fields.phone"),
+                    width: "w-[13%]",
+                    render: (client) => <span className="block truncate">{client.phone ?? "—"}</span>,
+                  },
+                  {
+                    key: "portalAccounts",
+                    header: t("fields.portalAccounts"),
+                    width: "w-[9%]",
+                    cellClassName: "tabular-nums",
+                    render: (client) => client.portal_accounts_count ?? 0,
+                  },
+                  {
+                    key: "actions",
+                    header: "",
+                    width: "w-[7%]",
+                    render: (client) =>
+                      canDelete ? (
+                        <ActionMenu
+                          items={[
+                            {
+                              label: t("actions.delete"),
+                              icon: "trash-2",
+                              danger: true,
+                              onClick: () => handleDelete(client),
+                            },
+                          ]}
+                        />
+                      ) : null,
+                  },
+                ]}
+                rows={clients}
+                rowKey={(client) => client.id}
+                onRowClick={(client) => router.push(`/clients/${client.id}`)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 lg:hidden">
             {clients.map((client) => (
               <div
                 key={client.id}
@@ -556,7 +650,8 @@ export default function ClientsPage() {
                   </div>
                 </dl>
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

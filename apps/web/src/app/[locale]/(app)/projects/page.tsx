@@ -7,6 +7,8 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import {
   listProjects,
   createProject,
@@ -32,6 +34,7 @@ export default function ProjectsPage() {
   const c = useTranslations("Common");
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
@@ -75,6 +78,7 @@ export default function ProjectsPage() {
         project_manager_id: managerId ? Number(managerId) : undefined,
       });
       setProjects(data);
+      setHasLoaded(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
@@ -88,6 +92,9 @@ export default function ProjectsPage() {
   }, [session, q, status, clientId, managerId]);
 
   const canCreate = !!session?.user.permissions.includes("projects.create");
+  const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
+  const refetching = loading && hasLoaded;
+
   const canDelete = !!session?.user.permissions.includes("projects.delete");
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -217,8 +224,19 @@ export default function ProjectsPage() {
 
       {/* Content */}
       <div className="min-h-[320px]">
-        {loading ? (
-          <p className="text-sm text-muted-foreground">{c("loading")}</p>
+        {loading && !hasLoaded ? (
+          showSkeleton ? (
+            <>
+              <div className="hidden lg:block">
+                <DataTableSkeleton columns={["w-[26%]", "w-[20%]", "w-[13%]", "w-[22%]", "w-[10%]", "w-[9%]"]} />
+              </div>
+              <div className="lg:hidden">
+                <SkeletonCardGrid variant="lg3" />
+              </div>
+            </>
+          ) : (
+            <div className="min-h-[240px]" />
+          )
         ) : projects.length === 0 ? (
           <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-8 text-center">
             <Icon name="folder-kanban" className="mb-3 h-8 w-8 text-muted-foreground" />
@@ -228,7 +246,88 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div aria-busy={refetching} className={refetching ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+            <div className="hidden lg:block">
+              <DataTable
+                columns={[
+                  {
+                    key: "name",
+                    header: t("fields.name"),
+                    width: "w-[26%]",
+                    render: (p) => <span className="block truncate font-medium text-foreground">{p.name}</span>,
+                  },
+                  {
+                    key: "client",
+                    header: t("fields.client"),
+                    width: "w-[20%]",
+                    render: (p) => <span className="block truncate">{p.client?.name ?? "—"}</span>,
+                  },
+                  {
+                    key: "status",
+                    header: t("fields.status"),
+                    width: "w-[13%]",
+                    render: (p) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(p.status)}`}>
+                        {t(`statuses.${p.status}`)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "progress",
+                    header: t("fields.progress"),
+                    width: "w-[22%]",
+                    render: (p) => {
+                      const pct = p.progress_percent ?? 0;
+                      return (
+                        <span className="flex items-center gap-2">
+                          <span className="h-2 w-24 overflow-hidden rounded-full bg-secondary">
+                            <span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(100, Math.max(0, pct))}%` }} />
+                          </span>
+                          <span className="text-xs font-medium tabular-nums">{pct}%</span>
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    key: "tasks",
+                    header: t("fields.tasks"),
+                    width: "w-[10%]",
+                    cellClassName: "tabular-nums",
+                    render: (p) => `${p.tasks_done_count ?? 0}/${p.tasks_count ?? 0}`,
+                  },
+                  {
+                    key: "actions",
+                    header: "",
+                    width: "w-[9%]",
+                    render: (p) => (
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("actions.detail"),
+                            icon: "eye",
+                            onClick: () => router.push(`/projects/${p.id}`),
+                          },
+                          ...(canDelete
+                            ? [
+                                {
+                                  label: t("actions.delete"),
+                                  icon: "trash-2",
+                                  danger: true,
+                                  onClick: () => handleDelete(p.id),
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
+                    ),
+                  },
+                ]}
+                rows={projects}
+                rowKey={(p) => p.id}
+                onRowClick={(p) => router.push(`/projects/${p.id}`)}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:hidden">
             {projects.map((p) => {
               const pct = p.progress_percent ?? 0;
               const done = p.tasks_done_count ?? 0;
@@ -286,7 +385,8 @@ export default function ProjectsPage() {
                   </div>
                 </div>
               );
-            })}
+              })}
+            </div>
           </div>
         )}
       </div>

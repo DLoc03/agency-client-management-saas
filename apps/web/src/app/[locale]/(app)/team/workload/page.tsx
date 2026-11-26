@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -16,6 +18,7 @@ export default function WorkloadPage() {
 
   const [rows, setRows] = useState<WorkloadRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function WorkloadPage() {
       setError(null);
       try {
         setRows(await getWorkload());
+        setHasLoaded(true);
       } catch (e) {
         setError(e instanceof Error ? e.message : t("errors.loadFailed"));
       } finally {
@@ -36,6 +40,8 @@ export default function WorkloadPage() {
       }
     })();
   }, [session]);
+
+  const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
 
   if (isLoading || !session) {
     return (
@@ -57,15 +63,89 @@ export default function WorkloadPage() {
       )}
 
       <div className="min-h-[320px]">
-        {loading ? (
-          <p className="text-sm text-muted-foreground">{c("loading")}</p>
+        {loading && !hasLoaded ? (
+          showSkeleton ? (
+            <>
+              <div className="hidden lg:block">
+                <DataTableSkeleton columns={["w-[40%]", "w-[15%]", "w-[15%]", "w-[15%]", "w-[15%]"]} />
+              </div>
+              <div className="space-y-3 lg:hidden">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} aria-hidden className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-sm">
+                    <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-3 w-1/3" />
+                    </div>
+                    <Skeleton className="h-10 w-16" />
+                    <Skeleton className="h-10 w-16" />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="min-h-[240px]" />
+          )
         ) : rows.length === 0 ? (
           <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-8 text-center">
             <h3 className="text-base font-semibold text-foreground">{t("empty.title")}</h3>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">{t("empty.description")}</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <>
+            <div className="hidden lg:block">
+              <DataTable
+                columns={[
+                  {
+                    key: "member",
+                    header: t("fields.name"),
+                    width: "w-[40%]",
+                    render: (r) => (
+                      <span className="flex min-w-0 items-center gap-3">
+                        <Avatar name={r.name} seed={r.user_id ?? r.name} className="h-9 w-9 shrink-0 text-xs" />
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium text-foreground">{r.name}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{r.email}</span>
+                        </span>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "open",
+                    header: t("fields.openTasks"),
+                    width: "w-[15%]",
+                    cellClassName: "text-base font-semibold tabular-nums",
+                    render: (r) => r.open_tasks,
+                  },
+                  {
+                    key: "overdue",
+                    header: t("fields.overdue"),
+                    width: "w-[15%]",
+                    cellClassName: "text-base font-semibold tabular-nums",
+                    render: (r) => (
+                      <span className={r.overdue_tasks > 0 ? "text-red-700" : undefined}>{r.overdue_tasks}</span>
+                    ),
+                  },
+                  {
+                    key: "dueNext7",
+                    header: t("fields.dueNext7"),
+                    width: "w-[15%]",
+                    cellClassName: "text-base font-semibold tabular-nums",
+                    render: (r) => r.due_next_7_days,
+                  },
+                  {
+                    key: "projects",
+                    header: t("fields.projects"),
+                    width: "w-[15%]",
+                    cellClassName: "text-base font-semibold tabular-nums",
+                    render: (r) => r.projects_count,
+                  },
+                ]}
+                rows={rows}
+                rowKey={(r) => r.user_id}
+              />
+            </div>
+            <div className="space-y-3 lg:hidden">
             {rows.map((r) => (
               <div key={r.user_id} className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -96,8 +176,9 @@ export default function WorkloadPage() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
