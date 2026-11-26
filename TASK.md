@@ -315,6 +315,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-016 — Mất 4 khóa Auth.login khi merge PR #63 + Portal login fill nền toàn trang (PO báo 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Hai việc. (1) Trang đăng nhập nội bộ hiện mã khóa `Auth.login.heading/backHome/portalPrompt/portalLink`: 4 khóa FE-017 thêm vào đã bị mất khỏi main khi squash merge PR #63 (cùng cơ chế mất mục tài liệu đã xử lý ở PR #66 — đợt khôi phục đó chỉ rà TASK.md/CHANGELOG.md, chưa rà file messages sau merge #63; đây là thiếu sót rà soát của Muse). Khôi phục nguyên văn 4 khóa EN + VI. Muse đã chạy rà soát toàn app: 642 tham chiếu khóa i18n, chỉ đúng 4 khóa này bị treo, mọi khóa khác (Home của FE-016, Portal.login của FE-018, actions.detail của FIX-014) đều nguyên vẹn. Từ nay sau MỖI lần merge PR đụng file messages, Muse chạy lại rà soát khóa treo trước khi báo cáo. (2) Theo feedback của PO: nền gradient của trang đăng nhập Portal trước đây chỉ là một panel bo góc nổi giữa trang — nay gradient fill toàn bộ vùng trang từ mép này sang mép kia (bỏ khung panel), header/footer Portal giữ nguyên.
+- Acceptance Criteria: Nguyen mở `/login`: tiêu đề "Đăng nhập Brewbase", link "← Về trang chủ", dòng "Bạn là khách hàng? Vào Cổng khách hàng →" hiển thị đúng chữ ở cả EN/VI, không còn mã khóa. Mở `/portal/login`: gradient phủ kín toàn trang, không còn panel nổi. Typecheck + build PASS; rà soát khóa treo = 0.
+- Blockers: Không có.
+
 ## FIX-013 — Menu three-dot cho card dữ liệu + sửa tràn ngang mobile (feedback PO 2026-11-25)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
