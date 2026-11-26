@@ -28,7 +28,7 @@ const TONES: Record<string, string> = {
   overdue: "border-red-200 bg-red-100 text-red-800",
   unqualified: "border-red-200 bg-red-100 text-red-800",
   churned: "border-red-200 bg-red-100 text-red-800",
-  cancelled: "border-red-200 bg-red-100 text-red-800",
+  cancelled: "border-slate-400 bg-slate-300 text-slate-800",
   inactive: "border-red-200 bg-red-100 text-red-800",
 };
 

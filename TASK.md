@@ -453,3 +453,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blocked by: ⏸ chờ BE-009 merge
 - Acceptance Criteria: Luồng invitation khớp danh tính đầy đủ (mời người đã có identity ở agency khác, ALREADY_MEMBER xử lý trọn vẹn); Portal chuyển sang link mời đặt mật khẩu thay cho agency đặt mật khẩu (thay đường parity của BE-009); bộ test Owner-invariant (Owner duy nhất, không tự hạ/xoá Owner qua membership); trau chuốt directory (job_title/phone theo membership hiển thị đủ các màn phụ).
 - Handoff: Chỉ bắt đầu sau khi BE-009 merge và Nguyen ra hiệu.
+
+---
+
+## FE-020 — Finance & Billing UI (Group 5)
+- Assignee: OpenCode · Reviewer: Muse + Nguyen (Muse+Nguyen) · Level: L3 · Status: IN_PROGRESS
+- Branch: fe/FE-020-finance-ui · PR: —
+- Blocked by: —
+- Acceptance Criteria: Sidebar có mục Invoices; danh sách hiển thị hoá đơn mẫu, filter Overdue chỉ ra hoá đơn quá hạn, bấm dòng vào chi tiết. Tạo hoá đơn: dropdown dự án chỉ hiện dự án của khách hàng đã chọn, số INV-2026-… tự sinh, sửa Draft tính lại tổng. Gửi Draft không có item cảnh báo tại nút; ghi payment vượt số dư cảnh báo ngay trong form; ghi đủ tiền → Paid. Member mở /invoices thấy Forbidden ngôn ngữ hiện tại; Sales xem + tải PDF, không thấy nút Gửi/Xoá. Portal (client@demo.test) xem hoá đơn + thông tin chuyển khoản, không tạo payment. Trang /finance/payment-details chỉ Owner/Admin. Đối soát ngân sách ở chi tiết dự án. next build PASS, vitest run PASS, i18n EN=VI, không có `confirm(` native mới.
+- Progress: OpenCode bắt đầu 2026-11-26: tạo nhánh fe/FE-020-finance-ui từ main, khám phá cấu trúc web, bắt đầu triển khai.
+- Handoff: —

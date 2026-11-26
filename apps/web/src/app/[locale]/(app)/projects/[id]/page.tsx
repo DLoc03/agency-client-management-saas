@@ -9,6 +9,7 @@ import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Avatar } from "@/components/ui/Avatar";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   getProject,
   updateProject,
@@ -27,6 +28,7 @@ import {
 } from "@/lib/projects/api";
 import { assignTeamToProject, listTeams, listUsers, removeTeamFromProject } from "@/lib/team/api";
 import type { Team } from "@/lib/team/types";
+import { formatMoney } from "@/lib/currency";
 import type {
   Project,
   ProjectStatus,
@@ -150,6 +152,7 @@ export default function ProjectDetailPage() {
   const canDeleteTask = !!session?.user.permissions.includes("tasks.delete");
   const canUpdateProject = !!session?.user.permissions.includes("projects.update");
   const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
+  const currency = session?.agency.base_currency || "USD";
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,8 +204,11 @@ export default function ProjectDetailPage() {
     }
   };
 
+  const [pendingDeleteMilestoneId, setPendingDeleteMilestoneId] = useState<number | null>(null);
+  const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState<number | null>(null);
+  const [confirmDeleteProjectOpen, setConfirmDeleteProjectOpen] = useState(false);
+
   const handleDeleteMilestone = async (milestoneId: number) => {
-    if (!confirm("Delete milestone?")) return;
     try {
       await deleteMilestone(id, milestoneId);
       setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
@@ -244,7 +250,6 @@ export default function ProjectDetailPage() {
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    if (!confirm("Delete task?")) return;
     try {
       await deleteTask(taskId);
       await loadTasks();
@@ -322,15 +327,7 @@ export default function ProjectDetailPage() {
         {canDeleteProject && (
           <button
             type="button"
-            onClick={async () => {
-              if (!confirm("Delete project?")) return;
-              try {
-                await deleteProject(id);
-                router.push("/projects");
-              } catch (e) {
-                setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
-              }
-            }}
+            onClick={() => setConfirmDeleteProjectOpen(true)}
             className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
           >
             {t("actions.delete")}
@@ -419,6 +416,45 @@ export default function ProjectDetailPage() {
         {project.description && (
           <p className="mt-4 text-sm text-muted-foreground">{project.description}</p>
         )}
+      </section>
+
+      {/* Budget reconciliation (read-only, BE-008 / FINANCE_CONTRACT §6). */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("detail.budgetReconciliation") || "Đối soát ngân sách"}</h2>
+          <p className="text-xs text-muted-foreground">
+            {t("budget.reconciliationHint") || "Số liệu tính lúc đọc, không sửa ngân sách ở đây."}
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-4">
+          <div>
+            <p className="text-xs text-muted-foreground">{t("fields.budget")}</p>
+            <p className="font-medium tabular-nums">
+              {project.budget != null ? formatMoney(project.budget, currency, locale) : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.invoiced")}</p>
+            <p className="font-medium tabular-nums text-blue-700">
+              {formatMoney(project.invoiced_total, currency, locale) || "0"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.collected")}</p>
+            <p className="font-medium tabular-nums text-green-700">
+              {formatMoney(project.collected_total, currency, locale) || "0"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("budget.remaining")}</p>
+            <p className="font-medium tabular-nums text-foreground">
+              {formatMoney(project.remaining_budget ?? (project.budget != null ? Number(project.budget) - Number(project.invoiced_total || 0) : null), currency, locale) || "—"}
+            </p>
+          </div>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {t("budget.note") || "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."}
+        </p>
       </section>
 
       {/* Members */}
@@ -567,7 +603,7 @@ export default function ProjectDetailPage() {
                             label: t("actions.delete"),
                             icon: "trash-2",
                             danger: true,
-                            onClick: () => handleDeleteMilestone(m.id),
+                            onClick: () => setPendingDeleteMilestoneId(m.id),
                           },
                         ]}
                       />
@@ -674,7 +710,7 @@ export default function ProjectDetailPage() {
                         label: t("actions.delete"),
                         icon: "trash-2",
                         danger: true,
-                        onClick: () => handleDeleteTask(task.id),
+                        onClick: () => setPendingDeleteTaskId(task.id),
                       },
                     ]}
                   />
@@ -888,6 +924,42 @@ export default function ProjectDetailPage() {
           </form>
         </div>
       )}
+      {pendingDeleteMilestoneId !== null && (
+        <ConfirmDialog
+          open
+          title={t("actions.delete") + "?"}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDeleteMilestone(pendingDeleteMilestoneId)}
+          onCancel={() => setPendingDeleteMilestoneId(null)}
+        />
+      )}
+      {pendingDeleteTaskId !== null && (
+        <ConfirmDialog
+          open
+          title={t("actions.delete") + "?"}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDeleteTask(pendingDeleteTaskId)}
+          onCancel={() => setPendingDeleteTaskId(null)}
+        />
+      )}
+      <ConfirmDialog
+        open={confirmDeleteProjectOpen}
+        title={t("actions.delete") + "?"}
+        confirmLabel={t("actions.delete")}
+        danger
+        onConfirm={async () => {
+          try {
+            await deleteProject(id);
+            router.push("/projects");
+          } catch (e) {
+            setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+          }
+          setConfirmDeleteProjectOpen(false);
+        }}
+        onCancel={() => setConfirmDeleteProjectOpen(false)}
+      />
     </div>
   );
 }

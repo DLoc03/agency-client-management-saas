@@ -8,6 +8,7 @@ import { Icon } from "@/components/shell/Icon";
 import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Team } from "@/lib/team/types";
 
 export default function TeamsPage() {
@@ -65,10 +66,12 @@ export default function TeamsPage() {
     }
   };
 
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+
   const handleDelete = async (id: number) => {
-    if (!confirm(t("confirmDeleteTeam"))) return;
     try {
       await deleteTeam(id);
+      setPendingDeleteId(null);
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -141,7 +144,7 @@ export default function TeamsPage() {
                                 label: t("actions.delete"),
                                 icon: "trash-2",
                                 danger: true,
-                                onClick: () => handleDelete(team.id),
+                                onClick: () => setPendingDeleteId(team.id),
                               },
                             ]
                           : []),
@@ -202,6 +205,16 @@ export default function TeamsPage() {
             </div>
           </form>
         </div>
+      )}
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          open
+          title={t("confirmDeleteTeam")}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDelete(pendingDeleteId)}
+          onCancel={() => setPendingDeleteId(null)}
+        />
       )}
     </div>
   );

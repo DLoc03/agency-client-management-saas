@@ -34,6 +34,9 @@ export interface Project {
   tasks_done_count: number | null;
   progress_percent: number | null;
   milestones_count: number | null;
+  invoiced_total: string | number | null;
+  collected_total: string | number | null;
+  remaining_budget: string | number | null;
   members?: ProjectMember[];
   created_at: string | null;
   updated_at: string | null;

@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   createClient,
   createTag,
@@ -164,10 +165,12 @@ export default function ClientsPage() {
     }
   };
 
+  const [pendingDelete, setPendingDelete] = useState<Client | null>(null);
+
   const handleDelete = async (client: Client) => {
-    if (!window.confirm(t("confirmDelete"))) return;
     try {
       await deleteClient(client.id);
+      setPendingDelete(null);
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -503,7 +506,7 @@ export default function ClientsPage() {
                             label: t("actions.delete"),
                             icon: "trash-2",
                             danger: true,
-                            onClick: () => handleDelete(client),
+                            onClick: () => setPendingDelete(client),
                           },
                         ]}
                       />
@@ -560,6 +563,16 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
+      {pendingDelete && (
+        <ConfirmDialog
+          open
+          title={t("confirmDelete")}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDelete(pendingDelete)}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   );
 }

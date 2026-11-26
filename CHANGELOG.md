@@ -46,6 +46,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Invitation form validation (missing email or role) is now reported inline inside the form instead of the page-level banner.
 - Status badges gained semantic colors via a shared map (active/done green, in-progress blue, qualified violet, waiting slate, on-hold amber, overdue/cancelled red) on the Clients, Projects and Lead screens; client cards navigate to the detail page when clicked anywhere (delete button excluded); Kanban cards show grab/grabbing cursors; workload rows gained initial avatars and metric tiles with overdue highlighted; primary action buttons gained icons, back buttons became text buttons with a chevron, member-chip remove buttons got a larger round hit area, clickable elements show the pointer cursor again, and required fields are marked with * across the main forms.
 
+### Frontend
+- Finance & Billing UI (FE-020): added internal invoice list/detail/create/edit, manual payment recording with overpayment guards, PDF export, agency payment-details settings, project budget reconciliation, and read-only portal invoices, with BFF proxies, i18n, and ConfirmDialog-based destructive actions.
+
 ## [0.5.0] - 2026-11-24
 
 ### Backend

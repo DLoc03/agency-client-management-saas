@@ -23,6 +23,6 @@ export function useNavItems(): NavItem[] {
     { key: "projects", href: "/projects", icon: "folder-kanban" },
     { key: "team", href: "/team/teams", icon: "users" },
     { key: "tasks", href: "/tasks", icon: "check-square", disabled: true },
-    { key: "invoices", href: "/invoices", icon: "receipt", disabled: true },
+    { key: "invoices", href: "/invoices", icon: "receipt" },
   ];
 }

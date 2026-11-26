@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/Select";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
 import type { DirectoryUser, Team } from "@/lib/team/types";
 
@@ -23,6 +24,7 @@ export default function TeamDetailPage() {
   const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
   const [newMemberId, setNewMemberId] = useState("");
   const [directory, setDirectory] = useState<DirectoryUser[]>([]);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
@@ -164,15 +166,7 @@ export default function TeamDetailPage() {
               {canDelete && (
                 <button
                   type="button"
-                  onClick={async () => {
-                    if (!confirm(t("confirmDeleteTeam"))) return;
-                    try {
-                      await deleteTeam(id);
-                      router.push("/team/teams");
-                    } catch (e) {
-                      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
-                    }
-                  }}
+                  onClick={() => setConfirmDeleteOpen(true)}
                   className="rounded-md border border-red-200 px-4 py-2 text-sm text-red-600"
                 >
                   {t("actions.delete")}
@@ -227,6 +221,22 @@ export default function TeamDetailPage() {
           </ul>
         )}
       </section>
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title={t("confirmDeleteTeam")}
+        confirmLabel={t("actions.delete")}
+        danger
+        onConfirm={async () => {
+          try {
+            await deleteTeam(id);
+            setConfirmDeleteOpen(false);
+            router.push("/team/teams");
+          } catch (e) {
+            setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+          }
+        }}
+        onCancel={() => setConfirmDeleteOpen(false)}
+      />
     </div>
   );
 }

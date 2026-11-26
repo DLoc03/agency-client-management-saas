@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   listInvitations,
   createInvitation,
@@ -97,10 +98,12 @@ export default function InvitationsPage() {
     }
   };
 
+  const [pendingRevokeId, setPendingRevokeId] = useState<number | null>(null);
+
   const handleRevoke = async (id: number) => {
-    if (!confirm(t("confirmRevokeInvitation"))) return;
     try {
       await revokeInvitation(id);
+      setPendingRevokeId(null);
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -162,7 +165,7 @@ export default function InvitationsPage() {
                     <button type="button" onClick={() => handleResend(inv.id)} className="rounded-md border border-border px-3 py-1.5 text-xs">
                       {t("actions.resend")}
                     </button>
-                    <button type="button" onClick={() => handleRevoke(inv.id)} className="rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600">
+                    <button type="button" onClick={() => setPendingRevokeId(inv.id)} className="rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600">
                       {t("actions.revoke")}
                     </button>
                   </div>
@@ -220,6 +223,16 @@ export default function InvitationsPage() {
             </div>
           </form>
         </div>
+      )}
+      {pendingRevokeId !== null && (
+        <ConfirmDialog
+          open
+          title={t("confirmRevokeInvitation")}
+          confirmLabel={t("actions.revoke")}
+          danger
+          onConfirm={() => handleRevoke(pendingRevokeId)}
+          onCancel={() => setPendingRevokeId(null)}
+        />
       )}
     </div>
   );

@@ -5,7 +5,14 @@
     "or": "or",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "moreActions": "More actions"
+    "moreActions": "More actions",
+    "prev": "Previous",
+    "next": "Next",
+    "cancel": "Cancel",
+    "forbidden": {
+      "title": "Forbidden",
+      "message": "You don't have permission to access this page."
+    }
   },
   "Home": {
     "status": "Foundation phase — the application is being initialized.",
@@ -120,15 +127,15 @@
       "submit": "Sign in to Portal",
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
-        "heading": "Welcome back",
-        "staffPrompt": "Agency staff?",
-        "staffLink": "Internal sign in",
-        "tileProjectsTitle": "Projects",
-        "tileProjectsText": "Real-time progress",
-        "tileTasksTitle": "Tasks",
-        "tileTasksText": "Milestones & to-dos",
-        "tileInvoicesTitle": "Invoices",
-        "tileInvoicesText": "Payment history",
+      "heading": "Welcome back",
+      "staffPrompt": "Agency staff?",
+      "staffLink": "Internal sign in",
+      "tileProjectsTitle": "Projects",
+      "tileProjectsText": "Real-time progress",
+      "tileTasksTitle": "Tasks",
+      "tileTasksText": "Milestones & to-dos",
+      "tileInvoicesTitle": "Invoices",
+      "tileInvoicesText": "Payment history",
       "errors": {
         "emailRequired": "Email is required.",
         "emailInvalid": "Enter a valid email address.",
@@ -194,6 +201,13 @@
       "noMilestones": "No milestones yet.",
       "tasks": "Tasks",
       "noTasks": "No tasks yet."
+    },
+    "invoices": {
+      "title": "Your invoices",
+      "subtitle": "Invoices for {name} at {agency}.",
+      "empty": "No invoices yet",
+      "emptyHint": "Invoices the agency issues for you will appear here.",
+      "loadError": "Could not load your invoices. Please try again."
     }
   },
   "Projects": {
@@ -259,7 +273,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
-        "detail": "Detail",
+      "detail": "Detail",
       "addMember": "Add member",
       "remove": "Remove",
       "addMilestone": "Add milestone",
@@ -314,7 +328,15 @@
       "task": "Task",
       "milestone": "Milestone"
     },
-    "selectMember": "Select a member"
+    "selectMember": "Select a member",
+    "budgetReconciliation": "Budget reconciliation",
+    "budget": {
+      "invoiced": "Invoiced",
+      "collected": "Collected",
+      "remaining": "Remaining",
+      "reconciliationHint": "Figures computed at read time; budget is not edited here.",
+      "note": "Invoiced = sum of non-cancelled invoices; Collected = sum of payments on those invoices."
+    }
   },
   "Leads": {
     "title": "Leads",
@@ -581,7 +603,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
-        "detail": "Detail",
+      "detail": "Detail",
       "add": "Add",
       "remove": "Remove",
       "resend": "Resend",
@@ -635,5 +657,107 @@
     },
     "confirmDeleteTeam": "Delete this team?",
     "confirmRevokeInvitation": "Revoke this invitation?"
+  },
+  "Finance": {
+    "title": "Invoices",
+    "subtitle": "Manage invoices and payments for this workspace.",
+    "empty": {
+      "title": "No invoices yet",
+      "description": "Create your first invoice to get started."
+    },
+    "filters": {
+      "status": "Status",
+      "customer": "Customer",
+      "project": "Project",
+      "search": "Search invoice number / customer",
+      "all": "All"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "storedStatus": "Stored: {status}",
+    "fields": {
+      "invoiceNumber": "Invoice number",
+      "customer": "Customer",
+      "project": "Project",
+      "issueDate": "Issue date",
+      "dueDate": "Due date",
+      "total": "Total",
+      "status": "Status",
+      "amount": "Amount",
+      "paidOn": "Paid on",
+      "method": "Method",
+      "note": "Note",
+      "description": "Description",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "subtotal": "Subtotal",
+      "taxRate": "Tax rate",
+      "taxAmount": "Tax",
+      "balanceDue": "Balance due",
+      "notes": "Notes"
+    },
+    "actions": {
+      "view": "View",
+      "send": "Send",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "downloadPdf": "Download PDF",
+      "newInvoice": "New invoice",
+      "create": "Create",
+      "save": "Save",
+      "back": "Back to invoices",
+      "recordPayment": "Record payment",
+      "remove": "Remove",
+      "addItem": "Add item"
+    },
+    "detail": {
+      "lineItems": "Line items",
+      "payments": "Payments",
+      "noItems": "No line items yet.",
+      "bankDetails": "Bank transfer details",
+      "back": "Back to invoices"
+    },
+    "payments": {
+      "methodBankTransfer": "Bank transfer",
+      "methodCash": "Cash",
+      "recordedBy": "Recorded by",
+      "noPayments": "No payments yet."
+    },
+    "confirmDelete": "Delete this invoice?",
+    "confirmCancel": "Cancel this invoice?",
+    "confirmDeletePayment": "Delete this payment?",
+    "paymentDetails": {
+      "title": "Bank transfer details",
+      "subtitle": "Agency bank account and VietQR shown on invoices.",
+      "bankName": "Bank name",
+      "bankAccountNumber": "Bank account number",
+      "bankAccountHolder": "Account holder",
+      "vietqrPayload": "VietQR payload",
+      "onlyOwnerAdmin": "Only Agency Owner and Admin can access this page.",
+      "forbidden": "You don't have permission to access this page."
+    },
+    "portalPayHint": "Please transfer the exact invoice amount to the account above.",
+    "errors": {
+      "loadFailed": "Failed to load invoices.",
+      "createFailed": "Failed to create invoice.",
+      "updateFailed": "Failed to update invoice.",
+      "deleteFailed": "Failed to delete invoice.",
+      "sendFailed": "Failed to send invoice.",
+      "cancelFailed": "Failed to cancel invoice.",
+      "paymentFailed": "Failed to record payment.",
+      "INVOICE_EMPTY": "Invoice has no line items and cannot be sent.",
+      "INVOICE_NOT_EDITABLE": "Only Draft invoices can be edited.",
+      "CANNOT_CANCEL_INVOICE": "Cannot cancel an invoice that already has payments.",
+      "CANNOT_DELETE_INVOICE": "Only the Agency Owner can delete a Draft invoice.",
+      "PAYMENT_NOT_ALLOWED": "Payments can only be recorded on Sent / Overdue invoices.",
+      "OVERPAYMENT_NOT_ALLOWED": "Amount exceeds the remaining balance.",
+      "CROSS_TENANT_REFERENCE": "Customer or project does not belong to this agency.",
+      "notFound": "Invoice not found."
+    }
   }
 }

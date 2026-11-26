@@ -10,6 +10,7 @@ import { Icon } from "@/components/shell/Icon";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Select } from "@/components/ui/Select";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   createContact,
   createNote,
@@ -190,8 +191,10 @@ export default function ClientDetailPage() {
     }
   };
 
+  const [confirmDeleteClientOpen, setConfirmDeleteClientOpen] = useState(false);
+  const [pendingDeleteContact, setPendingDeleteContact] = useState<Contact | null>(null);
+
   const handleDeleteClient = async () => {
-    if (!window.confirm(t("confirmDelete"))) return;
     try {
       await deleteClient(id);
       router.replace("/clients");
@@ -225,9 +228,9 @@ export default function ClientDetailPage() {
   };
 
   const handleDeleteContact = async (contact: Contact) => {
-    if (!window.confirm(t("confirmDeleteContact"))) return;
     try {
       await deleteContact(id, contact.id);
+      setPendingDeleteContact(null);
       await loadAll();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -324,7 +327,7 @@ export default function ClientDetailPage() {
           {canDelete && (
             <button
               type="button"
-              onClick={handleDeleteClient}
+              onClick={() => setConfirmDeleteClientOpen(true)}
               className="ml-auto text-sm font-medium text-red-600 hover:underline"
             >
               {t("actions.delete")}
@@ -632,7 +635,7 @@ export default function ClientDetailPage() {
                         label: t("actions.delete"),
                         icon: "trash-2",
                         danger: true,
-                        onClick: () => handleDeleteContact(contact),
+                        onClick: () => setPendingDeleteContact(contact),
                       },
                     ]}
                   />
@@ -879,6 +882,24 @@ export default function ClientDetailPage() {
         <Icon name="building-2" className="h-3.5 w-3.5" />
         {client.name}
       </p>
+      <ConfirmDialog
+        open={confirmDeleteClientOpen}
+        title={t("confirmDelete")}
+        confirmLabel={t("actions.delete")}
+        danger
+        onConfirm={async () => { await handleDeleteClient(); setConfirmDeleteClientOpen(false); }}
+        onCancel={() => setConfirmDeleteClientOpen(false)}
+      />
+      {pendingDeleteContact && (
+        <ConfirmDialog
+          open
+          title={t("confirmDeleteContact")}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDeleteContact(pendingDeleteContact)}
+          onCancel={() => setPendingDeleteContact(null)}
+        />
+      )}
     </div>
   );
 }

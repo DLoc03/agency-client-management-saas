@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   listProjects,
   createProject,
@@ -125,10 +126,12 @@ export default function ProjectsPage() {
     }
   };
 
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this project?")) return;
     try {
       await deleteProject(id);
+      setPendingDeleteId(null);
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -262,7 +265,7 @@ export default function ProjectsPage() {
                                   label: t("actions.delete"),
                                   icon: "trash-2",
                                   danger: true,
-                                  onClick: () => handleDelete(p.id),
+                                  onClick: () => setPendingDeleteId(p.id),
                                 },
                               ]
                             : []),
@@ -407,6 +410,16 @@ export default function ProjectsPage() {
             </div>
           </form>
         </div>
+      )}
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          open
+          title={t("actions.delete") + "?"}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDelete(pendingDeleteId)}
+          onCancel={() => setPendingDeleteId(null)}
+        />
       )}
     </div>
   );

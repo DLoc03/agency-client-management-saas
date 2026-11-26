@@ -115,6 +115,19 @@ const paths: Record<string, React.ReactNode> = {
       <circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none" />
     </>
   ),
+  download: (
+    <>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </>
+  ),
+  "shield-alert": (
+    <>
+      <path d="M20.39 11.29c.17-.42.27-.87.27-1.39 0-2.59-.78-4.75-2.1-6.38a10 10 0 0 0-.46-.98 2 2 0 0 0-.61-.61c-2.62-1.21-5.55-1.21-8.17 0-.22.1-.44.2-.61.61a10 10 0 0 0-.46.98c-1.32 1.63-2.1 3.79-2.1 6.38 0 .52.1.97.27 1.39.78 1.94 2.51 3.43 4.77 4.21 1.34.45 2.73.68 4.13.68s2.79-.23 4.13-.68c2.26-.78 4-2.27 4.77-4.21" />
+      <path d="M12 9h.01" />
+    </>
+  ),
 };
 
 export function Icon({ name, className }: { name: string; className?: string }) {

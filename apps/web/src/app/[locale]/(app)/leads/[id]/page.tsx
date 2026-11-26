@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   convertLead,
   createLeadActivity,
@@ -209,8 +210,10 @@ export default function LeadDetailPage() {
     }
   };
 
+  const [confirmDeleteLeadOpen, setConfirmDeleteLeadOpen] = useState(false);
+  const [pendingDeleteContact, setPendingDeleteContact] = useState<LeadContact | null>(null);
+
   const handleDeleteLead = async () => {
-    if (!window.confirm(t("confirmDelete"))) return;
     try {
       await deleteLead(id);
       router.replace("/leads");
@@ -244,9 +247,9 @@ export default function LeadDetailPage() {
   };
 
   const handleDeleteContact = async (contact: LeadContact) => {
-    if (!window.confirm(t("confirmDeleteContact"))) return;
     try {
       await deleteLeadContact(id, contact.id);
+      setPendingDeleteContact(null);
       await loadAll();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
@@ -380,7 +383,7 @@ export default function LeadDetailPage() {
           {canDelete && (
             <button
               type="button"
-              onClick={handleDeleteLead}
+              onClick={() => setConfirmDeleteLeadOpen(true)}
               className="ml-auto text-sm font-medium text-red-600 hover:underline"
             >
               {t("actions.delete")}
@@ -687,7 +690,7 @@ export default function LeadDetailPage() {
                         label: t("actions.delete"),
                         icon: "trash-2",
                         danger: true,
-                        onClick: () => handleDeleteContact(contact),
+                        onClick: () => setPendingDeleteContact(contact),
                       },
                     ]}
                   />
@@ -929,6 +932,24 @@ export default function LeadDetailPage() {
           </form>
         )}
       </section>
+      <ConfirmDialog
+        open={confirmDeleteLeadOpen}
+        title={t("confirmDelete")}
+        confirmLabel={t("actions.delete")}
+        danger
+        onConfirm={async () => { await handleDeleteLead(); setConfirmDeleteLeadOpen(false); }}
+        onCancel={() => setConfirmDeleteLeadOpen(false)}
+      />
+      {pendingDeleteContact && (
+        <ConfirmDialog
+          open
+          title={t("confirmDeleteContact")}
+          confirmLabel={t("actions.delete")}
+          danger
+          onConfirm={() => handleDeleteContact(pendingDeleteContact)}
+          onCancel={() => setPendingDeleteContact(null)}
+        />
+      )}
     </div>
   );
 }
