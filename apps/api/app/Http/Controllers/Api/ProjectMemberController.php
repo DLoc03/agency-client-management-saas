@@ -17,6 +17,7 @@ class ProjectMemberController extends Controller
             'id' => $member->id,
             'name' => $member->name,
             'email' => $member->email,
+            'via_team_id' => $member->pivot->via_team_id,
         ])->values()]);
     }
 

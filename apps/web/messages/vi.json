@@ -312,7 +312,11 @@
       "assign": "Gán team",
       "remove": "Gỡ team",
       "resultAssigned": "Đã gán team: thêm {added} thành viên.",
-      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
+      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}.",
+      "assignedTeams": "Team đã gán",
+      "noTeamsAssigned": "Chưa gán team nào",
+      "teamMembersCount": "{count} thành viên",
+      "deletedTeam": "Team đã xoá"
     },
     "timelineTypes": {
       "task": "Công việc",

@@ -312,7 +312,11 @@
       "assign": "Assign team",
       "remove": "Remove team",
       "resultAssigned": "Team assigned: {added} member(s) added.",
-      "resultRemoved": "Removed {removed} member(s), kept {kept}."
+      "resultRemoved": "Removed {removed} member(s), kept {kept}.",
+      "assignedTeams": "Assigned teams",
+      "noTeamsAssigned": "No team assigned yet",
+      "teamMembersCount": "{count} member(s)",
+      "deletedTeam": "Deleted team"
     },
     "timelineTypes": {
       "task": "Task",
