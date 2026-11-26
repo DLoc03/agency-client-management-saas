@@ -706,19 +706,14 @@ export default function ProjectDetailPage() {
             <div className="hidden lg:block">
               <DataTable
                 framed={false}
+                onRowClick={(task) => router.push(`/projects/${id}/tasks/${task.id}`)}
                 columns={[
                   {
                     key: "title",
                     header: t("fields.title"),
                     width: "w-[34%]",
                     render: (task) => (
-                      <button
-                        type="button"
-                        onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                        className="block max-w-full truncate text-left font-medium text-foreground hover:underline"
-                      >
-                        {task.title}
-                      </button>
+                      <span className="block max-w-full truncate font-medium text-foreground">{task.title}</span>
                     ),
                   },
                   {
@@ -789,16 +784,11 @@ export default function ProjectDetailPage() {
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
+                className="flex cursor-pointer flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <div className="min-w-0 flex-1">
-                  <button
-                    type="button"
-                    onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                    className="block max-w-full truncate text-left font-medium text-foreground hover:underline"
-                  >
-                    {task.title}
-                  </button>
+                  <p className="truncate font-medium text-foreground">{task.title}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
                       {t(`taskStatuses.${task.status}`)}

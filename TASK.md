@@ -315,6 +315,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-020 — Menu kebab bị khung bảng cắt + thống nhất click dòng/card (feedback PO tại nghiệm thu FIX-019, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Hai phần. PHẦN 1 (đã làm, PR riêng): thống nhất điều hướng theo DEC-023 — PO chốt Cách 1 "click dòng/card vào chi tiết" cho toàn bộ table row và card data: bảng Tasks trong chi tiết dự án thêm click dòng (tiêu đề chuyển thành chữ thường), card task mobile click toàn card; card mobile của Projects/Members và card Teams thêm click toàn card; Workload thêm click dòng/card vào chi tiết thành viên; bỏ mục "Chi tiết" khỏi kebab ở Projects/Members/Teams (kebab chỉ còn hành động thật), riêng bảng Members hết hành động trên dòng nên bỏ hẳn cột kebab và phân bổ lại bề rộng cột; Kanban CRM là ngoại lệ có chủ đích (card kéo–thả đổi giai đoạn). PHẦN 2 (đã làm, gộp cùng PR): menu kebab bị khung bảng cắt ở các dòng cuối (DataTable framed bọc overflow-hidden, menu absolute mở xuống bị cắt — bằng chứng là ảnh của PO tại trang Projects; bảng không khung không bị). PO chốt hướng (c) kèm nguyên tắc dùng shadcn/ui linh động theo từng component (DEC-024): ActionMenu render menu qua portal với position fixed bám theo vị trí nút bấm, tự lật lên trên khi sát đáy viewport và giữ vị trí khi cuộn trang — menu không còn bị bất kỳ khung chứa nào cắt.
+- Acceptance Criteria: Phần 1 — Nguyen chạy production, bấm thử từng danh sách (Clients, Projects, Members, Teams, Workload, Tasks trong chi tiết dự án) ở cả desktop và bề rộng mobile: click dòng/card đều vào đúng trang chi tiết, kebab chỉ còn hành động. Phần 2 — mở menu ở dòng cuối của bảng có khung (trang Projects) và thử cuộn trang khi menu đang mở: menu hiển thị trọn vẹn, không bị cắt. Typecheck + build PASS.
+
 ## FIX-019 — Tinh chỉnh hiển thị dữ liệu sau nghiệm thu FE-019 (DEC-022, PO duyệt mẫu 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)

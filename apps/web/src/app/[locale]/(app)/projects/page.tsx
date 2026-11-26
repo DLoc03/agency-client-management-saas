@@ -302,11 +302,6 @@ export default function ProjectsPage() {
                     render: (p) => (
                       <ActionMenu
                         items={[
-                          {
-                            label: t("actions.detail"),
-                            icon: "eye",
-                            onClick: () => router.push(`/projects/${p.id}`),
-                          },
                           ...(canDelete
                             ? [
                                 {
@@ -335,7 +330,8 @@ export default function ProjectsPage() {
               return (
                 <div
                   key={p.id}
-                  className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm"
+                  onClick={() => router.push(`/projects/${p.id}`)}
+                  className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -350,11 +346,6 @@ export default function ProjectsPage() {
                       </span>
                       <ActionMenu
                         items={[
-                          {
-                            label: t("actions.detail"),
-                            icon: "eye",
-                            onClick: () => router.push(`/projects/${p.id}`),
-                          },
                           ...(canDelete
                             ? [
                                 {

@@ -16,9 +16,11 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ### Changed
 - Web run mode is now switchable (CHORE-001): `docker-compose.yml` takes `WEB_MODE` — default `dev` (hot reload, per-route/per-locale compiles), `WEB_MODE=prod docker compose up -d web` runs a production build for acceptance testing, where page transitions no longer pay dev-mode compile time.
+- Consistent row/card navigation (FIX-020 part 1, DEC-023): every data table row and data card with a detail screen now navigates by clicking the whole row/card — the project task table and its mobile cards, the Projects/Members mobile cards, Team cards and the Workload list (to the member detail) were aligned with the Clients/Projects/Members tables; titles are plain text instead of separate links/buttons, and the redundant "Detail" item leaves the kebab menus (actions only), which also removes the Members table's now-empty action column. CRM Kanban cards are the deliberate exception (drag-to-move pipeline stages; the title link stays).
 
 ### Fixed
 - Data display polish (FIX-019, DEC-022): table headers now render at 11 px on a single line with ellipsis instead of wrapping and inflating the header row; task Priority is a semantic colour chip (urgent red, high rose, medium amber, low slate) in the project task table, the mobile task cards and the task detail field; nested borders are removed on the project detail page (one border level per data block — the Tasks table and the milestone / mobile task items drop their own frames inside their section cards and keep hairline dividers only, via the new `framed` prop on `DataTable`); the project detail first-load skeleton is now a geometric twin of the real layout, including a true table skeleton for the Tasks section, and follows the same ~200 ms appearance rule as the list pages.
+- Kebab action menus are no longer clipped by framed tables (FIX-020 part 2, DEC-024): the shared `ActionMenu` renders its menu through a portal with fixed positioning anchored to the toggle button, flips upward near the viewport bottom and keeps its position on scroll, so menus on the last table rows display in full instead of being cut off by the table frame.
 
 ## [0.6.0] - 2026-11-26
 

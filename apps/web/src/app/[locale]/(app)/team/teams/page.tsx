@@ -118,7 +118,11 @@ export default function TeamsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {teams.map((team) => (
-              <div key={team.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div
+                key={team.id}
+                onClick={() => router.push(`/team/teams/${team.id}`)}
+                className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h3 className="truncate font-semibold">{team.name}</h3>
@@ -130,11 +134,6 @@ export default function TeamsPage() {
                     </span>
                     <ActionMenu
                       items={[
-                        {
-                          label: t("actions.detail"),
-                          icon: "eye",
-                          onClick: () => router.push(`/team/teams/${team.id}`),
-                        },
                         ...(canDelete
                           ? [
                               {
