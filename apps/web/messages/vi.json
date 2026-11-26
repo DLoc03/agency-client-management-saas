@@ -738,7 +738,10 @@
       "loadFailed": "Không tải được dữ liệu.",
       "createFailed": "Không tạo được.",
       "updateFailed": "Không cập nhật được.",
-      "deleteFailed": "Không xóa được."
+      "deleteFailed": "Không xóa được.",
+      "INVITATION_PENDING": "Email này đang có một lời mời chưa được chấp nhận.",
+      "ALREADY_MEMBER": "Người này đã là thành viên đang hoạt động của workspace này.",
+      "INVITATION_ALREADY_ACCEPTED": "Lời mời này đã được chấp nhận rồi."
     },
     "confirmDeleteTeam": "Xoá team này?",
     "confirmRevokeInvitation": "Thu hồi lời mời này?"

@@ -738,7 +738,10 @@
       "loadFailed": "Failed to load data.",
       "createFailed": "Failed to create.",
       "updateFailed": "Failed to update.",
-      "deleteFailed": "Failed to delete."
+      "deleteFailed": "Failed to delete.",
+      "INVITATION_PENDING": "A pending invitation already exists for this email.",
+      "ALREADY_MEMBER": "This person is already an active member of this workspace.",
+      "INVITATION_ALREADY_ACCEPTED": "This invitation has already been accepted."
     },
     "confirmDeleteTeam": "Delete this team?",
     "confirmRevokeInvitation": "Revoke this invitation?"

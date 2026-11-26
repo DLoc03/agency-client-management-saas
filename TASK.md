@@ -315,6 +315,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-025 — Bản địa hoá cảnh báo theo mã lỗi ở modal Mời thành viên (PO phát hiện tại nghiệm thu FIX-023, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Tại nghiệm thu FIX-023, vị trí cảnh báo trong modal Mời đã đúng (nằm trong modal) nhưng nội dung vẫn là message thô tiếng Anh của API (API trả theo locale lưu trên tài khoản, lệch ngôn ngữ giao diện — cùng gốc rễ DEC-025 đã xử lý cho trạng thái 403). Modal Mời nay ánh xạ các mã lỗi nghiệp vụ sang khóa i18n `Teams.errors.*` (EN + VI, câu chữ khớp lang của BE): `INVITATION_PENDING` (mời trùng email đang chờ), `ALREADY_MEMBER` (email đã là thành viên); nút Gửi lại cũng ánh xạ `INVITATION_ALREADY_ACCEPTED`. Mã lạ vẫn fall back về message API như cũ.
+- Acceptance Criteria: Nguyen mở Team → Lời mời ở giao diện VI: mời trùng email đang chờ → cảnh báo tiếng Việt ngay trong modal; mời email đã là thành viên → cảnh báo tiếng Việt tương ứng; web build PASS; khóa i18n EN = VI, không khóa lơ lửng (kiểm cả khóa động `errors.${code}`).
+
 ## FIX-024 — (Tạm hoãn) Token giới hạn cho người được mời có danh tính nhưng chưa có membership nào
 - Status: TODO — PO chốt 2026-11-26: ghi nhận là giới hạn đã biết, hoãn triển khai, chỉ mở lại khi PO yêu cầu
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
