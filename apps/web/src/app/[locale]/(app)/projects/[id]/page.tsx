@@ -8,9 +8,9 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
-import { DataTable } from "@/components/ui/DataTable";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { statusBadgeClass } from "@/lib/status-colors";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { priorityBadgeClass, statusBadgeClass } from "@/lib/status-colors";
 import { Avatar } from "@/components/ui/Avatar";
 import {
   getProject,
@@ -101,6 +101,9 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
   }, [isLoading, session, router]);
+
+  // First-load skeleton follows the DEC-021 timing (appears only after ~200 ms).
+  const showSkeleton = useDelayedSkeleton(loading && !project);
 
   const loadAll = async () => {
     setLoading(true);
@@ -305,7 +308,12 @@ export default function ProjectDetailPage() {
         </div>
       );
     }
-    // First load: geometric skeleton of the detail layout (DEC-021).
+    if (!showSkeleton) {
+      // Fast load: hold the layout height without flashing a skeleton (DEC-021).
+      return <div className="min-h-[60vh]" />;
+    }
+    // First load: geometric skeleton of the detail layout (DEC-021). The
+    // Tasks section gets a true table twin (DEC-022), not generic bars.
     return (
       <div aria-hidden className="space-y-6">
         <Skeleton className="h-5 w-24" />
@@ -322,11 +330,28 @@ export default function ProjectDetailPage() {
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-4 w-2/3" />
         </section>
-        <section className="space-y-3 rounded-lg border border-border bg-card p-6 shadow-sm">
+        <section className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
           <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-1.5 w-full rounded-full" />
+          </div>
+        </section>
+        <section className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-24" />
+          <div className="hidden lg:block">
+            <DataTableSkeleton
+              framed={false}
+              rows={4}
+              columns={["w-[34%]", "w-[14%]", "w-[12%]", "w-[18%]", "w-[12%]", "w-[10%]"]}
+            />
+          </div>
+          <div className="space-y-3 lg:hidden">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
         </section>
       </div>
     );
@@ -562,13 +587,13 @@ export default function ProjectDetailPage() {
         {milestones.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("detail.noMilestones")}</p>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-border">
             {milestones.map((m) => {
               const mpct = m.progress_percent ?? 0;
               const mdone = m.tasks_done_count ?? 0;
               const mtotal = m.tasks_count ?? 0;
               return (
-                <div key={m.id} className="rounded-md border border-border p-3">
+                <div key={m.id} className="py-3 first:pt-0 last:pb-0">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate font-medium">{m.name}</p>
@@ -680,6 +705,7 @@ export default function ProjectDetailPage() {
           <div aria-busy={loading} className={loading ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
             <div className="hidden lg:block">
               <DataTable
+                framed={false}
                 columns={[
                   {
                     key: "title",
@@ -709,7 +735,11 @@ export default function ProjectDetailPage() {
                     key: "priority",
                     header: t("fields.priority"),
                     width: "w-[12%]",
-                    render: (task) => t(`priorities.${task.priority}`),
+                    render: (task) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
+                        {t(`priorities.${task.priority}`)}
+                      </span>
+                    ),
                   },
                   {
                     key: "assignee",
@@ -755,11 +785,11 @@ export default function ProjectDetailPage() {
                 rowKey={(task) => task.id}
               />
             </div>
-            <div className="space-y-2 lg:hidden">
+            <div className="divide-y divide-border lg:hidden">
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3"
+                className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <div className="min-w-0 flex-1">
                   <button
@@ -769,11 +799,16 @@ export default function ProjectDetailPage() {
                   >
                     {task.title}
                   </button>
-                  <p className="text-xs text-muted-foreground">
-                    {t(`taskStatuses.${task.status}`)} · {t(`priorities.${task.priority}`)}
-                    {task.assignee ? ` · ${task.assignee.name}` : ""}
-                    {task.due_date ? ` · ${task.due_date.slice(0, 10)}` : ""}
-                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
+                      {t(`taskStatuses.${task.status}`)}
+                    </span>
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
+                      {t(`priorities.${task.priority}`)}
+                    </span>
+                    {task.assignee ? <span className="text-xs text-muted-foreground">{task.assignee.name}</span> : null}
+                    {task.due_date ? <span className="text-xs text-muted-foreground">{task.due_date.slice(0, 10)}</span> : null}
+                  </div>
                 </div>
                 {canDeleteTask && (
                   <ActionMenu

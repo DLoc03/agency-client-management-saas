@@ -315,6 +315,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-019 — Tinh chỉnh hiển thị dữ liệu sau nghiệm thu FE-019 (DEC-022, PO duyệt mẫu 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Áp dụng DEC-022 từ feedback nghiệm thu FE-019 của PO (kèm ảnh chụp trang chi tiết dự án): (1) header table giảm còn 11px + khóa một dòng + ellipsis (component DataTable dùng chung, mọi bảng hưởng lợi); (2) Priority hiển thị dạng chip màu ngữ nghĩa ở bảng Tasks trong chi tiết dự án, card mobile của task và trường priority ở chi tiết task (helper mới `priorityBadgeClass`: urgent đỏ, high đỏ hồng, medium hổ phách, low xám); (3) bỏ viền lồng nhau ở trang chi tiết dự án theo nguyên tắc "một khối dữ liệu = một cấp viền": DataTable thêm prop `framed` — bảng Tasks nằm trong section thì bỏ khung riêng, chỉ giữ kẻ dòng, ô ở mép áp sát padding của section; milestone và card task mobile bỏ viền từng item, phân tách bằng divider; (4) skeleton lần tải đầu của trang chi tiết dự án làm lại đúng hình học: section Tasks dùng skeleton dạng table đúng 6 cột và tuân thủ quy tắc hiện sau ~200ms như các trang danh sách (trước đây là thanh xám chung chung và hiện ngay lập tức). Ngoài phạm vi: checkbox chọn nhiều dòng cho thao tác hàng loạt — PO chủ động hoãn 2026-11-26, chỉ làm khi PO chỉ định màn hình cụ thể.
+- Acceptance Criteria: Nguyen chạy app ở chế độ production (WEB_MODE=prod) kiểm tra bằng mắt trang chi tiết dự án: header bảng Tasks một dòng, không phình; Priority là chip màu; section Milestones/Tasks chỉ còn một cấp viền; mở trang chi tiết với mạng chậm (hoặc throttle trong DevTools) thấy skeleton dạng bảng. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## FIX-017 — Portal login: gradient chưa phủ hết chiều cao trang (PO báo 2026-11-26)
 - Status: DONE
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)

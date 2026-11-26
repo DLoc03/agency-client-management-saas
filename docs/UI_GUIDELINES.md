@@ -20,6 +20,8 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - **Chiều ngang bị khống chế tuyệt đối**: mỗi cột có max-width rõ ràng, nội dung dài phải rút gọn bằng ellipsis trong một dòng. Table KHÔNG bao giờ tràn hay phải cuộn ngang trên desktop. Nếu có cột phụ vượt ngưỡng: hoặc đưa cột phụ sang vùng chi tiết / dòng mở rộng, hoặc toàn bộ danh sách chuyển sang card.
 - **Desktop — dùng card** khi: số cột cốt lõi vượt 6, nội dung dài hoặc không đồng nhất (mô tả, ghi chú), hoặc bản ghi cần trình bày trực quan riêng (thanh tiến độ, ảnh). Nấc trung gian: table giữ cột cốt lõi + dòng mở rộng để xem phần còn lại.
 - **Mobile: luôn hiển thị card** cho mọi danh sách — cùng một dữ liệu, hai cách trình bày theo breakpoint.
+- **Header của table** (DEC-022): cỡ chữ 11px, in hoa, khóa đúng một dòng (nowrap) và cắt ellipsis khi vượt bề rộng cột — tiêu đề cột dài không được xuống dòng làm phình chiều cao hàng header.
+- **Một khối dữ liệu = một cấp viền** (DEC-022): khi table hoặc card nằm bên trong một section đã có khung viền, phần tử bên trong phải bỏ khung riêng — table chỉ giữ đường kẻ ngang mảnh giữa các dòng (DataTable với `framed={false}`), các item trong section phân tách bằng divider mảnh thay vì bọc viền từng item. Nút bấm và ô nhập liệu giữ viền vì là control nhập liệu, không phải khối dữ liệu.
 - Mục này thay thế cách tiếp cận "card là mặc định" trước đây. Ngưỡng 6 cột là mức tạm: PO nghiệm thu thực tế rồi quyết định chỉnh sau. Quy ước áp dụng ngược cho mọi màn danh sách đã làm (task FE-019) và là chuẩn cho mọi màn mới.
 
 ## 4. Độ tương phản của chữ
@@ -31,6 +33,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 
 - Nội dung trong chip/badge luôn nằm trên **một dòng duy nhất**, không được xuống dòng làm chip cao lên, vì sẽ phá vỡ sự cân đối chiều cao giữa các hàng dữ liệu.
 - Nhãn dài phải được đặt tên ngắn lại hoặc cắt bằng ellipsis; chiều cao chip đồng nhất trong cùng một danh sách.
+- Không chỉ trạng thái: **mức độ ưu tiên** (priority) và mọi giá trị phân mức tương tự cũng hiển thị dạng chip màu ngữ nghĩa (DEC-022) — dùng helper `priorityBadgeClass` trong `lib/status-colors.ts` (urgent đỏ, high đỏ hồng, medium hổ phách, low xám), cùng vỏ chip với chip trạng thái.
 
 ## 6. Ổn định chiều cao và trạng thái rỗng
 
@@ -54,3 +57,4 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Thời điểm hiển thị: chỉ hiện skeleton khi việc tải kéo dài hơn ~200ms (tránh "nháy skeleton" khi dữ liệu về nhanh); một khi đã hiện thì giữ tối thiểu ~300–400ms trước khi thay bằng dữ liệu (tránh chớp tắt). KHÔNG giữ dữ liệu thật lại thêm sau khi dữ liệu đã về.
 - Đổi filter, phân trang, tải lại tại chỗ: **giữ dữ liệu cũ hiển thị** (cơ chế placeholderData của TanStack Query) kèm một chỉ dấu tải nhẹ — không thay toàn bộ bằng skeleton.
 - Hiệu ứng shimmer / pulse của skeleton phải tắt theo `prefers-reduced-motion`.
+- Trang chi tiết cũng phải có skeleton đúng hình khối dữ liệu chính của nó (DEC-022): section chứa table thì dùng skeleton dạng table đúng số cột và bề rộng cột, section chứa item có thanh tiến độ thì skeleton có thanh tiến độ — không dùng các thanh xám chung chung thay cho cấu trúc thật; quy tắc thời gian ~200ms áp dụng như nhau.
