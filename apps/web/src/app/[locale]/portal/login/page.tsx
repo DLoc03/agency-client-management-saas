@@ -1,5 +1,5 @@
 /**
- * Portal Login Page — /[locale]/portal/login (FE-003; UI refresh FE-018, full-bleed fix FIX-016)
+ * Portal Login Page — /[locale]/portal/login (FE-003; UI refresh FE-018, full-bleed fix FIX-016, full-height fix FIX-017)
  * Layout per the PO-approved "P2 — Bento glass" sample (2026-11-25):
  * the emerald gradient fills the whole page area edge to edge
  * (FIX-016 — previously it wrapped only a floating panel), holding a
@@ -24,7 +24,7 @@ export default function PortalLoginPage() {
   ];
 
   return (
-    <main className="h-full bg-[linear-gradient(135deg,#d9f5e8_0%,#eefaf4_45%,#e3f2ec_100%)] px-4 py-10 md:py-12">
+    <main className="flex-1 bg-[linear-gradient(135deg,#d9f5e8_0%,#eefaf4_45%,#e3f2ec_100%)] px-4 py-10 md:py-12">
       {/* Frosted-glass sign-in card */}
       <div className="mx-auto w-full max-w-[400px] rounded-[22px] border border-white/80 bg-white/80 p-8 shadow-[0_24px_60px_rgba(6,60,40,0.13)] backdrop-blur-md">
         <div className="mb-7 text-center">

@@ -315,6 +315,13 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-017 — Portal login: gradient chưa phủ hết chiều cao trang (PO báo 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Sau FIX-016, gradient đã phủ kín chiều ngang nhưng còn một dải nền xám dưới chân trang trên màn hình cao: `h-full` trên thẻ main không giãn hết vùng nội dung. Sửa cơ chế giãn chiều cao: wrapper nội dung của Portal layout chuyển thành flex column, main của trang đăng nhập dùng `flex-1` để gradient phủ kín toàn bộ chiều cao giữa header và footer. Các trang Portal khác không đổi giao diện (main của chúng giữ chiều cao theo nội dung như trước).
+- Acceptance Criteria: Nguyen mở `/portal/login` trên màn hình cao: gradient phủ kín từ dưới header tới sát footer, không còn dải xám; các trang Portal khác (danh sách dự án, chi tiết) hiển thị như cũ. Typecheck + build PASS.
+- Blockers: Không có.
+
 ## FIX-016 — Mất 4 khóa Auth.login khi merge PR #63 + Portal login fill nền toàn trang (PO báo 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
