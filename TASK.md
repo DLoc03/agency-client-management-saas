@@ -315,6 +315,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-021 — Hiển thị team đã gán trong chi tiết dự án (góp ý PO 2026-11-26, PO duyệt phương án A qua trang mẫu)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Trước đây trang chi tiết dự án không hiển thị bền vững team nào đã được gán: section gán team chỉ có ô chọn + nút Gán/Gỡ + dòng kết quả tạm, chip thành viên không ghi nguồn team, tải lại trang là mất dấu vết. PO duyệt phương án A từ trang mẫu "Preview 3 phương án hiển thị team đã gán": (1) BE bổ sung trường via_team_id vào danh sách thành viên ở ProjectMemberController (endpoint mà trang chi tiết đang dùng) và vào ProjectResource cho nhất quán bề mặt API — dữ liệu gốc đã có sẵn ở pivot project_members. (2) FE: section Gán team thêm hàng "Team đã gán" dạng chip (tên team + số thành viên team đóng góp, suy ra từ via_team_id của các thành viên hiện tại — đúng ngữ nghĩa snapshot: team chỉ còn được tính là đã gán khi còn ít nhất một thành viên trong dự án), trạng thái rỗng hiện "Chưa gán team nào"; chip của thành viên đến từ team có thêm nhãn nhỏ tên team; team đã bị xoá thì nhãn hiện "Team đã xoá". Danh sách team nay tải cho mọi người xem (không chỉ người có quyền sửa dự án) để phân giải tên team cho nhãn, lỗi tải thì nhãn tự ẩn. Thêm 4 khóa i18n Projects.teamAssignment (EN + VI).
+- Acceptance Criteria: Nguyen mở chi tiết dự án "Website Redesign for Demo Client" ở production, gán Demo Delivery Team rồi tải lại trang: hàng "Team đã gán" còn nguyên chip team kèm số thành viên, các thành viên đến từ team có nhãn tên team trên chip; gỡ team thì hàng chip biến mất tương ứng. API: suite 129 test PASS, Pint PASS; web build PASS.
+
 ## FIX-020 — Menu kebab bị khung bảng cắt + thống nhất click dòng/card (feedback PO tại nghiệm thu FIX-019, 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
@@ -498,3 +504,23 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: `docker-compose.yml` trước đây hard-code service web chạy `pnpm dev` — chế độ dev biên dịch từng trang theo từng locale ngay khi điều hướng nên nghiệm thu luôn thấy chuyển trang chậm (PO phản ánh nhiều lần, log lúc nghiệm thu FE-019 xác nhận `next dev` + Compiling liên tục). Nay web nhận biến `WEB_MODE` (mặc định `dev`): `WEB_MODE=prod docker compose up -d web` sẽ build production + `pnpm start` phục vụ nghiệm thu; không đặt biến thì giữ nguyên hành vi dev cũ. PO duyệt mở chore 2026-11-26.
 - Acceptance Criteria: `docker compose config` render đúng cả hai chế độ; chạy prod thì log không còn Compiling khi chuyển trang; mặc định (không biến) vẫn là dev như cũ.
+
+## FE-014 — Màn hình chọn agency + bộ chuyển agency (DEC-018)
+- Status: TODO
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Bổ sung phía FE cho các luồng danh tính đa agency đã có ở BE-009 mà FE chưa có giao diện. (1) Màn hình chọn agency: khi đăng nhập trả về selection token (identity có nhiều membership staff và chưa có agency dùng gần nhất để tự chọn), hiển thị danh sách membership (tên agency + vai trò) để người dùng chọn, gọi POST /auth/select-agency rồi vào app; selection token hết hạn (30 phút) hoặc vào thẳng route khi không có selection token thì quay về đăng nhập. (2) Bộ chuyển agency trong khung app: hiển thị agency hiện tại ở khu vực sidebar/user, mở danh sách từ GET /auth/memberships, chọn agency khác gọi POST /auth/switch-agency, thay token và tải lại dữ liệu theo agency mới; identity chỉ có 1 membership thì chỉ hiện tên agency, không có menu chuyển. (3) Đăng nhập gặp 403 NO_ACTIVE_MEMBERSHIP phải hiện thông báo rõ ràng trên form (khóa i18n mới, EN + VI). Portal không thuộc task này (luồng chọn agency phía Portal để task sau nếu PO yêu cầu).
+- Acceptance Criteria: identity có 2 membership staff đăng nhập thấy màn hình chọn agency, chọn xong vào đúng dữ liệu của agency đã chọn; chuyển agency bằng switcher thì toàn bộ dữ liệu đổi theo, không còn dữ liệu của agency cũ; các tài khoản demo (1 membership) đăng nhập thẳng như hiện tại, không thấy màn hình chọn; khóa i18n EN/VI đầy đủ, không khóa lơ lửng; typecheck + build PASS.
+
+## FE-015 — Màn hình chấp nhận lời mời v2 + quản lý truy cập Portal (DEC-020)
+- Status: TODO
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Cập nhật phía FE theo hợp đồng invitations v2 của BE-010 (DEC-020). (1) Trang chấp nhận lời mời (nội bộ + Portal): đọc GET /invitations/preview theo token và hiển thị đúng theo trạng thái — email mới: form tên + mật khẩu như hiện tại; email đã có identity nhưng chưa đăng nhập: hướng dẫn đăng nhập rồi quay lại xác nhận (API trả 403 INVITATION_LOGIN_REQUIRED nếu accept trực tiếp); đã đăng nhập đúng identity: màn hình xác nhận tham gia agency (không hỏi mật khẩu); đăng nhập bằng identity khác: thông báo lỗi INVITATION_IDENTITY_MISMATCH rõ ràng. (2) Quản lý truy cập Portal ở trang chi tiết khách hàng: khớp với hành vi mới của BE-010 — cấp quyền cho email mới tạo lời mời đang chờ (hiển thị trạng thái pending thay vì tài khoản đã kích hoạt), cấp cho email đã có identity thì thành viên Portal xuất hiện ngay; thông điệp EN + VI cho các trạng thái. Luồng chuyển quyền Owner (POST /ownership/transfer) chưa có giao diện — chỉ bổ sung vào task này nếu PO chỉ định vị trí hiển thị.
+- Acceptance Criteria: cả 4 trạng thái chấp nhận lời mời hiển thị đúng ở trang nội bộ và trang Portal; cấp quyền Portal cho email mới thấy trạng thái lời mời đang chờ, cho email có sẵn thấy truy cập hiệu lực ngay; không còn luồng đặt mật khẩu ban đầu cho khách ở phía FE; khóa i18n EN/VI đầy đủ; typecheck + build PASS.
+- Blockers: chờ FE-014 merge (làm tuần tự theo chuỗi đã chốt, tránh hai PR cùng sửa khu auth/shell).
+
+## QA-007 — Kiểm thử hồi quy các luồng danh tính đa agency (DEC-018 + DEC-020)
+- Status: TODO
+- Assignee: OpenCode · Reviewer: Muse
+- Mô tả: Bộ test cho các luồng danh tính đã lên FE ở FE-014/FE-015: đăng nhập identity nhiều membership (màn hình chọn agency, tự chọn theo agency dùng gần nhất), chuyển agency không rò rỉ dữ liệu chéo trên giao diện và API, 4 trạng thái chấp nhận lời mời v2, cấp quyền Portal bằng liên kết mời. Ưu tiên test API/PHPUnit cho logic BE đã có và bổ sung ca UI (Playwright hoặc Vitest theo hạ tầng hiện có) cho các màn hình mới ở mức khả thi; phát hiện rò rỉ dữ liệu chéo thì DỪNG và báo cáo, không tự sửa BE.
+- Acceptance Criteria: bộ test chạy PASS toàn bộ cùng suite hiện tại; báo cáo liệt kê đủ các ca theo từng luồng; không sửa code BE/FE trong task này.
+- Blockers: chờ FE-014 + FE-015 merge.

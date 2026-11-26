@@ -61,7 +61,7 @@ export async function deleteProject(id: number) {
 }
 
 export async function listMembers(projectId: number) {
-  const res = await request<{ data: { id: number; name: string; email: string }[] }>(
+  const res = await request<{ data: { id: number; name: string; email: string; via_team_id: number | null }[] }>(
     `/api/projects/${projectId}/members`
   );
   return res.data || [];

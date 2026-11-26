@@ -40,6 +40,7 @@ class ProjectResource extends JsonResource
                 'id' => $member->id,
                 'name' => $member->name,
                 'email' => $member->email,
+                'via_team_id' => $member->pivot->via_team_id,
             ])->values()),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
