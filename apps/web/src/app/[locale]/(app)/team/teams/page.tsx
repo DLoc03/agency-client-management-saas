@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
@@ -19,6 +20,8 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
   const [directory, setDirectory] = useState<{ id: number; name: string; email: string }[]>([]);
@@ -32,11 +35,13 @@ export default function TeamsPage() {
     setError(null);
     try {
       setTeams(await listTeams());
+      setForbidden(false);
       listUsers()
         .then((users) => setDirectory(users.map((u) => ({ id: u.id, name: u.name, email: u.email }))))
         .catch(() => undefined);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -51,6 +56,7 @@ export default function TeamsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     try {
       await createTeam({
         name: form.name,
@@ -61,7 +67,7 @@ export default function TeamsPage() {
       setForm({ name: "", description: "", lead_id: "" });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
     }
   };
 
@@ -79,6 +85,18 @@ export default function TeamsPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("teams")}</p>
+        </div>
+        <Forbidden />
       </div>
     );
   }
@@ -161,6 +179,11 @@ export default function TeamsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleCreate} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("newTeam")}</h2>
+            {formError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {formError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.teamName")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input

@@ -61,3 +61,10 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Đổi filter, phân trang, tải lại tại chỗ: **giữ dữ liệu cũ hiển thị** (cơ chế placeholderData của TanStack Query) kèm một chỉ dấu tải nhẹ — không thay toàn bộ bằng skeleton.
 - Hiệu ứng shimmer / pulse của skeleton phải tắt theo `prefers-reduced-motion`.
 - Trang chi tiết cũng phải có skeleton đúng hình khối dữ liệu chính của nó (DEC-022): section chứa table thì dùng skeleton dạng table đúng số cột và bề rộng cột, section chứa item có thanh tiến độ thì skeleton có thanh tiến độ — không dùng các thanh xám chung chung thay cho cấu trúc thật; quy tắc thời gian ~200ms áp dụng như nhau.
+
+## 10. Vị trí hiển thị lỗi và trạng thái không có quyền (DEC-025, PO chốt 2026-11-26)
+
+- Lỗi/cảnh báo của một thao tác hiển thị **ngay tại vị trí tương tác**: form nào báo lỗi trong form đó (modal thì trong modal, section thì đầu section), không gom về banner chung ở đầu trang. Người dùng không phải cuộn đi tìm cảnh báo.
+- Banner đầu trang chỉ dành cho: lỗi tải dữ liệu lần đầu của cả trang, và hành động cấp trang (ví dụ xoá bản ghi từ nút ở header trang chi tiết).
+- Khi API trả 403 `FORBIDDEN` lúc tải trang, hiển thị trạng thái toàn trang "không có quyền truy cập" bằng ngôn ngữ giao diện đang chọn (component dùng chung `Forbidden`, khóa `Common.forbidden`) — không hiển thị nguyên văn message của API (message API đi theo locale của tài khoản, có thể khác ngôn ngữ giao diện).
+- Mọi chuỗi hiển thị cho người dùng (kể cả hộp thoại confirm) đều qua khóa i18n EN + VI; không để chuỗi hardcode trong JSX.

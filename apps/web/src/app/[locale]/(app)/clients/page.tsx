@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   createClient,
   createTag,
@@ -41,6 +42,9 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [tagError, setTagError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [tags, setTags] = useState<Tag[]>([]);
   const [users, setUsers] = useState<DirectoryUser[]>([]);
 
@@ -98,8 +102,10 @@ export default function ClientsPage() {
       });
       setClients(data);
       setHasLoaded(true);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -119,6 +125,7 @@ export default function ClientsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
+    setFormError(null);
     try {
       const payload: Record<string, unknown> = {
         name: form.name,
@@ -149,7 +156,7 @@ export default function ClientsPage() {
       setFormTags([]);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
     } finally {
       setCreating(false);
     }
@@ -159,12 +166,13 @@ export default function ClientsPage() {
     e.preventDefault();
     if (!newTagName.trim()) return;
     setCreatingTag(true);
+    setTagError(null);
     try {
       const tag = await createTag({ name: newTagName.trim() });
       setTags((prev) => [...prev, tag]);
       setNewTagName("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setTagError(e instanceof Error ? e.message : t("errors.saveFailed"));
     } finally {
       setCreatingTag(false);
     }
@@ -184,6 +192,18 @@ export default function ClientsPage() {
     setFormTags((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+        </div>
+        <Forbidden />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -261,6 +281,11 @@ export default function ClientsPage() {
           </button>
         </form>
       )}
+      {tagError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {tagError}
+        </div>
+      )}
 
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -273,6 +298,11 @@ export default function ClientsPage() {
           onSubmit={handleCreate}
           className="space-y-4 rounded-lg border border-border bg-card p-5"
         >
+          {formError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {formError}
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className={labelCls}>{t("fields.name")} *</label>

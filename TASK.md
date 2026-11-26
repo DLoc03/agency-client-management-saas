@@ -315,6 +315,18 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-024 — (Tạm hoãn) Token giới hạn cho người được mời có danh tính nhưng chưa có membership nào
+- Status: TODO — PO chốt 2026-11-26: ghi nhận là giới hạn đã biết, hoãn triển khai, chỉ mở lại khi PO yêu cầu
+- Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
+- Mô tả: Giới hạn của luồng chấp nhận lời mời (BE-010/DEC-020): người được mời đã có danh tính nhưng đang có 0 membership đang hoạt động (ví dụ khách bị xoá khỏi hệ thống khiến membership bị vô hiệu hoá, sau đó được mời làm nhân viên) rơi vào vòng lặp chết — accept trả 403 `INVITATION_LOGIN_REQUIRED` nhưng đăng nhập lại bị từ chối `NO_ACTIVE_MEMBERSHIP` vì chưa có membership nào, không còn đường hoàn tất. Hướng fix đã thống nhất: khi đăng nhập có 0 membership nhưng tồn tại lời mời đang chờ cho email đó, BE cấp token giới hạn chỉ dùng cho việc xem/xác nhận lời mời (không gắn membership, không vào được app — ResolveTenant chặn), FE đi tiếp `returnTo` về trang accept như bình thường.
+- Acceptance Criteria: Chưa áp dụng (task hoãn). Khi mở lại: identity có 0 membership + lời mời đang chờ đăng nhập được tại trang accept và xác nhận thành công; token giới hạn gọi mọi endpoint nghiệp vụ đều bị chặn; bộ test BE xanh trên cả SQLite và MySQL.
+
+## FIX-023 — Phản hồi tại vị trí tương tác + trạng thái không có quyền (PO yêu cầu tại nghiệm thu FE-015, 2026-11-26; DEC-025)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Bốn điểm. (1) Hai trang accept (nội bộ + Portal) tự chuyển hướng sang trang accept đúng loại lời mời khi mở nhầm bề mặt, giữ nguyên token. (2) Ưu tiên tuyệt đối trạng thái sai tài khoản ở trang accept: đang đăng nhập bằng danh tính khác thì chỉ hiện cảnh báo, không hiện form đặt mật khẩu/nút nhận lời mời (lỗi nghiệm thu mục B4 — trước đây form email mới và khối cảnh báo hiện đồng thời). (3) Quét toàn app theo DEC-025: lỗi của form/section hiển thị ngay trong form/section đó — chi tiết khách hàng (gồm form cấp quyền Portal), chi tiết lead (gồm khối chuyển đổi), chi tiết dự án (gồm các modal thêm thành viên/cột mốc/task và section gán team), chi tiết task (checklist, bình luận), chi tiết thành viên (hồ sơ, vai trò) và nhóm, các form tạo ở trang danh sách (khách hàng gồm cả form thẻ, lead, dự án) và các modal (mời thành viên, tạo nhóm); banner đầu trang chỉ còn cho lỗi tải trang và hành động cấp trang. (4) Trang không có quyền (API 403 `FORBIDDEN`) hiển thị trạng thái bản địa hoá theo ngôn ngữ giao diện (component `Forbidden` dùng chung, khóa `Common.forbidden`) ở mọi trang danh sách/chi tiết; bản địa hoá các chuỗi hardcode còn sót (confirm xoá ở Projects, ghi chú giới hạn Admin ở chi tiết thành viên). `lib/projects/api` từ nay đính kèm code/status vào lỗi như các lib khác.
+- Acceptance Criteria: Nguyen nghiệm thu ở production: cấp quyền Portal trùng email → cảnh báo đỏ hiện ngay trong section Portal; đăng nhập bằng member@demo.test mở Khách hàng/Dự án → trang "không có quyền truy cập" đúng ngôn ngữ đang chọn (EN/VI); mở link mời khách ở trang accept nội bộ → tự sang trang accept Portal; mở link mời email mới khi đang đăng nhập tài khoản khác → chỉ thấy cảnh báo sai tài khoản, không thấy form/nút nhận lời mời; web build PASS, vitest PASS, không khóa i18n lơ lửng.
+
 ## FIX-022 — Chú thích semantics gỡ team trong chi tiết dự án (PO yêu cầu tại nghiệm thu FIX-021, 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)

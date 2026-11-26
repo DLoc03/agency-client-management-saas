@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { Select } from "@/components/ui/Select";
 import {
   createLead,
@@ -55,6 +56,8 @@ export default function LeadsPage() {
   const [users, setUsers] = useState<DirectoryUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   const [q, setQ] = useState("");
   const [source, setSource] = useState("");
@@ -104,8 +107,10 @@ export default function LeadsPage() {
       setLeads(data);
       setSummary(sum);
       setDue(dueList);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -138,6 +143,7 @@ export default function LeadsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
+    setFormError(null);
     try {
       await createLead({
         name: form.name,
@@ -157,7 +163,7 @@ export default function LeadsPage() {
       setShowCreate(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
     } finally {
       setCreating(false);
     }
@@ -176,6 +182,18 @@ export default function LeadsPage() {
 
   const summaryFor = (status: LeadStatus) =>
     summary.find((row) => row.status === status);
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+        </div>
+        <Forbidden />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -236,6 +254,11 @@ export default function LeadsPage() {
           onSubmit={handleCreate}
           className="space-y-4 rounded-lg border border-border bg-card p-5"
         >
+          {formError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {formError}
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className={labelCls}>{t("fields.name")} *</label>

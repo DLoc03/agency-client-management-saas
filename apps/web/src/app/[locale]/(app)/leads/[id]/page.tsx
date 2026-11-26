@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   convertLead,
   createLeadActivity,
@@ -73,6 +74,12 @@ export default function LeadDetailPage() {
   const [users, setUsers] = useState<DirectoryUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [noteError, setNoteError] = useState<string | null>(null);
+  const [activityError, setActivityError] = useState<string | null>(null);
+  const [convertError, setConvertError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -118,7 +125,8 @@ export default function LeadDetailPage() {
       setActivities(acts);
       setUsers(us);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -203,7 +211,7 @@ export default function LeadDetailPage() {
       setEditing(false);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setEditError(e instanceof Error ? e.message : t("errors.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -239,7 +247,7 @@ export default function LeadDetailPage() {
       setEditingContact(null);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setContactError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -249,7 +257,7 @@ export default function LeadDetailPage() {
       await deleteLeadContact(id, contact.id);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setContactError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -261,7 +269,7 @@ export default function LeadDetailPage() {
       setNoteBody("");
       setNotes(await listLeadNotes(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setNoteError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -270,7 +278,7 @@ export default function LeadDetailPage() {
       await deleteLeadNote(id, note.id);
       setNotes(await listLeadNotes(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setNoteError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -287,7 +295,7 @@ export default function LeadDetailPage() {
       setActivityForm({ type: "call", scheduled_at: "", note: "" });
       setActivities(await listLeadActivities(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setActivityError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -298,7 +306,7 @@ export default function LeadDetailPage() {
       });
       setActivities(await listLeadActivities(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setActivityError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -307,13 +315,13 @@ export default function LeadDetailPage() {
       await deleteLeadActivity(id, activity.id);
       setActivities(await listLeadActivities(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setActivityError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
   const handleConvert = async (force: boolean) => {
     setConverting(true);
-    setError(null);
+    setConvertError(null);
     try {
       const client = await convertLead(id, {
         force,
@@ -330,10 +338,10 @@ export default function LeadDetailPage() {
         e instanceof LeadApiError &&
         e.code === "LEAD_ALREADY_CONVERTED"
       ) {
-        setError(t("convert.alreadyConverted"));
+        setConvertError(t("convert.alreadyConverted"));
         await loadAll();
       } else {
-        setError(e instanceof Error ? e.message : t("errors.convertFailed"));
+        setConvertError(e instanceof Error ? e.message : t("errors.convertFailed"));
       }
     } finally {
       setConverting(false);
@@ -350,10 +358,14 @@ export default function LeadDetailPage() {
         <Link href="/leads" className="text-sm font-medium hover:underline">
           ← {t("actions.back")}
         </Link>
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
+        {forbidden ? (
+          <Forbidden />
+        ) : (
+          error && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )
         )}
       </div>
     );
@@ -455,6 +467,11 @@ export default function LeadDetailPage() {
           </dl>
         ) : (
           <form onSubmit={handleSave} className="space-y-4">
+            {editError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {editError}
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className={labelCls}>{t("fields.name")} *</label>
@@ -593,6 +610,11 @@ export default function LeadDetailPage() {
               {t("convert.duplicateWarning")}
             </div>
           )}
+          {convertError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {convertError}
+            </div>
+          )}
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[220px]">
               <label className={labelCls}>{t("convert.manager")}</label>
@@ -631,6 +653,11 @@ export default function LeadDetailPage() {
       {/* Contacts */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.contacts")}</h2>
+        {contactError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {contactError}
+          </div>
+        )}
         {contacts.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noContacts")}
@@ -776,6 +803,11 @@ export default function LeadDetailPage() {
       {/* Activities */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.activities")}</h2>
+        {activityError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {activityError}
+          </div>
+        )}
         {activities.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noActivities")}
@@ -872,6 +904,11 @@ export default function LeadDetailPage() {
       {/* Notes */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.notes")}</h2>
+        {noteError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {noteError}
+          </div>
+        )}
         <p className="-mt-2 text-sm text-muted-foreground">
           {t("detail.notesHint")}
         </p>

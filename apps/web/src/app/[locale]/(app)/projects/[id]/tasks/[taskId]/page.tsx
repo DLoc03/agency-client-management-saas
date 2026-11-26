@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { priorityBadgeClass } from "@/lib/status-colors";
 import {
   getTask,
@@ -40,6 +41,9 @@ export default function TaskDetailPage() {
   const [comments, setComments] = useState<TaskComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [checklistError, setChecklistError] = useState<string | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   const [newChecklist, setNewChecklist] = useState("");
   const [newComment, setNewComment] = useState("");
@@ -60,8 +64,10 @@ export default function TaskDetailPage() {
       setTask(tk);
       setChecklist(cl);
       setComments(cm);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -96,7 +102,7 @@ export default function TaskDetailPage() {
       setChecklist((prev) => [...prev, item]);
       setNewChecklist("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setChecklistError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -105,7 +111,7 @@ export default function TaskDetailPage() {
       const updated = await updateChecklistItem(taskId, item.id, { is_done: !item.is_done });
       setChecklist((prev) => prev.map((x) => (x.id === item.id ? updated : x)));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setChecklistError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -114,7 +120,7 @@ export default function TaskDetailPage() {
       await deleteChecklistItem(taskId, itemId);
       setChecklist((prev) => prev.filter((x) => x.id !== itemId));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setChecklistError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -126,7 +132,7 @@ export default function TaskDetailPage() {
       setComments((prev) => [comment, ...prev]);
       setNewComment("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setCommentError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -135,7 +141,7 @@ export default function TaskDetailPage() {
       await deleteComment(taskId, commentId);
       setComments((prev) => prev.filter((x) => x.id !== commentId));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setCommentError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -148,6 +154,14 @@ export default function TaskDetailPage() {
   }
 
   if (loading || !task) {
+    if (forbidden) return <Forbidden />;
+    if (!loading && error) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
@@ -221,6 +235,11 @@ export default function TaskDetailPage() {
       {/* Checklist */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">{t("task.checklist")}</h2>
+        {checklistError && (
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {checklistError}
+          </div>
+        )}
         <form onSubmit={handleAddChecklist} className="mb-4 flex gap-2">
           <input
             value={newChecklist}
@@ -272,6 +291,11 @@ export default function TaskDetailPage() {
       {/* Comments */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">{t("task.comments")}</h2>
+        {commentError && (
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {commentError}
+          </div>
+        )}
         {canComment && (
           <form onSubmit={handleAddComment} className="mb-4 space-y-2">
             <textarea

@@ -8,6 +8,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { Select } from "@/components/ui/Select";
 import {
   createContact,
@@ -64,6 +65,11 @@ export default function ClientDetailPage() {
   const [users, setUsers] = useState<DirectoryUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [noteError, setNoteError] = useState<string | null>(null);
+  const [portalError, setPortalError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -125,7 +131,8 @@ export default function ClientDetailPage() {
           }))
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -175,6 +182,7 @@ export default function ClientDetailPage() {
     e.preventDefault();
     if (!client) return;
     setSaving(true);
+    setEditError(null);
     try {
       const payload: Record<string, unknown> = {
         name: form.name,
@@ -204,7 +212,7 @@ export default function ClientDetailPage() {
       setEditing(false);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setEditError(e instanceof Error ? e.message : t("errors.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -222,6 +230,7 @@ export default function ClientDetailPage() {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setContactError(null);
     const payload = {
       full_name: contactForm.full_name,
       email: contactForm.email || null,
@@ -240,7 +249,7 @@ export default function ClientDetailPage() {
       setEditingContact(null);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setContactError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -250,19 +259,20 @@ export default function ClientDetailPage() {
       await deleteContact(id, contact.id);
       await loadAll();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setContactError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
   const handleNoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!noteBody.trim()) return;
+    setNoteError(null);
     try {
       await createNote(id, noteBody.trim());
       setNoteBody("");
       setNotes(await listNotes(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setNoteError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -271,12 +281,13 @@ export default function ClientDetailPage() {
       await deleteNote(id, note.id);
       setNotes(await listNotes(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setNoteError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPortalError(null);
     try {
       const result = await createPortalAccount(id, {
         email: accountForm.email,
@@ -301,9 +312,9 @@ export default function ClientDetailPage() {
     } catch (e) {
       const code = (e as { code?: string } | null)?.code;
       if (code === "INVITATION_PENDING" || code === "EMAIL_ALREADY_REGISTERED") {
-        setError(t(`errors.${code}`));
+        setPortalError(t(`errors.${code}`));
       } else {
-        setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+        setPortalError(e instanceof Error ? e.message : t("errors.saveFailed"));
       }
     }
   };
@@ -313,7 +324,7 @@ export default function ClientDetailPage() {
       await setPortalAccountActive(id, account.id, !account.is_active);
       setAccounts(await listPortalAccounts(id));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      setPortalError(e instanceof Error ? e.message : t("errors.saveFailed"));
     }
   };
 
@@ -330,10 +341,14 @@ export default function ClientDetailPage() {
         <Link href="/clients" className="text-sm font-medium hover:underline">
           ← {t("actions.back")}
         </Link>
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
+        {forbidden ? (
+          <Forbidden />
+        ) : (
+          error && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )
         )}
       </div>
     );
@@ -425,6 +440,11 @@ export default function ClientDetailPage() {
           </dl>
         ) : (
           <form onSubmit={handleSave} className="space-y-4">
+            {editError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {editError}
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className={labelCls}>{t("fields.name")} *</label>
@@ -611,6 +631,11 @@ export default function ClientDetailPage() {
       {/* Contacts */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.contacts")}</h2>
+        {contactError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {contactError}
+          </div>
+        )}
         {contacts.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noContacts")}
@@ -759,6 +784,11 @@ export default function ClientDetailPage() {
         <p className="-mt-2 text-sm text-muted-foreground">
           {t("detail.notesHint")}
         </p>
+        {noteError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {noteError}
+          </div>
+        )}
         {notes.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noNotes")}
@@ -817,6 +847,11 @@ export default function ClientDetailPage() {
       {/* Portal accounts */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.portalAccounts")}</h2>
+        {portalError && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {portalError}
+          </div>
+        )}
         {accounts.length === 0 && pendingInvitations.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noPortalAccounts")}

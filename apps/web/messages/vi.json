@@ -5,7 +5,12 @@
     "or": "hoặc",
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
-    "moreActions": "Thao tác khác"
+    "moreActions": "Thao tác khác",
+    "forbidden": {
+      "title": "Bạn không có quyền truy cập trang này",
+      "body": "Vai trò hiện tại của bạn không có quyền xem mục này. Nếu cho rằng đây là nhầm lẫn, hãy liên hệ chủ không gian làm việc.",
+      "back": "Về bảng điều khiển"
+    }
   },
   "Home": {
     "status": "Giai đoạn nền tảng — ứng dụng đang được khởi tạo.",
@@ -258,6 +263,9 @@
     "title": "Dự án",
     "subtitle": "Quản lý dự án, cột mốc và công việc.",
     "newProject": "Dự án mới",
+    "confirmDelete": "Xoá dự án này?",
+    "confirmDeleteMilestone": "Xoá cột mốc này?",
+    "confirmDeleteTask": "Xoá công việc này?",
     "empty": {
       "title": "Chưa có dự án",
       "description": "Tạo dự án đầu tiên để bắt đầu."
@@ -664,7 +672,8 @@
       "title": "Hồ sơ thành viên",
       "openTasks": "Công việc mở",
       "noTeams": "Chưa có nhóm",
-      "noRoles": "Chưa có vai trò"
+      "noRoles": "Chưa có vai trò",
+      "adminLimited": "Admin không thể quản lý vai trò Admin."
     },
     "teamsDetail": {
       "title": "Chi tiết nhóm",

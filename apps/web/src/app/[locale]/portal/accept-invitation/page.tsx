@@ -74,6 +74,14 @@ function PortalAcceptInner() {
     };
   }, [token]);
 
+  // FIX-023: a staff invitation opened on the Portal surface belongs to
+  // the internal accept page — forward it, keeping the same token.
+  useEffect(() => {
+    if (preview && preview.kind === "staff") {
+      router.replace(`/accept-invitation?token=${encodeURIComponent(token)}`);
+    }
+  }, [preview, token, router]);
+
   const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(locale);
   const inputCls =
     "w-full rounded-lg border border-neutral-300 bg-white/90 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-neutral-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200";
@@ -181,7 +189,7 @@ function PortalAcceptInner() {
               </div>
             )}
 
-            {!previewError && !accepted && preview?.has_identity === false && (
+            {!previewError && !accepted && preview?.has_identity === false && preview?.matches_current_user === null && (
               <form
                 onSubmit={(e) => { e.preventDefault(); void doAccept(true); }}
                 className="flex flex-col gap-4"
