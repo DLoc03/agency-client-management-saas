@@ -59,13 +59,6 @@
         "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
       }
     },
-    "dashboard": {
-      "title": "Bảng điều khiển",
-      "welcome": "Chào mừng trở lại, {name}!",
-      "agency": "Không gian làm việc: {agency}",
-      "signOut": "Đăng xuất",
-      "mockNotice": "Đã kết nối API backend. Xác thực an toàn qua phiên cookie httpOnly."
-    },
     "selectAgency": {
       "heading": "Chọn không gian làm việc",
       "subtitle": "Tài khoản của bạn có thể truy cập nhiều không gian làm việc. Chọn một nơi để tiếp tục.",
@@ -77,6 +70,13 @@
         "expired": "Phiên chọn không gian làm việc đã hết hạn hoặc không còn hợp lệ. Vui lòng đăng nhập lại.",
         "failed": "Không thể mở không gian làm việc đó. Vui lòng đăng nhập lại."
       }
+    },
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "welcome": "Chào mừng trở lại, {name}!",
+      "agency": "Không gian làm việc: {agency}",
+      "signOut": "Đăng xuất",
+      "mockNotice": "Đã kết nối API backend. Xác thực an toàn qua phiên cookie httpOnly."
     }
   },
   "Shell": {
@@ -332,7 +332,11 @@
       "assign": "Gán team",
       "remove": "Gỡ team",
       "resultAssigned": "Đã gán team: thêm {added} thành viên.",
-      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
+      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}.",
+      "assignedTeams": "Team đã gán",
+      "noTeamsAssigned": "Chưa gán team nào",
+      "teamMembersCount": "{count} thành viên",
+      "deletedTeam": "Team đã xoá"
     },
     "timelineTypes": {
       "task": "Công việc",

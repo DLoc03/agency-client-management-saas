@@ -59,13 +59,6 @@
         "UNKNOWN": "An unexpected error occurred. Please try again later."
       }
     },
-    "dashboard": {
-      "title": "Dashboard",
-      "welcome": "Welcome back, {name}!",
-      "agency": "Workspace: {agency}",
-      "signOut": "Sign out",
-      "mockNotice": "Connected to backend API. Authenticated via secure httpOnly cookie session."
-    },
     "selectAgency": {
       "heading": "Choose a workspace",
       "subtitle": "Your account can access several workspaces. Pick one to continue.",
@@ -77,6 +70,13 @@
         "expired": "Your workspace selection has expired or is no longer valid. Please sign in again.",
         "failed": "We could not open that workspace. Please sign in again."
       }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back, {name}!",
+      "agency": "Workspace: {agency}",
+      "signOut": "Sign out",
+      "mockNotice": "Connected to backend API. Authenticated via secure httpOnly cookie session."
     }
   },
   "Shell": {
@@ -332,7 +332,11 @@
       "assign": "Assign team",
       "remove": "Remove team",
       "resultAssigned": "Team assigned: {added} member(s) added.",
-      "resultRemoved": "Removed {removed} member(s), kept {kept}."
+      "resultRemoved": "Removed {removed} member(s), kept {kept}.",
+      "assignedTeams": "Assigned teams",
+      "noTeamsAssigned": "No team assigned yet",
+      "teamMembersCount": "{count} member(s)",
+      "deletedTeam": "Deleted team"
     },
     "timelineTypes": {
       "task": "Task",
