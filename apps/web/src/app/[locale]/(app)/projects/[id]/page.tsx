@@ -592,6 +592,7 @@ export default function ProjectDetailPage() {
               {t("teamAssignment.remove")}
             </button>
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t("teamAssignment.note")}</p>
           {teamResult && (
             <p className="mt-2 text-sm text-muted-foreground">{teamResult}</p>
           )}

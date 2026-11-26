@@ -336,7 +336,8 @@
       "assignedTeams": "Team đã gán",
       "noTeamsAssigned": "Chưa gán team nào",
       "teamMembersCount": "{count} thành viên",
-      "deletedTeam": "Team đã xoá"
+      "deletedTeam": "Team đã xoá",
+      "note": "Gỡ team chỉ gỡ những thành viên vào dự án qua team đó và chưa có công việc được gán. Thành viên đang có công việc sẽ ở lại thành thành viên trực tiếp; thành viên được thêm riêng không bị ảnh hưởng."
     },
     "timelineTypes": {
       "task": "Công việc",
