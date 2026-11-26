@@ -68,6 +68,9 @@ services:
       - ./apps/web:/app
       - web_node_modules:/app/node_modules
     environment:
+      # Run mode of the web app, switchable from the host shell: dev (default)
+      # or prod. See the command below.
+      WEB_MODE: ${WEB_MODE:-dev}
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
       # Server-side (BFF) calls must reach the API over the compose network —
       # without this the web container falls back to localhost (= itself)
@@ -78,7 +81,13 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    command: sh -c "pnpm install && pnpm dev"
+    # WEB_MODE=dev (default): hot-reload dev server. Pages compile on first
+    # visit, separately per locale, so navigation feels slow in this mode;
+    # use it for development only.
+    # WEB_MODE=prod: full production build + start. Use it for acceptance
+    # testing so page transitions behave like the real deployment:
+    #   WEB_MODE=prod docker compose up -d web
+    command: sh -c "pnpm install && if [ \"$${WEB_MODE}\" = \"prod\" ]; then pnpm build && pnpm start; else pnpm dev; fi"
 
   mysql:
     image: mysql:8
