@@ -36,11 +36,15 @@ function buildSchema(t: ReturnType<typeof useTranslations<"Portal.login">>) {
 
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-export function PortalLoginForm() {
+export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
   const t = useTranslations("Portal.login");
   const schema = buildSchema(t);
   const { login } = usePortalAuth();
   const router = useRouter();
+  const safeRedirect =
+    redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : null;
   const [serverError, setServerError] = useState<ErrorCode | null>(null);
 
   const {
@@ -56,7 +60,7 @@ export function PortalLoginForm() {
     const result = await login(values);
 
     if (result.success) {
-      router.replace("/portal");
+      router.replace(safeRedirect || "/portal");
       return;
     }
 

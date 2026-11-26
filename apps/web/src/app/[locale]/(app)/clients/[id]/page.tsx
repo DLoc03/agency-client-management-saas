@@ -7,7 +7,6 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
-import { PasswordInput } from "@/components/ui/PasswordInput";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Select } from "@/components/ui/Select";
 import {
@@ -26,6 +25,7 @@ import {
   updateClient,
   updateContact,
 } from "@/lib/clients/api";
+import { listInvitations } from "@/lib/team/api";
 import { statusBadgeClass } from "@/lib/status-colors";
 import type {
   Client,
@@ -34,8 +34,10 @@ import type {
   Contact,
   DirectoryUser,
   PortalAccount,
+  PortalInvitation,
   Tag,
 } from "@/lib/clients/types";
+import type { Invitation } from "@/lib/team/types";
 
 const CLIENT_STATUSES: ClientStatus[] = ["active", "paused", "churned"];
 
@@ -57,6 +59,7 @@ export default function ClientDetailPage() {
   const [client, setClient] = useState<Client | null>(null);
   const [notes, setNotes] = useState<ClientNote[]>([]);
   const [accounts, setAccounts] = useState<PortalAccount[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PortalInvitation[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [users, setUsers] = useState<DirectoryUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,9 +81,7 @@ export default function ClientDetailPage() {
 
   const [noteBody, setNoteBody] = useState("");
   const [accountForm, setAccountForm] = useState<Record<string, string>>({
-    name: "",
     email: "",
-    password: "",
     locale: "en",
   });
 
@@ -92,18 +93,37 @@ export default function ClientDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const [cl, ns, accs, tg, us] = await Promise.all([
+      const [cl, ns, accs, tg, us, invs] = await Promise.all([
         getClient(id),
         listNotes(id).catch(() => [] as ClientNote[]),
         listPortalAccounts(id).catch(() => [] as PortalAccount[]),
         listTags().catch(() => [] as Tag[]),
         listDirectoryUsers().catch(() => [] as DirectoryUser[]),
+        listInvitations().catch(() => [] as Invitation[]),
       ]);
       setClient(cl);
       setNotes(ns);
       setAccounts(accs);
       setTags(tg);
       setUsers(us);
+      setPendingInvitations(
+        invs
+          .filter(
+            (inv) =>
+              inv.kind === "client" &&
+              inv.client_id === id &&
+              !inv.accepted_at &&
+              !inv.revoked_at
+          )
+          .map((inv) => ({
+            id: inv.id,
+            email: inv.email,
+            kind: "client" as const,
+            client_id: inv.client_id,
+            expires_at: inv.expires_at,
+            created_at: inv.created_at,
+          }))
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
@@ -258,18 +278,33 @@ export default function ClientDetailPage() {
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payload: Record<string, unknown> = {
-        name: accountForm.name,
+      const result = await createPortalAccount(id, {
         email: accountForm.email,
         locale: accountForm.locale,
-      };
-      payload["password"] = accountForm.password;
-      await createPortalAccount(id, payload);
-      setAccountForm({ name: "", email: "", password: "", locale: "en" });
-      setAccounts(await listPortalAccounts(id));
-      await loadAll();
+      });
+      if ("kind" in result && result.kind === "client") {
+        setPendingInvitations((current) => [
+          ...current.filter((inv) => inv.email !== result.email),
+          {
+            id: result.id,
+            email: result.email,
+            kind: "client",
+            client_id: result.client_id,
+            expires_at: result.expires_at,
+            created_at: null,
+          },
+        ]);
+      } else {
+        setAccounts(await listPortalAccounts(id));
+      }
+      setAccountForm({ email: "", locale: "en" });
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      const code = (e as { code?: string } | null)?.code;
+      if (code === "INVITATION_PENDING" || code === "EMAIL_ALREADY_REGISTERED") {
+        setError(t(`errors.${code}`));
+      } else {
+        setError(e instanceof Error ? e.message : t("errors.saveFailed"));
+      }
     }
   };
 
@@ -782,12 +817,29 @@ export default function ClientDetailPage() {
       {/* Portal accounts */}
       <section className={cardCls}>
         <h2 className={sectionTitleCls}>{t("detail.portalAccounts")}</h2>
-        {accounts.length === 0 ? (
+        {accounts.length === 0 && pendingInvitations.length === 0 ? (
           <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
             {t("detail.noPortalAccounts")}
           </div>
         ) : (
           <ul className="divide-y divide-border">
+            {pendingInvitations.map((invitation) => (
+              <li
+                key={`pending-${invitation.id}`}
+                className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3"
+              >
+                <span className="font-medium text-foreground">
+                  {invitation.email}
+                </span>
+                <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+                  {t("portal.pending")}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {t("portal.invitationSent")} · {t("portal.expires")}:{" "}
+                  {fmtDate(invitation.expires_at)}
+                </span>
+              </li>
+            ))}
             {accounts.map((account) => (
               <li
                 key={account.id}
@@ -825,15 +877,9 @@ export default function ClientDetailPage() {
             onSubmit={handleAccountSubmit}
             className="grid gap-3 border-t border-border pt-4 sm:grid-cols-2"
           >
-            <input
-              required
-              placeholder={`${t("portal.name")} *`}
-              value={accountForm.name}
-              onChange={(e) =>
-                setAccountForm({ ...accountForm, name: e.target.value })
-              }
-              className={inputCls}
-            />
+            <p className="text-xs text-muted-foreground sm:col-span-2">
+              {t("portal.grantHint")}
+            </p>
             <input
               required
               type="email"
@@ -841,16 +887,6 @@ export default function ClientDetailPage() {
               value={accountForm.email}
               onChange={(e) =>
                 setAccountForm({ ...accountForm, email: e.target.value })
-              }
-              className={inputCls}
-            />
-            <PasswordInput
-              required
-                minLength={8}
-              placeholder={`${t("portal.password")} *`}
-              value={accountForm.password}
-              onChange={(e) =>
-                setAccountForm({ ...accountForm, ["password"]: e.target.value })
               }
               className={inputCls}
             />

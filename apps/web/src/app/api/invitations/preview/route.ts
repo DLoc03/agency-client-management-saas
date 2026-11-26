@@ -1,0 +1,6 @@
+import { proxyToBackend } from "@/lib/bff/proxy";
+import { NextRequest } from "next/server";
+
+export async function GET(request: NextRequest) {
+  return proxyToBackend(request, "invitations/preview");
+}

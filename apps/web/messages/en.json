@@ -164,6 +164,40 @@
         "UNKNOWN": "An unexpected error occurred. Please try again later."
       }
     },
+    "accept": {
+      "heading": "You're invited to Client Portal",
+      "subtitle": "Review projects, tasks and invoices from {agency}.",
+      "agencyLabel": "Agency",
+      "emailLabel": "Invited email",
+      "expiresLabel": "Expires",
+      "newEmailTitle": "Set your password",
+      "newEmailSubtitle": "Choose your name and password to activate Portal access.",
+      "name": "Full name",
+      "password": "Password",
+      "submit": "Accept invitation",
+      "submitting": "Accepting…",
+      "loginRequiredTitle": "Sign in to continue",
+      "loginRequiredBody": "This email already has an account. Sign in with your existing password, then confirm the invitation here.",
+      "confirmTitle": "Confirm Portal access",
+      "confirmBody": "You are signed in as {email}. Confirm to join — no new password is needed.",
+      "confirmAction": "Confirm invitation",
+      "mismatchTitle": "Wrong account",
+      "mismatchBody": "You are signed in as {email}, but this invitation is for {invitedEmail}. Sign in with the invited account to continue.",
+      "unknownEmail": "another account",
+      "success": "Portal access is ready.",
+      "goToPortal": "Go to Portal",
+      "errors": {
+        "NOT_FOUND": "This invitation link is invalid or has been revoked.",
+        "INVALID": "This invitation is invalid.",
+        "INVITATION_EXPIRED": "This invitation has expired.",
+        "INVITATION_ALREADY_ACCEPTED": "This invitation has already been accepted.",
+        "INVITATION_LOGIN_REQUIRED": "Please sign in with the invited email first.",
+        "INVITATION_IDENTITY_MISMATCH": "You are signed in as a different account than the one invited.",
+        "EMAIL_ALREADY_REGISTERED": "This email already has Portal access.",
+        "STAFF_CLIENT_MEMBERSHIP_CONFLICT": "This account cannot hold both staff and client access in the same agency.",
+        "UNKNOWN": "An unexpected error occurred. Please try again later."
+      }
+    },
     "forgotPassword": {
       "title": "Forgot password",
       "subtitle": "Enter your email address to receive password reset instructions.",
@@ -540,7 +574,11 @@
       "active": "Active",
       "disabled": "Disabled",
       "lastLogin": "Last login",
-      "never": "Never"
+      "never": "Never",
+      "pending": "Invitation pending",
+      "invitationSent": "Invitation email sent — the client sets their own password.",
+      "expires": "Expires",
+      "grantHint": "A new email receives an invitation link; an existing account gets access immediately."
     },
     "tags": {
       "name": "Tag name",
@@ -552,7 +590,9 @@
       "loadFailed": "Failed to load clients.",
       "saveFailed": "Failed to save.",
       "createFailed": "Failed to create client.",
-      "deleteFailed": "Failed to delete."
+      "deleteFailed": "Failed to delete.",
+      "INVITATION_PENDING": "An invitation is already pending for this email.",
+      "EMAIL_ALREADY_REGISTERED": "This email already has Portal access."
     }
   },
   "Teams": {
@@ -643,17 +683,46 @@
     },
     "accept": {
       "title": "Accept invitation",
-      "subtitle": "Set your name and password to join the workspace.",
+      "subtitle": "Review the workspace invitation and confirm your access.",
       "name": "Full name",
       "password": "Password",
       "submit": "Accept invitation",
-      "success": "Invitation accepted. You can now sign in.",
+      "submitting": "Accepting…",
+      "success": "Invitation accepted.",
       "goToLogin": "Go to sign in",
+      "goToDashboard": "Go to dashboard",
+      "preview": {
+        "agency": "Workspace",
+        "email": "Invited email",
+        "expires": "Expires",
+        "kindStaff": "Internal member",
+        "kindClient": "Client access"
+      },
+      "loginRequired": {
+        "heading": "Sign in to continue",
+        "body": "This email already has an account. Sign in with your existing password, then return to this link to confirm.",
+        "action": "Go to sign in"
+      },
+      "confirm": {
+        "heading": "Join {agency}?",
+        "body": "You are signed in as {email}. Confirm to accept this invitation — no new password is needed.",
+        "action": "Confirm invitation"
+      },
+      "mismatch": {
+        "heading": "Wrong account",
+        "body": "You are signed in as {email}, but this invitation is for {invitedEmail}.",
+        "unknownEmail": "another account"
+      },
       "errors": {
+        "NOT_FOUND": "This invitation link is invalid or has been revoked.",
+        "INVALID": "Invalid invitation.",
         "INVITATION_EXPIRED": "This invitation has expired.",
         "INVITATION_ALREADY_ACCEPTED": "This invitation has already been accepted.",
+        "INVITATION_LOGIN_REQUIRED": "Please sign in with the invited email first.",
+        "INVITATION_IDENTITY_MISMATCH": "You are signed in as a different account than the one invited.",
         "EMAIL_ALREADY_REGISTERED": "This email is already registered.",
-        "INVALID": "Invalid invitation."
+        "ALREADY_MEMBER": "This email already has access to this workspace.",
+        "STAFF_CLIENT_MEMBERSHIP_CONFLICT": "This account cannot hold both staff and client access in the same agency."
       }
     },
     "errors": {

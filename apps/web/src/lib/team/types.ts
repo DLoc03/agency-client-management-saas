@@ -33,12 +33,32 @@ export interface DirectoryUser {
 export interface Invitation {
   id: number;
   email: string;
+  kind: "staff" | "client";
+  client_id: number | null;
   roles: { id: number; key: string; name: string }[];
   expires_at: string;
   invited_by: { id: number; name: string } | null;
   accepted_at: string | null;
   revoked_at: string | null;
   created_at: string | null;
+  updated_at?: string | null;
+}
+
+export interface InvitationPreview {
+  agency: { id: number; name: string };
+  email: string;
+  kind: "staff" | "client";
+  roles: string[];
+  has_identity: boolean;
+  matches_current_user: boolean | null;
+  expires_at: string;
+}
+
+export interface AcceptInvitationResult {
+  user_id: number;
+  email: string;
+  agency_id: number;
+  kind: "staff" | "client";
 }
 
 export interface WorkloadRow {
