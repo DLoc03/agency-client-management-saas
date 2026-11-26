@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AgencyPaymentDetailsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientContactController;
 use App\Http\Controllers\Api\ClientController;
@@ -7,13 +8,16 @@ use App\Http\Controllers\Api\ClientNoteController;
 use App\Http\Controllers\Api\ClientPortalAccountController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LeadActivityController;
 use App\Http\Controllers\Api\LeadContactController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\LeadNoteController;
 use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\OwnershipController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PortalAuthController;
+use App\Http\Controllers\Api\PortalInvoiceController;
 use App\Http\Controllers\Api\PortalProjectController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
@@ -190,10 +194,34 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::get('/workload', [WorkloadController::class, 'index'])->middleware('permission:workload.view');
 });
 
+// Finance & Billing module (docs/FINANCE_CONTRACT.md, DEC-019) — same
+// tenancy and permission model. The agency payment-details endpoint
+// lives here too: it edits the caller's own agency only.
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
+    Route::get('/invoices', [InvoiceController::class, 'index'])->middleware('permission:invoices.view');
+    Route::post('/invoices', [InvoiceController::class, 'store'])->middleware('permission:invoices.create');
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->middleware('permission:invoices.view');
+    Route::patch('/invoices/{invoice}', [InvoiceController::class, 'update'])->middleware('permission:invoices.update');
+    Route::delete('/invoices/{invoice}', [InvoiceController::class, 'destroy'])->middleware('permission:invoices.delete');
+    Route::post('/invoices/{invoice}/send', [InvoiceController::class, 'send'])->middleware('permission:invoices.send');
+    Route::post('/invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->middleware('permission:invoices.cancel');
+    Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->middleware('permission:invoices.pdf');
+
+    Route::get('/invoices/{invoice}/payments', [PaymentController::class, 'index'])->middleware('permission:invoices.view');
+    Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])->middleware('permission:payments.manage');
+    Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->middleware('permission:payments.manage');
+
+    Route::patch('/agencies/{agency}/payment-details', [AgencyPaymentDetailsController::class, 'update'])->middleware('permission:agencies.payment-details.update');
+});
+
 // Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —
 // read-only, scoped to the signed-in client's own projects.
 Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal', 'tenant'])->group(function () {
     Route::get('/projects', [PortalProjectController::class, 'index']);
     Route::get('/projects/{projectId}', [PortalProjectController::class, 'show']);
 
+    // Portal invoices (docs/FINANCE_CONTRACT.md section 4.6) —
+    // read-only, scoped to the signed-in client's own invoices.
+    Route::get('/invoices', [PortalInvoiceController::class, 'index']);
+    Route::get('/invoices/{invoiceId}', [PortalInvoiceController::class, 'show']);
 });

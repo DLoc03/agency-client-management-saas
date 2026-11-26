@@ -9,6 +9,10 @@ class ProjectResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        // Finance reconciliation figures (docs/FINANCE_CONTRACT.md
+        // section 6), computed at read like the progress percent.
+        $invoicedTotal = $this->invoicedTotal();
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -26,6 +30,11 @@ class ProjectResource extends JsonResource
             'start_date' => $this->start_date?->toDateString(),
             'due_date' => $this->due_date?->toDateString(),
             'budget' => $this->budget,
+            'invoiced_total' => number_format($invoicedTotal, 2, '.', ''),
+            'collected_total' => number_format($this->collectedTotal(), 2, '.', ''),
+            'remaining_budget' => $this->budget !== null
+                ? number_format(round((float) $this->budget - $invoicedTotal, 2), 2, '.', '')
+                : null,
             'tasks_count' => $this->whenCounted('tasks'),
             'tasks_done_count' => $this->when(
                 $this->tasks_done_count !== null || isset($this->tasks_done_count),

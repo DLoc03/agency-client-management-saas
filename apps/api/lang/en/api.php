@@ -34,4 +34,10 @@ return [
     'CANNOT_MODIFY_OWNER' => 'The workspace owner cannot be modified this way.',
     'PASSWORD_RESET_SENT' => 'If the account exists, a password reset email has been sent.',
     'PASSWORD_RESET_DONE' => 'Your password has been reset.',
+    'INVOICE_EMPTY' => 'An invoice needs at least one line item before it can be sent.',
+    'INVOICE_NOT_EDITABLE' => 'This invoice can no longer be changed in its current status.',
+    'CANNOT_CANCEL_INVOICE' => 'This invoice cannot be cancelled.',
+    'CANNOT_DELETE_INVOICE' => 'Only a draft invoice can be deleted.',
+    'PAYMENT_NOT_ALLOWED' => 'Payments can only be recorded on a sent invoice.',
+    'OVERPAYMENT_NOT_ALLOWED' => 'The payment exceeds the balance due on this invoice.',
 ];

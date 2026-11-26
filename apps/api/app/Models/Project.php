@@ -77,6 +77,33 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Budget reconciliation figures (docs/FINANCE_CONTRACT.md section
+     * 6), computed at read time: the sum of this project's live
+     * invoice totals, Cancelled invoices excluded.
+     */
+    public function invoicedTotal(): float
+    {
+        return round((float) $this->invoices()
+            ->where('status', '!=', Invoice::STATUS_CANCELLED)
+            ->sum('total'), 2);
+    }
+
+    /** Sum of live payments recorded on those same invoices. */
+    public function collectedTotal(): float
+    {
+        return round((float) Payment::query()
+            ->whereHas('invoice', fn ($q) => $q
+                ->where('project_id', $this->id)
+                ->where('status', '!=', Invoice::STATUS_CANCELLED))
+            ->sum('amount'), 2);
+    }
+
     /** Done-task share of all tasks, as a whole percent (0 tasks → 0). */
     public function progressPercent(): int
     {
