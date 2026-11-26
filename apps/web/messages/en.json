@@ -336,7 +336,8 @@
       "assignedTeams": "Assigned teams",
       "noTeamsAssigned": "No team assigned yet",
       "teamMembersCount": "{count} member(s)",
-      "deletedTeam": "Deleted team"
+      "deletedTeam": "Deleted team",
+      "note": "Removing a team only removes members who joined the project through that team and have no assigned tasks. Members with assigned tasks stay on as direct members, and members added individually are not affected."
     },
     "timelineTypes": {
       "task": "Task",

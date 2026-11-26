@@ -315,6 +315,12 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-022 — Chú thích semantics gỡ team trong chi tiết dự án (PO yêu cầu tại nghiệm thu FIX-021, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
+- Mô tả: Tại nghiệm thu FIX-021, PO xác nhận hành vi gỡ team hiện tại là đúng thiết kế TEAM_CONTRACT §4 (chỉ gỡ thành viên vào qua team và chưa có task; thành viên có task được giữ thành thành viên trực tiếp; thành viên thêm riêng không bị ảnh hưởng) nhưng yêu cầu thêm một chú thích nhỏ để người dùng không hiểu lầm. Bổ sung đúng một dòng chú thích tĩnh (khóa i18n `Projects.teamAssignment.note`, EN + VI) ngay dưới hàng nút Gán/Gỡ trong section gán team của trang chi tiết dự án. Không đổi hành vi, không đổi API.
+- Acceptance Criteria: Nguyen mở chi tiết dự án ở production: dòng chú thích hiển thị đúng nội dung EN/VI dưới hàng nút Gán/Gỡ; web build PASS; không khóa i18n lơ lửng.
+
 ## FIX-021 — Hiển thị team đã gán trong chi tiết dự án (góp ý PO 2026-11-26, PO duyệt phương án A qua trang mẫu)
 - Status: IN_PROGRESS
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
