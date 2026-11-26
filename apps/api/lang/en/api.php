@@ -29,6 +29,8 @@ return [
     'INVITATION_PENDING' => 'A pending invitation already exists for this email.',
     'INVITATION_EXPIRED' => 'This invitation has expired.',
     'INVITATION_ALREADY_ACCEPTED' => 'This invitation has already been accepted.',
+    'INVITATION_IDENTITY_MISMATCH' => 'This invitation was sent to a different account. Sign in with the invited email address to accept it.',
+    'INVITATION_LOGIN_REQUIRED' => 'This invitation belongs to an existing account. Sign in first, then open the link again to accept.',
     'CANNOT_MODIFY_OWNER' => 'The workspace owner cannot be modified this way.',
     'PASSWORD_RESET_SENT' => 'If the account exists, a password reset email has been sent.',
     'PASSWORD_RESET_DONE' => 'Your password has been reset.',

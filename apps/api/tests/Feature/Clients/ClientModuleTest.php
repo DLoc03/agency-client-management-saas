@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Clients;
 
+use App\Mail\InvitationMail;
 use App\Models\Client;
 use App\Models\Role;
 use App\Models\Tag;
@@ -9,6 +10,8 @@ use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -198,20 +201,47 @@ class ClientModuleTest extends TestCase
         $owner = $this->makeUser();
         $client = $this->makeClient($owner);
 
-        $accountId = $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
-            'name' => 'Acme Client', 'email' => 'boss@acme.test', 'password' => 'secret123',
-        ])->assertCreated()->assertJsonPath('data.client_id', $client->id)->json('data.id');
-
-        // Granting the same client access twice is rejected (DEC-018:
-        // the email now resolves to the existing identity's access).
+        // BE-010 (DEC-020): a brand-new email no longer gets an
+        // agency-set password — the grant sends an invitation link.
+        Mail::fake();
         $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
-            'name' => 'Copy', 'email' => 'boss@acme.test', 'password' => 'secret123',
+            'email' => 'boss@acme.test',
+        ])->assertCreated()
+            ->assertJsonPath('data.kind', 'client')
+            ->assertJsonPath('data.client_id', $client->id);
+
+        // Granting again while the invitation is pending -> 422.
+        $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
+            'email' => 'boss@acme.test',
+        ])->assertStatus(422)->assertJsonPath('error.code', 'INVITATION_PENDING');
+
+        // The invitee accepts the link and sets their own password.
+        $sent = null;
+        Mail::assertSent(InvitationMail::class, function ($mail) use (&$sent) {
+            $sent = $mail;
+
+            return true;
+        });
+        auth()->forgetGuards();
+        $this->withHeader('Authorization', '')
+            ->postJson('/api/v1/invitations/accept', [
+                'token' => Str::after($sent->acceptUrl, 'token='),
+                'name' => 'Acme Client', 'password' => 'secret123',
+            ])->assertCreated();
+
+        // Now the email resolves to the existing identity's active
+        // access: granting again is rejected (DEC-018).
+        $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
+            'email' => 'boss@acme.test',
         ])->assertStatus(422)->assertJsonPath('error.code', 'EMAIL_ALREADY_REGISTERED');
 
-        // The created account can log into the Portal right away (BE-003).
+        // The account can log into the Portal with its own password.
         $this->postJson('/api/v1/portal/auth/login', [
             'email' => 'boss@acme.test', 'password' => 'secret123',
         ])->assertOk();
+
+        $accountId = $this->as($owner)->getJson('/api/v1/clients/'.$client->id.'/portal-accounts')
+            ->assertOk()->json('data.0.id');
 
         // Disabling the access leaves the identity without any
         // active membership, so login answers NO_ACTIVE_MEMBERSHIP.

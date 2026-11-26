@@ -61,9 +61,13 @@ class CreateResponseDefaultsTest extends TestCase
         $owner = $this->owner();
         $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
 
-        // locale and is_active come from column defaults when not sent.
+        // DEC-020: granting Portal access to an existing identity
+        // creates the membership immediately (a brand-new email
+        // would receive an invitation link instead). locale and
+        // is_active come from column defaults when not sent.
+        User::factory()->create(['email' => 'boss@defaults.test']);
         $this->as($owner)->postJson('/api/v1/clients/'.$client->id.'/portal-accounts', [
-            'name' => 'Boss', 'email' => 'boss@defaults.test', 'password' => 'secret123',
+            'email' => 'boss@defaults.test',
         ])
             ->assertCreated()
             ->assertJsonPath('data.locale', 'en')
