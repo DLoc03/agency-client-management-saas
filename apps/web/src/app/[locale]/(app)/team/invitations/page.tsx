@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   listInvitations,
   createInvitation,
@@ -24,6 +25,7 @@ export default function InvitationsPage() {
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ email: "", roleIds: [] as number[] });
   const [formError, setFormError] = useState<string | null>(null);
@@ -48,8 +50,10 @@ export default function InvitationsPage() {
         });
       });
       setRoles(Array.from(map.values()));
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +88,7 @@ export default function InvitationsPage() {
       setForm({ email: "", roleIds: [] });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
     }
   };
 
@@ -111,6 +115,18 @@ export default function InvitationsPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("invitations")}</p>
+        </div>
+        <Forbidden />
       </div>
     );
   }

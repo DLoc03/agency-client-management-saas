@@ -7,6 +7,7 @@ import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { getWorkload } from "@/lib/team/api";
 import type { WorkloadRow } from "@/lib/team/types";
 
@@ -20,6 +21,7 @@ export default function WorkloadPage() {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
@@ -33,8 +35,10 @@ export default function WorkloadPage() {
       try {
         setRows(await getWorkload());
         setHasLoaded(true);
+        setForbidden(false);
       } catch (e) {
-        setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+        if (isForbiddenError(e)) setForbidden(true);
+        else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -47,6 +51,18 @@ export default function WorkloadPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("workload.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("workload.subtitle")}</p>
+        </div>
+        <Forbidden />
       </div>
     );
   }

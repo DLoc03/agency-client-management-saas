@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/Select";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
 import type { DirectoryUser, Team } from "@/lib/team/types";
 
@@ -20,6 +21,9 @@ export default function TeamDetailPage() {
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [memberError, setMemberError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [form, setForm] = useState({ name: "", description: "", lead_id: "" });
   const [newMemberId, setNewMemberId] = useState("");
   const [directory, setDirectory] = useState<DirectoryUser[]>([]);
@@ -40,8 +44,10 @@ export default function TeamDetailPage() {
         description: tm.description ?? "",
         lead_id: tm.lead_id ? String(tm.lead_id) : "",
       });
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -66,7 +72,7 @@ export default function TeamDetailPage() {
       });
       setTeam(updated);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setEditError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -78,7 +84,7 @@ export default function TeamDetailPage() {
       setTeam(updated);
       setNewMemberId("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -88,7 +94,7 @@ export default function TeamDetailPage() {
       const updated = await getTeam(id);
       setTeam(updated);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -101,6 +107,14 @@ export default function TeamDetailPage() {
   }
 
   if (loading || !team) {
+    if (forbidden) return <Forbidden />;
+    if (!loading && error) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
@@ -125,6 +139,11 @@ export default function TeamDetailPage() {
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("actions.edit")}</h2>
           <form onSubmit={handleSave} className="space-y-4">
+            {editError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {editError}
+              </div>
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.teamName")} <span className="text-red-500" aria-hidden="true">*</span></label>
@@ -185,6 +204,11 @@ export default function TeamDetailPage() {
 
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">{t("teamsDetail.members")}</h2>
+        {memberError && (
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {memberError}
+          </div>
+        )}
         {canManageMembers && (
           <form onSubmit={handleAddMember} className="mb-4 flex gap-2">
             <Select

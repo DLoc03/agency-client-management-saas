@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   listProjects,
   createProject,
@@ -37,6 +38,8 @@ export default function ProjectsPage() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
 
   const [q, setQ] = useState("");
@@ -79,8 +82,10 @@ export default function ProjectsPage() {
       });
       setProjects(data);
       setHasLoaded(true);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -100,6 +105,7 @@ export default function ProjectsPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
+    setFormError(null);
     try {
       await createProject({
         name: form.name,
@@ -126,14 +132,14 @@ export default function ProjectsPage() {
       });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this project?")) return;
+    if (!confirm(t("confirmDelete"))) return;
     try {
       await deleteProject(id);
       await load();
@@ -155,6 +161,18 @@ export default function ProjectsPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+        </div>
+        <Forbidden />
       </div>
     );
   }
@@ -390,6 +408,11 @@ export default function ProjectsPage() {
             className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl"
           >
             <h2 className="text-lg font-semibold">{t("newProject")}</h2>
+            {formError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {formError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.name")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input

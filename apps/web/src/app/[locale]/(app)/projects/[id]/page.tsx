@@ -12,6 +12,7 @@ import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { priorityBadgeClass, statusBadgeClass } from "@/lib/status-colors";
 import { Avatar } from "@/components/ui/Avatar";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   getProject,
   updateProject,
@@ -63,6 +64,11 @@ export default function ProjectDetailPage() {
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [memberError, setMemberError] = useState<string | null>(null);
+  const [teamError, setTeamError] = useState<string | null>(null);
+  const [milestoneError, setMilestoneError] = useState<string | null>(null);
+  const [taskError, setTaskError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   // task filters
   const [taskStatus, setTaskStatus] = useState("");
@@ -122,8 +128,10 @@ export default function ProjectDetailPage() {
       setMembers(m);
       setMilestones(ms);
       setTimeline(tl);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -178,7 +186,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -187,7 +195,7 @@ export default function ProjectDetailPage() {
       await removeMember(id, userId);
       setMembers((prev) => prev.filter((m) => m.id !== userId));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -215,19 +223,19 @@ export default function ProjectDetailPage() {
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMilestoneError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
   const handleDeleteMilestone = async (milestoneId: number) => {
-    if (!confirm("Delete milestone?")) return;
+    if (!confirm(t("confirmDeleteMilestone"))) return;
     try {
       await deleteMilestone(id, milestoneId);
       setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
       const tl = await getTimeline(id);
       setTimeline(tl);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setMilestoneError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -257,19 +265,19 @@ export default function ProjectDetailPage() {
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setTaskError(e instanceof Error ? e.message : t("errors.createFailed"));
     }
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    if (!confirm("Delete task?")) return;
+    if (!confirm(t("confirmDeleteTask"))) return;
     try {
       await deleteTask(taskId);
       await loadTasks();
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setTaskError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -285,7 +293,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setTeamError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -300,7 +308,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setTeamError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -313,6 +321,9 @@ export default function ProjectDetailPage() {
   }
 
   if (!project) {
+    if (forbidden) {
+      return <Forbidden />;
+    }
     if (!loading) {
       return (
         <div className="flex min-h-[60vh] items-center justify-center">
@@ -390,7 +401,7 @@ export default function ProjectDetailPage() {
           <button
             type="button"
             onClick={async () => {
-              if (!confirm("Delete project?")) return;
+              if (!confirm(t("confirmDelete"))) return;
               try {
                 await deleteProject(id);
                 router.push("/projects");
@@ -492,6 +503,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("detail.members")}</h2>
+          {memberError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {memberError}
+            </div>
+          )}
           {canManageMembers && (
             <button
               type="button"
@@ -549,6 +565,11 @@ export default function ProjectDetailPage() {
       {session.user.permissions.includes("projects.update") && (
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("teamAssignment.title")}</h2>
+          {teamError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {teamError}
+            </div>
+          )}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium">{t("teamAssignment.assignedTeams")}:</span>
             {assignedTeams.length === 0 ? (
@@ -603,6 +624,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("detail.milestones")}</h2>
+          {milestoneError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {milestoneError}
+            </div>
+          )}
           {canManageMilestones && (
             <button
               type="button"
@@ -684,6 +710,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">{t("detail.tasks")}</h2>
+          {taskError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {taskError}
+            </div>
+          )}
           {canCreateTask && (
             <button
               type="button"
@@ -891,6 +922,11 @@ export default function ProjectDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleAddMember} className="w-full max-w-sm space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addMember")}</h2>
+            {memberError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {memberError}
+              </div>
+            )}
             <Select
               value={memberUserId}
               onValueChange={setMemberUserId}
@@ -919,6 +955,11 @@ export default function ProjectDetailPage() {
             <h2 className="text-lg font-semibold">
               {editingMilestone ? t("actions.edit") : t("actions.addMilestone")}
             </h2>
+            {milestoneError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {milestoneError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.name")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
@@ -974,6 +1015,11 @@ export default function ProjectDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleCreateTask} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addTask")}</h2>
+            {taskError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {taskError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.title")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input

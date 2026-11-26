@@ -9,6 +9,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Select } from "@/components/ui/Select";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { listUsers, listTeams } from "@/lib/team/api";
 import type { DirectoryUser } from "@/lib/team/types";
 
@@ -25,6 +26,7 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   const [q, setQ] = useState("");
   const [role, setRole] = useState("");
@@ -51,8 +53,10 @@ export default function MembersPage() {
       setUsers(u);
       setHasLoaded(true);
       setTeams(tm.map((x) => ({ id: x.id, name: x.name })));
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -72,6 +76,18 @@ export default function MembersPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      </div>
+    );
+  }
+
+  if (forbidden) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("members")}</p>
+        </div>
+        <Forbidden />
       </div>
     );
   }

@@ -74,6 +74,14 @@ function AcceptInvitationInner() {
     };
   }, [token]);
 
+  // FIX-023: a client invitation opened on the internal surface belongs
+  // to the Portal accept page — forward it, keeping the same token.
+  useEffect(() => {
+    if (preview && preview.kind === "client") {
+      router.replace(`/portal/accept-invitation?token=${encodeURIComponent(token)}`);
+    }
+  }, [preview, token, router]);
+
   const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(locale);
   const roleLabel = (key: string) => {
     try {
@@ -192,7 +200,7 @@ function AcceptInvitationInner() {
               </div>
             )}
 
-            {!previewError && !accepted && preview?.has_identity === false && (
+            {!previewError && !accepted && preview?.has_identity === false && preview?.matches_current_user === null && (
               <form onSubmit={(e) => { e.preventDefault(); void doAccept(true); }} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="accept-name" className="text-sm font-medium">

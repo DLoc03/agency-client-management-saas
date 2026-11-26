@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   getUser,
   updateUser,
@@ -27,6 +28,9 @@ export default function MemberDetailPage() {
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [rolesError, setRolesError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({ name: "", job_title: "", phone: "", locale: "en" });
@@ -61,8 +65,10 @@ export default function MemberDetailPage() {
       });
       // also include current user roles? covered by users list
       setRoles(Array.from(map.values()));
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -93,7 +99,7 @@ export default function MemberDetailPage() {
       });
       setUser(updated);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setProfileError(e instanceof Error ? e.message : t("errors.updateFailed"));
     } finally {
       setSaving(false);
     }
@@ -107,7 +113,7 @@ export default function MemberDetailPage() {
       const updated = await updateUserRoles(id, selectedRoles);
       setUser(updated);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setRolesError(e instanceof Error ? e.message : t("errors.updateFailed"));
     } finally {
       setSaving(false);
     }
@@ -135,6 +141,14 @@ export default function MemberDetailPage() {
   }
 
   if (loading || !user) {
+    if (forbidden) return <Forbidden />;
+    if (!loading && error) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      );
+    }
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-sm text-muted-foreground">{c("loading")}</p>
@@ -199,6 +213,11 @@ export default function MemberDetailPage() {
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("actions.edit")}</h2>
           <form onSubmit={handleSaveProfile} className="space-y-4">
+            {profileError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {profileError}
+              </div>
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t("fields.name")}</label>
@@ -238,9 +257,14 @@ export default function MemberDetailPage() {
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("actions.changeRoles")}</h2>
           {adminLimited && (
-            <p className="mb-2 text-sm text-amber-700">Admin cannot manage Admin roles.</p>
+            <p className="mb-2 text-sm text-amber-700">{t("membersDetail.adminLimited")}</p>
           )}
           <form onSubmit={handleSaveRoles} className="space-y-4">
+            {rolesError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {rolesError}
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
               {visibleRoles.map((r) => (
                 <label key={r.id} className="inline-flex items-center gap-2 text-sm">

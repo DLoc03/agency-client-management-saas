@@ -5,7 +5,12 @@
     "or": "or",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "moreActions": "More actions"
+    "moreActions": "More actions",
+    "forbidden": {
+      "title": "You don't have access to this page",
+      "body": "Your current role doesn't include permission to view this section. If you think this is a mistake, contact your workspace owner.",
+      "back": "Back to dashboard"
+    }
   },
   "Home": {
     "status": "Foundation phase — the application is being initialized.",
@@ -258,6 +263,9 @@
     "title": "Projects",
     "subtitle": "Manage projects, milestones and tasks.",
     "newProject": "New project",
+    "confirmDelete": "Delete this project?",
+    "confirmDeleteMilestone": "Delete this milestone?",
+    "confirmDeleteTask": "Delete this task?",
     "empty": {
       "title": "No projects yet",
       "description": "Create your first project to get started."
@@ -664,7 +672,8 @@
       "title": "Member profile",
       "openTasks": "Open tasks",
       "noTeams": "No teams",
-      "noRoles": "No roles"
+      "noRoles": "No roles",
+      "adminLimited": "An Admin cannot manage Admin roles."
     },
     "teamsDetail": {
       "title": "Team detail",
