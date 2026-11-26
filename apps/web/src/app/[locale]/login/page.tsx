@@ -6,16 +6,21 @@
  * logo, the form, and a Client Portal cross-link at the bottom.
  */
 
-import { useLocale, useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { Logo } from "@/components/shell/Logo";
 
-export default function LoginPage() {
-  const t = useTranslations("Auth.login");
-  const home = useTranslations("Home");
-  const shell = useTranslations("Shell");
-  const locale = useLocale();
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const { returnTo } = await searchParams;
+  const t = await getTranslations("Auth.login");
+  const home = await getTranslations("Home");
+  const shell = await getTranslations("Shell");
+  const locale = await getLocale();
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -49,7 +54,7 @@ export default function LoginPage() {
             <p className="mt-1.5 text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
 
-          <LoginForm />
+          <LoginForm redirectTo={returnTo} />
 
           {/* Client Portal cross-link */}
           <p className="mt-6 border-t border-border pt-5 text-center text-sm text-muted-foreground">

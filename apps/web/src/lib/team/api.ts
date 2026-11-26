@@ -1,4 +1,11 @@
-import type { DirectoryUser, Invitation, Team, WorkloadRow } from "./types";
+import type {
+  AcceptInvitationResult,
+  DirectoryUser,
+  Invitation,
+  InvitationPreview,
+  Team,
+  WorkloadRow,
+} from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -134,11 +141,30 @@ export async function revokeInvitation(id: number) {
   await request(`/api/invitations/${id}`, { method: "DELETE" });
 }
 
-export async function acceptInvitation(payload: { token: string; name: string; password: string }) {
-  const res = await request<{ data: { user_id: number; email: string; agency_id: number } }>(
-    "/api/invitations/accept",
-    { method: "POST", body: JSON.stringify(payload) }
+export async function previewInvitation(
+  token: string,
+  options: { portal?: boolean } = {}
+) {
+  const base = options.portal
+    ? "/api/portal/invitations/preview"
+    : "/api/invitations/preview";
+  const res = await request<{ data: InvitationPreview }>(
+    `${base}?token=${encodeURIComponent(token)}`
   );
+  return res.data;
+}
+
+export async function acceptInvitation(
+  payload: { token: string; name?: string; password?: string },
+  options: { portal?: boolean } = {}
+) {
+  const base = options.portal
+    ? "/api/portal/invitations/accept"
+    : "/api/invitations/accept";
+  const res = await request<{ data: AcceptInvitationResult }>(base, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
   return res.data;
 }
 

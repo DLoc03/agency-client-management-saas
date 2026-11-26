@@ -44,11 +44,15 @@ function buildSchema(t: ReturnType<typeof useTranslations<"Auth.login">>) {
 
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-export function LoginForm() {
+export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
   const t = useTranslations("Auth.login");
   const schema = buildSchema(t);
   const { login } = useAuth();
   const router = useRouter();
+  const safeRedirect =
+    redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : null;
   const [serverError, setServerError] = useState<FormServerError | null>(null);
 
   const {
@@ -64,7 +68,8 @@ export function LoginForm() {
     const result = await login(values);
 
     if (result.success) {
-      router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
+      if (safeRedirect) router.replace(safeRedirect);
+      else router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
       return;
     }
 

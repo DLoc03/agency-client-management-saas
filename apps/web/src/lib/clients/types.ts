@@ -63,6 +63,17 @@ export interface PortalAccount {
   created_at: string | null;
 }
 
+export interface PortalInvitation {
+  id: number;
+  email: string;
+  kind: "client";
+  client_id: number | null;
+  expires_at: string;
+  created_at: string | null;
+}
+
+export type PortalGrantResult = PortalAccount | PortalInvitation;
+
 export interface Client {
   id: number;
   name: string;

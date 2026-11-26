@@ -9,13 +9,18 @@
  * layout and is unchanged.
  */
 
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { PortalLoginForm } from "@/components/portal/PortalLoginForm";
 import { Logo } from "@/components/shell/Logo";
 
-export default function PortalLoginPage() {
-  const t = useTranslations("Portal.login");
+export default async function PortalLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const { returnTo } = await searchParams;
+  const t = await getTranslations("Portal.login");
 
   const tiles = [
     { title: t("tileProjectsTitle"), text: t("tileProjectsText") },
@@ -37,7 +42,7 @@ export default function PortalLoginPage() {
           </p>
         </div>
 
-        <PortalLoginForm />
+        <PortalLoginForm redirectTo={returnTo} />
       </div>
 
       {/* Bento tiles — what clients can do inside */}
