@@ -6,6 +6,11 @@
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
     "moreActions": "Thao tác khác",
+    "actions": {
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "revoke": "Thu hồi"
+    },
     "forbidden": {
       "title": "Bạn không có quyền truy cập trang này",
       "body": "Vai trò hiện tại của bạn không có quyền xem mục này. Nếu cho rằng đây là nhầm lẫn, hãy liên hệ chủ không gian làm việc.",

@@ -315,6 +315,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-026 — Thay hộp confirm mặc định bằng dialog dùng chung kiểu shadcn/ui (PO yêu cầu sau nghiệm thu FIX-023, 2026-11-26)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen (nghiệm thu bằng mắt)
+- Mô tả: Thay toàn bộ 11 điểm xác nhận native trong app nội bộ bằng component/hook dùng chung `ConfirmDialog` / `useConfirm` (không thêm dependency, không dùng Radix): 7 điểm `confirm()` đã liệt kê (Projects list + detail với milestone/task, Teams list + detail, Thu hồi lời mời) và 4 điểm `window.confirm()` phát hiện thêm khi quét (Clients list + detail, Leads detail — xoá khách/lead/contact). Dialog tự dựng theo mẫu `ActionMenu` (DEC-024): portal ra `document.body`, overlay mờ, panel giữa màn hình, Escape/click ngoài = Huỷ, nút xác nhận phá huỷ màu đỏ, mặc định focus nút Huỷ, con trỏ pointer, không animation khi người dùng giảm chuyển động. Provider đặt tại `apps/web/src/app/[locale]/(app)/layout.tsx`. Nhãn nút lấy từ `Common.actions.{cancel,delete,revoke}` (EN + VI; namespace `Common` trước đây chưa có `actions` nên thêm 3 khóa mỗi ngôn ngữ), câu hỏi vẫn dùng nguyên khóa i18n cũ của từng màn. Không đụng BE, không đụng Portal, không đổi handler hay kết quả nghiệp vụ — chỉ đổi cơ chế xác nhận.
+- Progress: 2026-11-26 — OpenCode triển khai xong trên branch `fix/FIX-026-confirm-dialog` (từ `origin/main` e832108): component/hook `ConfirmDialog` + provider ở layout app, 11 call site chuyển sang `confirmAction(...)`, bổ sung `Common.actions` EN/VI. Kiểm chứng: `npx -y pnpm@10.0.0 build` PASS (dùng `distDir` tạm vì thư mục `.next` cũ thuộc root, đã khôi phục cấu hình), `npx -y pnpm@10.0.0 vitest run` 22/22 PASS, `typecheck` PASS, i18n 572 khóa EN = VI không lơ lửng, byte-check OK, grep không còn native confirm. Chờ Muse + Nguyen nghiệm thu; KHÔNG mở PR.
+- Acceptance Criteria: Mười một call site trên dùng dialog mới, xác nhận thì giữ nguyên thao tác xoá/thu hồi, Huỷ/Escape/click ngoài thì không thay đổi dữ liệu; `grep -rn "confirm(" apps/web/src` không còn lời gọi native; Nguyen + Muse nghiệm thu bằng mắt ít nhất một ca xoá và ca thu hồi lời mời ở EN/VI; `npx -y pnpm@10.0.0 build` + `npx -y pnpm@10.0.0 vitest run` PASS; khóa i18n EN = VI, không khóa lơ lửng, byte-check `TASK.md`/`CHANGELOG.md` không tăng dấu mã hoá đôi và không có U+FFFD.
+- Blockers: Không có.
+
 ## FIX-025 — Bản địa hoá cảnh báo theo mã lỗi ở modal Mời thành viên (PO phát hiện tại nghiệm thu FIX-023, 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)

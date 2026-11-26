@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import {
   listInvitations,
   createInvitation,
@@ -19,6 +20,7 @@ export default function InvitationsPage() {
   const { session, isLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations("Teams");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -112,7 +114,7 @@ export default function InvitationsPage() {
   };
 
   const handleRevoke = async (id: number) => {
-    if (!confirm(t("confirmRevokeInvitation"))) return;
+    if (!(await confirmAction(t("confirmRevokeInvitation"), { intent: "revoke" }))) return;
     try {
       await revokeInvitation(id);
       await load();

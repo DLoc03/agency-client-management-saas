@@ -7,6 +7,7 @@ import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/Select";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
 import type { DirectoryUser, Team } from "@/lib/team/types";
 
@@ -16,6 +17,7 @@ export default function TeamDetailPage() {
   const { session, isLoading } = useAuth();
   const router = useI18nRouter();
   const t = useTranslations("Teams");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [team, setTeam] = useState<Team | null>(null);
@@ -184,7 +186,7 @@ export default function TeamDetailPage() {
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!confirm(t("confirmDeleteTeam"))) return;
+                    if (!(await confirmAction(t("confirmDeleteTeam"), { intent: "delete" }))) return;
                     try {
                       await deleteTeam(id);
                       router.push("/team/teams");

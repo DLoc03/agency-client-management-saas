@@ -9,12 +9,14 @@ import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import type { Team } from "@/lib/team/types";
 
 export default function TeamsPage() {
   const { session, isLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations("Teams");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [teams, setTeams] = useState<Team[]>([]);
@@ -72,7 +74,7 @@ export default function TeamsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm(t("confirmDeleteTeam"))) return;
+    if (!(await confirmAction(t("confirmDeleteTeam"), { intent: "delete" }))) return;
     try {
       await deleteTeam(id);
       await load();
