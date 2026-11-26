@@ -6,7 +6,6 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Avatar } from "@/components/ui/Avatar";
-import { ActionMenu } from "@/components/ui/ActionMenu";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Select } from "@/components/ui/Select";
@@ -143,7 +142,7 @@ export default function MembersPage() {
           showSkeleton ? (
             <>
               <div className="hidden lg:block">
-                <DataTableSkeleton columns={["w-[26%]", "w-[24%]", "w-[15%]", "w-[17%]", "w-[11%]", "w-[7%]"]} />
+                <DataTableSkeleton columns={["w-[28%]", "w-[27%]", "w-[15%]", "w-[18%]", "w-[12%]"]} />
               </div>
               <div className="lg:hidden">
                 <SkeletonCardGrid variant="lg3" />
@@ -166,7 +165,7 @@ export default function MembersPage() {
                   {
                     key: "member",
                     header: t("fields.name"),
-                    width: "w-[26%]",
+                    width: "w-[28%]",
                     render: (u) => (
                       <span className="flex min-w-0 items-center gap-3">
                         <Avatar name={u.name} seed={u.id} className="h-9 w-9 shrink-0 text-xs" />
@@ -180,7 +179,7 @@ export default function MembersPage() {
                   {
                     key: "roles",
                     header: t("fields.roles"),
-                    width: "w-[24%]",
+                    width: "w-[27%]",
                     render: (u) => (
                       <span className="flex flex-wrap items-center gap-1">
                         {u.roles.slice(0, 2).map((r) => (
@@ -203,7 +202,7 @@ export default function MembersPage() {
                   {
                     key: "teams",
                     header: t("fields.teams"),
-                    width: "w-[17%]",
+                    width: "w-[18%]",
                     render: (u) => (
                       <span className="block truncate">{u.teams.length ? u.teams.map((tm) => tm.name).join(", ") : t("membersDetail.noTeams")}</span>
                     ),
@@ -211,27 +210,11 @@ export default function MembersPage() {
                   {
                     key: "status",
                     header: t("fields.status"),
-                    width: "w-[11%]",
+                    width: "w-[12%]",
                     render: (u) => (
                       <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${u.is_active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                         {u.is_active ? t("filters.active") : t("filters.inactive")}
                       </span>
-                    ),
-                  },
-                  {
-                    key: "actions",
-                    header: "",
-                    width: "w-[7%]",
-                    render: (u) => (
-                      <ActionMenu
-                        items={[
-                          {
-                            label: t("actions.detail"),
-                            icon: "eye",
-                            onClick: () => router.push(`/team/members/${u.id}`),
-                          },
-                        ]}
-                      />
                     ),
                   },
                 ]}
@@ -242,7 +225,11 @@ export default function MembersPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:hidden">
             {users.map((u) => (
-              <div key={u.id} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div
+                key={u.id}
+                onClick={() => router.push(`/team/members/${u.id}`)}
+                className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+              >
                 <div className="flex items-start justify-between gap-2">
                   <Avatar name={u.name} seed={u.id} className="h-10 w-10 text-sm" />
                   <div className="min-w-0 flex-1">
@@ -258,15 +245,6 @@ export default function MembersPage() {
                     >
                       {u.is_active ? t("filters.active") : t("filters.inactive")}
                     </span>
-                    <ActionMenu
-                      items={[
-                        {
-                          label: t("actions.detail"),
-                          icon: "eye",
-                          onClick: () => router.push(`/team/members/${u.id}`),
-                        },
-                      ]}
-                    />
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1">

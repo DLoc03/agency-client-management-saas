@@ -22,6 +22,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - **Mobile: luôn hiển thị card** cho mọi danh sách — cùng một dữ liệu, hai cách trình bày theo breakpoint.
 - **Header của table** (DEC-022): cỡ chữ 11px, in hoa, khóa đúng một dòng (nowrap) và cắt ellipsis khi vượt bề rộng cột — tiêu đề cột dài không được xuống dòng làm phình chiều cao hàng header.
 - **Một khối dữ liệu = một cấp viền** (DEC-022): khi table hoặc card nằm bên trong một section đã có khung viền, phần tử bên trong phải bỏ khung riêng — table chỉ giữ đường kẻ ngang mảnh giữa các dòng (DataTable với `framed={false}`), các item trong section phân tách bằng divider mảnh thay vì bọc viền từng item. Nút bấm và ô nhập liệu giữ viền vì là control nhập liệu, không phải khối dữ liệu.
+- **Click dòng/card vào chi tiết** (DEC-023): mọi dòng table và card dữ liệu có trang chi tiết đều click toàn bộ dòng/card để vào chi tiết; tiêu đề là chữ thường, không dựng nút/link riêng trong dòng. Ngoại lệ: card Kanban CRM (kéo–thả đổi giai đoạn) giữ điều hướng qua tiêu đề.
 - Mục này thay thế cách tiếp cận "card là mặc định" trước đây. Ngưỡng 6 cột là mức tạm: PO nghiệm thu thực tế rồi quyết định chỉnh sau. Quy ước áp dụng ngược cho mọi màn danh sách đã làm (task FE-019) và là chuẩn cho mọi màn mới.
 
 ## 4. Độ tương phản của chữ
@@ -43,6 +44,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 ## 7. Hành động trên card dữ liệu (FIX-013, PO chốt 2026-11-25)
 - Mọi hành động của một card dữ liệu (Sửa, Xoá, Đánh dấu xong, ...) phải thu gọn vào **một nút icon three-dot (kebab menu)** ở góc card — dùng component dùng chung `ActionMenu` (`components/ui/ActionMenu.tsx`) — bấm vào mới hiện danh sách hành động. KHÔNG hiển thị các nút chữ Sửa/Xoá trực tiếp trên card: khi số hành động tăng lên, card sẽ rối và thay đổi kích thước.
 - Quy ước áp dụng cho toàn bộ card dữ liệu (danh sách dự án/khách hàng/nhóm/thành viên, cột mốc, công việc, checklist, bình luận, người liên hệ, hoạt động, ghi chú). Hành động cấp trang (nút Xoá ở header trang chi tiết, nút Sửa mở form của section) không thuộc quy ước này.
+- Menu kebab chỉ chứa hành động thật (Sửa, Xoá, ...), KHÔNG chứa mục điều hướng "Chi tiết" — điều hướng vào chi tiết đi bằng click toàn bộ dòng/card theo §3 (DEC-023). Danh sách không còn hành động nào trên dòng thì bỏ hẳn cột kebab.
 - Mục hành động nguy hiểm (Xoá) hiển thị chữ đỏ trong menu.
 
 ## 8. Quy trình nghiệm thu UI

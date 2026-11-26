@@ -143,11 +143,16 @@ export default function WorkloadPage() {
                 ]}
                 rows={rows}
                 rowKey={(r) => r.user_id}
+                onRowClick={(r) => router.push(`/team/members/${r.user_id}`)}
               />
             </div>
             <div className="space-y-3 lg:hidden">
             {rows.map((r) => (
-              <div key={r.user_id} className="rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <div
+                key={r.user_id}
+                onClick={() => router.push(`/team/members/${r.user_id}`)}
+                className="cursor-pointer rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar name={r.name} seed={r.user_id ?? r.name} className="h-10 w-10 text-sm" />
