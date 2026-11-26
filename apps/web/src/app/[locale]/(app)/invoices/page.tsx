@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden } from "@/components/ui/Forbidden";
+import { useDelayedSkeleton } from "@/components/ui/Skeleton";
 import {
   listInvoices,
   deleteInvoice,
@@ -22,7 +23,6 @@ import { statusBadgeClass } from "@/lib/status-colors";
 import { formatMoney } from "@/lib/currency";
 
 const PAGE_SIZE = 15;
-const SKELETON_DELAY = 200;
 
 const INVOICE_STATUSES: InvoiceStatus[] = [
   "draft",
@@ -73,11 +73,13 @@ export default function InvoicesPage() {
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showSkeleton, setShowSkeleton] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [forbidden, setForbidden] = useState(false);
   const confirmAction = useConfirm();
-  const [firstLoad, setFirstLoad] = useState(true);
+  // DEC-021 §9: skeleton only for the first/cold load, via the shared hook
+  // (same pattern as the Clients/Projects lists).
+  const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
 
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<InvoiceStatus | "">("");
@@ -142,19 +144,14 @@ export default function InvoicesPage() {
       setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
-      setShowSkeleton(false);
-      setFirstLoad(false);
+      setHasLoaded(true);
     }
   }, [q, status, clientId, projectId, page, t]);
 
   useEffect(() => {
     if (!session) return;
-    const timer = setTimeout(() => {
-      if (firstLoad && loading) setShowSkeleton(true);
-    }, SKELETON_DELAY);
     load();
-    return () => clearTimeout(timer);
-  }, [session, firstLoad, loading, load]);
+  }, [session, load]);
 
   useEffect(() => {
     setPage(1);
