@@ -43,6 +43,10 @@
       "submit": "Sign in",
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
+        "heading": "Sign in to Brewbase",
+        "backHome": "Back to home",
+        "portalPrompt": "Are you a client?",
+        "portalLink": "Open the Client Portal",
       "errors": {
         "emailRequired": "Email is required.",
         "emailInvalid": "Enter a valid email address.",
