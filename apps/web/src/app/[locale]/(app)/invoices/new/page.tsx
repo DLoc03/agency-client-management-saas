@@ -14,12 +14,7 @@ export default function NewInvoicePage() {
   const canCreate = !!session?.user.permissions.includes("invoices.create");
   if (isLoading) return null;
   if (!session || !canCreate) {
-    return (
-      <Forbidden
-        title={t("paymentDetails.forbidden") || "Forbidden"}
-        message="Bạn không có quyền tạo hoá đơn."
-      />
-    );
+    return <Forbidden />;
   }
 
   return (
@@ -29,7 +24,7 @@ export default function NewInvoicePage() {
           {t("actions.newInvoice")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {t("subtitle") || "Tạo hoá đơn mới cho khách hàng."}
+          {t("subtitle")}
         </p>
       </div>
       <InvoiceForm mode="create" onSuccess={() => router.push("/invoices")} />

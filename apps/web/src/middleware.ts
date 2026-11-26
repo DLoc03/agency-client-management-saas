@@ -35,6 +35,7 @@ const PORTAL_AUTH_ONLY_PATHS = [
   "/portal/forgot-password",
   "/portal/reset-password",
 ];
+const PORTAL_PUBLIC_PATHS = ["/portal/accept-invitation"];
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -83,11 +84,14 @@ export default function middleware(request: NextRequest) {
   const isPortalAuthOnly = PORTAL_AUTH_ONLY_PATHS.some(
     (p) => pathnameWithoutLocale === p
   );
+  const isPortalPublic = PORTAL_PUBLIC_PATHS.some(
+    (p) => pathnameWithoutLocale === p
+  );
   const isPortalPath =
     pathnameWithoutLocale === "/portal" ||
     pathnameWithoutLocale.startsWith("/portal/");
 
-  if (isPortalPath && !isPortalAuthOnly && !isPortalAuthenticated) {
+  if (isPortalPath && !isPortalAuthOnly && !isPortalPublic && !isPortalAuthenticated) {
     const portalLoginUrl = new URL(request.url);
     portalLoginUrl.pathname = pathname.replace(
       pathnameWithoutLocale,
@@ -96,7 +100,7 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(portalLoginUrl);
   }
 
-  if (isPortalAuthOnly && isPortalAuthenticated) {
+  if (isPortalAuthOnly && !isPortalPublic && isPortalAuthenticated) {
     const portalHomeUrl = new URL(request.url);
     portalHomeUrl.pathname = pathname.replace(
       pathnameWithoutLocale,

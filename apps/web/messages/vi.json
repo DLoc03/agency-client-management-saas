@@ -2,16 +2,21 @@
   "Common": {
     "language": "Ngôn ngữ",
     "loading": "Đang tải…",
+    "prev": "Trước",
+    "next": "Tiếp",
     "or": "hoặc",
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
     "moreActions": "Thao tác khác",
-    "prev": "Trước",
-    "next": "Tiếp",
-    "cancel": "Hủy",
+    "actions": {
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "revoke": "Thu hồi"
+    },
     "forbidden": {
-      "title": "Không có quyền",
-      "message": "Bạn không có quyền truy cập trang này."
+      "title": "Bạn không có quyền truy cập trang này",
+      "body": "Vai trò hiện tại của bạn không có quyền xem mục này. Nếu cho rằng đây là nhầm lẫn, hãy liên hệ chủ không gian làm việc.",
+      "back": "Về bảng điều khiển"
     }
   },
   "Home": {
@@ -50,6 +55,10 @@
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập…",
       "forgotPassword": "Quên mật khẩu?",
+        "heading": "Đăng nhập Brewbase",
+        "backHome": "Về trang chủ",
+        "portalPrompt": "Bạn là khách hàng?",
+        "portalLink": "Vào Cổng khách hàng",
       "errors": {
         "emailRequired": "Email là bắt buộc.",
         "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
@@ -58,7 +67,20 @@
         "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
         "AGENCY_LOCKED": "Không gian làm việc của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.",
         "ACCOUNT_DISABLED": "Tài khoản của bạn đã bị vô hiệu hoá. Vui lòng liên hệ chủ sở hữu không gian làm việc.",
+        "NO_ACTIVE_MEMBERSHIP": "Tài khoản của bạn không có tư cách thành viên nào còn hoạt động. Vui lòng liên hệ chủ sở hữu không gian làm việc.",
         "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+      }
+    },
+    "selectAgency": {
+      "heading": "Chọn không gian làm việc",
+      "subtitle": "Tài khoản của bạn có thể truy cập nhiều không gian làm việc. Chọn một nơi để tiếp tục.",
+      "backHome": "Về trang chủ",
+      "backToLogin": "Về trang đăng nhập",
+      "choicesLabel": "Các không gian làm việc bạn có thể dùng",
+      "opening": "Đang mở không gian làm việc…",
+      "errors": {
+        "expired": "Phiên chọn không gian làm việc đã hết hạn hoặc không còn hợp lệ. Vui lòng đăng nhập lại.",
+        "failed": "Không thể mở không gian làm việc đó. Vui lòng đăng nhập lại."
       }
     },
     "dashboard": {
@@ -113,6 +135,13 @@
       "workspaceSettings": "Cài đặt workspace",
       "signOut": "Đăng xuất"
     },
+    "agencySwitcher": {
+      "label": "Đổi không gian làm việc",
+      "current": "Hiện tại",
+      "loading": "Đang tải không gian làm việc…",
+      "error": "Không thể tải danh sách không gian làm việc.",
+      "switching": "Đang chuyển…"
+    },
     "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },
   "Portal": {
@@ -127,15 +156,15 @@
       "submit": "Đăng nhập vào Portal",
       "submitting": "Đang đăng nhập…",
       "forgotPassword": "Quên mật khẩu?",
-      "heading": "Chào mừng bạn quay lại",
-      "staffPrompt": "Bạn là nhân viên agency?",
-      "staffLink": "Đăng nhập nội bộ",
-      "tileProjectsTitle": "Dự án",
-      "tileProjectsText": "Tiến độ theo thời gian thực",
-      "tileTasksTitle": "Công việc",
-      "tileTasksText": "Cột mốc & đầu việc",
-      "tileInvoicesTitle": "Hoá đơn",
-      "tileInvoicesText": "Lịch sử thanh toán",
+        "heading": "Chào mừng bạn quay lại",
+        "staffPrompt": "Bạn là nhân viên agency?",
+        "staffLink": "Đăng nhập nội bộ",
+        "tileProjectsTitle": "Dự án",
+        "tileProjectsText": "Tiến độ theo thời gian thực",
+        "tileTasksTitle": "Công việc",
+        "tileTasksText": "Cột mốc & đầu việc",
+        "tileInvoicesTitle": "Hoá đơn",
+        "tileInvoicesText": "Lịch sử thanh toán",
       "errors": {
         "emailRequired": "Email là bắt buộc.",
         "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
@@ -144,6 +173,40 @@
         "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng. Vui lòng thử lại.",
         "AGENCY_LOCKED": "Không gian làm việc của agency đã bị khoá. Vui lòng liên hệ đại diện agency.",
         "ACCOUNT_DISABLED": "Tài khoản Portal của bạn đã bị vô hiệu hoá. Vui lòng liên hệ quản trị viên agency.",
+        "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
+      }
+    },
+    "accept": {
+      "heading": "Bạn được mời vào Cổng Khách Hàng",
+      "subtitle": "Xem dự án, công việc và hoá đơn từ {agency}.",
+      "agencyLabel": "Agency",
+      "emailLabel": "Email được mời",
+      "expiresLabel": "Hết hạn",
+      "newEmailTitle": "Đặt mật khẩu của bạn",
+      "newEmailSubtitle": "Chọn tên và mật khẩu để kích hoạt quyền truy cập Portal.",
+      "name": "Họ và tên",
+      "password": "Mật khẩu",
+      "submit": "Nhận lời mời",
+      "submitting": "Đang xử lý…",
+      "loginRequiredTitle": "Đăng nhập để tiếp tục",
+      "loginRequiredBody": "Email này đã có tài khoản. Đăng nhập bằng mật khẩu hiện có, sau đó xác nhận lời mời tại đây.",
+      "confirmTitle": "Xác nhận quyền Portal",
+      "confirmBody": "Bạn đang đăng nhập bằng {email}. Xác nhận để tham gia — không cần đặt mật khẩu mới.",
+      "confirmAction": "Xác nhận lời mời",
+      "mismatchTitle": "Sai tài khoản",
+      "mismatchBody": "Bạn đang đăng nhập bằng {email}, nhưng lời mời này gửi cho {invitedEmail}. Vui lòng đăng nhập bằng tài khoản được mời.",
+      "unknownEmail": "tài khoản khác",
+      "success": "Quyền truy cập Portal đã sẵn sàng.",
+      "goToPortal": "Vào Portal",
+      "errors": {
+        "NOT_FOUND": "Liên kết lời mời không hợp lệ hoặc đã bị thu hồi.",
+        "INVALID": "Lời mời không hợp lệ.",
+        "INVITATION_EXPIRED": "Lời mời đã hết hạn.",
+        "INVITATION_ALREADY_ACCEPTED": "Lời mời đã được chấp nhận.",
+        "INVITATION_LOGIN_REQUIRED": "Vui lòng đăng nhập bằng email được mời trước.",
+        "INVITATION_IDENTITY_MISMATCH": "Bạn đang đăng nhập bằng tài khoản khác với tài khoản được mời.",
+        "EMAIL_ALREADY_REGISTERED": "Email này đã có quyền truy cập Portal.",
+        "STAFF_CLIENT_MEMBERSHIP_CONFLICT": "Tài khoản này không thể vừa là nhân viên vừa là khách hàng trong cùng một agency.",
         "UNKNOWN": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
       }
     },
@@ -202,18 +265,52 @@
       "tasks": "Công việc",
       "noTasks": "Chưa có công việc nào."
     },
-    "invoices": {
-      "title": "Hoá đơn của bạn",
-      "subtitle": "Các hoá đơn của {name} tại {agency}.",
-      "empty": "Chưa có hoá đơn nào",
-      "emptyHint": "Các hoá đơn agency lập cho bạn sẽ hiện ở đây.",
-      "loadError": "Không tải được hoá đơn. Vui lòng thử lại."
-    }
+      "invoices": {
+            "title": "Hoá đơn của bạn",
+            "subtitle": "Các hoá đơn agency đã phát hành cho bạn.",
+            "loadError": "Không tải được dữ liệu hoá đơn. Vui lòng thử lại.",
+            "empty": "Chưa có hoá đơn nào",
+            "emptyHint": "Các hoá đơn agency phát hành cho bạn sẽ hiện ở đây.",
+            "notFound": "Không tìm thấy hoá đơn.",
+            "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
+            "fields": {
+                  "amount": "Số tiền",
+                  "balanceDue": "Còn phải trả",
+                  "customer": "Khách hàng",
+                  "description": "Mô tả",
+                  "dueDate": "Hạn thanh toán",
+                  "issueDate": "Ngày phát hành",
+                  "notes": "Ghi chú",
+                  "project": "Dự án",
+                  "quantity": "Số lượng"
+            },
+            "statuses": {
+                  "draft": "Bản nháp",
+                  "sent": "Đã gửi",
+                  "paid": "Đã thanh toán",
+                  "overdue": "Quá hạn",
+                  "cancelled": "Đã huỷ"
+            },
+            "detail": {
+                  "back": "Quay lại danh sách hoá đơn",
+                  "bankDetails": "Thông tin chuyển khoản",
+                  "lineItems": "Chi tiết hoá đơn"
+            },
+            "paymentDetails": {
+                  "bankName": "Ngân hàng",
+                  "bankAccountNumber": "Số tài khoản",
+                  "bankAccountHolder": "Chủ tài khoản",
+                  "vietqrPayload": "Mã VietQR"
+            }
+      }
   },
   "Projects": {
     "title": "Dự án",
     "subtitle": "Quản lý dự án, cột mốc và công việc.",
     "newProject": "Dự án mới",
+    "confirmDelete": "Xoá dự án này?",
+    "confirmDeleteMilestone": "Xoá cột mốc này?",
+    "confirmDeleteTask": "Xoá công việc này?",
     "empty": {
       "title": "Chưa có dự án",
       "description": "Tạo dự án đầu tiên để bắt đầu."
@@ -273,7 +370,7 @@
       "cancel": "Hủy",
       "delete": "Xóa",
       "edit": "Sửa",
-      "detail": "Chi tiết",
+        "detail": "Chi tiết",
       "addMember": "Thêm thành viên",
       "remove": "Gỡ",
       "addMilestone": "Thêm cột mốc",
@@ -292,7 +389,8 @@
       "noMilestones": "Chưa có cột mốc.",
       "noTasks": "Chưa có công việc.",
       "progressWarning": "Vẫn còn công việc chưa hoàn thành."
-    },
+    ,
+      "budgetReconciliation": "Đối soát ngân sách"},
     "task": {
       "title": "Công việc",
       "comments": "Bình luận",
@@ -322,22 +420,26 @@
       "assign": "Gán team",
       "remove": "Gỡ team",
       "resultAssigned": "Đã gán team: thêm {added} thành viên.",
-      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}."
+      "resultRemoved": "Đã gỡ {removed} thành viên, giữ lại {kept}.",
+      "assignedTeams": "Team đã gán",
+      "noTeamsAssigned": "Chưa gán team nào",
+      "teamMembersCount": "{count} thành viên",
+      "deletedTeam": "Team đã xoá",
+      "note": "Gỡ team chỉ gỡ những thành viên vào dự án qua team đó và chưa có công việc được gán. Thành viên đang có công việc sẽ ở lại thành thành viên trực tiếp; thành viên được thêm riêng không bị ảnh hưởng."
     },
     "timelineTypes": {
       "task": "Công việc",
       "milestone": "Cột mốc"
     },
-    "selectMember": "Chọn thành viên",
-    "budgetReconciliation": "Đối soát ngân sách",
+    "selectMember": "Chọn thành viên"
+  ,
     "budget": {
       "invoiced": "Đã lập hoá đơn",
       "collected": "Đã thu",
       "remaining": "Còn lại",
       "reconciliationHint": "Số liệu tính lúc đọc; không sửa ngân sách ở đây.",
       "note": "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."
-    }
-  },
+    }},
   "Leads": {
     "title": "Lead",
     "subtitle": "Theo dõi khách hàng tiềm năng qua các giai đoạn của pipeline.",
@@ -533,7 +635,11 @@
       "active": "Đang hoạt động",
       "disabled": "Đã khóa",
       "lastLogin": "Đăng nhập gần nhất",
-      "never": "Chưa từng"
+      "never": "Chưa từng",
+      "pending": "Lời mời đang chờ",
+      "invitationSent": "Đã gửi email mời — khách sẽ tự đặt mật khẩu.",
+      "expires": "Hết hạn",
+      "grantHint": "Email mới sẽ nhận liên kết mời; tài khoản đã có sẽ được cấp quyền ngay."
     },
     "tags": {
       "name": "Tên nhãn",
@@ -545,7 +651,9 @@
       "loadFailed": "Không tải được danh sách khách hàng.",
       "saveFailed": "Lưu thất bại.",
       "createFailed": "Tạo khách hàng thất bại.",
-      "deleteFailed": "Xóa thất bại."
+      "deleteFailed": "Xóa thất bại.",
+      "INVITATION_PENDING": "Email này đã có lời mời đang chờ.",
+      "EMAIL_ALREADY_REGISTERED": "Email này đã có quyền truy cập Portal."
     }
   },
   "Teams": {
@@ -603,7 +711,7 @@
       "cancel": "Hủy",
       "delete": "Xóa",
       "edit": "Sửa",
-      "detail": "Chi tiết",
+        "detail": "Chi tiết",
       "add": "Thêm",
       "remove": "Gỡ",
       "resend": "Gửi lại",
@@ -617,7 +725,8 @@
       "title": "Hồ sơ thành viên",
       "openTasks": "Công việc mở",
       "noTeams": "Chưa có nhóm",
-      "noRoles": "Chưa có vai trò"
+      "noRoles": "Chưa có vai trò",
+      "adminLimited": "Admin không thể quản lý vai trò Admin."
     },
     "teamsDetail": {
       "title": "Chi tiết nhóm",
@@ -636,30 +745,63 @@
     },
     "accept": {
       "title": "Nhận lời mời",
-      "subtitle": "Đặt tên và mật khẩu để tham gia không gian làm việc.",
+      "subtitle": "Xem lại lời mời và xác nhận quyền truy cập của bạn.",
       "name": "Họ và tên",
       "password": "Mật khẩu",
       "submit": "Nhận lời mời",
-      "success": "Đã nhận lời mời. Bạn có thể đăng nhập.",
+      "submitting": "Đang xử lý…",
+      "success": "Đã chấp nhận lời mời.",
       "goToLogin": "Đi tới đăng nhập",
+      "goToDashboard": "Vào bảng điều khiển",
+      "preview": {
+        "agency": "Không gian làm việc",
+        "email": "Email được mời",
+        "expires": "Hết hạn",
+        "kindStaff": "Nhân viên nội bộ",
+        "kindClient": "Quyền khách hàng"
+      },
+      "loginRequired": {
+        "heading": "Đăng nhập để tiếp tục",
+        "body": "Email này đã có tài khoản. Đăng nhập bằng mật khẩu hiện có, sau đó quay lại liên kết này để xác nhận.",
+        "action": "Đi tới đăng nhập"
+      },
+      "confirm": {
+        "heading": "Tham gia {agency}?",
+        "body": "Bạn đang đăng nhập bằng {email}. Xác nhận để chấp nhận lời mời — không cần đặt mật khẩu mới.",
+        "action": "Xác nhận lời mời"
+      },
+      "mismatch": {
+        "heading": "Sai tài khoản",
+        "body": "Bạn đang đăng nhập bằng {email}, nhưng lời mời này gửi cho {invitedEmail}.",
+        "unknownEmail": "tài khoản khác"
+      },
       "errors": {
+        "NOT_FOUND": "Liên kết lời mời không hợp lệ hoặc đã bị thu hồi.",
+        "INVALID": "Lời mời không hợp lệ.",
         "INVITATION_EXPIRED": "Lời mời đã hết hạn.",
         "INVITATION_ALREADY_ACCEPTED": "Lời mời đã được chấp nhận.",
+        "INVITATION_LOGIN_REQUIRED": "Vui lòng đăng nhập bằng email được mời trước.",
+        "INVITATION_IDENTITY_MISMATCH": "Bạn đang đăng nhập bằng tài khoản khác với tài khoản được mời.",
         "EMAIL_ALREADY_REGISTERED": "Email này đã được đăng ký.",
-        "INVALID": "Lời mời không hợp lệ."
+        "ALREADY_MEMBER": "Email này đã có quyền truy cập không gian làm việc này.",
+        "STAFF_CLIENT_MEMBERSHIP_CONFLICT": "Tài khoản này không thể vừa là nhân viên vừa là khách hàng trong cùng một agency."
       }
     },
     "errors": {
       "loadFailed": "Không tải được dữ liệu.",
       "createFailed": "Không tạo được.",
       "updateFailed": "Không cập nhật được.",
-      "deleteFailed": "Không xóa được."
+      "deleteFailed": "Không xóa được.",
+      "INVITATION_PENDING": "Email này đang có một lời mời chưa được chấp nhận.",
+      "ALREADY_MEMBER": "Người này đã là thành viên đang hoạt động của workspace này.",
+      "INVITATION_ALREADY_ACCEPTED": "Lời mời này đã được chấp nhận rồi."
     },
     "confirmDeleteTeam": "Xoá team này?",
     "confirmRevokeInvitation": "Thu hồi lời mời này?"
   },
   "Finance": {
     "title": "Hoá đơn",
+    "editTitle": "Sửa hoá đơn",
     "subtitle": "Quản lý hoá đơn và thanh toán của workspace.",
     "empty": {
       "title": "Chưa có hoá đơn nào",
@@ -705,6 +847,7 @@
       "view": "Xem",
       "send": "Gửi",
       "cancel": "Hủy",
+      "cancelInvoice": "Huỷ hoá đơn",
       "delete": "Xoá",
       "downloadPdf": "Tải PDF",
       "newInvoice": "Hoá đơn mới",
@@ -739,6 +882,8 @@
       "bankAccountHolder": "Chủ tài khoản",
       "vietqrPayload": "VietQR payload",
       "onlyOwnerAdmin": "Chỉ Agency Owner và Admin được truy cập trang này.",
+      "saved": "Đã lưu thông tin chuyển khoản.",
+      "saveFailed": "Lưu thông tin chuyển khoản thất bại.",
       "forbidden": "Bạn không có quyền truy cập trang này."
     },
     "portalPayHint": "Vui lòng chuyển đúng số tiền hoá đơn vào tài khoản trên.",
@@ -750,6 +895,7 @@
       "sendFailed": "Không gửi được hoá đơn.",
       "cancelFailed": "Không hủy được hoá đơn.",
       "paymentFailed": "Không ghi nhận thanh toán.",
+      "paymentDeleteFailed": "Xoá thanh toán thất bại.",
       "INVOICE_EMPTY": "Hoá đơn chưa có mục nào, không thể gửi.",
       "INVOICE_NOT_EDITABLE": "Chỉ được sửa hoá đơn ở trạng thái Bản nháp.",
       "CANNOT_CANCEL_INVOICE": "Không thể hủy hoá đơn đã có thanh toán.",

@@ -8,7 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden } from "@/components/ui/Forbidden";
 import {
   listInvoices,
@@ -69,26 +69,14 @@ export default function InvoicesPage() {
     "agencies.payment-details.update",
   );
 
-  if (!session) return null;
-  if (!canView) {
-    return (
-      <Forbidden
-        title={t("paymentDetails.forbidden") || c("forbidden.title")}
-        message={
-          t("paymentDetails.onlyOwnerAdmin") ||
-          c("forbidden.message") ||
-          "Bạn không có quyền xem hoá đơn."
-        }
-      />
-    );
-  }
-
   const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
+  const confirmAction = useConfirm();
   const [firstLoad, setFirstLoad] = useState(true);
 
   const [q, setQ] = useState("");
@@ -97,10 +85,6 @@ export default function InvoicesPage() {
   const [projectId, setProjectId] = useState("");
   const [page, setPage] = useState(1);
 
-  const [openDeleteId, setOpenDeleteId] = useState<number | null>(null);
-  const [openCancelId, setOpenCancelId] = useState<number | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [cancelingId, setCancelingId] = useState<number | null>(null);
   const [sendingId, setSendingId] = useState<number | null>(null);
   const [pdfLoadingId, setPdfLoadingId] = useState<number | null>(null);
 
@@ -152,14 +136,10 @@ export default function InvoicesPage() {
     } catch (e) {
       const err = e as { status?: number; message?: string };
       if (err.status === 403) {
-        setError(t("errors.loadFailed") || "Forbidden.");
+        setForbidden(true);
         return;
       }
-      setError(
-        e instanceof Error
-          ? e.message
-          : t("errors.loadFailed") || "Lỗi tải hoá đơn.",
-      );
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
       setShowSkeleton(false);
@@ -181,10 +161,8 @@ export default function InvoicesPage() {
   }, [q, status, clientId, projectId]);
 
   const handleDelete = async (id: number) => {
-    setDeletingId(id);
     try {
       await deleteInvoice(id);
-      setOpenDeleteId(null);
       await load();
     } catch (e) {
       const err = e as { code?: string; message?: string };
@@ -193,22 +171,18 @@ export default function InvoicesPage() {
           ...prev,
           [id]: {
             code: err.code ?? "",
-            message: err.message || t("errors.CANNOT_DELETE_INVOICE"),
+            message: t("errors.CANNOT_DELETE_INVOICE"),
           },
         }));
       } else {
         setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
       }
-    } finally {
-      setDeletingId(null);
     }
   };
 
   const handleCancel = async (id: number) => {
-    setCancelingId(id);
     try {
       await cancelInvoice(id);
-      setOpenCancelId(null);
       await load();
     } catch (e) {
       const err = e as { code?: string; message?: string };
@@ -217,14 +191,12 @@ export default function InvoicesPage() {
           ...prev,
           [id]: {
             code: err.code ?? "",
-            message: err.message || t("errors.CANNOT_CANCEL_INVOICE"),
+            message: t("errors.CANNOT_CANCEL_INVOICE"),
           },
         }));
       } else {
         setError(e instanceof Error ? e.message : t("errors.cancelFailed"));
       }
-    } finally {
-      setCancelingId(null);
     }
   };
 
@@ -302,14 +274,28 @@ export default function InvoicesPage() {
       if (invoice.status === "sent" && canCancel) {
         items.push({
           label: t("actions.cancel"),
-          onClick: () => setOpenCancelId(invoice.id),
+          onClick: async () => {
+            if (
+              await confirmAction(t("confirmCancel"), {
+                confirmLabel: t("actions.cancelInvoice"),
+              })
+            ) {
+              await handleCancel(invoice.id);
+            }
+          },
         });
       }
       if (invoice.status === "draft" && canDelete) {
         items.push({
           label: t("actions.delete"),
           danger: true,
-          onClick: () => setOpenDeleteId(invoice.id),
+          onClick: async () => {
+            if (
+              await confirmAction(t("confirmDelete"), { intent: "delete" })
+            ) {
+              await handleDelete(invoice.id);
+            }
+          },
         });
       }
       if (canPdf) {
@@ -320,11 +306,27 @@ export default function InvoicesPage() {
       }
       return items;
     },
-    [canSend, canCancel, canDelete, canPdf, t, router, handleSend],
+    [
+      canSend,
+      canCancel,
+      canDelete,
+      canPdf,
+      t,
+      router,
+      handleSend,
+      handleDelete,
+      handleCancel,
+      confirmAction,
+    ],
   );
 
   const fmtMoney = (value: string | number | null | undefined) =>
     formatMoney(value, currency, locale) || "0";
+
+  if (!session) return null;
+  if (!canView || forbidden) {
+    return <Forbidden />;
+  }
 
   return (
     <div className="space-y-6">
@@ -607,30 +609,6 @@ export default function InvoicesPage() {
         )}
       </div>
 
-      {openDeleteId && (
-        <ConfirmDialog
-          open
-          title={t("confirmDelete")}
-          confirmLabel={t("actions.delete")}
-          cancelLabel={c("cancel")}
-          danger
-          loading={deletingId === openDeleteId}
-          onConfirm={() => handleDelete(openDeleteId)}
-          onCancel={() => setOpenDeleteId(null)}
-        />
-      )}
-      {openCancelId && (
-        <ConfirmDialog
-          open
-          title={t("confirmCancel")}
-          confirmLabel={t("actions.cancel")}
-          cancelLabel={c("cancel")}
-          danger
-          loading={cancelingId === openCancelId}
-          onConfirm={() => handleCancel(openCancelId)}
-          onCancel={() => setOpenCancelId(null)}
-        />
-      )}
     </div>
   );
 }

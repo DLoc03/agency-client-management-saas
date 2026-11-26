@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useTranslations } from "next-intl";
 import { Forbidden } from "@/components/ui/Forbidden";
@@ -18,23 +18,6 @@ export default function PaymentDetailsPage() {
   const t = useTranslations("Finance");
   const c = useTranslations("Common");
 
-  const perms = session?.user.permissions ?? [];
-  const canUpdate = perms.includes("agencies.payment-details.update");
-
-  if (isLoading) return null;
-  if (!session || !canUpdate) {
-    return (
-      <Forbidden
-        title={t("paymentDetails.forbidden") || "Forbidden"}
-        message={
-          t("paymentDetails.onlyOwnerAdmin") ||
-          "Chỉ Agency Owner và Admin được xem/trang này."
-        }
-      />
-    );
-  }
-
-  const agencyId = session.agency.id;
   const [data, setData] = useState<AgencyPaymentDetailsInput>({
     bank_name: "",
     bank_account_number: "",
@@ -45,21 +28,18 @@ export default function PaymentDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const load = useCallback(async () => {
-    // The detail endpoint is not part of BE-008 §5 (only PATCH exists), so the
-    // form starts empty and the current values are shown after a successful save.
-    setData({
-      bank_name: "",
-      bank_account_number: "",
-      bank_account_holder: "",
-      vietqr_payload: "",
-    });
-  }, []);
+  const perms = session?.user.permissions ?? [];
+  const canUpdate = perms.includes("agencies.payment-details.update");
+  const agencyId = session?.agency.id ?? 0;
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  if (isLoading) return null;
+  if (!session || !canUpdate) {
+    return <Forbidden />;
+  }
 
+  // Note: BE-008 exposes only PATCH for payment details (no GET), so the
+  // form starts empty; the saved values are echoed back by the PATCH
+  // response and are shown on invoices/PDFs.
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -72,10 +52,16 @@ export default function PaymentDetailsPage() {
     };
     setLoading(true);
     try {
-      await updateAgencyPaymentDetails(agencyId, payload);
+      const res = await updateAgencyPaymentDetails(agencyId, payload);
+      setData({
+        bank_name: res.bank_name ?? "",
+        bank_account_number: res.bank_account_number ?? "",
+        bank_account_holder: res.bank_account_holder ?? "",
+        vietqr_payload: res.vietqr_payload ?? "",
+      });
       setSaved(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Lưu thông tin chuyển khoản thất bại.");
+      setError(e instanceof Error ? e.message : t("paymentDetails.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -150,7 +136,7 @@ export default function PaymentDetailsPage() {
         )}
         {saved && (
           <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-            {t("actions.save") + " thành công."}
+            {t("paymentDetails.saved")}
           </div>
         )}
         <div className="flex gap-3">

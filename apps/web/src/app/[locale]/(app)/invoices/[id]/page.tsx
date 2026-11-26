@@ -9,7 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden } from "@/components/ui/Forbidden";
 import {
   getInvoice,
@@ -52,6 +52,8 @@ export default function InvoiceDetailPage() {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
+  const confirmAction = useConfirm();
   const [payments, setPayments] = useState<
     Array<{
       id: number;
@@ -71,14 +73,10 @@ export default function InvoiceDetailPage() {
   const [payError, setPayError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
 
-  // Confirmations
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openCancel, setOpenCancel] = useState(false);
-  const [openDeletePaymentId, setOpenDeletePaymentId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [canceling, setCanceling] = useState(false);
   const [sending, setSending] = useState(false);
-  const [deletingPaymentId, setDeletingPaymentId] = useState<number | null>(null);
+
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -92,14 +90,10 @@ export default function InvoiceDetailPage() {
     } catch (e) {
       const err = e as { status?: number; code?: string; message?: string };
       if (err.status === 403) {
-        setError(
-          t("paymentDetails.forbidden") || c("forbidden.message") || "Forbidden.",
-        );
+        setForbidden(true);
         return;
       }
-      setError(
-        e instanceof Error ? e.message : t("errors.notFound") || "Không tải được hoá đơn.",
-      );
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -172,15 +166,11 @@ export default function InvoiceDetailPage() {
   };
 
   const handleDeletePayment = async (paymentId: number) => {
-    setDeletingPaymentId(paymentId);
     try {
       await deletePayment(paymentId);
-      setOpenDeletePaymentId(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Xoá thanh toán thất bại.");
-    } finally {
-      setDeletingPaymentId(null);
+      setError(e instanceof Error ? e.message : t("errors.paymentDeleteFailed"));
     }
   };
 
@@ -248,11 +238,16 @@ export default function InvoiceDetailPage() {
     );
   }
 
+  if (forbidden) {
+    return <Forbidden />;
+  }
+
   if (error) {
-    return <Forbidden
-      title={t("paymentDetails.forbidden") || c("forbidden.title")}
-      message={error}
-    />;
+    return (
+      <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {error}
+      </div>
+    );
   }
 
   if (!invoice) return null;
@@ -464,7 +459,15 @@ export default function InvoiceDetailPage() {
                             {
                               label: t("actions.delete"),
                               danger: true,
-                              onClick: () => setOpenDeletePaymentId(p.id),
+                              onClick: async () => {
+                                if (
+                                  await confirmAction(t("confirmDeletePayment"), {
+                                    intent: "delete",
+                                  })
+                                ) {
+                                  await handleDeletePayment(p.id);
+                                }
+                              },
                             },
                           ]}
                         />
@@ -607,7 +610,14 @@ export default function InvoiceDetailPage() {
             {canDelete && (
               <button
                 type="button"
-                onClick={() => setOpenDelete(true)}
+                disabled={deleting}
+                onClick={async () => {
+                  if (
+                    await confirmAction(t("confirmDelete"), { intent: "delete" })
+                  ) {
+                    await handleDelete();
+                  }
+                }}
                 className="rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
               >
                 {t("actions.delete")}
@@ -618,7 +628,16 @@ export default function InvoiceDetailPage() {
         {invoice.status === "sent" && canCancel && (
           <button
             type="button"
-            onClick={() => setOpenCancel(true)}
+            disabled={canceling}
+            onClick={async () => {
+              if (
+                await confirmAction(t("confirmCancel"), {
+                  confirmLabel: t("actions.cancelInvoice"),
+                })
+              ) {
+                await handleCancel();
+              }
+            }}
             className="rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
           >
             {t("actions.cancel")}
@@ -636,42 +655,6 @@ export default function InvoiceDetailPage() {
         )}
       </div>
 
-      {openDelete && (
-        <ConfirmDialog
-          open
-          title={t("confirmDelete")}
-          confirmLabel={t("actions.delete")}
-          cancelLabel={c("cancel")}
-          danger
-          loading={deleting}
-          onConfirm={handleDelete}
-          onCancel={() => setOpenDelete(false)}
-        />
-      )}
-      {openCancel && (
-        <ConfirmDialog
-          open
-          title={t("confirmCancel")}
-          confirmLabel={t("actions.cancel")}
-          cancelLabel={c("cancel")}
-          danger
-          loading={canceling}
-          onConfirm={handleCancel}
-          onCancel={() => setOpenCancel(false)}
-        />
-      )}
-      {openDeletePaymentId && (
-        <ConfirmDialog
-          open
-          title={t("confirmDeletePayment")}
-          confirmLabel={t("actions.delete")}
-          cancelLabel={c("cancel")}
-          danger
-          loading={deletingPaymentId === openDeletePaymentId}
-          onConfirm={() => handleDeletePayment(openDeletePaymentId!)}
-          onCancel={() => setOpenDeletePaymentId(null)}
-        />
-      )}
     </div>
   );
 }

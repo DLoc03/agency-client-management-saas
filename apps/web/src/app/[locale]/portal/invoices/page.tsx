@@ -129,9 +129,7 @@ export default function PortalInvoicesPage() {
                       <span
                         className={`inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(invoice.status)}`}
                       >
-                        {invoice.status === "overdue"
-                          ? t("statuses.overdue")
-                          : invoice.status}
+                        {t(`statuses.${invoice.status}`)}
                       </span>
                     </div>
                   </div>

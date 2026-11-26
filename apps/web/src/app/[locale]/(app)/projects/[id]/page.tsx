@@ -8,8 +8,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { priorityBadgeClass, statusBadgeClass } from "@/lib/status-colors";
+import { formatMoney } from "@/lib/currency";
 import { Avatar } from "@/components/ui/Avatar";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   getProject,
   updateProject,
@@ -28,7 +33,6 @@ import {
 } from "@/lib/projects/api";
 import { assignTeamToProject, listTeams, listUsers, removeTeamFromProject } from "@/lib/team/api";
 import type { Team } from "@/lib/team/types";
-import { formatMoney } from "@/lib/currency";
 import type {
   Project,
   ProjectStatus,
@@ -52,16 +56,22 @@ export default function ProjectDetailPage() {
   const router = useI18nRouter();
   const locale = useLocale();
   const t = useTranslations("Projects");
+  const confirmAction = useConfirm();
   const c = useTranslations("Common");
 
   const [project, setProject] = useState<Project | null>(null);
-  const [members, setMembers] = useState<{ id: number; name: string; email: string }[]>([]);
+  const [members, setMembers] = useState<{ id: number; name: string; email: string; via_team_id: number | null }[]>([]);
   const [directory, setDirectory] = useState<{ id: number; name: string; email: string }[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [timeline, setTimeline] = useState<TimelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [memberError, setMemberError] = useState<string | null>(null);
+  const [teamError, setTeamError] = useState<string | null>(null);
+  const [milestoneError, setMilestoneError] = useState<string | null>(null);
+  const [taskError, setTaskError] = useState<string | null>(null);
+  const [forbidden, setForbidden] = useState(false);
 
   // task filters
   const [taskStatus, setTaskStatus] = useState("");
@@ -80,8 +90,11 @@ export default function ProjectDetailPage() {
   const [teamResult, setTeamResult] = useState<string | null>(null);
   const [assignTeams, setAssignTeams] = useState<Team[]>([]);
 
+  // The team list also resolves the names behind each member's via_team_id
+  // (FIX-021 labels), so load it for every viewer, not only project managers;
+  // a failed load just leaves the labels unresolved.
   useEffect(() => {
-    if (session?.user.permissions.includes("projects.update")) {
+    if (session) {
       listTeams()
         .then(setAssignTeams)
         .catch(() => setAssignTeams([]));
@@ -101,6 +114,9 @@ export default function ProjectDetailPage() {
     if (!isLoading && !session) router.replace("/login");
   }, [isLoading, session, router]);
 
+  // First-load skeleton follows the DEC-021 timing (appears only after ~200 ms).
+  const showSkeleton = useDelayedSkeleton(loading && !project);
+
   const loadAll = async () => {
     setLoading(true);
     setError(null);
@@ -115,8 +131,10 @@ export default function ProjectDetailPage() {
       setMembers(m);
       setMilestones(ms);
       setTimeline(tl);
+      setForbidden(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      if (isForbiddenError(e)) setForbidden(true);
+      else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -153,6 +171,15 @@ export default function ProjectDetailPage() {
   const canUpdateProject = !!session?.user.permissions.includes("projects.update");
   const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
   const currency = session?.agency.base_currency || "USD";
+  // FIX-021 (option A): surface which teams currently contribute members.
+  const teamNameFor = (teamId: number) =>
+    assignTeams.find((tm) => tm.id === teamId)?.name ?? t("teamAssignment.deletedTeam");
+  const assignedTeams = Array.from(
+    members.reduce((acc, m) => {
+      if (m.via_team_id != null) acc.set(m.via_team_id, (acc.get(m.via_team_id) ?? 0) + 1);
+      return acc;
+    }, new Map<number, number>()),
+  ).map(([teamId, count]) => ({ id: teamId, name: teamNameFor(teamId), count }));
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,7 +190,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -172,7 +199,7 @@ export default function ProjectDetailPage() {
       await removeMember(id, userId);
       setMembers((prev) => prev.filter((m) => m.id !== userId));
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMemberError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -200,22 +227,19 @@ export default function ProjectDetailPage() {
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setMilestoneError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
-  const [pendingDeleteMilestoneId, setPendingDeleteMilestoneId] = useState<number | null>(null);
-  const [pendingDeleteTaskId, setPendingDeleteTaskId] = useState<number | null>(null);
-  const [confirmDeleteProjectOpen, setConfirmDeleteProjectOpen] = useState(false);
-
   const handleDeleteMilestone = async (milestoneId: number) => {
+    if (!(await confirmAction(t("confirmDeleteMilestone"), { intent: "delete" }))) return;
     try {
       await deleteMilestone(id, milestoneId);
       setMilestones((prev) => prev.filter((m) => m.id !== milestoneId));
       const tl = await getTimeline(id);
       setTimeline(tl);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setMilestoneError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -245,18 +269,19 @@ export default function ProjectDetailPage() {
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.createFailed"));
+      setTaskError(e instanceof Error ? e.message : t("errors.createFailed"));
     }
   };
 
   const handleDeleteTask = async (taskId: number) => {
+    if (!(await confirmAction(t("confirmDeleteTask"), { intent: "delete" }))) return;
     try {
       await deleteTask(taskId);
       await loadTasks();
       const p = await getProject(id);
       setProject(p);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      setTaskError(e instanceof Error ? e.message : t("errors.deleteFailed"));
     }
   };
 
@@ -272,7 +297,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setTeamError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -287,7 +312,7 @@ export default function ProjectDetailPage() {
       const m = await listMembers(id);
       setMembers(m);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      setTeamError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -299,10 +324,62 @@ export default function ProjectDetailPage() {
     );
   }
 
-  if (loading || !project) {
+  if (!project) {
+    if (forbidden) {
+      return <Forbidden />;
+    }
+    if (!loading) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <p className="text-sm text-muted-foreground">{error ?? c("loading")}</p>
+        </div>
+      );
+    }
+    if (!showSkeleton) {
+      // Fast load: hold the layout height without flashing a skeleton (DEC-021).
+      return <div className="min-h-[60vh]" />;
+    }
+    // First load: geometric skeleton of the detail layout (DEC-021). The
+    // Tasks section gets a true table twin (DEC-022), not generic bars.
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">{c("loading")}</p>
+      <div aria-hidden className="space-y-6">
+        <Skeleton className="h-5 w-24" />
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-4 w-1/3" />
+          </div>
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+        <section className="space-y-3 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-2/3" />
+        </section>
+        <section className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-32" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-1.5 w-full rounded-full" />
+          </div>
+        </section>
+        <section className="space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
+          <Skeleton className="h-5 w-24" />
+          <div className="hidden lg:block">
+            <DataTableSkeleton
+              framed={false}
+              rows={4}
+              columns={["w-[34%]", "w-[14%]", "w-[12%]", "w-[18%]", "w-[12%]", "w-[10%]"]}
+            />
+          </div>
+          <div className="space-y-3 lg:hidden">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        </section>
       </div>
     );
   }
@@ -327,7 +404,15 @@ export default function ProjectDetailPage() {
         {canDeleteProject && (
           <button
             type="button"
-            onClick={() => setConfirmDeleteProjectOpen(true)}
+            onClick={async () => {
+              if (!(await confirmAction(t("confirmDelete"), { intent: "delete" }))) return;
+              try {
+                await deleteProject(id);
+                router.push("/projects");
+              } catch (e) {
+                setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+              }
+            }}
             className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
           >
             {t("actions.delete")}
@@ -421,9 +506,9 @@ export default function ProjectDetailPage() {
       {/* Budget reconciliation (read-only, BE-008 / FINANCE_CONTRACT §6). */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{t("detail.budgetReconciliation") || "Đối soát ngân sách"}</h2>
+          <h2 className="text-lg font-semibold">{t("detail.budgetReconciliation")}</h2>
           <p className="text-xs text-muted-foreground">
-            {t("budget.reconciliationHint") || "Số liệu tính lúc đọc, không sửa ngân sách ở đây."}
+            {t("budget.reconciliationHint")}
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-4">
@@ -453,7 +538,7 @@ export default function ProjectDetailPage() {
           </div>
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          {t("budget.note") || "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."}
+          {t("budget.note")}
         </p>
       </section>
 
@@ -461,6 +546,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("detail.members")}</h2>
+          {memberError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {memberError}
+            </div>
+          )}
           {canManageMembers && (
             <button
               type="button"
@@ -493,6 +583,11 @@ export default function ProjectDetailPage() {
               >
                 <Avatar name={m.name} seed={m.id} className="h-5 w-5 text-[10px]" />
                 <span className="whitespace-nowrap">{m.name}</span>
+                {m.via_team_id != null && (
+                  <span className="whitespace-nowrap rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary-text">
+                    {teamNameFor(m.via_team_id)}
+                  </span>
+                )}
                 {canManageMembers && (
                   <button
                     type="button"
@@ -513,6 +608,27 @@ export default function ProjectDetailPage() {
       {session.user.permissions.includes("projects.update") && (
         <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">{t("teamAssignment.title")}</h2>
+          {teamError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {teamError}
+            </div>
+          )}
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium">{t("teamAssignment.assignedTeams")}:</span>
+            {assignedTeams.length === 0 ? (
+              <span className="text-sm text-muted-foreground">{t("teamAssignment.noTeamsAssigned")}</span>
+            ) : (
+              assignedTeams.map((tm) => (
+                <span
+                  key={tm.id}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground"
+                >
+                  {tm.name}
+                  <span className="text-muted-foreground">· {t("teamAssignment.teamMembersCount", { count: tm.count })}</span>
+                </span>
+              ))
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             <Select
               value={teamAssignId}
@@ -540,6 +656,7 @@ export default function ProjectDetailPage() {
               {t("teamAssignment.remove")}
             </button>
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t("teamAssignment.note")}</p>
           {teamResult && (
             <p className="mt-2 text-sm text-muted-foreground">{teamResult}</p>
           )}
@@ -550,6 +667,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("detail.milestones")}</h2>
+          {milestoneError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {milestoneError}
+            </div>
+          )}
           {canManageMilestones && (
             <button
               type="button"
@@ -568,13 +690,13 @@ export default function ProjectDetailPage() {
         {milestones.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("detail.noMilestones")}</p>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-border">
             {milestones.map((m) => {
               const mpct = m.progress_percent ?? 0;
               const mdone = m.tasks_done_count ?? 0;
               const mtotal = m.tasks_count ?? 0;
               return (
-                <div key={m.id} className="rounded-md border border-border p-3">
+                <div key={m.id} className="py-3 first:pt-0 last:pb-0">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate font-medium">{m.name}</p>
@@ -603,7 +725,7 @@ export default function ProjectDetailPage() {
                             label: t("actions.delete"),
                             icon: "trash-2",
                             danger: true,
-                            onClick: () => setPendingDeleteMilestoneId(m.id),
+                            onClick: () => handleDeleteMilestone(m.id),
                           },
                         ]}
                       />
@@ -631,6 +753,11 @@ export default function ProjectDetailPage() {
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-semibold">{t("detail.tasks")}</h2>
+          {taskError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {taskError}
+            </div>
+          )}
           {canCreateTask && (
             <button
               type="button"
@@ -683,25 +810,103 @@ export default function ProjectDetailPage() {
         {tasks.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("detail.noTasks")}</p>
         ) : (
-          <div className="space-y-2">
+          <div aria-busy={loading} className={loading ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+            <div className="hidden lg:block">
+              <DataTable
+                framed={false}
+                onRowClick={(task) => router.push(`/projects/${id}/tasks/${task.id}`)}
+                columns={[
+                  {
+                    key: "title",
+                    header: t("fields.title"),
+                    width: "w-[34%]",
+                    render: (task) => (
+                      <span className="block max-w-full truncate font-medium text-foreground">{task.title}</span>
+                    ),
+                  },
+                  {
+                    key: "status",
+                    header: t("fields.status"),
+                    width: "w-[14%]",
+                    render: (task) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
+                        {t(`taskStatuses.${task.status}`)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "priority",
+                    header: t("fields.priority"),
+                    width: "w-[12%]",
+                    render: (task) => (
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
+                        {t(`priorities.${task.priority}`)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "assignee",
+                    header: t("fields.assignee"),
+                    width: "w-[18%]",
+                    render: (task) =>
+                      task.assignee ? (
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Avatar name={task.assignee.name} seed={task.assignee.id} className="h-7 w-7 shrink-0 text-[10px]" />
+                          <span className="truncate">{task.assignee.name}</span>
+                        </span>
+                      ) : (
+                        "—"
+                      ),
+                  },
+                  {
+                    key: "dueDate",
+                    header: t("fields.dueDate"),
+                    width: "w-[12%]",
+                    cellClassName: "tabular-nums",
+                    render: (task) => task.due_date?.slice(0, 10) ?? "—",
+                  },
+                  {
+                    key: "actions",
+                    header: "",
+                    width: "w-[10%]",
+                    render: (task) =>
+                      canDeleteTask ? (
+                        <ActionMenu
+                          items={[
+                            {
+                              label: t("actions.delete"),
+                              icon: "trash-2",
+                              danger: true,
+                              onClick: () => handleDeleteTask(task.id),
+                            },
+                          ]}
+                        />
+                      ) : null,
+                  },
+                ]}
+                rows={tasks}
+                rowKey={(task) => task.id}
+              />
+            </div>
+            <div className="divide-y divide-border lg:hidden">
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3"
+                onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
+                className="flex cursor-pointer flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <div className="min-w-0 flex-1">
-                  <button
-                    type="button"
-                    onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                    className="block max-w-full truncate text-left font-medium text-foreground hover:underline"
-                  >
-                    {task.title}
-                  </button>
-                  <p className="text-xs text-muted-foreground">
-                    {t(`taskStatuses.${task.status}`)} · {t(`priorities.${task.priority}`)}
-                    {task.assignee ? ` · ${task.assignee.name}` : ""}
-                    {task.due_date ? ` · ${task.due_date.slice(0, 10)}` : ""}
-                  </p>
+                  <p className="truncate font-medium text-foreground">{task.title}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
+                      {t(`taskStatuses.${task.status}`)}
+                    </span>
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
+                      {t(`priorities.${task.priority}`)}
+                    </span>
+                    {task.assignee ? <span className="text-xs text-muted-foreground">{task.assignee.name}</span> : null}
+                    {task.due_date ? <span className="text-xs text-muted-foreground">{task.due_date.slice(0, 10)}</span> : null}
+                  </div>
                 </div>
                 {canDeleteTask && (
                   <ActionMenu
@@ -710,13 +915,14 @@ export default function ProjectDetailPage() {
                         label: t("actions.delete"),
                         icon: "trash-2",
                         danger: true,
-                        onClick: () => setPendingDeleteTaskId(task.id),
+                        onClick: () => handleDeleteTask(task.id),
                       },
                     ]}
                   />
                 )}
               </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </section>
@@ -759,6 +965,11 @@ export default function ProjectDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleAddMember} className="w-full max-w-sm space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addMember")}</h2>
+            {memberError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {memberError}
+              </div>
+            )}
             <Select
               value={memberUserId}
               onValueChange={setMemberUserId}
@@ -787,6 +998,11 @@ export default function ProjectDetailPage() {
             <h2 className="text-lg font-semibold">
               {editingMilestone ? t("actions.edit") : t("actions.addMilestone")}
             </h2>
+            {milestoneError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {milestoneError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.name")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
@@ -842,6 +1058,11 @@ export default function ProjectDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleCreateTask} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
             <h2 className="text-lg font-semibold">{t("actions.addTask")}</h2>
+            {taskError && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {taskError}
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-medium">{t("fields.title")} <span className="text-red-500" aria-hidden="true">*</span></label>
               <input
@@ -924,42 +1145,6 @@ export default function ProjectDetailPage() {
           </form>
         </div>
       )}
-      {pendingDeleteMilestoneId !== null && (
-        <ConfirmDialog
-          open
-          title={t("actions.delete") + "?"}
-          confirmLabel={t("actions.delete")}
-          danger
-          onConfirm={() => handleDeleteMilestone(pendingDeleteMilestoneId)}
-          onCancel={() => setPendingDeleteMilestoneId(null)}
-        />
-      )}
-      {pendingDeleteTaskId !== null && (
-        <ConfirmDialog
-          open
-          title={t("actions.delete") + "?"}
-          confirmLabel={t("actions.delete")}
-          danger
-          onConfirm={() => handleDeleteTask(pendingDeleteTaskId)}
-          onCancel={() => setPendingDeleteTaskId(null)}
-        />
-      )}
-      <ConfirmDialog
-        open={confirmDeleteProjectOpen}
-        title={t("actions.delete") + "?"}
-        confirmLabel={t("actions.delete")}
-        danger
-        onConfirm={async () => {
-          try {
-            await deleteProject(id);
-            router.push("/projects");
-          } catch (e) {
-            setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
-          }
-          setConfirmDeleteProjectOpen(false);
-        }}
-        onCancel={() => setConfirmDeleteProjectOpen(false)}
-      />
     </div>
   );
 }
