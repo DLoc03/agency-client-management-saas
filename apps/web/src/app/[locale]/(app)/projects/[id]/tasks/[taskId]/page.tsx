@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { priorityBadgeClass } from "@/lib/status-colors";
 import {
   getTask,
   updateTask,
@@ -191,7 +192,11 @@ export default function TaskDetailPage() {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.priority")}</p>
-            <p className="font-medium">{t(`priorities.${task.priority}`)}</p>
+            <p className="mt-1">
+              <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
+                {t(`priorities.${task.priority}`)}
+              </span>
+            </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.assignee")}</p>
