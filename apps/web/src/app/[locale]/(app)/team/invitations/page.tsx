@@ -8,12 +8,13 @@ import { Icon } from "@/components/shell/Icon";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import {
-  listInvitations,
+  listInvitationsPage,
   createInvitation,
   resendInvitation,
   revokeInvitation,
   listUsers,
 } from "@/lib/team/api";
+import { Pagination } from "@/components/ui/Pagination";
 import type { Invitation, RoleOption } from "@/lib/team/types";
 
 export default function InvitationsPage() {
@@ -24,6 +25,10 @@ export default function InvitationsPage() {
   const c = useTranslations("Common");
 
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +48,13 @@ export default function InvitationsPage() {
     setLoading(true);
     setError(null);
     try {
-      const [inv, users] = await Promise.all([listInvitations(), listUsers()]);
-      setInvitations(inv);
+      const [res, users] = await Promise.all([
+        listInvitationsPage({ page, per_page: perPage }),
+        listUsers({ per_page: 100 }),
+      ]);
+      setInvitations(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
       const map = new Map<number, RoleOption>();
       users.forEach((u) => {
         u.roles.forEach((r) => {
@@ -63,7 +73,12 @@ export default function InvitationsPage() {
 
   useEffect(() => {
     if (session) load();
-  }, [session]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, page, perPage]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const canManage = !!session?.user.permissions.includes("invitations.manage");
 
@@ -197,6 +212,22 @@ export default function InvitationsPage() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+        {!loading && invitations.length > 0 && total > 0 && (
+          <div className="mt-6">
+            <Pagination
+              page={page}
+              perPage={perPage}
+              total={total}
+              lastPage={lastPage}
+              onPageChange={setPage}
+              onPerPageChange={(value) => {
+                setPerPage(value);
+                setPage(1);
+              }}
+              disabled={loading}
+            />
           </div>
         )}
       </div>

@@ -52,6 +52,12 @@ export async function listClients(
   return res.data || [];
 }
 
+export async function listClientsPage(
+  params: Record<string, string | number | undefined> = {},
+) {
+  return request<Paginated<Client>>(`/api/clients${queryString(params)}`);
+}
+
 export async function getClient(id: number) {
   const res = await request<{ data: Client }>(`/api/clients/${id}`);
   return res.data;
@@ -80,7 +86,7 @@ export async function deleteClient(id: number) {
 /* ---------------- Contacts ---------------- */
 
 export async function listContacts(clientId: number) {
-  const res = await request<Paginated<Contact>>(`/api/clients/${clientId}/contacts`);
+  const res = await request<Paginated<Contact>>(`/api/clients/${clientId}/contacts?per_page=100`);
   return res.data || [];
 }
 
@@ -111,7 +117,7 @@ export async function deleteContact(clientId: number, contactId: number) {
 /* ---------------- Notes (internal only) ---------------- */
 
 export async function listNotes(clientId: number) {
-  const res = await request<Paginated<ClientNote>>(`/api/clients/${clientId}/notes`);
+  const res = await request<Paginated<ClientNote>>(`/api/clients/${clientId}/notes?per_page=100`);
   return res.data || [];
 }
 
@@ -130,7 +136,7 @@ export async function deleteNote(clientId: number, noteId: number) {
 /* ---------------- Tags ---------------- */
 
 export async function listTags() {
-  const res = await request<Paginated<Tag>>("/api/tags");
+  const res = await request<Paginated<Tag>>("/api/tags?per_page=100");
   return res.data || [];
 }
 
@@ -177,6 +183,6 @@ export async function setPortalAccountActive(
 /* ---------------- Directory (account-manager picker) ---------------- */
 
 export async function listDirectoryUsers() {
-  const res = await request<Paginated<DirectoryUser>>("/api/users");
+  const res = await request<Paginated<DirectoryUser>>("/api/users?per_page=100");
   return res.data || [];
 }

@@ -221,10 +221,10 @@ export default function ProjectDetailPage() {
         }
       };
       const [files, comments, approvals, history] = await Promise.all([
-        fetchJson(`/api/projects/${id}/files`),
-        fetchJson(`/api/projects/${id}/portal-comments`),
-        fetchJson(`/api/projects/${id}/approvals`),
-        fetchJson(`/api/projects/${id}/history`),
+        fetchJson(`/api/projects/${id}/files?per_page=100`),
+        fetchJson(`/api/projects/${id}/portal-comments?per_page=100`),
+        fetchJson(`/api/projects/${id}/approvals?per_page=100`),
+        fetchJson(`/api/projects/${id}/history?per_page=100`),
       ]);
       if (cancelled) return;
       setPortalFiles(files);
@@ -1240,38 +1240,49 @@ export default function ProjectDetailPage() {
             ) : (
               <ul className="divide-y divide-border">
                 {portalFiles.map((f: any) => (
-                  <li key={f.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <Icon name={fileIcon(f.original_name, f.mime_type)} className="h-5 w-5 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0">
-                        <p className="truncate">{f.original_name}</p>
-                        {f.uploaded_by && (
-                          <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-4 w-4 text-[9px]" />
-                            {f.uploaded_by.name} · {String(f.created_at).slice(0, 10)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{f.client_visible ? t("portal.clientVisible") : ""}</span>
-                      {canManagePortalFiles && (
-                        <>
-                          <button type="button" onClick={async () => {
-                            await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
-                            setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
-                          }} className="text-xs text-muted-foreground hover:text-foreground">
-                            <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
-                          </button>
-                          <button type="button" onClick={async () => {
-                            const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
-                            if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
-                            else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
-                          }} className="inline-flex items-center justify-center gap-1.5 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("portal.delete")}</button>
-                        </>
+                  <li key={f.id} className="flex items-start gap-3 py-3 text-sm">
+                    <Icon name={fileIcon(f.original_name, f.mime_type)} className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{f.original_name}</p>
+                      {f.uploaded_by && (
+                        <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-5 w-5 shrink-0 text-[9px]" />
+                          <span className="truncate"><span className="font-semibold text-foreground">{f.uploaded_by.name}</span> · {String(f.created_at).slice(0, 10)}</span>
+                        </p>
                       )}
-                      <a href={`/api/projects/${id}/files/${f.id}/download`} className="text-xs text-primary hover:underline">{t("portal.download")}</a>
+                      {f.client_visible && (
+                        <p className="mt-1 text-xs text-muted-foreground">{t("portal.clientVisible")}</p>
+                      )}
                     </div>
+                    {canManagePortalFiles && (
+                      <button type="button" aria-label={t("portal.clientVisible")} onClick={async () => {
+                        await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
+                        setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
+                      }} className="shrink-0 text-muted-foreground hover:text-foreground">
+                        <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
+                      </button>
+                    )}
+                    <ActionMenu
+                      items={[
+                        {
+                          label: t("portal.download"),
+                          icon: "download",
+                          onClick: () => { window.location.href = `/api/projects/${id}/files/${f.id}/download`; },
+                        },
+                        ...(canManagePortalFiles
+                          ? [{
+                              label: t("portal.delete"),
+                              icon: "trash-2",
+                              danger: true,
+                              onClick: async () => {
+                                const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
+                                if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
+                                else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
+                              },
+                            }]
+                          : []),
+                      ]}
+                    />
                   </li>
                 ))}
               </ul>
@@ -1327,7 +1338,7 @@ export default function ProjectDetailPage() {
                 if (!portalApprovalTitle.trim()) return;
                 const res = await fetch(`/api/projects/${id}/approvals`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: portalApprovalTitle.trim(), description: portalApprovalDesc.trim() || undefined }) });
                 if (res.ok) { const b = await res.json(); setPortalApprovals((prev) => [b.data, ...prev]); setPortalApprovalTitle(""); setPortalApprovalDesc(""); } else { const b = await res.json().catch(()=>null); setPortalError(b?.error?.message || "Approval failed"); }
-              }} className="space-y-2 rounded-md border border-border p-3">
+              }} className="space-y-2 rounded-md bg-muted/30 p-3">
                 <input value={portalApprovalTitle} onChange={(e) => setPortalApprovalTitle(e.target.value)} placeholder={t("portal.approvals")} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
                 <textarea value={portalApprovalDesc} onChange={(e) => setPortalApprovalDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("fields.description")} />
                 <div className="flex justify-end">
@@ -1338,9 +1349,9 @@ export default function ProjectDetailPage() {
             {portalApprovals.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("portal.noApprovals")}</p>
             ) : (
-              <ul className="space-y-3">
+              <ul className="divide-y divide-border">
                 {portalApprovals.map((a: any) => (
-                  <li key={a.id} className="rounded-xl border border-border bg-card p-4 text-sm">
+                  <li key={a.id} className="py-4 text-sm first:pt-0 last:pb-0">
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-medium">{a.title}</p>
                       <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${approvalStatusClass(a.status)}`}>{t(`portal.approvalStatuses.${a.status}`)}</span>

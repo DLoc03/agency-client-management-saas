@@ -9,13 +9,14 @@ import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
+import { Pagination } from "@/components/ui/Pagination";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
   createClient,
   createTag,
   deleteClient,
-  listClients,
+  listClientsPage,
   listDirectoryUsers,
   listTags,
 } from "@/lib/clients/api";
@@ -54,6 +55,10 @@ export default function ClientsPage() {
   const [status, setStatus] = useState("");
   const [tagId, setTagId] = useState("");
   const [managerId, setManagerId] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
 
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -96,13 +101,17 @@ export default function ClientsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await listClients({
+      const res = await listClientsPage({
         q: q || undefined,
         status: status || undefined,
         tag_id: tagId ? Number(tagId) : undefined,
         account_manager_id: managerId ? Number(managerId) : undefined,
+        page,
+        per_page: perPage,
       });
-      setClients(data);
+      setClients(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
       setHasLoaded(true);
       setForbidden(false);
     } catch (e) {
@@ -116,7 +125,11 @@ export default function ClientsPage() {
   useEffect(() => {
     if (session) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, q, status, tagId, managerId]);
+  }, [session, q, status, tagId, managerId, page, perPage]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
   const refetching = loading && hasLoaded;
@@ -232,12 +245,12 @@ export default function ClientsPage() {
           type="search"
           placeholder={t("filters.search")}
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => { setQ(e.target.value); setPage(1); }}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
         <Select
           value={status}
-          onValueChange={setStatus}
+          onValueChange={(v) => { setStatus(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
             ...CLIENT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
@@ -246,7 +259,7 @@ export default function ClientsPage() {
         />
         <Select
           value={tagId}
-          onValueChange={setTagId}
+          onValueChange={(v) => { setTagId(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.tag")}` },
             ...tags.map((tag) => ({ value: String(tag.id), label: tag.name })),
@@ -255,7 +268,7 @@ export default function ClientsPage() {
         />
         <Select
           value={managerId}
-          onValueChange={setManagerId}
+          onValueChange={(v) => { setManagerId(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.manager")}` },
             ...users.map((u) => ({ value: String(u.id), label: u.name })),
@@ -678,6 +691,22 @@ export default function ClientsPage() {
               </div>
               ))}
             </div>
+            {total > 0 && (
+              <div className="mt-6">
+                <Pagination
+                  page={page}
+                  perPage={perPage}
+                  total={total}
+                  lastPage={lastPage}
+                  onPageChange={setPage}
+                  onPerPageChange={(value) => {
+                    setPerPage(value);
+                    setPage(1);
+                  }}
+                  disabled={loading}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

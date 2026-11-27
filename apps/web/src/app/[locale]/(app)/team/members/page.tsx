@@ -10,7 +10,8 @@ import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { Select } from "@/components/ui/Select";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
-import { listUsers, listTeams } from "@/lib/team/api";
+import { listUsersPage, listTeams } from "@/lib/team/api";
+import { Pagination } from "@/components/ui/Pagination";
 import type { DirectoryUser } from "@/lib/team/types";
 
 const ROLE_KEYS = ["agency_owner", "admin", "sales_manager", "project_manager", "team_member", "accountant"];
@@ -32,6 +33,10 @@ export default function MembersPage() {
   const [role, setRole] = useState("");
   const [teamId, setTeamId] = useState("");
   const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
     if (!isLoading && !session) router.replace("/login");
@@ -41,16 +46,20 @@ export default function MembersPage() {
     setLoading(true);
     setError(null);
     try {
-      const [u, tm] = await Promise.all([
-        listUsers({
+      const [res, tm] = await Promise.all([
+        listUsersPage({
           q: q || undefined,
           role: role || undefined,
           team_id: teamId ? Number(teamId) : undefined,
           is_active: status === "" ? undefined : status === "active",
+          page,
+          per_page: perPage,
         }),
-        listTeams(),
+        listTeams({ per_page: "100" }),
       ]);
-      setUsers(u);
+      setUsers(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
       setHasLoaded(true);
       setTeams(tm.map((x) => ({ id: x.id, name: x.name })));
       setForbidden(false);
@@ -65,7 +74,11 @@ export default function MembersPage() {
   useEffect(() => {
     if (session) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, q, role, teamId, status]);
+  }, [session, q, role, teamId, status, page, perPage]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
   const refetching = loading && hasLoaded;
@@ -116,12 +129,12 @@ export default function MembersPage() {
           type="search"
           placeholder={t("filters.search")}
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => { setQ(e.target.value); setPage(1); }}
           className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
         <Select
           value={role}
-          onValueChange={setRole}
+          onValueChange={(v) => { setRole(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.role")}` },
             ...ROLE_KEYS.map((r) => ({ value: r, label: t(`roles.${r}`) })),
@@ -130,7 +143,7 @@ export default function MembersPage() {
         />
         <Select
           value={teamId}
-          onValueChange={setTeamId}
+          onValueChange={(v) => { setTeamId(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.team")}` },
             ...teams.map((tm) => ({ value: String(tm.id), label: tm.name })),
@@ -139,7 +152,7 @@ export default function MembersPage() {
         />
         <Select
           value={status}
-          onValueChange={setStatus}
+          onValueChange={(v) => { setStatus(v); setPage(1); }}
           options={[
             { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
             { value: "active", label: t("filters.active") },
@@ -276,6 +289,22 @@ export default function MembersPage() {
               </div>
               ))}
             </div>
+            {total > 0 && (
+              <div className="mt-6">
+                <Pagination
+                  page={page}
+                  perPage={perPage}
+                  total={total}
+                  lastPage={lastPage}
+                  onPageChange={setPage}
+                  onPerPageChange={(value) => {
+                    setPerPage(value);
+                    setPage(1);
+                  }}
+                  disabled={loading}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

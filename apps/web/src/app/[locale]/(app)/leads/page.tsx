@@ -100,6 +100,8 @@ export default function LeadsPage() {
           q: q || undefined,
           source: source || undefined,
           owner_id: ownerId ? Number(ownerId) : undefined,
+          // Kanban board groups one collection by stage, so it loads the API cap instead of page controls.
+          per_page: 100,
         }),
         getPipelineSummary().catch(() => [] as PipelineSummaryRow[]),
         listDueActivities().catch(() => [] as LeadActivity[]),

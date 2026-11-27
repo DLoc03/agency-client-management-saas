@@ -167,7 +167,7 @@ export interface PaymentCreateInput {
 
 export async function listPayments(invoiceId: number): Promise<InvoicePayment[]> {
   const res = await request<Paginated<InvoicePayment>>(
-    `/api/invoices/${invoiceId}/payments`,
+    `/api/invoices/${invoiceId}/payments?per_page=100`,
   );
   return res.data || [];
 }

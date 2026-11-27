@@ -87,7 +87,7 @@ export async function removeMember(projectId: number, userId: number) {
 }
 
 export async function listMilestones(projectId: number) {
-  const res = await request<Paginated<Milestone>>(`/api/projects/${projectId}/milestones`);
+  const res = await request<Paginated<Milestone>>(`/api/projects/${projectId}/milestones?per_page=100`);
   return res.data || [];
 }
 
@@ -120,6 +120,7 @@ export async function listTasks(projectId: number, params: Record<string, string
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
   });
+  if (!qs.has("per_page")) qs.set("per_page", "100");
   const q = qs.toString();
   const res = await request<Paginated<Task>>(`/api/projects/${projectId}/tasks${q ? `?${q}` : ""}`);
   return res.data || [];
@@ -156,7 +157,7 @@ export async function getTimeline(projectId: number) {
 }
 
 export async function listComments(taskId: number) {
-  const res = await request<Paginated<TaskComment>>(`/api/tasks/${taskId}/comments`);
+  const res = await request<Paginated<TaskComment>>(`/api/tasks/${taskId}/comments?per_page=100`);
   return res.data || [];
 }
 
@@ -173,7 +174,7 @@ export async function deleteComment(taskId: number, commentId: number) {
 }
 
 export async function listChecklist(taskId: number) {
-  const res = await request<Paginated<ChecklistItem>>(`/api/tasks/${taskId}/checklist`);
+  const res = await request<Paginated<ChecklistItem>>(`/api/tasks/${taskId}/checklist?per_page=100`);
   return res.data || [];
 }
 

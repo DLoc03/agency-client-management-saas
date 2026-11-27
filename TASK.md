@@ -1,6 +1,15 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-038 — Hoàn thiện nghiệm thu vòng 2 (Nhóm 7) + phân trang danh sách
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Branch: fix/FIX-038-acceptance-polish
+- Progress: Ba điểm nghiệm thu vòng 2 của PO: (1) trang chi tiết công việc có đủ thao tác như row bên ngoài (menu kebab ở header: bật/tắt hiển thị Portal + Xoá, gate theo can_act + quyền tasks.update/tasks.delete); (2) tab File ở mobile hết vỡ layout — tên file truncate trong cột min-w-0, tên người tải font-semibold, thao tác Tải xuống/Xoá đưa vào menu dropdown, nút mắt ẩn/hiện Portal giữ nguyên trên card (áp dụng cả Portal); (3) tab Phê duyệt bỏ lồng viền — form tạo chuyển nền mềm bg-muted/30, danh sách phê duyệt chuyển divide-y không khung. Cộng yêu cầu bổ sung của PO: phân trang đầy đủ cho các danh sách — Clients/Members/Teams/Invitations có Pagination hoàn chỉnh (helper Page-variant trả meta, reset về trang 1 khi đổi bộ lọc), bảng Kanban Leads tải per_page=100 (board gom theo stage nên không dùng page controls), toàn bộ danh sách con (tasks, milestones, files/comments/approvals/history ở cả hai phía, checklist, task comments, contacts, notes, activities, payments, portal invoices, tags, directory users) tải per_page=100 thay vì bị cắt ở mặc định 15 của API.
+- Blocked by: —
+- Acceptance Criteria: Chi tiết công việc có kebab Xoá + ẩn/hiện Portal; tab File hiển thị đúng ở 375px ở cả hai phía; tab Phê duyệt không còn viền lồng; Clients/Members/Teams/Invitations chuyển trang được và không mất bản ghi sau trang 1; không còn danh sách nào bị cắt ở 15 bản ghi.
+- Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
+
+---
 ## FIX-037 — Polish UI Portal & icon hệ thống (Nhóm 7)
 - Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
 - Branch: fix/FIX-037-portal-ui-polish
