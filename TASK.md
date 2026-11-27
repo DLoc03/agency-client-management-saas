@@ -315,6 +315,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-029 — Mobile hoá danh sách/chi tiết hoá đơn, chống tràn ngang, phân trang hiện đại (phát hiện khi nghiệm thu FE-020, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: (1) Danh sách Invoices render trùng bảng + card ở mobile: bọc bảng trong `hidden lg:block`, card mobile đổi sang `lg:hidden`, thống nhất breakpoint `lg` như Projects/Clients; bộ lọc xếp dọc full-width ở mobile. (2) Sửa tràn ngang ở 375px cho card danh sách Projects và Invoices (truncate/min-w-0/break-words, bỏ chiều rộng cứng vượt viewport), desktop không đổi. (3) Trang chi tiết hoá đơn: chip trạng thái `self-start` để không kéo full chiều ngang, bảng Payments và Line items có bản card mobile theo DEC-021, thêm nút Back về `/invoices` ở đầu trang. (4) Component dùng chung `Pagination` (số trang + Previous/Next + chọn 10/20/30/50/100 dòng/trang, reset trang 1 khi đổi filter/số dòng), áp dụng cho Invoices và Projects; thêm khoá i18n `Common.pagination.*` EN/VI. (5) Bỏ ký tự "+" text trùng icon Plus ở nút Add item trong `InvoiceForm`, quét các nút khác trong phạm vi Invoices.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-029-mobile-pagination` từ `origin/main` (`ad3c6e7`).
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n EN = VI khớp tuyệt đối, không khóa lơ lửng; byte-check OK; kiểm tra bằng mắt ở 375px: Invoices chỉ còn card, Projects/Invoices không tràn ngang, chip chi tiết không tràn, Payments dạng card, nút Back hoạt động.
+- Blockers: Không có.
+
 ## FIX-028 — Layout hoá đơn: i18n validation, header danh sách, chi tiết hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-26)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen

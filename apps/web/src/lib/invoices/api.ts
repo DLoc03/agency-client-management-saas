@@ -72,10 +72,16 @@ function queryString(params: Record<string, string | number | undefined>) {
 
 /* ---------------- Invoices ---------------- */
 
+export async function listInvoicesPage(
+  params: Record<string, string | number | undefined> = {},
+): Promise<Paginated<Invoice>> {
+  return request<Paginated<Invoice>>(`/api/invoices${queryString(params)}`);
+}
+
 export async function listInvoices(
   params: Record<string, string | number | undefined> = {},
 ): Promise<Invoice[]> {
-  const res = await request<Paginated<Invoice>>(`/api/invoices${queryString(params)}`);
+  const res = await listInvoicesPage(params);
   return res.data || [];
 }
 

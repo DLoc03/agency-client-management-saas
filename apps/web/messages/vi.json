@@ -8,6 +8,11 @@
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
     "moreActions": "Thao tác khác",
+    "pagination": {
+      "rowsPerPage": "Số dòng mỗi trang",
+      "page": "Trang {page}/{last}",
+      "showing": "Hiển thị {from}–{to} trên {total}"
+    },
     "actions": {
       "cancel": "Hủy",
       "delete": "Xóa",

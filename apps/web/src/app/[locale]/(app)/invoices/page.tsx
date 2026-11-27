@@ -11,8 +11,9 @@ import { ActionMenu } from "@/components/ui/ActionMenu";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden } from "@/components/ui/Forbidden";
 import { useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { Pagination } from "@/components/ui/Pagination";
 import {
-  listInvoices,
+  listInvoicesPage,
   deleteInvoice,
   sendInvoice,
   cancelInvoice,
@@ -22,7 +23,7 @@ import {
 import { statusBadgeClass } from "@/lib/status-colors";
 import { formatMoney } from "@/lib/currency";
 
-const PAGE_SIZE = 15;
+const DEFAULT_PAGE_SIZE = 10;
 
 const INVOICE_STATUSES: InvoiceStatus[] = [
   "draft",
@@ -54,7 +55,6 @@ export default function InvoicesPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Finance");
-  const c = useTranslations("Common");
 
   const currency = session?.agency.base_currency || "USD";
 
@@ -86,6 +86,9 @@ export default function InvoicesPage() {
   const [clientId, setClientId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
 
   const [sendingId, setSendingId] = useState<number | null>(null);
   const [pdfLoadingId, setPdfLoadingId] = useState<number | null>(null);
@@ -125,16 +128,17 @@ export default function InvoicesPage() {
     // Keep showing the previous page of data while the next one loads
     // (keepPreviousData behaviour without TanStack Query).
     try {
-      await listInvoices({
+      const res = await listInvoicesPage({
         q: q || undefined,
         status: status || undefined,
         client_id: clientId ? Number(clientId) : undefined,
         project_id: projectId ? Number(projectId) : undefined,
         page,
-        per_page: PAGE_SIZE,
-      }).then((data) => {
-        setInvoices(data);
+        per_page: perPage,
       });
+      setInvoices(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
     } catch (e) {
       const err = e as { status?: number; message?: string };
       if (err.status === 403) {
@@ -146,7 +150,7 @@ export default function InvoicesPage() {
       setLoading(false);
       setHasLoaded(true);
     }
-  }, [q, status, clientId, projectId, page, t]);
+  }, [q, status, clientId, projectId, page, perPage, t]);
 
   useEffect(() => {
     if (!session) return;
@@ -156,6 +160,10 @@ export default function InvoicesPage() {
   useEffect(() => {
     setPage(1);
   }, [q, status, clientId, projectId]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -356,13 +364,13 @@ export default function InvoicesPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <input
           type="search"
           placeholder={t("filters.search")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm sm:min-w-[180px] sm:flex-1"
         />
         <Select
           value={status}
@@ -374,7 +382,7 @@ export default function InvoicesPage() {
               label: t(`statuses.${s}`),
             })),
           ]}
-          className="w-[170px] max-w-full"
+          className="w-full max-w-full sm:w-[170px]"
         />
         <Select
           value={clientId}
@@ -383,7 +391,7 @@ export default function InvoicesPage() {
             { value: "", label: `${t("filters.all")} ${t("filters.customer")}` },
             ...clients.map((c) => ({ value: String(c.id), label: c.name })),
           ]}
-          className="w-[170px] max-w-full"
+          className="w-full max-w-full sm:w-[170px]"
         />
         <Select
           value={projectId}
@@ -395,7 +403,7 @@ export default function InvoicesPage() {
               label: p.name,
             })),
           ]}
-          className="w-[170px] max-w-full"
+          className="w-full max-w-full sm:w-[170px]"
         />
       </div>
 
@@ -409,7 +417,7 @@ export default function InvoicesPage() {
       <div className="min-h-[320px]">
         {showSkeleton ? (
           <div className="space-y-2">
-            {[...Array(PAGE_SIZE)].map((_, i) => (
+            {[...Array(perPage)].map((_, i) => (
               <div
                 key={i}
                 className="flex gap-4 rounded-lg border border-border bg-card p-4 animate-pulse"
@@ -436,6 +444,7 @@ export default function InvoicesPage() {
         ) : (
           <>
             {/* Desktop table (6 core columns + kebab). Row click opens detail. */}
+            <div className="hidden lg:block">
             <table className="w-full text-sm border border-border">
               <thead className="bg-muted">
                 <tr>
@@ -504,9 +513,10 @@ export default function InvoicesPage() {
                 })}
               </tbody>
             </table>
+            </div>
 
             {/* Mobile cards */}
-            <div className="mt-4 sm:hidden space-y-3">
+            <div className="lg:hidden space-y-3">
               {invoices.map((invoice) => {
                 const err = inlineErrors[invoice.id];
                 return (
@@ -516,8 +526,8 @@ export default function InvoicesPage() {
                     onClick={() => router.push(`/invoices/${invoice.id}`)}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="font-semibold text-foreground">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-foreground break-words">
                           {invoice.number}
                         </div>
                         <div className="mt-1 text-sm text-muted-foreground truncate">
@@ -538,19 +548,19 @@ export default function InvoicesPage() {
                       </div>
                     </div>
                     <dl className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <dt className="text-muted-foreground">
+                      <div className="flex justify-between gap-3">
+                        <dt className="shrink-0 text-muted-foreground">
                           {t("fields.issueDate")}
                         </dt>
-                        <dd className="text-foreground">
+                        <dd className="min-w-0 truncate text-right text-foreground">
                           {fmtDate(invoice.issue_date)}
                         </dd>
                       </div>
-                      <div className="flex justify-between">
-                        <dt className="text-muted-foreground">
+                      <div className="flex justify-between gap-3">
+                        <dt className="shrink-0 text-muted-foreground">
                           {t("fields.total")}
                         </dt>
-                        <dd className="text-foreground font-medium">
+                        <dd className="min-w-0 break-words text-right text-foreground font-medium">
                           {fmtMoney(invoice.total)}
                         </dd>
                       </div>
@@ -580,29 +590,19 @@ export default function InvoicesPage() {
               })}
             </div>
 
-            {/* Pagination (server-driven in production; here we track the page). */}
-            <div className="mt-6 flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                Trang {page}
-              </p>
-              <div className="flex gap-1">
-                <button
-                  type="button"
-                  disabled={page === 1 || loading}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-50"
-                >
-                  {c("prev")}
-                </button>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-50"
-                >
-                  {c("next")}
-                </button>
-              </div>
+            <div className="mt-6">
+              <Pagination
+                page={page}
+                perPage={perPage}
+                total={total}
+                lastPage={lastPage}
+                onPageChange={setPage}
+                onPerPageChange={(value) => {
+                  setPerPage(value);
+                  setPage(1);
+                }}
+                disabled={loading}
+              />
             </div>
           </>
         )}

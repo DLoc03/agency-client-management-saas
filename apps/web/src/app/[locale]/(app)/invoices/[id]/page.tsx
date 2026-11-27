@@ -174,6 +174,20 @@ export default function InvoiceDetailPage() {
     }
   };
 
+  const buildPaymentActions = (paymentId: number) => [
+    {
+      label: t("actions.delete"),
+      danger: true,
+      onClick: async () => {
+        if (
+          await confirmAction(t("confirmDeletePayment"), { intent: "delete" })
+        ) {
+          await handleDeletePayment(paymentId);
+        }
+      },
+    },
+  ];
+
   const handleSend = async () => {
     if (!invoice) return;
     setSending(true);
@@ -259,11 +273,19 @@ export default function InvoiceDetailPage() {
 
   return (
     <div className="space-y-6">
+      <button
+        type="button"
+        onClick={() => router.push("/invoices")}
+        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <Icon name="chevron-left" className="h-4 w-4" />
+        {t("actions.back")}
+      </button>
       <div className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold tracking-tight">{invoice.number}</h1>
           <span
-            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusBadgeClass(invoice.status)}`}
+            className={`inline-flex items-center gap-1.5 self-start whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium sm:self-center ${statusBadgeClass(invoice.status)}`}
           >
             {t(`statuses.${invoice.status}`)}
             {invoice.status === "overdue" && (
@@ -386,6 +408,7 @@ export default function InvoiceDetailPage() {
         <h2 className="text-base font-semibold text-foreground mb-3">
           {t("detail.lineItems")}
         </h2>
+        <div className="hidden lg:block">
         <table className="w-full text-sm divide-y divide-border">
           <thead>
             <tr>
@@ -453,6 +476,81 @@ export default function InvoiceDetailPage() {
             </tr>
           </tfoot>
         </table>
+        </div>
+        <div className="lg:hidden space-y-3">
+          {invoice.items.length === 0 ? (
+            <p className="py-2 text-center text-muted-foreground">
+              {t("detail.noItems")}
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {invoice.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-md border border-border p-3 text-sm"
+                >
+                  <p className="break-words font-medium text-foreground">
+                    {item.description}
+                  </p>
+                  <dl className="mt-2 space-y-1 text-xs">
+                    <div className="flex justify-between gap-3">
+                      <dt className="shrink-0 text-muted-foreground">
+                        {t("fields.quantity")}
+                      </dt>
+                      <dd className="min-w-0 text-right text-foreground">
+                        {Number(item.quantity || 0)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="shrink-0 text-muted-foreground">
+                        {t("fields.unitPrice")}
+                      </dt>
+                      <dd className="min-w-0 break-words text-right text-foreground">
+                        {fmtMoney(item.unit_price)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="shrink-0 text-muted-foreground">
+                        {t("fields.amount")}
+                      </dt>
+                      <dd className="min-w-0 break-words text-right font-medium text-foreground">
+                        {fmtMoney(item.amount)}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+          )}
+          <dl className="space-y-1 border-t border-border pt-3 text-sm">
+            <div className="flex justify-between gap-3">
+              <dt className="shrink-0 text-muted-foreground">
+                {t("fields.subtotal")}
+              </dt>
+              <dd className="min-w-0 break-words text-right text-foreground">
+                {fmtMoney(subtotal)}
+              </dd>
+            </div>
+            {invoice.tax_rate != null && (
+              <div className="flex justify-between gap-3">
+                <dt className="shrink-0 text-muted-foreground">
+                  {t("fields.taxAmount")}
+                </dt>
+                <dd className="min-w-0 break-words text-right text-foreground">
+                  {fmtMoney(taxAmount)}
+                </dd>
+              </div>
+            )}
+            <div className="flex justify-between gap-3">
+              <dt className="shrink-0 text-muted-foreground">
+                {t("fields.total")}
+              </dt>
+              <dd className="min-w-0 break-words text-right font-bold text-foreground">
+                {fmtMoney(total)}
+              </dd>
+            </div>
+          </dl>
+        </div>
       </section>
 
       {/* Payments */}
@@ -463,66 +561,98 @@ export default function InvoiceDetailPage() {
 
         <div className="space-y-2 mb-4">
           {payments.length > 0 ? (
-            <table className="w-full text-sm divide-y divide-border">
-              <thead>
-                <tr>
-                  <th className="p-3 text-left text-muted-foreground font-medium w-[40px]">
-                    #
-                  </th>
-                  <th className="p-3 text-left text-muted-foreground font-medium">
-                    {t("fields.amount")}
-                  </th>
-                  <th className="p-3 text-left text-muted-foreground font-medium">
-                    {t("fields.paidOn")}
-                  </th>
-                  <th className="p-3 text-left text-muted-foreground font-medium">
-                    {t("fields.method")}
-                  </th>
-                  <th className="p-3 text-left text-muted-foreground font-medium">
-                    {t("payments.recordedBy")}
-                  </th>
-                  <th className="p-3 text-right shrink-0"></th>
-                </tr>
-              </thead>
-              <tbody>
+            <>
+              <div className="hidden lg:block">
+                <table className="w-full text-sm divide-y divide-border">
+                  <thead>
+                    <tr>
+                      <th className="p-3 text-left text-muted-foreground font-medium w-[40px]">
+                        #
+                      </th>
+                      <th className="p-3 text-left text-muted-foreground font-medium">
+                        {t("fields.amount")}
+                      </th>
+                      <th className="p-3 text-left text-muted-foreground font-medium">
+                        {t("fields.paidOn")}
+                      </th>
+                      <th className="p-3 text-left text-muted-foreground font-medium">
+                        {t("fields.method")}
+                      </th>
+                      <th className="p-3 text-left text-muted-foreground font-medium">
+                        {t("payments.recordedBy")}
+                      </th>
+                      <th className="p-3 text-right shrink-0"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((p) => (
+                      <tr key={p.id} className="group">
+                        <td className="p-3 text-muted-foreground">{p.id}</td>
+                        <td className="p-3 text-foreground">{fmtMoney(p.amount)}</td>
+                        <td className="p-3 text-muted-foreground">{fmtDate(p.paid_on)}</td>
+                        <td className="p-3 text-muted-foreground">
+                          {p.method === "bank_transfer"
+                            ? t("payments.methodBankTransfer")
+                            : t("payments.methodCash")}
+                        </td>
+                        <td className="p-3 text-muted-foreground truncate max-w-[140px]">
+                          {p.recorded_by_name ?? "—"}
+                        </td>
+                        <td className="p-3 text-right">
+                          {canManagePayment && (
+                            <ActionMenu items={buildPaymentActions(p.id)} />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="lg:hidden space-y-2">
                 {payments.map((p) => (
-                  <tr key={p.id} className="group">
-                    <td className="p-3 text-muted-foreground">{p.id}</td>
-                    <td className="p-3 text-foreground">{fmtMoney(p.amount)}</td>
-                    <td className="p-3 text-muted-foreground">{fmtDate(p.paid_on)}</td>
-                    <td className="p-3 text-muted-foreground">
-                      {p.method === "bank_transfer"
-                        ? t("payments.methodBankTransfer")
-                        : t("payments.methodCash")}
-                    </td>
-                    <td className="p-3 text-muted-foreground truncate max-w-[140px]">
-                      {p.recorded_by_name ?? "—"}
-                    </td>
-                    <td className="p-3 text-right">
+                  <div
+                    key={p.id}
+                    className="rounded-md border border-border p-3 text-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="break-words font-medium text-foreground">
+                          {fmtMoney(p.amount)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {fmtDate(p.paid_on)}
+                        </div>
+                      </div>
                       {canManagePayment && (
-                        <ActionMenu
-                          items={[
-                            {
-                              label: t("actions.delete"),
-                              danger: true,
-                              onClick: async () => {
-                                if (
-                                  await confirmAction(t("confirmDeletePayment"), {
-                                    intent: "delete",
-                                  })
-                                ) {
-                                  await handleDeletePayment(p.id);
-                                }
-                              },
-                            },
-                          ]}
-                        />
+                        <div className="shrink-0">
+                          <ActionMenu items={buildPaymentActions(p.id)} />
+                        </div>
                       )}
-                    </td>
-                  </tr>
+                    </div>
+                    <dl className="mt-2 space-y-1 text-xs">
+                      <div className="flex justify-between gap-3">
+                        <dt className="shrink-0 text-muted-foreground">
+                          {t("fields.method")}
+                        </dt>
+                        <dd className="min-w-0 truncate text-right text-foreground">
+                          {p.method === "bank_transfer"
+                            ? t("payments.methodBankTransfer")
+                            : t("payments.methodCash")}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="shrink-0 text-muted-foreground">
+                          {t("payments.recordedBy")}
+                        </dt>
+                        <dd className="min-w-0 truncate text-right text-foreground">
+                          {p.recorded_by_name ?? "—"}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </>
           ) : (
             <p className="p-3 text-center text-muted-foreground">
               {t("payments.noPayments")}

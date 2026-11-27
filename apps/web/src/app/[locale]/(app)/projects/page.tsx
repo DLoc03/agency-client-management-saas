@@ -10,9 +10,10 @@ import { ActionMenu } from "@/components/ui/ActionMenu";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { DataTable, DataTableSkeleton } from "@/components/ui/DataTable";
 import { SkeletonCardGrid, useDelayedSkeleton } from "@/components/ui/Skeleton";
+import { Pagination } from "@/components/ui/Pagination";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import {
-  listProjects,
+  listProjectsPage,
   createProject,
   deleteProject,
   listClients,
@@ -48,6 +49,10 @@ export default function ProjectsPage() {
   const [status, setStatus] = useState("");
   const [clientId, setClientId] = useState("");
   const [managerId, setManagerId] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
 
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -76,13 +81,17 @@ export default function ProjectsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await listProjects({
+      const res = await listProjectsPage({
         q: q || undefined,
         status: status || undefined,
         client_id: clientId ? Number(clientId) : undefined,
         project_manager_id: managerId ? Number(managerId) : undefined,
+        page,
+        per_page: perPage,
       });
-      setProjects(data);
+      setProjects(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
       setHasLoaded(true);
       setForbidden(false);
     } catch (e) {
@@ -96,7 +105,15 @@ export default function ProjectsPage() {
   useEffect(() => {
     if (session) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, q, status, clientId, managerId]);
+  }, [session, q, status, clientId, managerId, page, perPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, status, clientId, managerId]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const canCreate = !!session?.user.permissions.includes("projects.create");
   const showSkeleton = useDelayedSkeleton(loading && !hasLoaded);
@@ -199,13 +216,13 @@ export default function ProjectsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <input
           type="search"
           placeholder={t("filters.search")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="min-w-[180px] flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm sm:min-w-[180px] sm:flex-1"
         />
         <Select
           value={status}
@@ -214,7 +231,7 @@ export default function ProjectsPage() {
             { value: "", label: `${t("filters.all")} ${t("filters.status")}` },
             ...PROJECT_STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) })),
           ]}
-          className="w-[190px] max-w-full"
+          className="w-full max-w-full sm:w-[190px]"
         />
         <Select
           value={clientId}
@@ -223,7 +240,7 @@ export default function ProjectsPage() {
             { value: "", label: `${t("filters.all")} ${t("filters.client")}` },
             ...clients.map((cl) => ({ value: String(cl.id), label: cl.name })),
           ]}
-          className="w-[190px] max-w-full"
+          className="w-full max-w-full sm:w-[190px]"
         />
         <Select
           value={managerId}
@@ -232,7 +249,7 @@ export default function ProjectsPage() {
             { value: "", label: `${t("filters.all")} ${t("filters.manager")}` },
             ...managers.map((m) => ({ value: String(m.id), label: m.name })),
           ]}
-          className="w-[190px] max-w-full"
+          className="w-full max-w-full sm:w-[190px]"
         />
       </div>
 
@@ -266,6 +283,7 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
+          <>
           <div aria-busy={refetching} className={refetching ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
             <div className="hidden lg:block">
               <DataTable
@@ -351,9 +369,9 @@ export default function ProjectsPage() {
                 <div
                   key={p.id}
                   onClick={() => router.push(`/projects/${p.id}`)}
-                  className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
+                  className="flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-start justify-between gap-2">
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{p.name}</h3>
                       <p className="truncate text-xs text-muted-foreground">
@@ -399,6 +417,21 @@ export default function ProjectsPage() {
               })}
             </div>
           </div>
+          <div className="mt-6">
+            <Pagination
+              page={page}
+              perPage={perPage}
+              total={total}
+              lastPage={lastPage}
+              onPageChange={setPage}
+              onPerPageChange={(value) => {
+                setPerPage(value);
+                setPage(1);
+              }}
+              disabled={loading}
+            />
+          </div>
+          </>
         )}
       </div>
 
