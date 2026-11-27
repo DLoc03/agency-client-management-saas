@@ -315,6 +315,14 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-030 — Icon mũi tên cho nút Previous/Next của phân trang (phát hiện khi nghiệm thu FIX-029, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: Thay chữ Previous/Next trên component dùng chung `Pagination` bằng icon `chevron-left` (Next dùng `chevron-left` xoay 180° vì Icon chưa có `chevron-right`); thêm `aria-label` từ `Common.prev`/`Common.next`, giữ kích thước nút `h-9 min-w-9` và logic disabled/click/dropdown/số trang không đổi.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-030-pagination-icons` từ `origin/main` (`e5c5e71`).
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n EN = VI 707 = 707; byte-check OK; nhìn bằng mắt ở Invoices/Projects hai nút mũi tên đều kích thước với nút số trang, disabled đúng ở trang đầu/cuối.
+- Blockers: Không có.
+
 ## FIX-029 — Mobile hoá danh sách/chi tiết hoá đơn, chống tràn ngang, phân trang hiện đại (phát hiện khi nghiệm thu FE-020, 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen

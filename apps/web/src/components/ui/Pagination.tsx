@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Icon } from "@/components/shell/Icon";
 import { Select } from "./Select";
 
 const DEFAULT_PAGE_SIZES = [10, 20, 30, 50, 100];
@@ -80,11 +81,12 @@ export function Pagination({
       >
         <button
           type="button"
+          aria-label={c("prev")}
           disabled={disabled || current <= 1}
           onClick={() => onPageChange(current - 1)}
           className={`${buttonCls} border-border hover:bg-accent`}
         >
-          {c("prev")}
+          <Icon name="chevron-left" className="h-4 w-4" />
         </button>
 
         {pageItems(current, last).map((item) =>
@@ -116,11 +118,12 @@ export function Pagination({
 
         <button
           type="button"
+          aria-label={c("next")}
           disabled={disabled || current >= last}
           onClick={() => onPageChange(current + 1)}
           className={`${buttonCls} border-border hover:bg-accent`}
         >
-          {c("next")}
+          <Icon name="chevron-left" className="h-4 w-4 rotate-180" />
         </button>
       </nav>
     </div>
