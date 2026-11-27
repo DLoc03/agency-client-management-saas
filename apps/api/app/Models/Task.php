@@ -71,6 +71,37 @@ class Task extends Model
         });
     }
 
+    /**
+     * Who may ACT on this task (DEC-027): the assignee, the project's
+     * manager, or a user whose CURRENT membership (DEC-018: roles live
+     * on the membership) is the Owner or holds the Admin / Project
+     * Manager role. Viewing a task follows Project::isVisibleTo()
+     * instead — this rule guards mutations only (update, delete,
+     * comments, checklist). Portal (client) memberships hold none of
+     * these, so the answer is naturally false for Portal readers.
+     */
+    public function canBeActedOnBy(User $user): bool
+    {
+        if ($this->assignee_id === $user->id) {
+            return true;
+        }
+
+        $managerId = $this->relationLoaded('project')
+            ? $this->project?->project_manager_id
+            : Project::whereKey($this->project_id)->value('project_manager_id');
+
+        if ($managerId !== null && (int) $managerId === $user->id) {
+            return true;
+        }
+
+        $membership = $user->currentMembership();
+
+        return $membership !== null
+            && ($membership->isOwner()
+                || $membership->hasRole(Role::ADMIN)
+                || $membership->hasRole(Role::PROJECT_MANAGER));
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);

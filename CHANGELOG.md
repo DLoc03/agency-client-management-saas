@@ -13,6 +13,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ### Changed
 
 ### Fixed
+- Task action scope (FIX-033, DEC-027): acting on a task — update, delete, comments, checklist — now requires being the task's assignee, the project's manager, or holding the Owner / Admin / Project Manager role on the current membership; denials answer 403 `TASK_ACTION_FORBIDDEN` instead of passing on role permission alone, and task payloads gain a `can_act` flag computed by the same rule so the FE can gate its controls.
 - Team tab scrollbar and bell button chrome (FIX-034): removed the stray vertical scrollbar on the Team tab nav (`overflow-y-hidden` alongside `overflow-x-auto`) and dropped the border/box from the notification bell button in the Topbar.
 
 ## [0.7.0] - 2026-11-27
