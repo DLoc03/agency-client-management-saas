@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\Api\Concerns;
 
+use App\Exceptions\ApiException;
 use App\Models\Role;
 use App\Models\Task;
 use App\Models\User;
 
 /**
- * Team Member task scoping (DEC-016 matrix): a user whose task access
- * comes only from the Team Member role may mutate just the tasks
- * assigned to them; broader roles (Owner/Admin/PM) are unrestricted.
+ * Task mutation scoping. DEC-016 introduced the first guard (a
+ * Team-Member-only user could mutate just their assigned tasks);
+ * DEC-027 generalises it to every user: acting on a task — update,
+ * delete, comments, checklist — requires being the task's assignee,
+ * the project's manager, or holding the Owner / Admin / Project
+ * Manager role on the current membership. The rule itself lives on
+ * the Task model (`canBeActedOnBy`) so the API and the `can_act`
+ * resource flag can never drift apart.
  */
 trait GuardsTeamMemberTasks
 {
@@ -19,11 +25,11 @@ trait GuardsTeamMemberTasks
             && ! $user->hasAnyRole([Role::OWNER, Role::ADMIN, Role::PROJECT_MANAGER]);
     }
 
-    /** Abort 403 unless a Team-Member-only user is the task's assignee. */
+    /** Throw 403 TASK_ACTION_FORBIDDEN unless the user may act on the task (DEC-027). */
     protected function guardTeamMemberMutation(User $user, Task $task): void
     {
-        if ($this->isTeamMemberOnly($user)) {
-            abort_unless($task->assignee_id === $user->id, 403);
+        if (! $task->canBeActedOnBy($user)) {
+            throw new ApiException('TASK_ACTION_FORBIDDEN', 403);
         }
     }
 }

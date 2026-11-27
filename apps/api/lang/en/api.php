@@ -3,6 +3,7 @@
 return [
     'UNAUTHENTICATED' => 'Unauthenticated.',
     'FORBIDDEN' => 'You do not have permission to perform this action.',
+    'TASK_ACTION_FORBIDDEN' => 'Only the assignee or the project manager can modify this task.',
     'NOT_FOUND' => 'The requested resource was not found.',
     'VALIDATION_FAILED' => 'The given data failed validation.',
     'RATE_LIMITED' => 'Too many attempts. Please try again later.',

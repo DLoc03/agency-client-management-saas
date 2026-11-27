@@ -29,6 +29,12 @@ class TaskResource extends JsonResource
                 'id' => $this->project->id,
                 'name' => $this->project->name,
             ] : null),
+            // DEC-027: whether the requesting user may act on this
+            // task (same rule the API enforces) so the FE can gate
+            // its controls. False without an authenticated app user
+            // (e.g. Portal reads carry a client membership, which the
+            // rule never privileges).
+            'can_act' => $request->user() !== null && $this->canBeActedOnBy($request->user()),
             'due_date' => $this->due_date?->toISOString(),
             'completed_at' => $this->completed_at?->toISOString(),
             'position' => $this->position,

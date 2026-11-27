@@ -40,6 +40,10 @@ class TaskController extends Controller
             ->latest()
             ->paginate(min($request->integer('per_page', 15), 100));
 
+        // Every row belongs to the route project: pin the relation so
+        // TaskResource's `can_act` flag (DEC-027) needs no extra query.
+        $tasks->getCollection()->each->setRelation('project', $project);
+
         return TaskResource::collection($tasks);
     }
 
@@ -120,8 +124,10 @@ class TaskController extends Controller
         return TaskResource::make($task->refresh()->load(['assignee', 'milestone']));
     }
 
-    public function destroy(Task $task): Response
+    public function destroy(Request $request, Task $task): Response
     {
+        $this->guardTeamMemberMutation($request->user(), $task);
+
         $task->delete();
 
         return response()->noContent();
