@@ -341,6 +341,14 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có (BE-009 đã merge).
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
+## FE-022 — Nút chuyển ngôn ngữ bằng cờ quốc gia ở Topbar (Nhóm 6/7, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: Thêm nút cờ tròn (VN/UK) cạnh chuông thông báo ở Topbar khu vực staff; bấm chuyển locale giữ nguyên trang; tái sử dụng logic `router.replace(pathname, { locale })` của `LocaleSwitcher`; vẽ cờ bằng SVG inline (`FlagIcon`), không emoji/ảnh ngoài. Thêm key `Common.switchLanguage`.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-022-language-toggle` từ `origin/main` (`27484cd`).
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n parity 725 = 725; byte-check OK.
+- Blockers: Không có.
+
 ## FIX-033 — Phạm vi thao tác trên task: chỉ assignee / quản lý dự án / vai trò quản lý (phát hiện khi nghiệm thu FE-021, 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: Muse (BE) + OpenCode (FE) · Reviewer: Nguyen
