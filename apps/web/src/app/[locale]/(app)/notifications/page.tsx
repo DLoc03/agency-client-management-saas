@@ -16,6 +16,7 @@ import {
   getUnreadCount,
   type NotificationItem,
 } from "@/lib/notifications/api";
+import { notificationTarget } from "@/lib/notifications/target";
 
 const PAGE_SIZE_DEFAULT = 10;
 
@@ -122,14 +123,6 @@ export default function NotificationsPage() {
     }
   };
 
-  const targetOf = (n: NotificationItem): string | null => {
-    const d = (n.data || {}) as Record<string, unknown>;
-    if (d.invoice_id) return `/invoices/${d.invoice_id}`;
-    if (d.project_id) return `/projects/${d.project_id}`;
-    if (n.type === "reminder.lead_followup" && d.lead_id) return `/leads/${d.lead_id}`;
-    return null;
-  };
-
   const handleClick = async (n: NotificationItem) => {
     if (!n.read_at) {
       setCount((c) => Math.max(0, c - 1));
@@ -142,7 +135,7 @@ export default function NotificationsPage() {
         /* ignore */
       }
     }
-    const to = targetOf(n);
+    const to = notificationTarget(n);
     if (to) router.push(to);
   };
 
