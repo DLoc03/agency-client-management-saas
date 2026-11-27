@@ -316,6 +316,14 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## FIX-031 — Batch BE nhỏ tồn đọng Nhóm 5: GET payment-details + validate project cùng client (mục 4 trong thứ tự PO duyệt 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
+- Mô tả: (a) Thêm `GET /agencies/{id}/payment-details` — cùng quyền `agencies.payment-details.update` (Owner/Admin) và cùng response shape với PATCH, để form cài đặt prefill dữ liệu đã lưu thay vì mở trống (hạn chế đã ghi trong PR #89; không thêm khóa quyền mới). (b) Validate `invoice.project_id` phải thuộc cùng client với `invoice.client_id` trên cả create và update — khi update chỉ đổi client hoặc chỉ đổi project thì cặp (client, project) sau cập nhật vẫn được kiểm; project của client khác cùng workspace → 422 `PROJECT_CLIENT_MISMATCH`, project của workspace khác vẫn 422 `CROSS_TENANT_REFERENCE`; mã lỗi mới có trong `lang/en|vi/api.php`; `docs/FINANCE_CONTRACT.md` §4.3 + §5 bổ sung quy tắc theo mẫu amendment `INVOICE_NOT_EDITABLE` (PR #80).
+- Acceptance Criteria: GET trả đúng 4 trường đã lưu (agency chưa lưu gì trả null), Sales Manager 403, agency khác 404; create/update với project của client khác → 422 `PROJECT_CLIENT_MISMATCH` (kể cả update chỉ đổi client), cùng client và không có project → OK, project cross-agency vẫn `CROSS_TENANT_REFERENCE`; toàn suite PHPUnit PASS trên SQLite + test Finance PASS trên MySQL 8; Pint PASS.
+- Progress: 2026-11-27 — Muse triển khai trên branch `fix/FIX-031-group5-leftovers` từ `origin/main` (`c7b2157`, merge PR #96).
+- Blockers: Không có.
+
 ## BE-009 — Workflow & Notifications (Nhóm 6) theo hợp đồng WORKFLOW_CONTRACT
 - Status: IN_PROGRESS
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen

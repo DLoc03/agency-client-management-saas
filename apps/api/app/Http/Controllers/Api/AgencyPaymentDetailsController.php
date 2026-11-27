@@ -17,6 +17,18 @@ use Illuminate\Http\JsonResponse;
  */
 class AgencyPaymentDetailsController extends Controller
 {
+    /**
+     * Read the saved details (FIX-031): the settings form prefills
+     * from this instead of opening empty. Same permission and same
+     * response shape as update(), so no shape change for the FE.
+     */
+    public function show(int $agencyId): JsonResponse
+    {
+        abort_unless($agencyId === Tenant::id(), 404);
+
+        return response()->json(['data' => $this->payload(Agency::findOrFail($agencyId))]);
+    }
+
     public function update(UpdatePaymentDetailsRequest $request, int $agencyId): JsonResponse
     {
         abort_unless($agencyId === Tenant::id(), 404);
@@ -24,12 +36,18 @@ class AgencyPaymentDetailsController extends Controller
         $agency = Agency::findOrFail($agencyId);
         $agency->update($request->validated());
 
-        return response()->json(['data' => [
+        return response()->json(['data' => $this->payload($agency)]);
+    }
+
+    /** @return array<string, mixed> */
+    private function payload(Agency $agency): array
+    {
+        return [
             'id' => $agency->id,
             'bank_name' => $agency->bank_name,
             'bank_account_number' => $agency->bank_account_number,
             'bank_account_holder' => $agency->bank_account_holder,
             'vietqr_payload' => $agency->vietqr_payload,
-        ]]);
+        ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Finance;
 
 use App\Exceptions\ApiException;
 use App\Models\Client;
+use App\Models\Invoice;
 use App\Models\Project;
 use App\Support\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
@@ -50,22 +51,64 @@ abstract class InvoiceRequest extends FormRequest
                 return;
             }
 
+            // The client this invoice will belong to: the supplied
+            // client_id on create, or on update the supplied one,
+            // falling back to the bound invoice's stored client when
+            // the request only changes the project.
+            $clientId = null;
+            $clientKnown = false;
+
             if ($this->filled('client_id')) {
                 $client = Client::withoutGlobalScopes()->find($this->input('client_id'));
                 if (! $client) {
                     $validator->errors()->add('client_id', 'Client not found.');
                 } elseif ($client->agency_id !== Tenant::id()) {
                     throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'client_id']);
+                } else {
+                    $clientId = $client->id;
+                    $clientKnown = true;
+                }
+            } elseif (! $this->creating()) {
+                $invoice = $this->route('invoice');
+                if ($invoice instanceof Invoice) {
+                    $clientId = $invoice->client_id;
+                    $clientKnown = true;
                 }
             }
 
-            if ($this->filled('project_id')) {
-                $project = Project::withoutGlobalScopes()->find($this->input('project_id'));
-                if (! $project) {
+            // The (client, project) pair is only re-checked when the
+            // request touches either side of it — a PATCH that changes
+            // neither cannot make a previously valid pair invalid.
+            // The effective project is the supplied one, or on update
+            // the invoice's stored project when only the client moves.
+            if (! $this->creating() && ! $this->filled('client_id') && ! $this->filled('project_id')) {
+                return;
+            }
+
+            $projectId = $this->filled('project_id')
+                ? (int) $this->input('project_id')
+                : (! $this->creating() && $this->route('invoice') instanceof Invoice
+                    ? $this->route('invoice')->project_id
+                    : null);
+
+            if ($projectId === null) {
+                return;
+            }
+
+            $project = Project::withoutGlobalScopes()->find($projectId);
+            if (! $project) {
+                if ($this->filled('project_id')) {
                     $validator->errors()->add('project_id', 'Project not found.');
-                } elseif ($project->agency_id !== Tenant::id()) {
-                    throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'project_id']);
                 }
+            } elseif ($this->filled('project_id') && $project->agency_id !== Tenant::id()) {
+                throw new ApiException('CROSS_TENANT_REFERENCE', 422, ['field' => 'project_id']);
+            } elseif ($clientKnown && $project->client_id !== $clientId) {
+                // FIX-031 (docs/FINANCE_CONTRACT.md section 4.3):
+                // a project belongs to exactly one client, so an
+                // invoice may only reference a project of its own
+                // client — same-agency, different-client is a
+                // mismatch, not a cross-tenant reference.
+                throw new ApiException('PROJECT_CLIENT_MISMATCH', 422, ['field' => 'project_id']);
             }
         });
     }

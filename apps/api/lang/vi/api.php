@@ -40,5 +40,6 @@ return [
     'CANNOT_CANCEL_INVOICE' => 'Không thể huỷ hoá đơn này.',
     'CANNOT_DELETE_INVOICE' => 'Chỉ hoá đơn nháp mới có thể xoá.',
     'PAYMENT_NOT_ALLOWED' => 'Chỉ có thể ghi thanh toán cho hoá đơn đã gửi.',
+    'PROJECT_CLIENT_MISMATCH' => 'Dự án đã chọn thuộc về khách hàng khác với hoá đơn này.',
     'OVERPAYMENT_NOT_ALLOWED' => 'Số tiền thanh toán vượt quá số dư còn phải thu của hoá đơn này.',
 ];

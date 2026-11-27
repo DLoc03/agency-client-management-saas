@@ -212,6 +212,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::post('/invoices/{invoice}/payments', [PaymentController::class, 'store'])->middleware('permission:payments.manage');
     Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->middleware('permission:payments.manage');
 
+    Route::get('/agencies/{agency}/payment-details', [AgencyPaymentDetailsController::class, 'show'])->middleware('permission:agencies.payment-details.update');
     Route::patch('/agencies/{agency}/payment-details', [AgencyPaymentDetailsController::class, 'update'])->middleware('permission:agencies.payment-details.update');
 });
 
