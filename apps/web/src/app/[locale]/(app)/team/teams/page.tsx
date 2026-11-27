@@ -144,12 +144,12 @@ export default function TeamsPage() {
                 className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <h3 className="truncate font-semibold">{team.name}</h3>
-                    <p className="truncate text-xs text-muted-foreground">{team.description ?? "—"}</p>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-semibold whitespace-nowrap max-w-full">{team.name}</h3>
+                    <p className="truncate text-xs text-muted-foreground whitespace-nowrap max-w-full">{team.description ?? "—"}</p>
                   </div>
                   <div className="flex shrink-0 items-start gap-1">
-                    <span className="whitespace-nowrap rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                       {team.members_count ?? 0} {t("fields.membersCount")}
                     </span>
                     <ActionMenu
@@ -165,6 +165,7 @@ export default function TeamsPage() {
                             ]
                           : []),
                       ]}
+                      className="min-w-0"
                     />
                   </div>
                 </div>

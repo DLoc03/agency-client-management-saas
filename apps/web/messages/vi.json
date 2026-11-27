@@ -153,6 +153,8 @@
     "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },
   "Portal": {
+    "back": "Quay lại",
+    "progress": "Tiến độ",
     "uploadFailed": "Tải lên thất bại",
     "deleteFailed": "Xoá thất bại",
     "brand": "Brewbase",
@@ -484,6 +486,23 @@
       "note": "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."
     },
     "portal": {
+      "portalSection": "Cổng khách hàng",
+      "files": "File",
+      "discussion": "Trao đổi",
+      "approvals": "Phê duyệt",
+      "history": "Lịch sử",
+      "upload": "Tải lên",
+      "noFiles": "Chưa có file nào.",
+      "noApprovals": "Chưa có yêu cầu phê duyệt nào.",
+      "noComments": "Chưa có tin nhắn nào.",
+      "noHistory": "Chưa có lịch sử nào.",
+      "clientVisible": "Hiển thị trên Portal",
+      "comment": "Nhập nội dung trả lời…",
+      "send": "Gửi",
+      "delete": "Xoá",
+      "download": "Tải xuống",
+      "historyDecisionApproved": "đã đồng ý",
+      "historyDecisionChanges": "đã yêu cầu chỉnh sửa",
       "historyTypes": {
         "comment": "{actor} đã bình luận: {excerpt}",
         "approval_requested": "Yêu cầu duyệt: {title}",

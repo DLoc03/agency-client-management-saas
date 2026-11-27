@@ -1,6 +1,14 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-036 — Sửa lỗi nghiệm thu Nhóm 7 vòng 1
+- Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
+- Branch: fix/FIX-036-portal-acceptance-fixes
+- Progress: Đang thực hiện các sửa S1–S5: (1) Hợp nhất route slug BFF Portal, (2) Bổ sung khoá i18n thiếu, (3) Sửa responsive section Client Portal, (4) Fix card team name ellipsis, (5) Quy ước nút mobile center. Kiểm chứng: tsc PASS, next build PASS, vitest PASS, i18n EN=VI, byte-check, manual 375px check.
+- Blocked by: —
+- Acceptance Criteria: Không còn cặp thư mục dynamic segment đồng tên, đủ 20 khoá i18n EN+VI, section Client Portal không tràn ngang 375px, tên nhóm ellipsis 1 dòng, nút full-width mobile có label centered, quy ước ghi trong UI_GUIDELINES.
+- Handoff: Muse review, Không tự review, KHÔNG merge, KHÔNG mở PR.
+
 ---
 
 ## DOC-001 — Bootstrap repository documents & conventions

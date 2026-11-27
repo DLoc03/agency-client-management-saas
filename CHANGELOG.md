@@ -22,6 +22,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Task detail gating (FIX-033): the task detail page now honours `can_act` (locking status select, checklist add/toggle/delete and comment form for non-actors with an in-place note), avoids full-page 403 banners from secondary requests, deep-links task notifications to `/projects/{id}/tasks/{taskId}`, and gives the description a distinct background.
 - Task action scope (FIX-033, DEC-027): acting on a task — update, delete, comments, checklist — now requires being the task's assignee, the project's manager, or holding the Owner / Admin / Project Manager role on the current membership; denials answer 403 `TASK_ACTION_FORBIDDEN` instead of passing on role permission alone, and task payloads gain a `can_act` flag computed by the same rule so the FE can gate its controls.
 - Team tab scrollbar and bell button chrome (FIX-034): removed the stray vertical scrollbar on the Team tab nav (`overflow-y-hidden` alongside `overflow-x-auto`) and dropped the border/box from the notification bell button in the Topbar.
+- FIX-036: merged duplicate BFF route slug `[id]` → `[projectId]` in portal API, added 20 missing i18n keys EN+VI (Portal.back, Portal.progress, Projects.portal.*), fixed horizontal overflow on Client Portal section at 375px (tabs wrap, tables/cards responsive, buttons centered), and fixed team card name ellipsis on Team page.
 
 ## [0.7.0] - 2026-11-27
 
