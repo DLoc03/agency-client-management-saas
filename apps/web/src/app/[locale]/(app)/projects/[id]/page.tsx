@@ -797,19 +797,20 @@ export default function ProjectDetailPage() {
               const mtotal = m.tasks_count ?? 0;
               return (
                 <div key={m.id} className="py-3 first:pt-0 last:pb-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{m.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {m.due_date ?? "—"} · {t(`milestoneStatuses.${m.status}`)}
                       </p>
                     </div>
+                    <div className="flex shrink-0 items-center gap-1">
                     <button
                       type="button"
                       disabled={!canManageMilestones}
                       onClick={() => handleToggleMilestoneVisibility(m)}
                       title={t("portal.clientVisible")}
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
+                      className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-50"
                     >
                       <Icon name={m.client_visible !== false ? "eye" : "eye-off"} className="h-4 w-4" />
                     </button>
@@ -839,6 +840,7 @@ export default function ProjectDetailPage() {
                         ]}
                       />
                     )}
+                    </div>
                   </div>
                   <div className="mt-2 flex items-center gap-3">
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
@@ -1261,11 +1263,12 @@ export default function ProjectDetailPage() {
                         {f.client_visible ? t("portal.clientVisible") : t("portal.clientHidden")}
                       </p>
                     </div>
+                    <div className="flex shrink-0 items-center gap-1">
                     {canManagePortalFiles && (
                       <button type="button" aria-label={t("portal.clientVisible")} onClick={async () => {
                         await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
                         setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
-                      }} className="hidden shrink-0 text-muted-foreground hover:text-foreground lg:inline-flex">
+                      }} className="hidden shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:inline-flex">
                         <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
                       </button>
                     )}
@@ -1300,6 +1303,7 @@ export default function ProjectDetailPage() {
                           : []),
                       ]}
                     />
+                    </div>
                   </li>
                 ))}
               </ul>
