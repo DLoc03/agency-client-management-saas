@@ -334,12 +334,13 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Chờ BE-011.
 
 ## FE-023 — Portal & Collaboration UI (Nhóm 7): Portal + section Client Portal nội bộ
-- Status: TODO
+- Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: FE cho Nhóm 7 theo `docs/PORTAL_CONTRACT.md` mục 7: Portal (dashboard thêm khối Cần bạn duyệt + invoice chưa thanh toán + File mới; chi tiết project thêm Files / Trao đổi / Duyệt bàn giao / Lịch sử; giữ phong cách Bento emerald DEC-013) và phía nội bộ (section "Client Portal" trong chi tiết project: công tắc client_visible, quản lý Files, Approvals, luồng Trao đổi, Lịch sử; chuông thông báo render thêm `portal.comment` / `portal.approval_response`). Ghi chú hướng UI của PO (DEC-028): Portal là bề mặt phía khách — khách ít thao tác và thao tác đơn giản, chất lượng trình bày quan trọng hơn mật độ thông tin; FE-023 bắt đầu bằng các trang mẫu thiết kế để PO duyệt trước khi triển khai, như quy trình mẫu của các đợt UI trước.
 - Blocked by: QA-008 (chỉ soạn prompt sau khi BE-011 merge và QA-008 PASS — kỷ luật prompt).
 - Acceptance Criteria: Chốt khi soạn prompt sau QA-008; tuân thủ DEC-013 (Portal Bento emerald), DEC-021/023/025 và quy ước i18n EN + VI đầy đủ.
-- Blockers: Chờ BE-011 + QA-008.
+- Blockers: Không có (BE-011 + QA-008 đã qua).
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-023-portal-collaboration-ui` từ `origin/main` (`bfdc0f3`). Hướng thiết kế theo mẫu PO duyệt: bố cục A (Bento kính mờ) + diện mạo C (tiến độ nổi bật) cho Portal; nội bộ giữ phong cách workspace.
 
 ## FIX-031 — Batch BE nhỏ tồn đọng Nhóm 5: GET payment-details + validate project cùng client (mục 4 trong thứ tự PO duyệt 2026-11-27)
 - Status: IN_PROGRESS

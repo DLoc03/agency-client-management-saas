@@ -308,7 +308,28 @@
         "bankAccountHolder": "Chủ tài khoản",
         "vietqrPayload": "Mã VietQR"
       }
-    }
+    },
+    "pendingApprovals": "Chờ bạn duyệt",
+    "unpaidInvoices": "Hoá đơn chưa thanh toán",
+    "recentFiles": "File mới nhất",
+    "viewAll": "Xem tất cả",
+    "files": "File",
+    "discussion": "Trao đổi",
+    "approvals": "Phê duyệt",
+    "history": "Lịch sử",
+    "upload": "Tải lên",
+    "download": "Tải xuống",
+    "delete": "Xoá",
+    "approve": "Phê duyệt",
+    "requestChanges": "Yêu cầu chỉnh sửa",
+    "comment": "Bình luận",
+    "send": "Gửi",
+    "noFiles": "Chưa có file",
+    "noComments": "Chưa có tin nhắn",
+    "noApprovals": "Chưa có yêu cầu phê duyệt",
+    "noHistory": "Chưa có lịch sử",
+    "clientVisible": "Khách nhìn thấy",
+    "portalSection": "Cổng khách hàng"
   },
   "Projects": {
     "title": "Dự án",
@@ -943,7 +964,9 @@
       "reminder_milestone_due": "Cột mốc {milestone} đến hạn vào ngày mai",
       "reminder_milestone_overdue": "Cột mốc {milestone} đã quá hạn",
       "reminder_lead_followup": "Theo dõi lead {lead}",
-      "reminder_invoice_overdue": "Hoá đơn {invoice} đã quá hạn"
+      "reminder_invoice_overdue": "Hoá đơn {invoice} đã quá hạn",
+      "portal_comment": "{actor} đã bình luận trong dự án {project}",
+      "portal_approval_response": "{actor} đã phản hồi phê duyệt \"{approval}\" trong dự án {project}"
     }
   }
 }

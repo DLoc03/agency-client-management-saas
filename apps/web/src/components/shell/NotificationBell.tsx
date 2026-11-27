@@ -150,6 +150,18 @@ export function NotificationBell() {
         return t("types.reminder_lead_followup", { lead });
       case "reminder.invoice_overdue":
         return t("types.reminder_invoice_overdue", { invoice });
+      case "portal.comment":
+        return t("types.portal_comment", {
+          actor: String((n.data || {}).actor_name ?? ""),
+          project: String((n.data || {}).project_name ?? ""),
+        });
+      case "portal.approval_response":
+        return t("types.portal_approval_response", {
+          actor: String((n.data || {}).actor_name ?? ""),
+          project: String((n.data || {}).project_name ?? ""),
+          approval: String((n.data || {}).approval_title ?? ""),
+          decision: String((n.data || {}).decision ?? ""),
+        });
       default:
         return n.type;
     }

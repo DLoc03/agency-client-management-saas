@@ -308,7 +308,28 @@
         "bankAccountHolder": "Account holder",
         "vietqrPayload": "VietQR payload"
       }
-    }
+    },
+    "pendingApprovals": "Needs your approval",
+    "unpaidInvoices": "Unpaid invoices",
+    "recentFiles": "Recent files",
+    "viewAll": "View all",
+    "files": "Files",
+    "discussion": "Discussion",
+    "approvals": "Approvals",
+    "history": "History",
+    "upload": "Upload",
+    "download": "Download",
+    "delete": "Delete",
+    "approve": "Approve",
+    "requestChanges": "Request changes",
+    "comment": "Comment",
+    "send": "Send",
+    "noFiles": "No files yet",
+    "noComments": "No messages yet",
+    "noApprovals": "No approval requests",
+    "noHistory": "No history yet",
+    "clientVisible": "Visible to client",
+    "portalSection": "Client Portal"
   },
   "Projects": {
     "title": "Projects",
@@ -943,7 +964,9 @@
       "reminder_milestone_due": "Milestone {milestone} is due tomorrow",
       "reminder_milestone_overdue": "Milestone {milestone} is overdue",
       "reminder_lead_followup": "Follow up with lead {lead}",
-      "reminder_invoice_overdue": "Invoice {invoice} is overdue"
+      "reminder_invoice_overdue": "Invoice {invoice} is overdue",
+      "portal_comment": "{actor} commented on project {project}",
+      "portal_approval_response": "{actor} responded to approval \"{approval}\" on project {project}"
     }
   }
 }
