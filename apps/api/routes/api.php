@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\LeadContactController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\LeadNoteController;
 use App\Http\Controllers\Api\MilestoneController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OwnershipController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PortalAuthController;
@@ -212,6 +213,16 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->middleware('permission:payments.manage');
 
     Route::patch('/agencies/{agency}/payment-details', [AgencyPaymentDetailsController::class, 'update'])->middleware('permission:agencies.payment-details.update');
+});
+
+// Workflow & Notifications (docs/WORKFLOW_CONTRACT.md, DEC-026) —
+// system-generated, read/mark-read only; every query is pinned to
+// the token identity in the token's agency, so no permission key.
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
 });
 
 // Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —

@@ -316,6 +316,22 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## BE-009 — Workflow & Notifications (Nhóm 6) theo hợp đồng WORKFLOW_CONTRACT
+- Status: IN_PROGRESS
+- Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
+- Mô tả: Triển khai Nhóm 6 theo `docs/WORKFLOW_CONTRACT.md` (DEC-026, Nguyen duyệt nguyên văn theo đề xuất 2026-11-27): bảng `notifications` tự xây (BelongsToAgency, `dedupe_key` duy nhất chống nhắc trùng) + cột `created_by` bổ sung cho `tasks`/`invoices`; service `App\Support\Notifier` là điểm tạo thông báo duy nhất (chỉ tạo cho membership staff đang hoạt động trong agency của token, không bao giờ báo cho chính người thực hiện hành động, lỗi thông báo không làm hỏng hành động nghiệp vụ); API đọc/đánh dấu đã đọc (list + `unread` filter, unread-count, read, read-all — ghim theo danh tính + agency của token, id lạ trả 404, không thêm khóa quyền mới); sự kiện `task.assigned` / `task.status_changed` / `task.commented` / `invoice.status_changed` gắn tại controller task/comment/invoice và tại `Invoice::refreshStatusFromPayments()` cho các chuyển trạng thái do thanh toán (gồm cả Paid quay về Sent khi xoá thanh toán); email chỉ cho `task.assigned` + invoice sang Paid qua job `SendNotificationMail` (payload mang agency_id, chạy trong Tenant::run, render theo locale lưu trên tài khoản, mẫu `NotificationMail` + `lang/en|vi/mail.php`); lệnh `reminders:run` chạy lịch 01:00 UTC, đánh giá theo múi giờ từng agency — task/milestone sắp hạn + quá hạn, lead quá 3 ngày chưa liên hệ, invoice quá hạn chỉ nhắc nội bộ (Accountant + Owner, không bao giờ gửi khách) — kèm xoá thông báo quá 90 ngày.
+- Acceptance Criteria: Toàn bộ tiêu chí mục 8 của WORKFLOW_CONTRACT; test PHPUnit trong `tests/Feature/Workflow/` cho từng trigger sự kiện (kèm loại trừ actor + membership đã vô hiệu), cách ly chéo user/agency của API thông báo, từng rule reminders + dedupe chạy 2 lần trong ngày + ca biên múi giờ agency + dọn dẹp 90 ngày; toàn suite PASS trên SQLite và MySQL 8; Pint PASS.
+- Progress: 2026-11-27 — Muse triển khai trên branch `be/BE-009-workflow-notifications` từ `origin/main` (`3001fd6`, release 0.7.0).
+- Blockers: Không có.
+
+## FE-021 — Chuông thông báo + trang thông báo (Nhóm 6)
+- Status: TODO
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: FE cho Nhóm 6 theo `docs/WORKFLOW_CONTRACT.md` mục 9: icon chuông kèm badge số chưa đọc ở khung app, panel dropdown (khoảng 10 thông báo mới nhất, nút đánh dấu tất cả đã đọc), trang `/notifications` đầy đủ dùng lại component Pagination dùng chung, liên kết sâu từ thông báo tới task/invoice/dự án tương ứng; toàn bộ chuỗi hiển thị qua namespace i18n `Notifications.*` (EN + VI) render từ `type` + `data` của API.
+- Blocked by: BE-009 — chỉ soạn prompt chi tiết sau khi BE-009 merge (kỷ luật prompt, đúng nhịp FE-020 của Nhóm 5).
+- Acceptance Criteria: Chốt khi soạn prompt sau BE-009; tuân thủ DEC-021/023/024/025 và quy ước skeleton/phân trang hiện hành.
+- Blockers: Chờ BE-009.
+
 ## FIX-030 — Icon mũi tên cho nút Previous/Next của phân trang (phát hiện khi nghiệm thu FIX-029, 2026-11-27)
 - Status: DONE
 Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
