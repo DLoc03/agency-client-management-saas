@@ -316,6 +316,31 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Acceptance Criteria: Nguyen mở `/login` ở 2 ngôn ngữ kiểm tra bằng mắt; đăng nhập bằng tài khoản demo vẫn vào thẳng dashboard; link Quên mật khẩu, chuyển ngữ, Về trang chủ và lối sang Portal hoạt động. Typecheck + build PASS.
 - Blockers: Không có.
 
+## BE-011 — Client Portal & Collaboration (Nhóm 7) theo hợp đồng PORTAL_CONTRACT
+- Status: IN_PROGRESS
+- Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
+- Mô tả: Triển khai Nhóm 7 theo `docs/PORTAL_CONTRACT.md` (DEC-028, Nguyen duyệt cả 12 điểm Q1–Q12 theo đề xuất 2026-11-27): cột `client_visible` cho milestones/tasks (mặc định hiện, sửa qua PATCH sẵn có) và Portal chỉ tính tiến độ trên phần hiển thị; project draft/cancelled ẩn khỏi Portal; bảng `project_files` hai chiều trên disk private (giới hạn 20 MB + allowlist đuôi trong config/portal.php, tải qua endpoint stream có xác thực); bảng `portal_comments` — một luồng trao đổi duy nhất theo project, tách hẳn task_comments nội bộ; bảng `approval_requests` (pending/approved/changes_requested, comment bắt buộc khi yêu cầu sửa, phản hồi một lần và bất biến, account bất kỳ của cùng client record đều phản hồi được, ghi responded_by); `GET /portal/dashboard` tổng hợp một lần gọi; history tổng hợp lúc đọc từ comment + approval + sự kiện invoice công khai (không bảng activity); Notifier thêm `portal.comment` (→ quản lý dự án + thành viên dự án) và `portal.approval_response` (→ người tạo request + quản lý dự án), in-app only, MVP không email cho client; 2 khóa quyền mới `portal.files.manage` + `portal.approvals.manage` (Owner/Admin/PM), trả lời luồng trao đổi chỉ cần `projects.view`.
+- Acceptance Criteria: Toàn bộ tiêu chí mục 8 của PORTAL_CONTRACT; test PHPUnit trong `tests/Feature/Portal/` (lọc hiển thị + mẫu số tiến độ, draft/cancelled 404, ghim client trên mọi endpoint mới kể cả download/respond, giới hạn upload, vòng đời approval + thông báo đúng người nhận, dashboard, thứ tự history trộn 3 nguồn); toàn suite PASS trên SQLite và MySQL 8; Pint PASS.
+- Progress: 2026-11-27 — Muse triển khai trên branch `be/BE-011-portal-collaboration` từ `origin/main` (`bb2d63d`).
+- Progress: 2026-11-27 — Vòng sửa theo QA-008 (F0–F5): Pint sạch toàn bộ file PHP thay đổi (F0); kiểm tra đuôi file upload theo file thật thay vì tên client gửi (F1, kèm test bằng UploadedFile thật); bổ sung comment lý do bypass ở StoreApprovalRequest (F2); phản hồi approval thành thao tác nguyên tử có điều kiện `status = pending` (F3); dashboard loại invoice thuộc project draft/cancelled khỏi tổng nợ (F4); bổ sung comment lý do bypass trong PortalCollaborationTest (F5). Suite 213 PASS trên SQLite, Pint PASS.
+- Blockers: Không có.
+
+## QA-008 — Rà soát BE-011 Nhóm 7 (Portal & Collaboration)
+- Status: TODO
+- Assignee: OpenCode (QA) · Reviewer: Muse + Nguyen
+- Mô tả: Review chéo BE-011 theo mục 8 của `docs/PORTAL_CONTRACT.md`: lọc hiển thị và mẫu số tiến độ phía Portal, ẩn project draft/cancelled, ghim client_id trên mọi endpoint Portal mới (file/comment/approval/history/dashboard), giới hạn upload + mime/size theo file thật, vòng đời approval (bất biến sau phản hồi, APPROVAL_ALREADY_RESPONDED, comment bắt buộc khi changes_requested), người nhận hai thông báo mới, suite chạy trên MySQL 8.
+- Blocked by: BE-011 (chỉ bắt đầu sau khi PR BE-011 mở).
+- Acceptance Criteria: Báo cáo PASS/FAIL theo từng mục của hợp đồng kèm bằng chứng chạy test; không tự sửa code BE trong task này.
+- Blockers: Chờ BE-011.
+
+## FE-023 — Portal & Collaboration UI (Nhóm 7): Portal + section Client Portal nội bộ
+- Status: TODO
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: FE cho Nhóm 7 theo `docs/PORTAL_CONTRACT.md` mục 7: Portal (dashboard thêm khối Cần bạn duyệt + invoice chưa thanh toán + File mới; chi tiết project thêm Files / Trao đổi / Duyệt bàn giao / Lịch sử; giữ phong cách Bento emerald DEC-013) và phía nội bộ (section "Client Portal" trong chi tiết project: công tắc client_visible, quản lý Files, Approvals, luồng Trao đổi, Lịch sử; chuông thông báo render thêm `portal.comment` / `portal.approval_response`). Ghi chú hướng UI của PO (DEC-028): Portal là bề mặt phía khách — khách ít thao tác và thao tác đơn giản, chất lượng trình bày quan trọng hơn mật độ thông tin; FE-023 bắt đầu bằng các trang mẫu thiết kế để PO duyệt trước khi triển khai, như quy trình mẫu của các đợt UI trước.
+- Blocked by: QA-008 (chỉ soạn prompt sau khi BE-011 merge và QA-008 PASS — kỷ luật prompt).
+- Acceptance Criteria: Chốt khi soạn prompt sau QA-008; tuân thủ DEC-013 (Portal Bento emerald), DEC-021/023/025 và quy ước i18n EN + VI đầy đủ.
+- Blockers: Chờ BE-011 + QA-008.
+
 ## FIX-031 — Batch BE nhỏ tồn đọng Nhóm 5: GET payment-details + validate project cùng client (mục 4 trong thứ tự PO duyệt 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen

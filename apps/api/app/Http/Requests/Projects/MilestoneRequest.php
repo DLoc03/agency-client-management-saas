@@ -24,6 +24,8 @@ abstract class MilestoneRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:5000'],
             'due_date' => ['nullable', 'date'],
             'status' => ['sometimes', Rule::in(Milestone::STATUSES)],
+            // Group 7 (DEC-028 Q1): per-milestone Portal visibility.
+            'client_visible' => ['sometimes', 'boolean'],
         ];
     }
 }

@@ -356,7 +356,9 @@ class ProjectModuleTest extends TestCase
         $owner = $this->makeUser();
         $client = $this->makeClient($owner);
         $otherClient = $this->makeClient($owner);
-        $mine = $this->makeProject($owner, ['client_id' => $client->id, 'name' => 'Client visible']);
+        // DEC-028 Q2: the project must not be draft/cancelled for
+        // the Portal to see it (drafts are hidden since Group 7).
+        $mine = $this->makeProject($owner, ['client_id' => $client->id, 'name' => 'Client visible', 'status' => Project::STATUS_IN_PROGRESS]);
         $this->makeProject($owner, ['client_id' => $otherClient->id, 'name' => 'Not yours']);
         $task = Task::factory()->create(['project_id' => $mine->id, 'agency_id' => $owner->agency_id, 'status' => Task::STATUS_DONE]);
         $task->comments()->create(['agency_id' => $owner->agency_id, 'author_id' => $owner->id, 'body' => 'Internal secret']);

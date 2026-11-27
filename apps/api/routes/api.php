@@ -17,11 +17,20 @@ use App\Http\Controllers\Api\MilestoneController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OwnershipController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\PortalApprovalController;
 use App\Http\Controllers\Api\PortalAuthController;
+use App\Http\Controllers\Api\PortalCommentController;
+use App\Http\Controllers\Api\PortalDashboardController;
+use App\Http\Controllers\Api\PortalHistoryController;
 use App\Http\Controllers\Api\PortalInvoiceController;
 use App\Http\Controllers\Api\PortalProjectController;
+use App\Http\Controllers\Api\PortalProjectFileController;
+use App\Http\Controllers\Api\ProjectApprovalController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\ProjectFileController;
+use App\Http\Controllers\Api\ProjectHistoryController;
 use App\Http\Controllers\Api\ProjectMemberController;
+use App\Http\Controllers\Api\ProjectPortalCommentController;
 use App\Http\Controllers\Api\ProjectTeamController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TaskChecklistController;
@@ -168,6 +177,26 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::post('/tasks/{task}/checklist', [TaskChecklistController::class, 'store'])->middleware('permission:tasks.update');
     Route::patch('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'update'])->middleware('permission:tasks.update');
     Route::delete('/tasks/{task}/checklist/{itemId}', [TaskChecklistController::class, 'destroy'])->middleware('permission:tasks.update');
+
+    // Client Portal & Collaboration surfaces, internal side
+    // (docs/PORTAL_CONTRACT.md section 3.2, DEC-028): file sharing,
+    // the Portal discussion thread, approval requests and the
+    // composed communication history of a project.
+    Route::get('/projects/{project}/files', [ProjectFileController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/files', [ProjectFileController::class, 'store'])->middleware('permission:portal.files.manage');
+    Route::patch('/projects/{project}/files/{fileId}', [ProjectFileController::class, 'update'])->middleware('permission:portal.files.manage');
+    Route::delete('/projects/{project}/files/{fileId}', [ProjectFileController::class, 'destroy'])->middleware('permission:portal.files.manage');
+    Route::get('/projects/{project}/files/{fileId}/download', [ProjectFileController::class, 'download'])->middleware('permission:projects.view');
+
+    Route::get('/projects/{project}/portal-comments', [ProjectPortalCommentController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/portal-comments', [ProjectPortalCommentController::class, 'store'])->middleware('permission:projects.view');
+    Route::delete('/projects/{project}/portal-comments/{commentId}', [ProjectPortalCommentController::class, 'destroy'])->middleware('permission:projects.view');
+
+    Route::get('/projects/{project}/approvals', [ProjectApprovalController::class, 'index'])->middleware('permission:projects.view');
+    Route::post('/projects/{project}/approvals', [ProjectApprovalController::class, 'store'])->middleware('permission:portal.approvals.manage');
+    Route::delete('/projects/{project}/approvals/{approvalId}', [ProjectApprovalController::class, 'destroy'])->middleware('permission:portal.approvals.manage');
+
+    Route::get('/projects/{project}/history', [ProjectHistoryController::class, 'show'])->middleware('permission:projects.view');
     // Team & Resource module (docs/TEAM_CONTRACT.md, DEC-017).
     Route::get('/teams', [TeamController::class, 'index'])->middleware('permission:teams.view');
     Route::post('/teams', [TeamController::class, 'store'])->middleware('permission:teams.create');
@@ -236,4 +265,24 @@ Route::prefix('v1/portal')->middleware(['auth:sanctum', 'ability:portal', 'tenan
     // read-only, scoped to the signed-in client's own invoices.
     Route::get('/invoices', [PortalInvoiceController::class, 'index']);
     Route::get('/invoices/{invoiceId}', [PortalInvoiceController::class, 'show']);
+
+    // Group 7 — Client Portal & Collaboration (docs/
+    // PORTAL_CONTRACT.md section 3.1, DEC-028): dashboard aggregate,
+    // two-way file sharing, the per-project discussion thread,
+    // approval responses and the composed communication history.
+    // Everything stays pinned to the membership's client record.
+    Route::get('/dashboard', [PortalDashboardController::class, 'show']);
+
+    Route::get('/projects/{projectId}/files', [PortalProjectFileController::class, 'index']);
+    Route::post('/projects/{projectId}/files', [PortalProjectFileController::class, 'store']);
+    Route::get('/projects/{projectId}/files/{fileId}/download', [PortalProjectFileController::class, 'download']);
+    Route::delete('/projects/{projectId}/files/{fileId}', [PortalProjectFileController::class, 'destroy']);
+
+    Route::get('/projects/{projectId}/comments', [PortalCommentController::class, 'index']);
+    Route::post('/projects/{projectId}/comments', [PortalCommentController::class, 'store']);
+
+    Route::get('/projects/{projectId}/approvals', [PortalApprovalController::class, 'index']);
+    Route::post('/projects/{projectId}/approvals/{approvalId}/respond', [PortalApprovalController::class, 'respond']);
+
+    Route::get('/projects/{projectId}/history', [PortalHistoryController::class, 'show']);
 });

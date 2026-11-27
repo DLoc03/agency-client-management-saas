@@ -43,6 +43,9 @@ abstract class TaskRequest extends FormRequest
             'assignee_id' => ['nullable', 'integer'],
             'due_date' => ['nullable', 'date'],
             'position' => ['sometimes', 'integer', 'min:0'],
+            // Group 7 (DEC-028 Q1): per-task Portal visibility flag,
+            // set through this same endpoint — no parallel endpoint.
+            'client_visible' => ['sometimes', 'boolean'],
         ];
     }
 

@@ -51,6 +51,7 @@ class Task extends Model
     protected $fillable = [
         'agency_id', 'project_id', 'milestone_id', 'title', 'description',
         'status', 'priority', 'assignee_id', 'created_by', 'due_date', 'completed_at', 'position',
+        'client_visible',
     ];
 
     protected function casts(): array
@@ -59,6 +60,7 @@ class Task extends Model
             'due_date' => 'datetime',
             'completed_at' => 'datetime',
             'position' => 'integer',
+            'client_visible' => 'boolean',
         ];
     }
 

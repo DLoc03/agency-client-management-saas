@@ -17,6 +17,12 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
  * token: the agency scope applies automatically, and this controller
  * only pins the query to the membership's client record. Internal
  * comments and the budget are never exposed.
+ *
+ * Group 7 (docs/PORTAL_CONTRACT.md sections 2.1/3.1, DEC-028 Q1/Q2):
+ * draft and cancelled projects are hidden from the Portal, and only
+ * client-visible milestones/tasks are shown — the progress percent
+ * and the counts are computed over the visible subset only, so the
+ * volume of internal work never leaks through the denominator.
  */
 class PortalProjectController extends Controller
 {
@@ -24,9 +30,12 @@ class PortalProjectController extends Controller
     {
         return Project::query()
             ->where('client_id', Tenant::membership()->client_id)
+            ->whereNotIn('status', [Project::STATUS_DRAFT, Project::STATUS_CANCELLED])
             ->withCount([
-                'tasks',
-                'tasks as tasks_done_count' => fn ($q) => $q->where('status', Task::STATUS_DONE),
+                'tasks' => fn ($q) => $q->where('client_visible', true),
+                'tasks as tasks_done_count' => fn ($q) => $q
+                    ->where('client_visible', true)
+                    ->where('status', Task::STATUS_DONE),
             ]);
     }
 
@@ -43,11 +52,17 @@ class PortalProjectController extends Controller
     {
         $project = $this->scopedQuery($request)
             ->with([
-                'milestones' => fn ($q) => $q->withCount([
-                    'tasks',
-                    'tasks as tasks_done_count' => fn ($tq) => $tq->where('status', Task::STATUS_DONE),
-                ])->orderBy('due_date'),
-                'tasks' => fn ($q) => $q->orderBy('position')->latest(),
+                'milestones' => fn ($q) => $q
+                    ->where('client_visible', true)
+                    ->withCount([
+                        'tasks' => fn ($tq) => $tq->where('client_visible', true),
+                        'tasks as tasks_done_count' => fn ($tq) => $tq
+                            ->where('client_visible', true)
+                            ->where('status', Task::STATUS_DONE),
+                    ])->orderBy('due_date'),
+                'tasks' => fn ($q) => $q
+                    ->where('client_visible', true)
+                    ->orderBy('position')->latest(),
             ])
             ->findOrFail($projectId);
 

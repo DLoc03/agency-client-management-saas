@@ -82,6 +82,24 @@ class Project extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    /** Files shared with the client (docs/PORTAL_CONTRACT.md, Group 7). */
+    public function portalFiles(): HasMany
+    {
+        return $this->hasMany(ProjectFile::class);
+    }
+
+    /** The Portal discussion thread of this project (Group 7). */
+    public function portalComments(): HasMany
+    {
+        return $this->hasMany(PortalComment::class);
+    }
+
+    /** Client approval requests on this project (Group 7). */
+    public function approvalRequests(): HasMany
+    {
+        return $this->hasMany(ApprovalRequest::class);
+    }
+
     /**
      * Budget reconciliation figures (docs/FINANCE_CONTRACT.md section
      * 6), computed at read time: the sum of this project's live

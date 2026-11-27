@@ -42,4 +42,5 @@ return [
     'PAYMENT_NOT_ALLOWED' => 'Payments can only be recorded on a sent invoice.',
     'PROJECT_CLIENT_MISMATCH' => 'The selected project belongs to a different client than this invoice.',
     'OVERPAYMENT_NOT_ALLOWED' => 'The payment exceeds the balance due on this invoice.',
+    'APPROVAL_ALREADY_RESPONDED' => 'This approval request has already been responded to.',
 ];
