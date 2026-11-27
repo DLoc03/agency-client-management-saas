@@ -37,8 +37,10 @@ class UploadProjectFileRequest extends FormRequest
                 return;
             }
 
-            $extension = strtolower($file->getClientOriginalExtension());
-            if (! in_array($extension, config('portal.files.extensions', []), true)) {
+            // extension() guesses from the file's real MIME type
+            // (content inspection), never from the client name.
+            $extension = $file->extension();
+            if ($extension === null || ! in_array($extension, config('portal.files.extensions', []), true)) {
                 $validator->errors()->add('file', 'This file type is not allowed.');
             }
         });

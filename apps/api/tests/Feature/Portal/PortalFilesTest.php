@@ -169,6 +169,37 @@ class PortalFilesTest extends TestCase
         $this->assertDatabaseCount('project_files', 0);
     }
 
+    public function test_upload_is_judged_by_the_real_file_not_the_client_supplied_name(): void
+    {
+        $owner = $this->makeMembershipUser([Role::OWNER]);
+        $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
+        $project = $this->makeProject($owner, $client->id);
+
+        // A real UploadedFile built from an on-disk temp file, so
+        // the MIME type comes from the actual bytes (the fake
+        // factory derives its reported MIME from the file name and
+        // cannot exercise this). Binary content wearing a `.pdf`
+        // name is refused: the content wins over the name.
+        $binaryPath = tempnam(sys_get_temp_dir(), 'be011-upload-');
+        file_put_contents($binaryPath, str_repeat("\x00\x01\x02\x03", 16));
+        $this->as($owner)->postJson("/api/v1/projects/{$project->id}/files", [
+            'file' => new UploadedFile($binaryPath, 'report.pdf', null, null, true),
+        ])->assertUnprocessable()
+            ->assertJsonPath('error.code', 'VALIDATION_FAILED');
+
+        // …and genuine PDF bytes wearing a `.exe` name are accepted
+        // as the PDF they are.
+        $pdfPath = tempnam(sys_get_temp_dir(), 'be011-upload-');
+        file_put_contents($pdfPath, "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n");
+        $this->as($owner)->postJson("/api/v1/projects/{$project->id}/files", [
+            'file' => new UploadedFile($pdfPath, 'payload.exe', null, null, true),
+        ])->assertCreated()
+            ->assertJsonPath('data.original_name', 'payload.exe')
+            ->assertJsonPath('data.mime_type', 'application/pdf');
+
+        $this->assertDatabaseCount('project_files', 1);
+    }
+
     public function test_client_deletes_only_client_uploaded_files_and_staff_delete_removes_the_physical_file(): void
     {
         $owner = $this->makeMembershipUser([Role::OWNER]);

@@ -52,6 +52,10 @@ class StoreApprovalRequest extends FormRequest
             }
 
             if ($this->filled('file_id')) {
+                // Bypass reason: unscoped lookup is safe — agency_id
+                // and project_id are verified explicitly right below,
+                // and a foreign row answers 422 CROSS_TENANT_REFERENCE
+                // instead of looking like a missing file.
                 $file = ProjectFile::withoutGlobalScopes()->find($this->input('file_id'));
                 if (! $file) {
                     $validator->errors()->add('file_id', 'File not found.');
@@ -62,6 +66,10 @@ class StoreApprovalRequest extends FormRequest
             }
 
             if ($this->filled('milestone_id')) {
+                // Bypass reason: unscoped lookup is safe — agency_id
+                // and project_id are verified explicitly right below,
+                // and a foreign row answers 422 CROSS_TENANT_REFERENCE
+                // instead of looking like a missing milestone.
                 $milestone = Milestone::withoutGlobalScopes()->find($this->input('milestone_id'));
                 if (! $milestone) {
                     $validator->errors()->add('milestone_id', 'Milestone not found.');

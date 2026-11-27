@@ -48,10 +48,16 @@ class PortalDashboardController extends Controller
             ->get();
 
         // Issued and not yet fully paid: stored status `sent` covers
-        // both plain sent and derived-overdue invoices.
+        // both plain sent and derived-overdue invoices. Like the
+        // rest of the dashboard, invoices of draft/cancelled
+        // projects stay out (Q2); project-less invoices still count.
         $openInvoices = Invoice::query()
             ->where('client_id', $clientId)
             ->where('status', Invoice::STATUS_SENT)
+            ->where(fn ($q) => $q
+                ->whereNull('project_id')
+                ->orWhereHas('project', fn ($p) => $p
+                    ->whereNotIn('status', [Project::STATUS_DRAFT, Project::STATUS_CANCELLED])))
             ->withSum('payments', 'amount')
             ->get()
             ->filter(fn (Invoice $invoice) => $invoice->balanceDue() > 0)

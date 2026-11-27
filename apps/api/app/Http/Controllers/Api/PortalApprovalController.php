@@ -44,16 +44,25 @@ class PortalApprovalController extends Controller
         $project = $this->portalProject($projectId);
         $approval = $project->approvalRequests()->findOrFail($approvalId);
 
-        if (! $approval->isPending()) {
+        // Claim the response atomically: the update only lands
+        // while the request is still pending, so two responses
+        // racing each other cannot both win — the loser affects
+        // zero rows and answers APPROVAL_ALREADY_RESPONDED.
+        $claimed = ApprovalRequest::query()
+            ->whereKey($approval->id)
+            ->where('status', ApprovalRequest::STATUS_PENDING)
+            ->update([
+                'status' => $request->validated('decision'),
+                'response_comment' => $request->validated('comment'),
+                'responded_by' => $request->user()->id,
+                'responded_at' => now(),
+            ]);
+
+        if ($claimed === 0) {
             throw new ApiException('APPROVAL_ALREADY_RESPONDED', 422);
         }
 
-        $approval->update([
-            'status' => $request->validated('decision'),
-            'response_comment' => $request->validated('comment'),
-            'responded_by' => $request->user()->id,
-            'responded_at' => now(),
-        ]);
+        $approval->refresh();
 
         Notifier::notifyMany(
             [$approval->created_by, $project->project_manager_id],

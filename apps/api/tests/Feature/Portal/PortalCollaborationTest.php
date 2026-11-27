@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Notification as AppNotification;
 use App\Models\Payment;
+use App\Models\PortalComment;
 use App\Models\Project;
 use App\Models\ProjectFile;
 use App\Models\Role;
@@ -176,9 +177,13 @@ class PortalCollaborationTest extends TestCase
         $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
         $project = $this->makeProject($owner, $client->id);
 
+        // Bypass reason: fixture setup; the record is pinned to
+        // the project created above.
         $first = Tenant::bypass(fn () => ApprovalRequest::factory()->create([
             'project_id' => $project->id, 'created_by' => $owner->id,
         ]));
+        // Bypass reason: fixture setup; the record is pinned to
+        // the project created above.
         $second = Tenant::bypass(fn () => ApprovalRequest::factory()->create([
             'project_id' => $project->id, 'created_by' => $owner->id,
         ]));
@@ -212,6 +217,8 @@ class PortalCollaborationTest extends TestCase
         $owner = $this->makeMembershipUser([Role::OWNER]);
         $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
         $project = $this->makeProject($owner, $client->id);
+        // Bypass reason: fixture setup; the record is pinned to
+        // the project created above.
         $file = Tenant::bypass(fn () => ProjectFile::factory()->create([
             'project_id' => $project->id, 'uploaded_by' => $owner->id,
             'original_name' => 'final-logo.pdf',
@@ -225,6 +232,8 @@ class PortalCollaborationTest extends TestCase
 
         // A file from another project is a cross-reference error.
         $otherProject = $this->makeProject($owner, $client->id);
+        // Bypass reason: fixture setup; the record is pinned to
+        // the other project created above.
         $foreignFile = Tenant::bypass(fn () => ProjectFile::factory()->create([
             'project_id' => $otherProject->id, 'uploaded_by' => $owner->id,
         ]));
@@ -247,9 +256,13 @@ class PortalCollaborationTest extends TestCase
         $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
         $project = $this->makeProject($owner, $client->id);
 
+        // Bypass reason: fixture setup; the record is pinned to
+        // the project created above.
         Tenant::bypass(fn () => ApprovalRequest::factory()->create([
             'project_id' => $project->id, 'created_by' => $owner->id, 'title' => 'Sign off the mockups',
         ]));
+        // Bypass reason: fixture setup; the record is pinned to
+        // the project created above.
         Tenant::bypass(fn () => ProjectFile::factory()->create([
             'project_id' => $project->id, 'uploaded_by' => $owner->id, 'original_name' => 'mockups.pdf',
         ]));
@@ -268,6 +281,16 @@ class PortalCollaborationTest extends TestCase
         Invoice::factory()->create([
             'agency_id' => $owner->agency_id, 'client_id' => $client->id,
             'project_id' => $project->id, 'status' => Invoice::STATUS_DRAFT, 'total' => 999,
+        ]);
+
+        // A sent invoice on a DRAFT project must not count either:
+        // like the rest of the dashboard, unpaid totals only speak
+        // about portal-visible projects (Q2 consistency).
+        $draftProject = $this->makeProject($owner, $client->id, ['status' => Project::STATUS_DRAFT]);
+        Invoice::factory()->create([
+            'agency_id' => $owner->agency_id, 'client_id' => $client->id,
+            'project_id' => $draftProject->id, 'status' => Invoice::STATUS_SENT,
+            'sent_at' => now(), 'total' => 400,
         ]);
 
         $portal = $this->makePortalIdentity($owner->agency_id, $client->id);
@@ -289,6 +312,8 @@ class PortalCollaborationTest extends TestCase
         $portalUser = $this->makePortalIdentity($owner->agency_id, $client->id);
 
         $base = now()->subDays(10);
+        // Bypass reason: fixture setup; every record below is
+        // pinned to an explicit agency/project/client.
         Tenant::bypass(function () use ($project, $owner, $portalUser, $client, $base) {
             $invoice = Invoice::factory()->create([
                 'agency_id' => $owner->agency_id, 'client_id' => $client->id,
@@ -298,7 +323,7 @@ class PortalCollaborationTest extends TestCase
                 'created_at' => $base,
             ]);
 
-            \App\Models\PortalComment::factory()->create([
+            PortalComment::factory()->create([
                 'project_id' => $project->id, 'author_id' => $portalUser->id,
                 'created_at' => $base->copy()->addDays(1),
             ]);
