@@ -242,7 +242,8 @@ export default function InvitationsPage() {
               <button type="button" onClick={() => setShowForm(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                <Icon name="mail" className="h-4 w-4" />
                 {t("invitationsForm.send")}
               </button>
             </div>

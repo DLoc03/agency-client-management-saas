@@ -337,6 +337,7 @@
     "noHistory": "Chưa có lịch sử",
     "clientVisible": "Khách nhìn thấy",
     "portalSection": "Cổng khách hàng",
+    "unknownAuthor": "Không rõ",
     "approvalStatuses": {
       "pending": "Chờ duyệt",
       "approved": "Đã duyệt",

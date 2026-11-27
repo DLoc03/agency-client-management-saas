@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/Select";
+import { Icon } from "@/components/shell/Icon";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { getTeam, updateTeam, deleteTeam, addTeamMember, removeTeamMember, listUsers } from "@/lib/team/api";
@@ -179,7 +180,8 @@ export default function TeamDetailPage() {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <Icon name="check" className="h-4 w-4" />
                 {t("actions.save")}
               </button>
               {canDelete && (

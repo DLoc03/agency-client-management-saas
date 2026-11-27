@@ -305,9 +305,9 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                 <ul className="mt-3 space-y-3">
                   {comments.map((c) => (
                     <li key={c.id} className={`flex gap-3 rounded-xl px-4 py-3 text-sm ${c.author_kind === "client" ? "bg-emerald-50/60" : "bg-violet-50/60"}`}>
-                      <Avatar name={c.author?.name ?? (c.author_kind === "client" ? "You" : "Agency")} seed={c.author_id} className="h-8 w-8 shrink-0 text-xs" />
+                      <Avatar name={c.author?.name ?? t("unknownAuthor")} seed={c.author_id} className="h-8 w-8 shrink-0 text-xs" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium text-slate-600">{c.author?.name ?? (c.author_kind === "client" ? "You" : "Agency")} · {c.created_at.slice(0, 10)}</p>
+                        <p className="text-xs font-medium text-slate-600">{c.author?.name ?? t("unknownAuthor")} · {c.created_at.slice(0, 10)}</p>
                         <p className="mt-1 whitespace-pre-wrap text-slate-900">{c.body}</p>
                       </div>
                     </li>

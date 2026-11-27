@@ -337,6 +337,7 @@
     "noHistory": "No history yet",
     "clientVisible": "Visible to client",
     "portalSection": "Client Portal",
+    "unknownAuthor": "Unknown",
     "approvalStatuses": {
       "pending": "Pending",
       "approved": "Approved",

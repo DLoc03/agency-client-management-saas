@@ -263,8 +263,9 @@ export default function TaskDetailPage() {
             />
             <button
               type="submit"
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
             >
+              <Icon name="plus" className="h-4 w-4" />
               {t("actions.addChecklist")}
             </button>
           </form>
@@ -324,8 +325,9 @@ export default function TaskDetailPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
               >
+                <Icon name="send" className="h-4 w-4" />
                 {t("actions.addComment")}
               </button>
             </div>
