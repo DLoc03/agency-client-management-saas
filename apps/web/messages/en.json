@@ -8,6 +8,8 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "moreActions": "More actions",
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
     "pagination": {
       "rowsPerPage": "Rows per page",
       "page": "Page {page} of {last}",
@@ -151,6 +153,8 @@
     "siteTitle": "Brewbase - Agency & Client Management"
   },
   "Portal": {
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
     "brand": "Brewbase",
     "login": {
       "title": "Sign in to Client Portal",

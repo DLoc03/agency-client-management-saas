@@ -8,6 +8,8 @@
     "showPassword": "Hiện mật khẩu",
     "hidePassword": "Ẩn mật khẩu",
     "moreActions": "Thao tác khác",
+    "uploadFailed": "Tải lên thất bại",
+    "deleteFailed": "Xoá thất bại",
     "pagination": {
       "rowsPerPage": "Số dòng mỗi trang",
       "page": "Trang {page}/{last}",
@@ -151,6 +153,8 @@
     "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },
   "Portal": {
+    "uploadFailed": "Tải lên thất bại",
+    "deleteFailed": "Xoá thất bại",
     "brand": "Brewbase",
     "login": {
       "title": "Đăng nhập Cổng Khách Hàng",

@@ -1184,9 +1184,9 @@ export default function ProjectDetailPage() {
                       setPortalFiles((prev) => [b.data, ...prev]);
                     } else {
                       const b = await res.json().catch(()=>null);
-                      setPortalError(b?.error?.message || "Upload failed");
+                      setPortalError(b?.error?.message || c("uploadFailed"));
                     }
-                  } catch { setPortalError("Upload failed"); }
+                  } catch { setPortalError(c("uploadFailed")); }
                   e.target.value = "";
                 }} />
               </label>
@@ -1211,7 +1211,7 @@ export default function ProjectDetailPage() {
                           <button type="button" onClick={async () => {
                             const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
                             if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
-                            else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || "Delete failed"); }
+                            else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
                           }} className="text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
                         </>
                       )}

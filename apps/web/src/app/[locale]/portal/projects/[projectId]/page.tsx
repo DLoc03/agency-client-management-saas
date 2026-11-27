@@ -101,10 +101,10 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
         setFiles((prev) => [b.data, ...prev]);
       } else {
         const b = await res.json().catch(() => null);
-        setFileError(b?.error?.message || "Upload failed");
+        setFileError(b?.error?.message || t("uploadFailed"));
       }
     } catch {
-      setFileError("Upload failed");
+      setFileError(t("uploadFailed"));
     }
   };
 
@@ -116,10 +116,10 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
         setFiles((prev) => prev.filter((f) => f.id !== fileId));
       } else {
         const b = await res.json().catch(() => null);
-        setFileError(b?.error?.message || "Delete failed");
+        setFileError(b?.error?.message || t("deleteFailed"));
       }
     } catch {
-      setFileError("Delete failed");
+      setFileError(t("deleteFailed"));
     }
   };
 
