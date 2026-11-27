@@ -155,6 +155,7 @@
   "Portal": {
     "back": "Back",
     "progress": "Progress",
+    "tasksDone": "{done}/{total} tasks done",
     "uploadFailed": "Upload failed",
     "deleteFailed": "Delete failed",
     "brand": "Brewbase",
@@ -336,6 +337,11 @@
     "noHistory": "No history yet",
     "clientVisible": "Visible to client",
     "portalSection": "Client Portal",
+    "approvalStatuses": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "changes_requested": "Changes requested"
+    },
     "historyTypes": {
       "comment": "{actor} commented: {excerpt}",
       "approval_requested": "Approval requested: {title}",
@@ -487,6 +493,7 @@
     },
     "portal": {
       "portalSection": "Client Portal",
+      "sectionDescription": "What your client sees and does on the Portal for this project: files, discussion, approvals and history.",
       "files": "Files",
       "discussion": "Discussion",
       "approvals": "Approvals",
@@ -497,6 +504,11 @@
       "noComments": "No messages yet.",
       "noHistory": "No history yet.",
       "clientVisible": "Shown in portal",
+      "approvalStatuses": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "changes_requested": "Changes requested"
+      },
       "comment": "Write a reply…",
       "send": "Send",
       "delete": "Delete",

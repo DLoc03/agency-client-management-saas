@@ -140,6 +140,74 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 9h.01" />
     </>
   ),
+  send: (
+    <>
+      <path d="M22 2L11 13" />
+      <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="m21 15-5-5L5 21" />
+    </>
+  ),
+  "file-text": (
+    <>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M16 13H8M16 17H8M10 9H8" />
+    </>
+  ),
+  "file-spreadsheet": (
+    <>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8M8 17h8M8 9h4" />
+    </>
+  ),
+  archive: (
+    <>
+      <path d="M21 8v13H3V8" />
+      <path d="M1 3h22v5H1z" />
+      <path d="M10 12h4" />
+    </>
+  ),
+  file: (
+    <>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+    </>
+  ),
+  reply: (
+    <>
+      <path d="M9 17l-5-5 5-5" />
+      <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M21 2v6h-6" />
+      <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+      <path d="M3 22v-6h6" />
+      <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+    </>
+  ),
+  "chevron-down": <path d="m6 9 6 6 6-6" />,
+  upload: (
+    <>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </>
+  ),
 };
 
 export function Icon({ name, className }: { name: string; className?: string }) {

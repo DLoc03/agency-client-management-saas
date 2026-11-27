@@ -155,6 +155,7 @@
   "Portal": {
     "back": "Quay lại",
     "progress": "Tiến độ",
+    "tasksDone": "{done}/{total} công việc đã xong",
     "uploadFailed": "Tải lên thất bại",
     "deleteFailed": "Xoá thất bại",
     "brand": "Brewbase",
@@ -336,6 +337,11 @@
     "noHistory": "Chưa có lịch sử",
     "clientVisible": "Khách nhìn thấy",
     "portalSection": "Cổng khách hàng",
+    "approvalStatuses": {
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "changes_requested": "Yêu cầu chỉnh sửa"
+    },
     "historyTypes": {
       "comment": "{actor} đã bình luận: {excerpt}",
       "approval_requested": "Yêu cầu duyệt: {title}",
@@ -487,6 +493,7 @@
     },
     "portal": {
       "portalSection": "Cổng khách hàng",
+      "sectionDescription": "Những gì khách hàng nhìn thấy và làm trên Portal cho dự án này: file, trao đổi, phê duyệt và lịch sử.",
       "files": "File",
       "discussion": "Trao đổi",
       "approvals": "Phê duyệt",
@@ -497,12 +504,17 @@
       "noComments": "Chưa có tin nhắn nào.",
       "noHistory": "Chưa có lịch sử nào.",
       "clientVisible": "Hiển thị trên Portal",
+      "approvalStatuses": {
+        "pending": "Chờ duyệt",
+        "approved": "Đã duyệt",
+        "changes_requested": "Yêu cầu chỉnh sửa"
+      },
       "comment": "Nhập nội dung trả lời…",
       "send": "Gửi",
       "delete": "Xoá",
       "download": "Tải xuống",
-      "historyDecisionApproved": "đã đồng ý",
-      "historyDecisionChanges": "đã yêu cầu chỉnh sửa",
+      "historyDecisionApproved": "đồng ý",
+      "historyDecisionChanges": "yêu cầu chỉnh sửa",
       "historyTypes": {
         "comment": "{actor} đã bình luận: {excerpt}",
         "approval_requested": "Yêu cầu duyệt: {title}",
