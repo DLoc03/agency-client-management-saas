@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Icon } from "./Icon";
+import { NotificationBell } from "./NotificationBell";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -31,6 +32,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        <NotificationBell />
         <span className="hidden rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground sm:inline-flex">
           {t("environment")}
         </span>

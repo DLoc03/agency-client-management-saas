@@ -923,5 +923,25 @@
     "hints": {
       "noProjectsForClient": "No projects belong to this client."
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "viewAll": "View all",
+    "unreadOnly": "Unread only",
+    "empty": "No notifications yet",
+    "loading": "Loading notifications…",
+    "types": {
+      "task_assigned": "{actor} assigned you the task {task}",
+      "task_status_changed": "{actor} moved {task} from {from} to {to}",
+      "task_commented": "{actor} commented on {task}",
+      "invoice_status_changed": "Invoice {invoice} changed to {status}",
+      "reminder_task_due": "Task {task} is due tomorrow",
+      "reminder_task_overdue": "Task {task} is overdue",
+      "reminder_milestone_due": "Milestone {milestone} is due tomorrow",
+      "reminder_milestone_overdue": "Milestone {milestone} is overdue",
+      "reminder_lead_followup": "Follow up with lead {lead}",
+      "reminder_invoice_overdue": "Invoice {invoice} is overdue"
+    }
   }
 }

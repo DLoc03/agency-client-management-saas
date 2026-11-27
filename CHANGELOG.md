@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Added
+- Notifications UI (FE-021): bell icon with unread badge in the app shell (Topbar), dropdown panel (latest 10, mark-all-read, deep links) rendered through a portal anchored to the bell, plus a full `/notifications` page with unread filter and shared Pagination; all copy via `Notifications.*` (EN + VI) rendered from `type` + `data`, plus a `bell` icon added to the shared Icon set.
 - Workflow & Notifications (BE-009, DEC-026): in-app notifications on a custom tenant-scoped `notifications` table (unique `dedupe_key`), created through one `Notifier` service for task assignment/reassignment, task status changes, task comments and invoice status transitions (including payment-driven Paid and Paid→Sent reverts), with email only for task assignment and invoices reaching Paid (queued job, recipient's stored locale); read API (`GET /notifications` with unread filter, unread-count, mark read / mark all read) pinned to the token identity and agency; a daily `reminders:run` scheduler command evaluating due/overdue tasks and milestones, 3-day-stale leads and overdue invoices per agency timezone (invoice reminders go to Accountants and the Owner only, never to clients), pruning notifications older than 90 days. Tasks and invoices gain a nullable `created_by` column so the creator recipient rules have data.
 
 ### Changed
