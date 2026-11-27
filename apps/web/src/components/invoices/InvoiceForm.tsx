@@ -266,13 +266,29 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
             {t("actions.addItem")}
           </button>
         </div>
+        <div className="hidden sm:grid sm:grid-cols-4 gap-2 mb-1">
+          <span className="text-xs font-medium text-muted-foreground">
+            {t("fields.description")}
+          </span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {t("fields.quantity")}
+          </span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {t("fields.unitPrice")}
+          </span>
+          <span className="text-xs font-medium text-muted-foreground" aria-hidden="true" />
+        </div>
         <div className="space-y-2">
           {items.map((it, index) => (
             <div
               key={index}
               className="grid gap-2 sm:grid-cols-4 items-end"
             >
-              <input
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground sm:sr-only">
+                  {t("fields.description")}
+                </label>
+                <input
                 placeholder={t("fields.description")}
                 value={it.description}
                 onChange={(e) =>
@@ -284,11 +300,16 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
                 }
                 className={inputCls}
               />
-              <input
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground sm:sr-only">
+                  {t("fields.quantity")}
+                </label>
+                <input
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="0"
+                placeholder={t("fields.quantity")}
                 value={it.quantity}
                 onChange={(e) =>
                   setItems((prev) => {
@@ -299,11 +320,16 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
                 }
                 className={inputCls}
               />
-              <input
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground sm:sr-only">
+                  {t("fields.unitPrice")}
+                </label>
+                <input
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="0"
+                placeholder={t("fields.unitPrice")}
                 value={it.unit_price}
                 onChange={(e) =>
                   setItems((prev) => {
@@ -314,6 +340,7 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
                 }
                 className={inputCls}
               />
+              </div>
               <button
                 type="button"
                 onClick={() => removeRow(index)}
