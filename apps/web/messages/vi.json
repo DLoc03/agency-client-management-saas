@@ -410,7 +410,8 @@
         "assignee": "Người được gán",
         "dueDate": "Hạn",
         "milestone": "Cột mốc"
-      }
+      },
+      "readOnlyNote": "Chỉ người được giao hoặc quản lý dự án mới thay đổi được task này."
     },
     "errors": {
       "loadFailed": "Không tải được danh sách dự án.",

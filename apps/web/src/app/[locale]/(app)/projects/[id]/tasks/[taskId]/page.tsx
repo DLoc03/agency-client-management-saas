@@ -56,21 +56,28 @@ export default function TaskDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const [tk, cl, cm] = await Promise.all([
-        getTask(taskId),
-        listChecklist(taskId),
-        listComments(taskId),
-      ]);
+      const tk = await getTask(taskId);
       setTask(tk);
-      setChecklist(cl);
-      setComments(cm);
       setForbidden(false);
     } catch (e) {
       if (isForbiddenError(e)) setForbidden(true);
       else setError(e instanceof Error ? e.message : t("errors.loadFailed"));
-    } finally {
       setLoading(false);
+      return;
     }
+    // Secondary data: a 403 (or any failure) here must not turn the
+    // whole page into a "Request failed (403)" banner for a viewer.
+    try {
+      setChecklist(await listChecklist(taskId));
+    } catch {
+      setChecklist([]);
+    }
+    try {
+      setComments(await listComments(taskId));
+    } catch {
+      setComments([]);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -80,6 +87,7 @@ export default function TaskDetailPage() {
 
   const canUpdate = !!session?.user.permissions.includes("tasks.update");
   const canComment = !!session?.user.permissions.includes("tasks.comments.manage");
+  const canAct = task?.can_act !== false;
   const canDeleteComment = (comment: TaskComment) =>
     comment.author?.id === session?.user.id ||
     session?.user.roles.includes("agency_owner") ||
@@ -190,10 +198,13 @@ export default function TaskDetailPage() {
 
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">{t("detail.overview")}</h2>
+        {!canAct && (
+          <p className="mb-4 text-sm text-muted-foreground">{t("task.readOnlyNote")}</p>
+        )}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <p className="text-xs text-muted-foreground">{t("fields.status")}</p>
-            {canUpdate ? (
+            {canAct && canUpdate ? (
               <Select
                 value={task.status}
                 onValueChange={(v) => handleStatusChange(v as TaskStatus)}
@@ -226,9 +237,11 @@ export default function TaskDetailPage() {
           </div>
         </div>
         {task.description && (
-          <p className="mt-4 text-sm text-muted-foreground whitespace-pre-wrap">
-            {task.description}
-          </p>
+          <div className="mt-4 rounded-md bg-muted/50 p-3">
+            <p className="text-sm text-foreground whitespace-pre-wrap">
+              {task.description}
+            </p>
+          </div>
         )}
       </section>
 
@@ -240,20 +253,22 @@ export default function TaskDetailPage() {
             {checklistError}
           </div>
         )}
-        <form onSubmit={handleAddChecklist} className="mb-4 flex gap-2">
-          <input
-            value={newChecklist}
-            onChange={(e) => setNewChecklist(e.target.value)}
-            placeholder={t("actions.addChecklist")}
-            className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
-          />
-          <button
-            type="submit"
-            className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
-          >
-            {t("actions.addChecklist")}
-          </button>
-        </form>
+        {canAct && (
+          <form onSubmit={handleAddChecklist} className="mb-4 flex gap-2">
+            <input
+              value={newChecklist}
+              onChange={(e) => setNewChecklist(e.target.value)}
+              placeholder={t("actions.addChecklist")}
+              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            />
+            <button
+              type="submit"
+              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            >
+              {t("actions.addChecklist")}
+            </button>
+          </form>
+        )}
         {checklist.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("task.noChecklist")}</p>
         ) : (
@@ -263,13 +278,14 @@ export default function TaskDetailPage() {
                 <input
                   type="checkbox"
                   checked={item.is_done}
+                  disabled={!canAct}
                   onChange={() => handleToggleChecklist(item)}
-                  className="h-4 w-4"
+                  className="h-4 w-4 disabled:opacity-50"
                 />
                 <span className={item.is_done ? "text-muted-foreground line-through" : ""}>
                   {item.title}
                 </span>
-                {canUpdate && (
+                {canAct && canUpdate && (
                   <ActionMenu
                     className="ml-auto"
                     items={[
@@ -296,7 +312,7 @@ export default function TaskDetailPage() {
             {commentError}
           </div>
         )}
-        {canComment && (
+        {canAct && canComment ? (
           <form onSubmit={handleAddComment} className="mb-4 space-y-2">
             <textarea
               value={newComment}
@@ -314,7 +330,9 @@ export default function TaskDetailPage() {
               </button>
             </div>
           </form>
-        )}
+        ) : !canAct ? (
+          <p className="mb-4 text-sm text-muted-foreground">{t("task.readOnlyNote")}</p>
+        ) : null}
         {comments.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("task.noComments")}</p>
         ) : (

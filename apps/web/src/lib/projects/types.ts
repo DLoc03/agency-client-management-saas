@@ -74,6 +74,7 @@ export interface Task {
   comments?: TaskComment[];
   created_at: string | null;
   updated_at: string | null;
+  can_act?: boolean;
 }
 
 export interface TaskComment {

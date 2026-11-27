@@ -410,7 +410,8 @@
         "assignee": "Assignee",
         "dueDate": "Due date",
         "milestone": "Milestone"
-      }
+      },
+      "readOnlyNote": "Only the assignee or the project manager can modify this task."
     },
     "errors": {
       "loadFailed": "Failed to load projects.",
