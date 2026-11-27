@@ -1,6 +1,15 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-040 — Bố cục header chi tiết & căn hàng icon thao tác (Nhóm 7)
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Branch: fix/FIX-040-detail-actions-layout
+- Progress: Theo feedback nghiệm thu của PO trên FIX-039: (1) dòng Milestone: khối tên thành flex-1 và cụm mắt + kebab gom về cạnh phải trong một flex chung, nút mắt dùng đúng khuôn nút của ActionMenu (p-1.5, icon 16px) — hết cảnh icon Eye trôi giữa card do justify-between; (2) trang chi tiết công việc bỏ hẳn kebab ở header (dropdown chỉ dành cho row/card dữ liệu) — thao tác hiện đầy đủ thành nút: nút bật/tắt hiển thị Portal (icon + nhãn theo trạng thái) và nút Xoá danger-soft (nền đỏ nhạt, viền đỏ, chữ đỏ đậm, icon thùng rác); header xếp lại theo tầng: hàng nút Quay lại, hàng tiêu đề + chip trạng thái, hàng nút thao tác — hết vỡ bố cục mobile; (3) dòng file ở Portal Section: nút mắt và nút ba chấm nằm chung một flex items-center, nút mắt dùng đúng khuôn p-1.5 như nút mở menu nên hai icon ngang hàng tuyệt đối trên desktop (mobile giữ nguyên như FIX-039); (4) hai quy ước mới của PO ghi vào UI_GUIDELINES §14 (đối xứng thao tác row/card ↔ chi tiết, chi tiết hiện nút đầy đủ) và §15 (nút Back ở trang chi tiết chỉ là nút dạng chữ) — đồng thời chuẩn hoá ngay các nút Back còn dạng hộp viền theo §15: chi tiết thành viên, chi tiết nhóm, chi tiết công việc, form hoá đơn (các trang chi tiết còn lại đã là nút chữ).
+- Blocked by: —
+- Acceptance Criteria: Icon Eye ở Milestone dính cạnh phải cùng kebab; header chi tiết công việc hiển thị đủ nút thao tác, mobile không vỡ; icon Eye ở dòng file ngang hàng với nút ba chấm trên desktop.
+- Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
+
+---
 ## FIX-039 — Đồng bộ trạng thái hiển thị Portal & thẻ card mobile (Nhóm 7)
 - Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
 - Branch: fix/FIX-039-visibility-sync

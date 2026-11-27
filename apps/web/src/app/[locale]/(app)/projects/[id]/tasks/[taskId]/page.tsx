@@ -204,44 +204,46 @@ export default function TaskDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => router.push(`/projects/${projectId}`)}
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"
-        ><Icon name="chevron-left" className="h-4 w-4" /> 
-          {t("actions.back")}
-        </button>
-        <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>
-        <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${task.client_visible !== false ? "border-slate-200 bg-slate-100 text-slate-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
-          <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-3 w-3" />
-          {task.client_visible !== false ? t("portal.clientVisible") : t("portal.clientHidden")}
-        </span>
+      <div className="space-y-3">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push(`/projects/${projectId}`)}
+            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Icon name="chevron-left" className="h-4 w-4" />
+            {t("actions.back")}
+          </button>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>
+          <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${task.client_visible !== false ? "border-slate-200 bg-slate-100 text-slate-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
+            <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-3 w-3" />
+            {task.client_visible !== false ? t("portal.clientVisible") : t("portal.clientHidden")}
+          </span>
+        </div>
         {canAct && (canUpdate || canDelete) && (
-          <div className="ml-auto shrink-0">
-            <ActionMenu
-              items={[
-                ...(canUpdate
-                  ? [
-                      {
-                        label: task.client_visible !== false ? t("portal.clientHidden") : t("portal.clientVisible"),
-                        icon: task.client_visible !== false ? "eye-off" : "eye",
-                        onClick: handleToggleVisibility,
-                      },
-                    ]
-                  : []),
-                ...(canDelete
-                  ? [
-                      {
-                        label: t("actions.delete"),
-                        icon: "trash-2",
-                        danger: true,
-                        onClick: handleDeleteTask,
-                      },
-                    ]
-                  : []),
-              ]}
-            />
+          <div className="flex flex-wrap gap-2">
+            {canUpdate && (
+              <button
+                type="button"
+                onClick={handleToggleVisibility}
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"
+              >
+                <Icon name={task.client_visible !== false ? "eye-off" : "eye"} className="h-4 w-4" />
+                {task.client_visible !== false ? t("portal.clientHidden") : t("portal.clientVisible")}
+              </button>
+            )}
+            {canDelete && (
+              <button
+                type="button"
+                onClick={handleDeleteTask}
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700"
+              >
+                <Icon name="trash-2" className="h-4 w-4" />
+                {t("actions.delete")}
+              </button>
+            )}
           </div>
         )}
       </div>

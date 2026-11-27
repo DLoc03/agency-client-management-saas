@@ -128,7 +128,7 @@ export default function TeamDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <button type="button" onClick={() => router.push("/team/teams")} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"><Icon name="chevron-left" className="h-4 w-4" /> 
+        <button type="button" onClick={() => router.push("/team/teams")} className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"><Icon name="chevron-left" className="h-4 w-4" /> 
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{team.name}</h1>

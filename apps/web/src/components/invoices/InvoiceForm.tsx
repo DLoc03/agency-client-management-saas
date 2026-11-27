@@ -399,8 +399,9 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
           type="button"
           onClick={() => router.push("/invoices")}
           disabled={loading}
-          className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
+          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
         >
+          <Icon name="chevron-left" className="h-4 w-4" />
           {t("actions.back")}
         </button>
       </div>

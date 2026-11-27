@@ -89,3 +89,13 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 ## 13. Mô tả cho section (PO chốt 2026-11-27)
 
 - Section mà mục đích chưa rõ ngay từ tiêu đề thì có thêm **một dòng mô tả nhỏ chữ xám** (text-sm, màu muted) ngay dưới tiêu đề, qua khóa i18n như mọi chuỗi hiển thị khác. Áp dụng đầu tiên cho section Cổng khách hàng trong trang chi tiết dự án.
+
+## 14. Đối xứng thao tác giữa danh sách và trang chi tiết (PO chốt 2026-11-27)
+
+- Mọi thao tác có trên một card dữ liệu hoặc một dòng dữ liệu trong bảng (nút bấm, mục trong menu kebab, nút bật/tắt trạng thái...) thì cũng phải có bên trong trang chi tiết của chính bản ghi đó, và ngược lại: thao tác có ở trang chi tiết thì cũng phải có ở row/card khi hợp lý. Người dùng không bao giờ rơi vào cảnh "ở ngoài có, vào trong mất" hoặc ngược lại.
+- Ngoại lệ chỉ khi bất khả thi, hoặc khi thao tác thuộc bản chất của danh sách (ví dụ chọn hàng loạt bằng checkbox) — ngoại lệ phải là chủ đích rõ ràng, không phải mặc định.
+- Ở trang chi tiết, các thao tác của bản ghi hiển thị thành **nút đầy đủ** (icon + nhãn) chứ không giấu trong dropdown; dropdown/kebab chỉ dùng trên row/card dữ liệu, nơi diện tích hạn chế.
+
+## 15. Nút quay lại (PO chốt 2026-11-27)
+
+- Nút Back trong các trang chi tiết chỉ là **nút dạng chữ** (text button): icon chevron-left + nhãn, không viền, không nền hộp, hover đổi màu chữ. Áp dụng toàn hệ thống cho mọi màn hình chi tiết.
