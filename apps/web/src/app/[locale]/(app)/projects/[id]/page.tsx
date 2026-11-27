@@ -1021,10 +1021,18 @@ export default function ProjectDetailPage() {
               <div
                 key={task.id}
                 onClick={() => router.push(`/projects/${id}/tasks/${task.id}`)}
-                className="flex cursor-pointer flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                className="flex cursor-pointer items-start gap-3 py-3 first:pt-0 last:pb-0"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-foreground">{task.title}</p>
+                  {task.assignee ? (
+                    <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Avatar name={task.assignee.name} seed={task.assignee.id} className="h-5 w-5 shrink-0 text-[9px]" />
+                      <span className="truncate"><span className="font-semibold text-foreground">{task.assignee.name}</span>{task.due_date ? ` · ${task.due_date.slice(0, 10)}` : ""}</span>
+                    </p>
+                  ) : task.due_date ? (
+                    <p className="mt-1 text-xs text-muted-foreground">{task.due_date.slice(0, 10)}</p>
+                  ) : null}
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(task.status)}`}>
                       {t(`taskStatuses.${task.status}`)}
@@ -1032,12 +1040,10 @@ export default function ProjectDetailPage() {
                     <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${priorityBadgeClass(task.priority)}`}>
                       {t(`priorities.${task.priority}`)}
                     </span>
-                    {task.assignee ? <span className="text-xs text-muted-foreground">{task.assignee.name}</span> : null}
-                    {task.due_date ? <span className="text-xs text-muted-foreground">{task.due_date.slice(0, 10)}</span> : null}
                     {canUpdateTask && (
                       <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${task.client_visible !== false ? "border-slate-200 bg-slate-100 text-slate-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
                         <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-3 w-3" />
-                        {task.client_visible !== false ? t("portal.clientVisible") : "—"}
+                        {task.client_visible !== false ? t("portal.clientVisible") : t("portal.clientHidden")}
                       </span>
                     )}
                   </div>
@@ -1046,7 +1052,7 @@ export default function ProjectDetailPage() {
                   <ActionMenu
                     items={[
                       ...(canUpdateTask ? [{
-                        label: t("portal.clientVisible"),
+                        label: task.client_visible !== false ? t("portal.clientHidden") : t("portal.clientVisible"),
                         icon: task.client_visible !== false ? "eye-off" : "eye",
                         onClick: () => handleToggleTaskVisibility(task),
                       }] : []),
@@ -1250,20 +1256,31 @@ export default function ProjectDetailPage() {
                           <span className="truncate"><span className="font-semibold text-foreground">{f.uploaded_by.name}</span> · {String(f.created_at).slice(0, 10)}</span>
                         </p>
                       )}
-                      {f.client_visible && (
-                        <p className="mt-1 text-xs text-muted-foreground">{t("portal.clientVisible")}</p>
-                      )}
+                      <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-3 w-3 shrink-0" />
+                        {f.client_visible ? t("portal.clientVisible") : t("portal.clientHidden")}
+                      </p>
                     </div>
                     {canManagePortalFiles && (
                       <button type="button" aria-label={t("portal.clientVisible")} onClick={async () => {
                         await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
                         setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
-                      }} className="shrink-0 text-muted-foreground hover:text-foreground">
+                      }} className="hidden shrink-0 text-muted-foreground hover:text-foreground lg:inline-flex">
                         <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
                       </button>
                     )}
                     <ActionMenu
                       items={[
+                        ...(canManagePortalFiles
+                          ? [{
+                              label: f.client_visible ? t("portal.clientHidden") : t("portal.clientVisible"),
+                              icon: f.client_visible ? "eye-off" : "eye",
+                              onClick: async () => {
+                                await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
+                                setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
+                              },
+                            }]
+                          : []),
                         {
                           label: t("portal.download"),
                           icon: "download",

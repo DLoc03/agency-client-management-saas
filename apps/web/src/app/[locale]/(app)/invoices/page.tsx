@@ -261,24 +261,28 @@ export default function InvoicesPage() {
     (invoice: InvoiceRow) => {
       const items: Array<{
         label: string;
+        icon: string;
         onClick: () => void;
         danger?: boolean;
       }> = [];
 
       items.push({
         label: t("actions.view"),
+        icon: "eye",
         onClick: () => router.push(`/invoices/${invoice.id}`),
       });
 
       if (invoice.status === "draft" && canSend) {
         items.push({
           label: t("actions.send"),
+          icon: "send",
           onClick: () => handleSend(invoice),
         });
       }
       if (invoice.status === "sent" && canCancel) {
         items.push({
           label: t("actions.cancel"),
+          icon: "x",
           onClick: async () => {
             if (
               await confirmAction(t("confirmCancel"), {
@@ -293,6 +297,7 @@ export default function InvoicesPage() {
       if (invoice.status === "draft" && canDelete) {
         items.push({
           label: t("actions.delete"),
+          icon: "trash-2",
           danger: true,
           onClick: async () => {
             if (
@@ -306,6 +311,7 @@ export default function InvoicesPage() {
       if (canPdf) {
         items.push({
           label: t("actions.downloadPdf"),
+          icon: "download",
           onClick: () => handleDownloadPdf(invoice.id),
         });
       }

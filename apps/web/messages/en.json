@@ -505,6 +505,7 @@
       "noComments": "No messages yet.",
       "noHistory": "No history yet.",
       "clientVisible": "Shown in portal",
+      "clientHidden": "Hidden from portal",
       "approvalStatuses": {
         "pending": "Pending",
         "approved": "Approved",
