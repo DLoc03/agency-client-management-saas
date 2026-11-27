@@ -9,6 +9,7 @@ use App\Http\Requests\Finance\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Agency;
 use App\Models\Invoice;
+use App\Support\Notifier;
 use App\Support\Tenant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -94,10 +95,13 @@ class InvoiceController extends Controller
     {
         $data = $request->validated();
 
-        $invoice = DB::transaction(function () use ($data) {
+        $invoice = DB::transaction(function () use ($data, $request) {
             $issueDate = isset($data['issue_date']) ? Carbon::parse($data['issue_date']) : Carbon::today();
 
             $invoice = Invoice::create([
+                // Recorded for the BE-009 notification recipient rule
+                // (invoice events go to the invoice's creator).
+                'created_by' => $request->user()->id,
                 'client_id' => $data['client_id'],
                 'project_id' => $data['project_id'] ?? null,
                 // Assigned at creation and immutable (contract 4.1).
@@ -172,6 +176,16 @@ class InvoiceController extends Controller
 
         $invoice->forceFill(['status' => Invoice::STATUS_SENT, 'sent_at' => now()])->save();
 
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): the invoice
+        // creator hears about the Draft -> Sent transition.
+        Notifier::notify($invoice->created_by, Notifier::TYPE_INVOICE_STATUS_CHANGED, [
+            'invoice_id' => $invoice->id,
+            'invoice_number' => $invoice->number,
+            'from_status' => Invoice::STATUS_DRAFT,
+            'to_status' => Invoice::STATUS_SENT,
+            'actor_name' => request()->user()?->name,
+        ], actorId: request()->user()?->id);
+
         return InvoiceResource::make($this->present($invoice));
     }
 
@@ -184,6 +198,16 @@ class InvoiceController extends Controller
         }
 
         $invoice->forceFill(['status' => Invoice::STATUS_CANCELLED])->save();
+
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): the invoice
+        // creator hears about the Sent -> Cancelled transition.
+        Notifier::notify($invoice->created_by, Notifier::TYPE_INVOICE_STATUS_CHANGED, [
+            'invoice_id' => $invoice->id,
+            'invoice_number' => $invoice->number,
+            'from_status' => Invoice::STATUS_SENT,
+            'to_status' => Invoice::STATUS_CANCELLED,
+            'actor_name' => request()->user()?->name,
+        ], actorId: request()->user()?->id);
 
         return InvoiceResource::make($this->present($invoice));
     }

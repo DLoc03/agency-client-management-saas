@@ -50,7 +50,7 @@ class Task extends Model
 
     protected $fillable = [
         'agency_id', 'project_id', 'milestone_id', 'title', 'description',
-        'status', 'priority', 'assignee_id', 'due_date', 'completed_at', 'position',
+        'status', 'priority', 'assignee_id', 'created_by', 'due_date', 'completed_at', 'position',
     ];
 
     protected function casts(): array
@@ -84,6 +84,12 @@ class Task extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assignee_id');
+    }
+
+    /** Who created the task (BE-009 notification recipient rule). */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function comments(): HasMany

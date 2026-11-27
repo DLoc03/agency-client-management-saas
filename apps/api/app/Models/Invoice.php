@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToAgency;
+use App\Support\Notifier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,7 +41,7 @@ class Invoice extends Model
     protected $fillable = [
         'agency_id', 'client_id', 'project_id', 'number', 'status',
         'issue_date', 'due_date', 'tax_rate', 'subtotal', 'tax_amount',
-        'total', 'notes', 'sent_at', 'paid_at',
+        'total', 'notes', 'sent_at', 'paid_at', 'created_by',
     ];
 
     protected function casts(): array
@@ -60,6 +61,12 @@ class Invoice extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /** Who created the invoice (BE-009 notification recipient rule). */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function project(): BelongsTo
@@ -161,10 +168,27 @@ class Invoice extends Model
      */
     public function refreshStatusFromPayments(): void
     {
+        $previousStatus = $this->status;
+
         if ($this->status === self::STATUS_SENT && $this->paidTotal() > 0 && $this->balanceDue() <= 0) {
             $this->forceFill(['status' => self::STATUS_PAID, 'paid_at' => now()])->save();
         } elseif ($this->status === self::STATUS_PAID && $this->balanceDue() > 0) {
             $this->forceFill(['status' => self::STATUS_SENT, 'paid_at' => null])->save();
+        }
+
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): this method is
+        // the single choke point for payment-driven transitions, in
+        // both directions (payment recorded -> Paid, payment deleted
+        // -> back to Sent), so the invoice.status_changed event fires
+        // here — on an actual stored-status change only.
+        if ($this->status !== $previousStatus) {
+            Notifier::notify($this->created_by, Notifier::TYPE_INVOICE_STATUS_CHANGED, [
+                'invoice_id' => $this->id,
+                'invoice_number' => $this->number,
+                'from_status' => $previousStatus,
+                'to_status' => $this->status,
+                'actor_name' => auth()->user()?->name,
+            ], actorId: auth()->id());
         }
     }
 }
