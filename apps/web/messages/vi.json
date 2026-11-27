@@ -843,7 +843,7 @@
       "quantity": "Số lượng",
       "unitPrice": "Đơn giá",
       "subtotal": "Tạm tính",
-      "taxRate": "Thuế (%)",
+      "taxRate": "Thuế",
       "taxAmount": "Tiền thuế",
       "balanceDue": "Số dư còn lại",
       "notes": "Ghi chú"

@@ -333,6 +333,12 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có (BE-009 đã merge).
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
+## FIX-032 — Nhãn trường Thuế và hàng nhãn mục hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: (1) Đổi giá trị VI của `Finance.fields.taxRate` từ "Thuế (%)" thành "Thuế" để tránh nhân đôi "(%)" với component. (2) Thêm hàng nhãn (Mô tả/Số lượng/Đơn giá) trên lưới mục trong `InvoiceForm`, nhãn nhỏ riêng trên mobile (`sm:sr-only`), đổi placeholder Số lượng/Đơn giá thành tên trường.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-032-invoice-form-labels` từ `origin/main` (`472d0e7`).
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n 723 = 723; byte-check OK.
 ## FIX-034 — Thanh cuộn dọc thừa ở tab Team + khung viền nút chuông thông báo (phát hiện khi nghiệm thu FE-021, 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
