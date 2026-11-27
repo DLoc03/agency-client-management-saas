@@ -140,6 +140,8 @@ class PortalInvoiceTest extends TestCase
         $client = Client::factory()->create(['agency_id' => $agencyId]);
         $project = Project::factory()->create([
             'agency_id' => $agencyId, 'client_id' => $client->id, 'budget' => 10000,
+            // DEC-028 Q2: draft projects are hidden from the Portal.
+            'status' => Project::STATUS_IN_PROGRESS,
         ]);
         $this->makeInvoice($agencyId, $client->id, ['project_id' => $project->id]);
 

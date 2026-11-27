@@ -35,6 +35,9 @@ class TaskResource extends JsonResource
             // (e.g. Portal reads carry a client membership, which the
             // rule never privileges).
             'can_act' => $request->user() !== null && $this->canBeActedOnBy($request->user()),
+            // Group 7 (DEC-028): Portal visibility flag for the
+            // internal Client Portal section toggle.
+            'client_visible' => (bool) $this->client_visible,
             'due_date' => $this->due_date?->toISOString(),
             'completed_at' => $this->completed_at?->toISOString(),
             'position' => $this->position,

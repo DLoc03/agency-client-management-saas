@@ -28,11 +28,15 @@ class Milestone extends Model
 
     protected $fillable = [
         'agency_id', 'project_id', 'name', 'description', 'due_date', 'status',
+        'client_visible',
     ];
 
     protected function casts(): array
     {
-        return ['due_date' => 'date'];
+        return [
+            'due_date' => 'date',
+            'client_visible' => 'boolean',
+        ];
     }
 
     public function project(): BelongsTo

@@ -16,6 +16,9 @@ class MilestoneResource extends JsonResource
             'description' => $this->description,
             'due_date' => $this->due_date?->toDateString(),
             'status' => $this->status,
+            // Group 7 (DEC-028): Portal visibility flag for the
+            // internal Client Portal section toggle.
+            'client_visible' => (bool) $this->client_visible,
             'tasks_count' => $this->whenCounted('tasks'),
             'tasks_done_count' => $this->when(
                 isset($this->tasks_done_count),

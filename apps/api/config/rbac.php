@@ -66,6 +66,9 @@ return [
         'invoices.pdf',
         'payments.manage',
         'agencies.payment-details.update',
+        // Client Portal & Collaboration module (docs/PORTAL_CONTRACT.md, DEC-028 Q10).
+        'portal.files.manage',
+        'portal.approvals.manage',
     ],
 
     'roles' => [
@@ -123,6 +126,9 @@ return [
             'invoices.pdf',
             'payments.manage',
             'agencies.payment-details.update',
+            // DEC-028 Q10: Admin manages the Portal surfaces too.
+            'portal.files.manage',
+            'portal.approvals.manage',
         ],
         Role::SALES_MANAGER => [
             'workspace.view',
@@ -172,6 +178,9 @@ return [
             // DEC-019: PM is view-only on Finance, PDF export included.
             'invoices.view',
             'invoices.pdf',
+            // DEC-028 Q10: PM runs the client-facing Portal surfaces.
+            'portal.files.manage',
+            'portal.approvals.manage',
         ],
         // DEC-009.3: Team Members hold no clients.* permission in the MVP.
         // DEC-014: and no leads.* permission either.

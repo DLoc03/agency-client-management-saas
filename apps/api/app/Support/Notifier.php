@@ -48,6 +48,13 @@ class Notifier
 
     public const TYPE_REMINDER_INVOICE_OVERDUE = 'reminder.invoice_overdue';
 
+    // Group 7 (docs/PORTAL_CONTRACT.md section 5, DEC-028): Portal
+    // activity. Recipients are staff only and neither type is in the
+    // email subset — clients get no email in the MVP.
+    public const TYPE_PORTAL_COMMENT = 'portal.comment';
+
+    public const TYPE_PORTAL_APPROVAL_RESPONSE = 'portal.approval_response';
+
     /**
      * Notify one recipient. $recipient may be a User or a user id;
      * null recipients (e.g. an unassigned task) are a no-op.

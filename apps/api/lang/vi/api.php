@@ -42,4 +42,5 @@ return [
     'PAYMENT_NOT_ALLOWED' => 'Chỉ có thể ghi thanh toán cho hoá đơn đã gửi.',
     'PROJECT_CLIENT_MISMATCH' => 'Dự án đã chọn thuộc về khách hàng khác với hoá đơn này.',
     'OVERPAYMENT_NOT_ALLOWED' => 'Số tiền thanh toán vượt quá số dư còn phải thu của hoá đơn này.',
+    'APPROVAL_ALREADY_RESPONDED' => 'Yêu cầu phê duyệt này đã được phản hồi rồi.',
 ];
