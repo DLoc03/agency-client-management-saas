@@ -7,6 +7,7 @@
  */
 
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { useRouter } from "@/i18n/routing";
 import { PasswordInput } from "@/components/ui/PasswordInput";
@@ -186,13 +187,14 @@ export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
         type="submit"
         disabled={isSubmitting}
         className={[
+          "inline-flex items-center justify-center gap-2",
           "mt-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           isSubmitting
             ? "cursor-not-allowed bg-primary/60"
             : "bg-primary hover:opacity-90 active:opacity-95",
         ].join(" ")}
-      >
+      ><Icon name="arrow-right" className="h-4 w-4" /> 
         {isSubmitting ? t("submitting") : t("submit")}
       </button>
     </form>

@@ -187,10 +187,10 @@ export default function InvitationsPage() {
                 </div>
                 {canManage && (
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => handleResend(inv.id)} className="rounded-md border border-border px-3 py-1.5 text-xs">
+                    <button type="button" onClick={() => handleResend(inv.id)} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs"><Icon name="refresh" className="h-4 w-4" /> 
                       {t("actions.resend")}
                     </button>
-                    <button type="button" onClick={() => handleRevoke(inv.id)} className="rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600">
+                    <button type="button" onClick={() => handleRevoke(inv.id)} className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600"><Icon name="x" className="h-4 w-4" /> 
                       {t("actions.revoke")}
                     </button>
                   </div>

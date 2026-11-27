@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth";
@@ -345,8 +346,8 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
                 type="button"
                 onClick={() => removeRow(index)}
                 disabled={items.length === 1}
-                className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:pointer-events-none"
-              >
+                className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:pointer-events-none"
+              ><Icon name="trash-2" className="h-3.5 w-3.5" /> 
                 {t("actions.remove")}
               </button>
             </div>
@@ -390,8 +391,8 @@ export function InvoiceForm({ mode, invoice, onSuccess }: InvoiceFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-        >
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+        ><Icon name="check" className="h-4 w-4" /> 
           {loading ? c("loading") : mode === "create" ? t("actions.create") : t("actions.save")}
         </button>
         <button

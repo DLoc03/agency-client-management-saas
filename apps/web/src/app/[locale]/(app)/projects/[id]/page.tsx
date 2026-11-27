@@ -513,8 +513,8 @@ export default function ProjectDetailPage() {
                 setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
               }
             }}
-            className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-          >
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+          ><Icon name="trash-2" className="h-4 w-4" /> 
             {t("actions.delete")}
           </button>
         )}
@@ -743,16 +743,16 @@ export default function ProjectDetailPage() {
               type="button"
               onClick={handleAssignTeam}
               disabled={!teamAssignId}
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+            ><Icon name="user-plus" className="h-4 w-4" /> 
               {t("teamAssignment.assign")}
             </button>
             <button
               type="button"
               onClick={handleRemoveTeam}
               disabled={!teamAssignId}
-              className="rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 disabled:opacity-60"
+            ><Icon name="x" className="h-4 w-4" /> 
               {t("teamAssignment.remove")}
             </button>
           </div>
@@ -1267,7 +1267,7 @@ export default function ProjectDetailPage() {
                             const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
                             if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
                             else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
-                          }} className="text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
+                          }} className="inline-flex items-center justify-center gap-1.5 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("portal.delete")}</button>
                         </>
                       )}
                       <a href={`/api/projects/${id}/files/${f.id}/download`} className="text-xs text-primary hover:underline">{t("portal.download")}</a>
@@ -1295,7 +1295,7 @@ export default function ProjectDetailPage() {
                         <button type="button" onClick={async () => {
                           await fetch(`/api/projects/${id}/portal-comments/${c.id}`, { method: "DELETE" });
                           setPortalComments((prev) => prev.filter((x) => x.id !== c.id));
-                        }} className="mt-1 text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
+                        }} className="inline-flex items-center justify-center gap-1.5 mt-1 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("portal.delete")}</button>
                       )}
                     </div>
                   </li>
@@ -1331,7 +1331,7 @@ export default function ProjectDetailPage() {
                 <input value={portalApprovalTitle} onChange={(e) => setPortalApprovalTitle(e.target.value)} placeholder={t("portal.approvals")} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
                 <textarea value={portalApprovalDesc} onChange={(e) => setPortalApprovalDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("fields.description")} />
                 <div className="flex justify-end">
-                  <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("actions.create")}</button>
+                  <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"><Icon name="plus" className="h-4 w-4" /> {t("actions.create")}</button>
                 </div>
               </form>
             )}
@@ -1361,7 +1361,7 @@ export default function ProjectDetailPage() {
                       <button type="button" onClick={async () => {
                         await fetch(`/api/projects/${id}/approvals/${a.id}`, { method: "DELETE" });
                         setPortalApprovals((prev) => prev.filter((x) => x.id !== a.id));
-                      }} className="mt-2 text-xs text-red-600 hover:underline">{t("actions.delete")}</button>
+                      }} className="inline-flex items-center justify-center gap-1.5 mt-2 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("actions.delete")}</button>
                     )}
                   </li>
                 ))}

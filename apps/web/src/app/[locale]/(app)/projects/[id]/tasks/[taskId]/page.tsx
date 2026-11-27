@@ -183,8 +183,8 @@ export default function TaskDetailPage() {
         <button
           type="button"
           onClick={() => router.push(`/projects/${projectId}`)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm"
-        >
+          className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"
+        ><Icon name="chevron-left" className="h-4 w-4" /> 
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>

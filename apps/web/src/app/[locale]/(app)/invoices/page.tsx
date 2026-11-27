@@ -356,7 +356,7 @@ export default function InvoicesPage() {
               type="button"
               onClick={() => router.push("/finance/payment-details")}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
-            >
+            ><Icon name="receipt" className="h-4 w-4" /> 
               {t("paymentDetails.title")}
             </button>
           )}

@@ -285,7 +285,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                       <div className="flex shrink-0 gap-2">
                         <a href={`/api/portal/projects/${projectId}/files/${f.id}/download`} className="text-xs font-medium text-emerald-700 hover:underline">{t("download")}</a>
                         {f.uploader_kind === "client" && (
-                          <button type="button" onClick={() => handleDeleteFile(f.id)} className="text-xs font-medium text-red-600 hover:underline">{t("delete")}</button>
+                          <button type="button" onClick={() => handleDeleteFile(f.id)} className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("delete")}</button>
                         )}
                       </div>
                     </li>

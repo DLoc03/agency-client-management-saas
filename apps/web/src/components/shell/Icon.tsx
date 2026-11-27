@@ -1,6 +1,12 @@
 import React from "react";
 
 const paths: Record<string, React.ReactNode> = {
+  "arrow-right": (
+    <>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </>
+  ),
   "layout-dashboard": (
     <>
       <rect x="3" y="3" width="7" height="7" rx="1" />

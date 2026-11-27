@@ -165,7 +165,7 @@ export default function MemberDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <button type="button" onClick={() => router.push("/team/members")} className="rounded-md border border-border px-3 py-1.5 text-sm">
+        <button type="button" onClick={() => router.push("/team/members")} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"><Icon name="chevron-left" className="h-4 w-4" /> 
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{user.name}</h1>
@@ -245,7 +245,7 @@ export default function MemberDetailPage() {
               </div>
             </div>
             <div className="flex justify-end">
-              <button type="submit" disabled={saving} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">
+              <button type="submit" disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"><Icon name="check" className="h-4 w-4" /> 
                 {saving ? c("loading") : t("actions.save")}
               </button>
             </div>
@@ -285,8 +285,8 @@ export default function MemberDetailPage() {
               <button
                 type="submit"
                 disabled={saving || adminLimited}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+              ><Icon name="check" className="h-4 w-4" /> 
                 {saving ? c("loading") : t("actions.save")}
               </button>
             </div>
@@ -302,16 +302,16 @@ export default function MemberDetailPage() {
               type="button"
               disabled={user.is_active || saving}
               onClick={() => handleActivation(true)}
-              className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-4 py-2 text-sm disabled:opacity-60"
+            ><Icon name="check" className="h-4 w-4" /> 
               {t("actions.activate")}
             </button>
             <button
               type="button"
               disabled={!user.is_active || saving}
               onClick={() => handleActivation(false)}
-              className="rounded-md border border-red-200 px-4 py-2 text-sm text-red-600 disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-4 py-2 text-sm text-red-600 disabled:opacity-60"
+            ><Icon name="lock" className="h-4 w-4" /> 
               {t("actions.deactivate")}
             </button>
           </div>

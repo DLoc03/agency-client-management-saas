@@ -352,7 +352,7 @@ export default function InvoiceDetailPage() {
               disabled={!invoice.items.length || sending}
               onClick={handleSend}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            >
+            ><Icon name="send" className="h-4 w-4" /> 
               {sending ? c("loading") : t("actions.send")}
             </button>
           )}
@@ -380,7 +380,7 @@ export default function InvoiceDetailPage() {
                 }
               }}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
-            >
+            ><Icon name="x" className="h-4 w-4" /> 
               {t("actions.cancel")}
             </button>
           )}
@@ -396,7 +396,7 @@ export default function InvoiceDetailPage() {
                 }
               }}
               className="inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-border px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
-            >
+            ><Icon name="trash-2" className="h-4 w-4" /> 
               {t("actions.delete")}
             </button>
           )}
@@ -718,8 +718,8 @@ export default function InvoiceDetailPage() {
             <button
               type="submit"
               disabled={recording}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            ><Icon name="receipt" className="h-4 w-4" /> 
               {recording ? c("loading") : t("actions.recordPayment")}
             </button>
           </form>

@@ -128,7 +128,7 @@ export default function TeamDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <button type="button" onClick={() => router.push("/team/teams")} className="rounded-md border border-border px-3 py-1.5 text-sm">
+        <button type="button" onClick={() => router.push("/team/teams")} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"><Icon name="chevron-left" className="h-4 w-4" /> 
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{team.name}</h1>
@@ -196,8 +196,8 @@ export default function TeamDetailPage() {
                       setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
                     }
                   }}
-                  className="rounded-md border border-red-200 px-4 py-2 text-sm text-red-600"
-                >
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-4 py-2 text-sm text-red-600"
+                ><Icon name="trash-2" className="h-4 w-4" /> 
                   {t("actions.delete")}
                 </button>
               )}
@@ -226,7 +226,7 @@ export default function TeamDetailPage() {
               ]}
               className="flex-1"
             />
-            <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
+            <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"><Icon name="user-plus" className="h-4 w-4" /> 
               {t("actions.add")}
             </button>
           </form>
@@ -245,8 +245,8 @@ export default function TeamDetailPage() {
                   <button
                     type="button"
                     onClick={() => handleRemoveMember(m.id)}
-                    className="text-xs text-red-600 hover:underline"
-                  >
+                    className="inline-flex items-center justify-center gap-1.5 text-xs text-red-600 hover:underline"
+                  ><Icon name="x" className="h-3.5 w-3.5" /> 
                     {t("actions.remove")}
                   </button>
                 )}
