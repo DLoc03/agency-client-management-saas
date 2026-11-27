@@ -26,6 +26,7 @@ const INTERNAL_PROTECTED_PATHS = [
   "/leads",
   "/invoices",
   "/finance",
+  "/notifications",
 ];
 const INTERNAL_AUTH_ONLY_PATHS = ["/login"];
 

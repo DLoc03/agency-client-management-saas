@@ -325,12 +325,13 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## FE-021 — Chuông thông báo + trang thông báo (Nhóm 6)
-- Status: TODO
+- Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: FE cho Nhóm 6 theo `docs/WORKFLOW_CONTRACT.md` mục 9: icon chuông kèm badge số chưa đọc ở khung app, panel dropdown (khoảng 10 thông báo mới nhất, nút đánh dấu tất cả đã đọc), trang `/notifications` đầy đủ dùng lại component Pagination dùng chung, liên kết sâu từ thông báo tới task/invoice/dự án tương ứng; toàn bộ chuỗi hiển thị qua namespace i18n `Notifications.*` (EN + VI) render từ `type` + `data` của API.
 - Blocked by: BE-009 — chỉ soạn prompt chi tiết sau khi BE-009 merge (kỷ luật prompt, đúng nhịp FE-020 của Nhóm 5).
 - Acceptance Criteria: Chốt khi soạn prompt sau BE-009; tuân thủ DEC-021/023/024/025 và quy ước skeleton/phân trang hiện hành.
-- Blockers: Chờ BE-009.
+- Blockers: Không có (BE-009 đã merge).
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
 ## FIX-030 — Icon mũi tên cho nút Previous/Next của phân trang (phát hiện khi nghiệm thu FIX-029, 2026-11-27)
 - Status: DONE

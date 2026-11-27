@@ -923,5 +923,25 @@
     "hints": {
       "noProjectsForClient": "Không có dự án nào của khách hàng này."
     }
+  },
+  "Notifications": {
+    "title": "Thông báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "viewAll": "Xem tất cả",
+    "unreadOnly": "Chỉ chưa đọc",
+    "empty": "Chưa có thông báo nào",
+    "loading": "Đang tải thông báo…",
+    "types": {
+      "task_assigned": "{actor} đã giao cho bạn công việc {task}",
+      "task_status_changed": "{actor} chuyển {task} từ {from} sang {to}",
+      "task_commented": "{actor} đã bình luận trong {task}",
+      "invoice_status_changed": "Hoá đơn {invoice} chuyển sang {status}",
+      "reminder_task_due": "Công việc {task} đến hạn vào ngày mai",
+      "reminder_task_overdue": "Công việc {task} đã quá hạn",
+      "reminder_milestone_due": "Cột mốc {milestone} đến hạn vào ngày mai",
+      "reminder_milestone_overdue": "Cột mốc {milestone} đã quá hạn",
+      "reminder_lead_followup": "Theo dõi lead {lead}",
+      "reminder_invoice_overdue": "Hoá đơn {invoice} đã quá hạn"
+    }
   }
 }
