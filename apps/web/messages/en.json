@@ -8,6 +8,11 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "moreActions": "More actions",
+    "pagination": {
+      "rowsPerPage": "Rows per page",
+      "page": "Page {page} of {last}",
+      "showing": "Showing {from}–{to} of {total}"
+    },
     "actions": {
       "cancel": "Cancel",
       "delete": "Delete",

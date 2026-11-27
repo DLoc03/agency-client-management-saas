@@ -28,13 +28,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-export async function listProjects(params: Record<string, string | number | undefined> = {}) {
+export async function listProjectsPage(params: Record<string, string | number | undefined> = {}) {
   const qs = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
   });
   const q = qs.toString();
-  const res = await request<Paginated<Project>>(`/api/projects${q ? `?${q}` : ""}`);
+  return request<Paginated<Project>>(`/api/projects${q ? `?${q}` : ""}`);
+}
+
+export async function listProjects(params: Record<string, string | number | undefined> = {}) {
+  const res = await listProjectsPage(params);
   return res.data || [];
 }
 
