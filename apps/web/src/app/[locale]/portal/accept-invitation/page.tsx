@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -224,9 +225,9 @@ function PortalAcceptInner() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:bg-emerald-400"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:bg-emerald-400"
                 >
-                  {submitting ? t("submitting") : t("submit")}
+                  <Icon name="check" className="h-4 w-4" /> {submitting ? t("submitting") : t("submit")}
                 </button>
               </form>
             )}
@@ -251,8 +252,8 @@ function PortalAcceptInner() {
                   type="button"
                   onClick={() => void doAccept(false)}
                   disabled={submitting}
-                  className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:bg-emerald-400"
-                >
+                  className="inline-flex items-center justify-center gap-2 w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:bg-emerald-400"
+                ><Icon name="check" className="h-4 w-4" /> 
                   {submitting ? t("submitting") : t("confirmAction")}
                 </button>
               </div>

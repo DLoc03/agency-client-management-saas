@@ -1,5 +1,4 @@
 "use client";
-
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations, useFormatter } from "next-intl";
@@ -233,8 +232,8 @@ export function NotificationBell() {
                 type="button"
                 onClick={handleMarkAll}
                 disabled={count === 0}
-                className="text-xs font-medium text-primary hover:underline disabled:opacity-50 disabled:no-underline"
-              >
+                className="inline-flex items-center justify-center gap-2 text-xs font-medium text-primary hover:underline disabled:opacity-50 disabled:no-underline"
+              ><Icon name="check-square" className="h-4 w-4" /> 
                 {t("markAllRead")}
               </button>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
@@ -49,6 +49,42 @@ const PROJECT_STATUSES: ProjectStatus[] = ["draft", "in_progress", "on_hold", "c
 const TASK_STATUSES: TaskStatus[] = ["todo", "in_progress", "in_review", "done"];
 const TASK_PRIORITIES: TaskPriority[] = ["low", "medium", "high", "urgent"];
 const MILESTONE_STATUSES: MilestoneStatus[] = ["planned", "in_progress", "completed"];
+
+function fileIcon(name: string, mime: string): string {
+  const n = name.toLowerCase();
+  if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(n)) return "image";
+  if (mime === "application/pdf" || /\.pdf$/i.test(n)) return "file-text";
+  if (/\.(xlsx?|csv|ods)$/i.test(n) || mime.includes("spreadsheet") || mime.includes("csv")) return "file-spreadsheet";
+  if (/\.(zip|rar|7z|tar|gz)$/i.test(n) || mime.includes("zip") || mime.includes("archive")) return "archive";
+  return "file";
+}
+
+function DropzoneInternal({ onFile, label }: { onFile: (f: File) => void; label: string }) {
+  const [dragging, setDragging] = useState(false);
+  const [selected, setSelected] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) { setSelected(f); onFile(f); } }}
+      onClick={() => inputRef.current?.click()}
+      className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors ${dragging ? "border-primary bg-primary/5" : "border-border bg-muted/30 hover:border-primary/50 hover:bg-primary/5"}`}
+    >
+      <Icon name="upload" className="h-6 w-6 text-muted-foreground" />
+      <p className="mt-2 text-sm text-muted-foreground">{selected ? selected.name : label}</p>
+      <input ref={inputRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setSelected(f); onFile(f); } e.target.value = ""; }} />
+    </div>
+  );
+}
+
+function approvalStatusClass(status: string): string {
+  switch (status) {
+    case "approved": return "border-emerald-200 bg-emerald-100 text-emerald-800";
+    case "changes_requested": return "border-rose-200 bg-rose-100 text-rose-800";
+    default: return "border-amber-200 bg-amber-100 text-amber-800";
+  }
+}
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -477,8 +513,8 @@ export default function ProjectDetailPage() {
                 setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
               }
             }}
-            className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-          >
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+          ><Icon name="trash-2" className="h-4 w-4" /> 
             {t("actions.delete")}
           </button>
         )}
@@ -707,16 +743,16 @@ export default function ProjectDetailPage() {
               type="button"
               onClick={handleAssignTeam}
               disabled={!teamAssignId}
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+            ><Icon name="user-plus" className="h-4 w-4" /> 
               {t("teamAssignment.assign")}
             </button>
             <button
               type="button"
               onClick={handleRemoveTeam}
               disabled={!teamAssignId}
-              className="rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 disabled:opacity-60"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 disabled:opacity-60"
+            ><Icon name="x" className="h-4 w-4" /> 
               {t("teamAssignment.remove")}
             </button>
           </div>
@@ -998,17 +1034,28 @@ export default function ProjectDetailPage() {
                     </span>
                     {task.assignee ? <span className="text-xs text-muted-foreground">{task.assignee.name}</span> : null}
                     {task.due_date ? <span className="text-xs text-muted-foreground">{task.due_date.slice(0, 10)}</span> : null}
+                    {canUpdateTask && (
+                      <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${task.client_visible !== false ? "border-slate-200 bg-slate-100 text-slate-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
+                        <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-3 w-3" />
+                        {task.client_visible !== false ? t("portal.clientVisible") : "—"}
+                      </span>
+                    )}
                   </div>
                 </div>
-                {canDeleteTask && (
+                {(canDeleteTask || canUpdateTask) && (
                   <ActionMenu
                     items={[
-                      {
+                      ...(canUpdateTask ? [{
+                        label: t("portal.clientVisible"),
+                        icon: task.client_visible !== false ? "eye-off" : "eye",
+                        onClick: () => handleToggleTaskVisibility(task),
+                      }] : []),
+                      ...(canDeleteTask ? [{
                         label: t("actions.delete"),
                         icon: "trash-2",
                         danger: true,
                         onClick: () => handleDeleteTask(task.id),
-                      },
+                      }] : []),
                     ]}
                   />
                 )}
@@ -1075,7 +1122,8 @@ export default function ProjectDetailPage() {
               <button type="button" onClick={() => setShowMember(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" disabled={!memberUserId} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
+              <button type="submit" disabled={!memberUserId} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
+                <Icon name="user-plus" className="h-4 w-4" />
                 {t("actions.addMember")}
               </button>
             </div>
@@ -1137,7 +1185,8 @@ export default function ProjectDetailPage() {
               <button type="button" onClick={() => setShowMilestone(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                <Icon name="check" className="h-4 w-4" />
                 {t("actions.save")}
               </button>
             </div>
@@ -1148,7 +1197,8 @@ export default function ProjectDetailPage() {
       {/* Task modal */}
       {/* Client Portal (FE-023) */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">{t("portal.portalSection")}</h2>
+        <h2 className="mb-1 text-lg font-semibold">{t("portal.portalSection")}</h2>
+        <p className="mb-4 text-sm text-muted-foreground">{t("portal.sectionDescription")}</p>
         <div className="flex flex-wrap gap-2 border-b border-border mb-4">
           {(["files","discussion","approvals","history"] as const).map((tb) => (
             <button
@@ -1170,26 +1220,20 @@ export default function ProjectDetailPage() {
         {portalTab === "files" && (
           <div className="space-y-3">
             {canManagePortalFiles && (
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent">
-                {t("portal.upload")}
-                <input type="file" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  const fd = new FormData();
-                  fd.append("file", f);
-                  try {
-                    const res = await fetch(`/api/projects/${id}/files`, { method: "POST", body: fd });
-                    if (res.ok) {
-                      const b = await res.json();
-                      setPortalFiles((prev) => [b.data, ...prev]);
-                    } else {
-                      const b = await res.json().catch(()=>null);
-                      setPortalError(b?.error?.message || c("uploadFailed"));
-                    }
-                  } catch { setPortalError(c("uploadFailed")); }
-                  e.target.value = "";
-                }} />
-              </label>
+              <DropzoneInternal onFile={async (f) => {
+                const fd = new FormData();
+                fd.append("file", f);
+                try {
+                  const res = await fetch(`/api/projects/${id}/files`, { method: "POST", body: fd });
+                  if (res.ok) {
+                    const b = await res.json();
+                    setPortalFiles((prev) => [b.data, ...prev]);
+                  } else {
+                    const b = await res.json().catch(()=>null);
+                    setPortalError(b?.error?.message || c("uploadFailed"));
+                  }
+                } catch { setPortalError(c("uploadFailed")); }
+              }} label={t("portal.upload")} />
             )}
             {portalFiles.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("portal.noFiles")}</p>
@@ -1197,8 +1241,19 @@ export default function ProjectDetailPage() {
               <ul className="divide-y divide-border">
                 {portalFiles.map((f: any) => (
                   <li key={f.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                    <span className="truncate">{f.original_name}</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <Icon name={fileIcon(f.original_name, f.mime_type)} className="h-5 w-5 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <p className="truncate">{f.original_name}</p>
+                        {f.uploaded_by && (
+                          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-4 w-4 text-[9px]" />
+                            {f.uploaded_by.name} · {String(f.created_at).slice(0, 10)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
                       <span className="text-xs text-muted-foreground">{f.client_visible ? t("portal.clientVisible") : ""}</span>
                       {canManagePortalFiles && (
                         <>
@@ -1212,7 +1267,7 @@ export default function ProjectDetailPage() {
                             const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
                             if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
                             else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
-                          }} className="text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
+                          }} className="inline-flex items-center justify-center gap-1.5 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("portal.delete")}</button>
                         </>
                       )}
                       <a href={`/api/projects/${id}/files/${f.id}/download`} className="text-xs text-primary hover:underline">{t("portal.download")}</a>
@@ -1229,17 +1284,20 @@ export default function ProjectDetailPage() {
             {portalComments.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("portal.noComments")}</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {portalComments.map((c: any) => (
-                  <li key={c.id} className="rounded-md border border-border p-3 text-sm">
-                    <p className="text-xs text-muted-foreground">{c.author_kind} · {String(c.created_at).slice(0,10)}</p>
-                    <p className="mt-1 whitespace-pre-wrap">{c.body}</p>
-                    {canManagePortalFiles && (
-                      <button type="button" onClick={async () => {
-                        await fetch(`/api/projects/${id}/portal-comments/${c.id}`, { method: "DELETE" });
-                        setPortalComments((prev) => prev.filter((x) => x.id !== c.id));
-                      }} className="mt-1 text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
-                    )}
+                  <li key={c.id} className={`flex gap-3 rounded-xl px-4 py-3 text-sm ${c.author_kind === "client" ? "bg-emerald-50/60" : "bg-violet-50/60"}`}>
+                    <Avatar name={c.author?.name ?? (c.author_kind === "client" ? "Client" : "Agency")} seed={c.author_id ?? c.id} className="h-8 w-8 shrink-0 text-xs" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-muted-foreground">{c.author?.name ?? (c.author_kind === "client" ? "Client" : "Agency")} · {String(c.created_at).slice(0, 10)}</p>
+                      <p className="mt-1 whitespace-pre-wrap">{c.body}</p>
+                      {canManagePortalFiles && (
+                        <button type="button" onClick={async () => {
+                          await fetch(`/api/projects/${id}/portal-comments/${c.id}`, { method: "DELETE" });
+                          setPortalComments((prev) => prev.filter((x) => x.id !== c.id));
+                        }} className="inline-flex items-center justify-center gap-1.5 mt-1 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("portal.delete")}</button>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -1252,7 +1310,10 @@ export default function ProjectDetailPage() {
             }} className="space-y-2">
               <textarea value={portalCommentDraft} onChange={(e) => setPortalCommentDraft(e.target.value)} rows={3} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("portal.comment")} />
               <div className="flex justify-end">
-                <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("portal.send")}</button>
+                <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
+                  <Icon name="send" className="h-4 w-4" />
+                  {t("portal.send")}
+                </button>
               </div>
             </form>
           </div>
@@ -1270,26 +1331,37 @@ export default function ProjectDetailPage() {
                 <input value={portalApprovalTitle} onChange={(e) => setPortalApprovalTitle(e.target.value)} placeholder={t("portal.approvals")} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
                 <textarea value={portalApprovalDesc} onChange={(e) => setPortalApprovalDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("fields.description")} />
                 <div className="flex justify-end">
-                  <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("actions.create")}</button>
+                  <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"><Icon name="plus" className="h-4 w-4" /> {t("actions.create")}</button>
                 </div>
               </form>
             )}
             {portalApprovals.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("portal.noApprovals")}</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {portalApprovals.map((a: any) => (
-                  <li key={a.id} className="rounded-md border border-border p-3 text-sm">
-                    <div className="flex items-center justify-between">
+                  <li key={a.id} className="rounded-xl border border-border bg-card p-4 text-sm">
+                    <div className="flex items-center justify-between gap-2">
                       <p className="font-medium">{a.title}</p>
-                      <span className="text-xs text-muted-foreground">{a.status}</span>
+                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${approvalStatusClass(a.status)}`}>{t(`portal.approvalStatuses.${a.status}`)}</span>
                     </div>
                     {a.description && <p className="mt-1 text-muted-foreground">{a.description}</p>}
+                    {a.response_comment && a.responded_at && (
+                      <div className="mt-3 rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <Icon name="reply" className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Avatar name={a.responded_by?.name ?? "Unknown"} seed={a.responded_by?.id ?? 0} className="h-5 w-5 text-[9px]" />
+                          <span className="text-xs font-medium">{a.responded_by?.name ?? "Unknown"}</span>
+                          <span className="text-xs text-muted-foreground">{new Date(String(a.responded_at)).toLocaleString(locale)}</span>
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground">{a.response_comment}</p>
+                      </div>
+                    )}
                     {canManagePortalApprovals && a.status === "pending" && (
                       <button type="button" onClick={async () => {
                         await fetch(`/api/projects/${id}/approvals/${a.id}`, { method: "DELETE" });
                         setPortalApprovals((prev) => prev.filter((x) => x.id !== a.id));
-                      }} className="mt-2 text-xs text-red-600 hover:underline">{t("actions.delete")}</button>
+                      }} className="inline-flex items-center justify-center gap-1.5 mt-2 text-xs text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("actions.delete")}</button>
                     )}
                   </li>
                 ))}
@@ -1303,26 +1375,28 @@ export default function ProjectDetailPage() {
             {portalHistory.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("portal.noHistory")}</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {portalHistory.map((e: any, i: number) => {
                   const d = e as Record<string, unknown>;
-                  const actor = String((d.actor as { name?: string } | null)?.name ?? "");
+                  const actorName = String((d.actor as { name?: string } | null)?.name ?? (d.author as { name?: string } | null)?.name ?? "");
+                  const actorId = Number((d.actor as { id?: number } | null)?.id ?? (d.author as { id?: number } | null)?.id ?? 0);
                   const title = String(d.approval_title ?? "");
                   const number = String(d.invoice_number ?? "");
                   const amount = formatMoney(d.amount as string | number, currency, locale) || String(d.amount ?? "");
                   const decisionRaw = String(d.decision ?? "");
                   const excerpt = String(d.body ?? "").slice(0, 80);
+                  const excerptDisplay = String(d.body ?? "").length > 80 ? excerpt + "…" : excerpt;
                   let text = "";
                   switch (String(d.type)) {
                     case "comment":
-                      text = t("portal.historyTypes.comment", { actor, excerpt });
+                      text = t("portal.historyTypes.comment", { actor: actorName, excerpt: excerptDisplay });
                       break;
                     case "approval_requested":
                       text = t("portal.historyTypes.approval_requested", { title });
                       break;
                     case "approval_responded": {
                       const decLabel = decisionRaw === "approved" ? t("portal.historyDecisionApproved") : t("portal.historyDecisionChanges");
-                      text = t("portal.historyTypes.approval_responded", { actor, decision: decLabel, title });
+                      text = t("portal.historyTypes.approval_responded", { actor: actorName, decision: decLabel, title });
                       break;
                     }
                     case "invoice_issued":
@@ -1335,9 +1409,12 @@ export default function ProjectDetailPage() {
                       text = String(d.type);
                   }
                   return (
-                    <li key={i} className="rounded-md border border-border p-3 text-sm text-muted-foreground">
-                      <p className="text-foreground">{text}</p>
-                      <p className="mt-1 text-xs">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                    <li key={i} className="flex gap-3 rounded-xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                      <Avatar name={actorName || "?"} seed={actorId} className="h-8 w-8 shrink-0 text-xs" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground">{text}</p>
+                        <p className="mt-1 text-xs">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                      </div>
                     </li>
                   );
                 })}
@@ -1431,7 +1508,8 @@ export default function ProjectDetailPage() {
               <button type="button" onClick={() => setShowTask(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                <Icon name="plus" className="h-4 w-4" />
                 {t("actions.create")}
               </button>
             </div>

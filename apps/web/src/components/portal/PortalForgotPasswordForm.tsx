@@ -5,6 +5,7 @@
  */
 
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { Link } from "@/i18n/routing";
 import { usePortalAuth } from "@/lib/portal-auth";
@@ -104,13 +105,14 @@ export function PortalForgotPasswordForm() {
         type="submit"
         disabled={isSubmitting}
         className={[
+          "inline-flex items-center justify-center gap-2",
           "mt-1 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2",
           isSubmitting
             ? "cursor-not-allowed bg-emerald-400"
             : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800",
         ].join(" ")}
-      >
+      ><Icon name="mail" className="h-4 w-4" /> 
         {isSubmitting ? t("submitting") : t("submit")}
       </button>
 

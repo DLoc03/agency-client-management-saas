@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -230,8 +231,8 @@ function AcceptInvitationInner() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-                >
+                  className="inline-flex items-center justify-center gap-2 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+                ><Icon name="check" className="h-4 w-4" /> 
                   {submitting ? t("accept.submitting") : t("accept.submit")}
                 </button>
               </form>
@@ -260,8 +261,8 @@ function AcceptInvitationInner() {
                   type="button"
                   onClick={() => void doAccept(false)}
                   disabled={submitting}
-                  className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-                >
+                  className="inline-flex items-center justify-center gap-2 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
+                ><Icon name="check" className="h-4 w-4" /> 
                   {submitting ? t("accept.submitting") : t("accept.confirm.action")}
                 </button>
               </div>

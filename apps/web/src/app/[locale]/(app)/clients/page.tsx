@@ -277,8 +277,8 @@ export default function ClientsPage() {
           <button
             type="submit"
             disabled={creatingTag}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
-          >
+            className="inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
+          ><Icon name="plus" className="h-3.5 w-3.5" /> 
             {t("newTag")}
           </button>
         </form>
@@ -486,8 +486,8 @@ export default function ClientsPage() {
             <button
               type="submit"
               disabled={creating}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            ><Icon name="plus" className="h-4 w-4" /> 
               {t("actions.create")}
             </button>
             <button

@@ -1,4 +1,5 @@
 "use client";
+import { Icon } from "@/components/shell/Icon";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -395,8 +396,8 @@ export default function LeadDetailPage() {
             <button
               type="button"
               onClick={handleDeleteLead}
-              className="ml-auto text-sm font-medium text-red-600 hover:underline"
-            >
+              className="inline-flex items-center justify-center gap-2 ml-auto text-sm font-medium text-red-600 hover:underline"
+            ><Icon name="trash-2" className="h-4 w-4" /> 
               {t("actions.delete")}
             </button>
           )}
@@ -439,8 +440,8 @@ export default function LeadDetailPage() {
             <button
               type="button"
               onClick={startEdit}
-              className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+            ><Icon name="pencil" className="h-4 w-4" /> 
               {t("actions.edit")}
             </button>
           )}
@@ -584,8 +585,8 @@ export default function LeadDetailPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+              ><Icon name="check" className="h-4 w-4" /> 
                 {t("actions.save")}
               </button>
               <button
@@ -634,8 +635,8 @@ export default function LeadDetailPage() {
               type="button"
               disabled={converting}
               onClick={() => handleConvert(false)}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            ><Icon name="arrow-right" className="h-4 w-4" /> 
               {t("actions.convert")}
             </button>
             {duplicateWarning && (
@@ -643,8 +644,8 @@ export default function LeadDetailPage() {
                 type="button"
                 disabled={converting}
                 onClick={() => handleConvert(true)}
-                className="rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-50 disabled:opacity-50"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-amber-300 px-4 py-2 text-sm font-medium text-amber-800 hover:bg-amber-50 disabled:opacity-50"
+              ><Icon name="arrow-right" className="h-4 w-4" /> 
                 {t("actions.forceConvert")}
               </button>
             )}
@@ -775,8 +776,8 @@ export default function LeadDetailPage() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+              ><Icon name="check" className="h-4 w-4" /> 
                 {editingContact ? t("actions.save") : t("actions.addContact")}
               </button>
               {editingContact && (
@@ -894,8 +895,8 @@ export default function LeadDetailPage() {
             <div>
               <button
                 type="submit"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+              ><Icon name="plus" className="h-4 w-4" /> 
                 {t("actions.addActivity")}
               </button>
             </div>
@@ -961,8 +962,8 @@ export default function LeadDetailPage() {
             />
             <button
               type="submit"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            ><Icon name="plus" className="h-4 w-4" /> 
               {t("actions.addNote")}
             </button>
           </form>

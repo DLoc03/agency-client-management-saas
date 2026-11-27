@@ -3,16 +3,55 @@
 import { usePortalAuth, type PortalProject } from "@/lib/portal-auth";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { formatMoney } from "@/lib/currency";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/shell/Icon";
 
 type Tab = "files" | "discussion" | "approvals" | "history";
 
-interface PortalFile { id: number; original_name: string; size_bytes: number; mime_type: string; uploader_kind: string; client_visible: boolean; created_at: string }
-interface PortalComment { id: number; body: string; author_kind: string; author_id: number; created_at: string }
-interface PortalApproval { id: number; title: string; description: string | null; status: string; response_comment: string | null; responded_at: string | null; created_at: string }
+function approvalStatusClass(status: string): string {
+  switch (status) {
+    case "approved": return "border-emerald-200 bg-emerald-100 text-emerald-800";
+    case "changes_requested": return "border-rose-200 bg-rose-100 text-rose-800";
+    default: return "border-amber-200 bg-amber-100 text-amber-800";
+  }
+}
+
+function fileIcon(name: string, mime: string): string {
+  const n = name.toLowerCase();
+  if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(n)) return "image";
+  if (mime === "application/pdf" || /\.pdf$/i.test(n)) return "file-text";
+  if (/\.(xlsx?|csv|ods)$/i.test(n) || mime.includes("spreadsheet") || mime.includes("csv")) return "file-spreadsheet";
+  if (/\.(zip|rar|7z|tar|gz)$/i.test(n) || mime.includes("zip") || mime.includes("archive")) return "archive";
+  return "file";
+}
+
+function Dropzone({ onFile, label, error }: { onFile: (f: File) => void; label: string; error: string | null }) {
+  const [dragging, setDragging] = useState(false);
+  const [selected, setSelected] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) { setSelected(f); onFile(f); } }}
+      onClick={() => inputRef.current?.click()}
+      className={`mt-3 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors ${dragging ? "border-emerald-500 bg-emerald-50" : "border-slate-300 bg-slate-50 hover:border-emerald-400 hover:bg-emerald-50/50"}`}
+    >
+      <Icon name="upload" className="h-6 w-6 text-slate-400" />
+      <p className="mt-2 text-sm text-slate-600">{selected ? selected.name : label}</p>
+      {error && <p className="mt-1 text-sm text-red-700">{error}</p>}
+      <input ref={inputRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) { setSelected(f); onFile(f); } e.target.value = ""; }} />
+    </div>
+  );
+}
+
+interface PortalFile { id: number; original_name: string; size_bytes: number; mime_type: string; uploader_kind: string; client_visible: boolean; created_at: string; uploaded_by?: { id: number; name: string } }
+interface PortalComment { id: number; body: string; author_kind: string; author_id: number; created_at: string; author?: { id: number; name: string } }
+interface PortalApproval { id: number; title: string; description: string | null; status: string; response_comment: string | null; responded_at: string | null; created_at: string; responded_by?: { id: number; name: string } }
 interface HistoryEvent { type: string; created_at: string; [k: string]: unknown }
 
 export default function PortalProjectDetailPage({ params }: { params: Promise<{ projectId: string }> }) {
@@ -223,25 +262,30 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
           {/* Files */}
           {tab === "files" && (
             <section className="mt-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-slate-900">{t("files")}</h2>
-                <label className="cursor-pointer rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700">
-                  {t("upload")}
-                  <input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }} />
-                </label>
-              </div>
-              {fileError && <p className="mb-2 text-sm text-red-700">{fileError}</p>}
+              <h2 className="text-lg font-semibold text-slate-900">{t("files")}</h2>
+              <Dropzone onFile={handleUpload} label={t("upload")} error={fileError} />
               {files.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">{t("noFiles")}</p>
               ) : (
                 <ul className="mt-3 space-y-2">
                   {files.map((f) => (
-                    <li key={f.id} className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
-                      <span className="truncate text-sm text-slate-900">{f.original_name}</span>
-                      <div className="flex gap-2">
+                    <li key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Icon name={fileIcon(f.original_name, f.mime_type)} className="h-5 w-5 shrink-0 text-slate-500" />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm text-slate-900">{f.original_name}</p>
+                          {f.uploaded_by && (
+                            <p className="flex items-center gap-1 text-xs text-slate-500">
+                              <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-4 w-4 text-[9px]" />
+                              {f.uploaded_by.name} · {String(f.created_at).slice(0, 10)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 gap-2">
                         <a href={`/api/portal/projects/${projectId}/files/${f.id}/download`} className="text-xs font-medium text-emerald-700 hover:underline">{t("download")}</a>
                         {f.uploader_kind === "client" && (
-                          <button type="button" onClick={() => handleDeleteFile(f.id)} className="text-xs font-medium text-red-600 hover:underline">{t("delete")}</button>
+                          <button type="button" onClick={() => handleDeleteFile(f.id)} className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("delete")}</button>
                         )}
                       </div>
                     </li>
@@ -258,11 +302,14 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
               {comments.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">{t("noComments")}</p>
               ) : (
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-3 space-y-3">
                   {comments.map((c) => (
-                    <li key={c.id} className={`rounded-xl border px-4 py-3 text-sm ${c.author_kind === "client" ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"}`}>
-                      <p className="text-xs text-slate-500">{c.author_kind === "client" ? "You" : "Agency"} · {c.created_at.slice(0, 10)}</p>
-                      <p className="mt-1 text-slate-900 whitespace-pre-wrap">{c.body}</p>
+                    <li key={c.id} className={`flex gap-3 rounded-xl px-4 py-3 text-sm ${c.author_kind === "client" ? "bg-emerald-50/60" : "bg-violet-50/60"}`}>
+                      <Avatar name={c.author?.name ?? t("unknownAuthor")} seed={c.author_id} className="h-8 w-8 shrink-0 text-xs" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-slate-600">{c.author?.name ?? t("unknownAuthor")} · {c.created_at.slice(0, 10)}</p>
+                        <p className="mt-1 whitespace-pre-wrap text-slate-900">{c.body}</p>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -271,7 +318,10 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                 {commentError && <p className="text-sm text-red-700">{commentError}</p>}
                 <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} rows={3} className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm" placeholder={t("comment")} />
                 <div className="flex justify-center text-center">
-                  <button type="submit" className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">{t("send")}</button>
+                  <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+                    <Icon name="send" className="h-4 w-4" />
+                    {t("send")}
+                  </button>
                 </div>
               </form>
             </section>
@@ -288,22 +338,36 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                 <ul className="mt-3 space-y-3">
                   {approvals.map((a) => (
                     <li key={a.id} className="rounded-xl border border-slate-200 bg-white p-4">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-semibold text-slate-900">{a.title}</p>
-                        <span className="text-xs font-medium text-slate-500">{a.status}</span>
+                        <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${approvalStatusClass(a.status)}`}>{t(`approvalStatuses.${a.status}`)}</span>
                       </div>
                       {a.description && <p className="mt-1 text-sm text-slate-600">{a.description}</p>}
                       {a.status === "pending" && (
                         <div className="mt-3 space-y-2">
                           <textarea value={responseComment} onChange={(e) => setResponseComment(e.target.value)} rows={2} className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm" placeholder={t("comment")} />
                           <div className="flex gap-2">
-                            <button type="button" disabled={respondingId === a.id} onClick={() => handleRespond(a.id, "approved")} className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50">{t("approve")}</button>
-                            <button type="button" disabled={respondingId === a.id} onClick={() => handleRespond(a.id, "changes_requested")} className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50">{t("requestChanges")}</button>
+                            <button type="button" disabled={respondingId === a.id} onClick={() => handleRespond(a.id, "approved")} className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50">
+                              <Icon name="check" className="h-3.5 w-3.5" />
+                              {t("approve")}
+                            </button>
+                            <button type="button" disabled={respondingId === a.id} onClick={() => handleRespond(a.id, "changes_requested")} className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50">
+                              <Icon name="x" className="h-3.5 w-3.5" />
+                              {t("requestChanges")}
+                            </button>
                           </div>
                         </div>
                       )}
-                      {a.response_comment && (
-                        <p className="mt-2 text-sm text-slate-600">“{a.response_comment}”</p>
+                      {a.response_comment && a.responded_at && (
+                        <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            <Icon name="reply" className="h-3.5 w-3.5 text-slate-400" />
+                            <Avatar name={a.responded_by?.name ?? "Unknown"} seed={a.responded_by?.id ?? 0} className="h-5 w-5 text-[9px]" />
+                            <span className="text-xs font-medium text-slate-700">{a.responded_by?.name ?? "Unknown"}</span>
+                            <span className="text-xs text-slate-400">{new Date(String(a.responded_at)).toLocaleString(locale)}</span>
+                          </div>
+                          <p className="mt-1 text-sm text-slate-600">{a.response_comment}</p>
+                        </div>
                       )}
                     </li>
                   ))}
@@ -319,26 +383,28 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
               {history.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">{t("noHistory")}</p>
               ) : (
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-3 space-y-3">
                   {history.map((e, i) => {
                     const d = e as Record<string, unknown>;
-                    const actor = String((d.actor as { name?: string } | null)?.name ?? "");
+                    const actorName = String((d.actor as { name?: string } | null)?.name ?? (d.author as { name?: string } | null)?.name ?? "");
+                    const actorId = Number((d.actor as { id?: number } | null)?.id ?? (d.author as { id?: number } | null)?.id ?? 0);
                     const title = String(d.approval_title ?? "");
                     const number = String(d.invoice_number ?? "");
                     const amount = formatMoney(d.amount as string | number, "USD", locale) || String(d.amount ?? "");
                     const decisionRaw = String(d.decision ?? "");
                     const excerpt = String(d.body ?? "").slice(0, 80);
+                    const excerptDisplay = String(d.body ?? "").length > 80 ? excerpt + "…" : excerpt;
                     let text = "";
                     switch (String(d.type)) {
                       case "comment":
-                        text = t("historyTypes.comment", { actor, excerpt });
+                        text = t("historyTypes.comment", { actor: actorName, excerpt: excerptDisplay });
                         break;
                       case "approval_requested":
                         text = t("historyTypes.approval_requested", { title });
                         break;
                       case "approval_responded": {
                         const decLabel = decisionRaw === "approved" ? t("historyDecisionApproved") : t("historyDecisionChanges");
-                        text = t("historyTypes.approval_responded", { actor, decision: decLabel, title });
+                        text = t("historyTypes.approval_responded", { actor: actorName, decision: decLabel, title });
                         break;
                       }
                       case "invoice_issued":
@@ -351,9 +417,12 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                         text = String(d.type);
                     }
                     return (
-                      <li key={i} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                        <p>{text}</p>
-                        <p className="mt-1 text-xs text-slate-500">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                      <li key={i} className="flex gap-3 rounded-xl bg-slate-50/60 px-4 py-3 text-sm text-slate-700">
+                        <Avatar name={actorName || "?"} seed={actorId} className="h-8 w-8 shrink-0 text-xs" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-slate-900">{text}</p>
+                          <p className="mt-1 text-xs text-slate-500">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                        </div>
                       </li>
                     );
                   })}

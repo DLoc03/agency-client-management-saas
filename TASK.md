@@ -1,6 +1,16 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-037 — Polish UI Portal & icon hệ thống (Nhóm 7)
+- Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
+- Branch: fix/FIX-037-portal-ui-polish
+- Progress: Đang thực hiện S1–S10: (1) Thêm Portal.tasksDone, (2) Approval card status chip + response block, (3) Discussion tab avatar + tên thật + tông nền, (4) History tab avatar + tên + fix "đã đã" + truncate, (5) Files tab dropzone + icon + uploader, (6) Section description, (7) Mobile toggle visibility, (8) Icon send, (9) Icon sweep, (10) Paperwork.
+- Blocked by: —
+- Acceptance Criteria: Approval card có chip trạng thái màu + khối phản hồi; Discussion/History dùng avatar + tên thật; Files có dropzone + icon + uploader; section description; mobile toggle; icon send; system-wide icon sweep; parity i18n.
+- Handoff: Muse review, Không tự review, KHÔNG merge, KHÔNG mở PR.
+
+---
+
 ## FIX-036 — Sửa lỗi nghiệm thu Nhóm 7 vòng 1
 - Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
 - Branch: fix/FIX-036-portal-acceptance-fixes

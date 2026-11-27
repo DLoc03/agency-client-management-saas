@@ -187,10 +187,10 @@ export default function InvitationsPage() {
                 </div>
                 {canManage && (
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => handleResend(inv.id)} className="rounded-md border border-border px-3 py-1.5 text-xs">
+                    <button type="button" onClick={() => handleResend(inv.id)} className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs"><Icon name="refresh" className="h-4 w-4" /> 
                       {t("actions.resend")}
                     </button>
-                    <button type="button" onClick={() => handleRevoke(inv.id)} className="rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600">
+                    <button type="button" onClick={() => handleRevoke(inv.id)} className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-1.5 text-xs text-red-600"><Icon name="x" className="h-4 w-4" /> 
                       {t("actions.revoke")}
                     </button>
                   </div>
@@ -242,7 +242,8 @@ export default function InvitationsPage() {
               <button type="button" onClick={() => setShowForm(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+                <Icon name="mail" className="h-4 w-4" />
                 {t("invitationsForm.send")}
               </button>
             </div>

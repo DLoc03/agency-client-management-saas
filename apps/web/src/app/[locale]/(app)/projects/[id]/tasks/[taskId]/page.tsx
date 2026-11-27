@@ -183,8 +183,8 @@ export default function TaskDetailPage() {
         <button
           type="button"
           onClick={() => router.push(`/projects/${projectId}`)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm"
-        >
+          className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm"
+        ><Icon name="chevron-left" className="h-4 w-4" /> 
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>
@@ -263,8 +263,9 @@ export default function TaskDetailPage() {
             />
             <button
               type="submit"
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
             >
+              <Icon name="plus" className="h-4 w-4" />
               {t("actions.addChecklist")}
             </button>
           </form>
@@ -324,8 +325,9 @@ export default function TaskDetailPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
               >
+                <Icon name="send" className="h-4 w-4" />
                 {t("actions.addComment")}
               </button>
             </div>

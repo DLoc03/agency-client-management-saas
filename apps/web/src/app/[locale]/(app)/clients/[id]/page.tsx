@@ -378,8 +378,8 @@ export default function ClientDetailPage() {
             <button
               type="button"
               onClick={handleDeleteClient}
-              className="ml-auto text-sm font-medium text-red-600 hover:underline"
-            >
+              className="inline-flex items-center justify-center gap-2 ml-auto text-sm font-medium text-red-600 hover:underline"
+            ><Icon name="trash-2" className="h-4 w-4" /> 
               {t("actions.delete")}
             </button>
           )}
@@ -400,8 +400,8 @@ export default function ClientDetailPage() {
             <button
               type="button"
               onClick={startEdit}
-              className="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+            ><Icon name="pencil" className="h-4 w-4" /> 
               {t("actions.edit")}
             </button>
           )}
@@ -590,8 +590,8 @@ export default function ClientDetailPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+              ><Icon name="check" className="h-4 w-4" /> 
                 {t("actions.save")}
               </button>
               <button
@@ -754,8 +754,8 @@ export default function ClientDetailPage() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+              ><Icon name="check" className="h-4 w-4" /> 
                 {editingContact ? t("actions.save") : t("actions.addContact")}
               </button>
               {editingContact && (
@@ -839,8 +839,8 @@ export default function ClientDetailPage() {
             />
             <button
               type="submit"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-            >
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            ><Icon name="plus" className="h-4 w-4" /> 
               {t("actions.addNote")}
             </button>
           </form>
@@ -915,8 +915,8 @@ export default function ClientDetailPage() {
                     <button
                       type="button"
                       onClick={() => handleToggleAccount(account)}
-                      className="text-xs font-medium text-primary hover:underline"
-                    >
+                      className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                    ><Icon name="check" className="h-3.5 w-3.5" /> 
                       {t("actions.activate")}
                     </button>
                   )}
@@ -955,8 +955,8 @@ export default function ClientDetailPage() {
             <div>
               <button
                 type="submit"
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
-              >
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+              ><Icon name="user-plus" className="h-4 w-4" /> 
                 {t("actions.createAccount")}
               </button>
             </div>
