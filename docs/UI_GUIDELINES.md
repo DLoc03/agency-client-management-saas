@@ -37,6 +37,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Nội dung trong chip/badge luôn nằm trên **một dòng duy nhất**, không được xuống dòng làm chip cao lên, vì sẽ phá vỡ sự cân đối chiều cao giữa các hàng dữ liệu.
 - Nhãn dài phải được đặt tên ngắn lại hoặc cắt bằng ellipsis; chiều cao chip đồng nhất trong cùng một danh sách.
 - Không chỉ trạng thái: **mức độ ưu tiên** (priority) và mọi giá trị phân mức tương tự cũng hiển thị dạng chip màu ngữ nghĩa (DEC-022) — dùng helper `priorityBadgeClass` trong `lib/status-colors.ts` (urgent đỏ, high đỏ hồng, medium hổ phách, low xám), cùng vỏ chip với chip trạng thái.
+- Mọi giá trị trạng thái hiển thị cho người dùng phải là **nhãn đã dịch qua khóa i18n** và trình bày dạng chip màu — KHÔNG bao giờ hiện enum thô của API (ví dụ `changes_requested`, `in_progress`) hay khóa i18n thô lên màn hình.
 
 ## 6. Ổn định chiều cao và trạng thái rỗng
 
@@ -71,3 +72,20 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Banner đầu trang chỉ dành cho: lỗi tải dữ liệu lần đầu của cả trang, và hành động cấp trang (ví dụ xoá bản ghi từ nút ở header trang chi tiết).
 - Khi API trả 403 `FORBIDDEN` lúc tải trang, hiển thị trạng thái toàn trang "không có quyền truy cập" bằng ngôn ngữ giao diện đang chọn (component dùng chung `Forbidden`, khóa `Common.forbidden`) — không hiển thị nguyên văn message của API (message API đi theo locale của tài khoản, có thể khác ngôn ngữ giao diện).
 - Mọi chuỗi hiển thị cho người dùng (kể cả hộp thoại confirm) đều qua khóa i18n EN + VI; không để chuỗi hardcode trong JSX.
+
+## 11. Nút bấm và icon (PO chốt 2026-11-27)
+
+- Nút chính và nút hành động (Tạo, Lưu, Sửa, Xoá cấp trang, Thêm, Gửi, Tải lên, Duyệt, ...) luôn có **icon dẫn đầu** (leading icon) lấy từ bộ icon dùng chung `components/shell/Icon.tsx`; thiếu icon thì thêm vào bộ dùng chung theo cùng phong cách SVG, không vẽ icon riêng từng chỗ. Nút gửi bình luận/tin nhắn dùng icon **send**.
+- Miễn trừ: tab, nút phân trang, mục trong menu, và các dòng/card bấm toàn bộ để mở chi tiết — các control điều hướng này không cần icon. Nút phụ Huỷ/Đóng trong form và modal được để chữ trơn.
+- Icon đi kèm nhãn chữ, không thay thế nhãn (trừ các nút icon-only đã có quy ước riêng như kebab, chuông thông báo, nút trước/sau của phân trang), và không làm nút thay đổi kích thước giữa các trạng thái.
+
+## 12. Nội dung do người dùng tạo (PO chốt 2026-11-27)
+
+- Mọi nội dung do người dùng tạo — bình luận, file tải lên, yêu cầu và phản hồi phê duyệt, dòng lịch sử — luôn hiển thị kèm **tên và avatar** của người thực hiện (avatar ký tự đầu + màu theo người dùng như quy ước avatar hiện có). API đã trả các field này (`author`, `uploaded_by`, `responded_by`, `actor`/`author` của history); thiếu tên/avatar trên màn hình là lỗi hiển thị của FE.
+- Luồng trao đổi hai phía (agency ↔ khách): hai phía dùng **hai tông nền mềm khác nhau** để phân biệt; khối nội dung dùng nền mềm thay cho viền lồng nhau (theo nguyên tắc một cấp viền ở §3).
+- Phản hồi phê duyệt hiển thị thành **khối riêng** tách khỏi phần yêu cầu: avatar + tên người phản hồi, thời gian phản hồi, nội dung phản hồi, kèm icon Reply ở đầu khối.
+- Tải file dùng vùng **dropzone** (viền dashed, có trạng thái khi kéo file qua, click để chọn file, hiện tên file đã chọn trước khi tải lên); mỗi dòng file có **icon theo định dạng** (ảnh / tài liệu / bảng tính / file nén / file chung).
+
+## 13. Mô tả cho section (PO chốt 2026-11-27)
+
+- Section mà mục đích chưa rõ ngay từ tiêu đề thì có thêm **một dòng mô tả nhỏ chữ xám** (text-sm, màu muted) ngay dưới tiêu đề, qua khóa i18n như mọi chuỗi hiển thị khác. Áp dụng đầu tiên cho section Cổng khách hàng trong trang chi tiết dự án.
