@@ -13,6 +13,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 - Agency payment details can now be read back (FIX-031): `GET /agencies/{id}/payment-details` under the same Owner/Admin permission and response shape as the PATCH endpoint, so the settings form prefills the saved bank/VietQR details instead of opening empty.
 
 ### Changed
+- Portal accounts section on the client detail page tidied (FIX-035): each account row is now a compact three-zone layout (two-line identity with avatar, status chip with last-login meta, actions), the Deactivate action is a highlighted danger-soft button with a lock icon instead of a plain text link, and the danger-button rule (highlight dangerous actions — tinted red background, red border and text, icon where sensible — never plain text) is recorded in `docs/UI_GUIDELINES.md` section 7.
 
 ### Fixed
 - Invoices now reject a project that belongs to a different client (FIX-031): `invoice.project_id` must belong to the invoice's `client_id` on create and update (a project of another client in the same workspace answers 422 `PROJECT_CLIENT_MISMATCH`; a project from another workspace still answers 422 `CROSS_TENANT_REFERENCE`).

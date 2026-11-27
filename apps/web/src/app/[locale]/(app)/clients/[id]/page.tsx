@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
+import { Avatar } from "@/components/ui/Avatar";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -880,31 +881,46 @@ export default function ClientDetailPage() {
             {accounts.map((account) => (
               <li
                 key={account.id}
-                className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3"
+                className="flex items-center gap-3 py-3"
               >
-                <span className="font-medium text-foreground">
-                  {account.name}
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  {account.email}
-                </span>
-                <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
-                  {account.is_active ? t("portal.active") : t("portal.disabled")}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {t("portal.lastLogin")}: {fmtDate(account.last_login_at)}
-                </span>
-                {canPortal && (
-                  <button
-                    type="button"
-                    onClick={() => handleToggleAccount(account)}
-                    className="ml-auto text-sm font-medium hover:underline"
-                  >
-                    {account.is_active
-                      ? t("actions.deactivate")
-                      : t("actions.activate")}
-                  </button>
-                )}
+                <Avatar name={account.name} seed={account.id} className="h-8 w-8 text-xs" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {account.name}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {account.email}
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1 text-right sm:flex-row sm:items-center sm:gap-3">
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+                      {account.is_active ? t("portal.active") : t("portal.disabled")}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {t("portal.lastLogin")}: {fmtDate(account.last_login_at)}
+                    </span>
+                  </div>
+                  {canPortal && account.is_active && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleAccount(account)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
+                    >
+                      <Icon name="lock" className="h-3.5 w-3.5" />
+                      {t("actions.deactivate")}
+                    </button>
+                  )}
+                  {canPortal && !account.is_active && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleAccount(account)}
+                      className="text-xs font-medium text-primary hover:underline"
+                    >
+                      {t("actions.activate")}
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

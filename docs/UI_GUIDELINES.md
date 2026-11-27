@@ -48,6 +48,8 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 - Menu kebab chỉ chứa hành động thật (Sửa, Xoá, ...), KHÔNG chứa mục điều hướng "Chi tiết" — điều hướng vào chi tiết đi bằng click toàn bộ dòng/card theo §3 (DEC-023). Danh sách không còn hành động nào trên dòng thì bỏ hẳn cột kebab.
 - Mục hành động nguy hiểm (Xoá) hiển thị chữ đỏ trong menu.
 
+- **Nút nguy hiểm mềm (danger soft)**: khi một thao tác huỷ/vô hiệu hoá được trình bày trực tiếp bằng nút (không thu vào menu kebab), nút dùng nền đỏ nhạt (`bg-red-50`) + viền đỏ (`border-red-200`) + chữ đỏ đậm (`text-red-700`, `font-semibold`) + icon khoá/trash đi kèm, hover làm đậm nền (`hover:bg-red-100`). Áp dụng cho các nút như "Vô hiệu hoá tài khoản Portal".
+
 ## 8. Quy trình nghiệm thu UI
 
 - Các điểm 2–6 chỉ kiểm chứng đáng tin bằng mắt: agent làm FE tự kiểm ở nhiều bề rộng và nhiều trạng thái dữ liệu (có dữ liệu, rỗng, lỗi) trước khi báo cáo, và nêu rõ đã kiểm ở những bề rộng/trạng thái nào.
