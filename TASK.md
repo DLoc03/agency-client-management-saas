@@ -339,6 +339,12 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Mô tả: (1) Đổi giá trị VI của `Finance.fields.taxRate` từ "Thuế (%)" thành "Thuế" để tránh nhân đôi "(%)" với component. (2) Thêm hàng nhãn (Mô tả/Số lượng/Đơn giá) trên lưới mục trong `InvoiceForm`, nhãn nhỏ riêng trên mobile (`sm:sr-only`), đổi placeholder Số lượng/Đơn giá thành tên trường.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-032-invoice-form-labels` từ `origin/main` (`472d0e7`).
 - Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n 723 = 723; byte-check OK.
+## FIX-034 — Thanh cuộn dọc thừa ở tab Team + khung viền nút chuông thông báo (phát hiện khi nghiệm thu FE-021, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: (1) Thêm `overflow-y-hidden` vào nav tab Team (giữ `overflow-x-auto`) để loại bỏ thanh cuộn dọc thừa; quét pattern tương tự → không có chỗ khác. (2) Bỏ khung viền/nền hộp của nút chuông ở Topbar, giữ icon, badge, vùng bấm và hover nền mờ.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-034-team-tab-scrollbar` từ `origin/main` (`472d0e7`).
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n 723 = 723; byte-check OK; nhìn bằng mắt trang Team không còn cuộn dọc, chuông không khung viền.
 - Blockers: Không có.
 
 ## FIX-030 — Icon mũi tên cho nút Previous/Next của phân trang (phát hiện khi nghiệm thu FIX-029, 2026-11-27)

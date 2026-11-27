@@ -18,7 +18,7 @@ export default function TeamLayout({ children }: { children: React.ReactNode }) 
     <div className="space-y-6">
       <nav
         aria-label={t("title")}
-        className="flex gap-1 overflow-x-auto border-b border-border"
+        className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-border"
       >
         {TABS.map((tab) => {
           const active =

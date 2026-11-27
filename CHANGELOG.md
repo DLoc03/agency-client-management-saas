@@ -13,6 +13,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ### Changed
 
 ### Fixed
+- Team tab scrollbar and bell button chrome (FIX-034): removed the stray vertical scrollbar on the Team tab nav (`overflow-y-hidden` alongside `overflow-x-auto`) and dropped the border/box from the notification bell button in the Topbar.
 
 ## [0.7.0] - 2026-11-27
 
