@@ -273,7 +273,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Nguyen mở app kiểm tra bằng mắt: icon Eye nằm trong khung input ở trang đăng nhập; chữ màu primary đậm dễ đọc hơn; sidebar tông tím than + logo biến thể light hài hoà. Typecheck + build PASS.
 - Blockers: Không có.
 ## BE-008 — Module Finance & Billing (Nhóm 5) theo hợp đồng FINANCE_CONTRACT
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: OpenCode
 - Mô tả: Triển khai module Finance & Billing theo `docs/FINANCE_CONTRACT.md` (DEC-019, Nguyen duyệt theo đề xuất 2026-11-25): invoices + invoice_items + payments (BelongsToAgency), số hoá đơn tự sinh INV-{YYYY}-{4 số} theo agency cấp lúc tạo và bất biến, tổng tiền lưu sẵn, trạng thái draft/sent/paid/cancelled + Overdue suy ra lúc đọc, thanh toán thủ công nhiều lần (không trả thừa), PDF qua barryvdh/laravel-dompdf, endpoint sửa thông tin chuyển khoản/VietQR của agency, Portal chỉ đọc invoice của client mình, ProjectResource thêm invoiced_total/collected_total tính lúc đọc. Ma trận quyền invoices.*/payments.* theo hợp đồng (Accountant toàn quyền Finance; Sales/PM chỉ xem; delete chỉ Owner + chỉ Draft).
 - Acceptance Criteria: Toàn bộ tiêu chí mục 7 của FINANCE_CONTRACT; test PHPUnit cho CRUD + tiền/thuế + trạng thái + thanh toán + PDF + Portal scope + cách ly tenant; Pint PASS; xác minh migration trên MySQL 8 (bài học PR #57).
@@ -316,7 +317,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-030 — Icon mũi tên cho nút Previous/Next của phân trang (phát hiện khi nghiệm thu FIX-029, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: Thay chữ Previous/Next trên component dùng chung `Pagination` bằng icon `chevron-left` (Next dùng `chevron-left` xoay 180° vì Icon chưa có `chevron-right`); thêm `aria-label` từ `Common.prev`/`Common.next`, giữ kích thước nút `h-9 min-w-9` và logic disabled/click/dropdown/số trang không đổi.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-030-pagination-icons` từ `origin/main` (`e5c5e71`).
@@ -324,7 +326,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-029 — Mobile hoá danh sách/chi tiết hoá đơn, chống tràn ngang, phân trang hiện đại (phát hiện khi nghiệm thu FE-020, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: (1) Danh sách Invoices render trùng bảng + card ở mobile: bọc bảng trong `hidden lg:block`, card mobile đổi sang `lg:hidden`, thống nhất breakpoint `lg` như Projects/Clients; bộ lọc xếp dọc full-width ở mobile. (2) Sửa tràn ngang ở 375px cho card danh sách Projects và Invoices (truncate/min-w-0/break-words, bỏ chiều rộng cứng vượt viewport), desktop không đổi. (3) Trang chi tiết hoá đơn: chip trạng thái `self-start` để không kéo full chiều ngang, bảng Payments và Line items có bản card mobile theo DEC-021, thêm nút Back về `/invoices` ở đầu trang. (4) Component dùng chung `Pagination` (số trang + Previous/Next + chọn 10/20/30/50/100 dòng/trang, reset trang 1 khi đổi filter/số dòng), áp dụng cho Invoices và Projects; thêm khoá i18n `Common.pagination.*` EN/VI. (5) Bỏ ký tự "+" text trùng icon Plus ở nút Add item trong `InvoiceForm`, quét các nút khác trong phạm vi Invoices.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-029-mobile-pagination` từ `origin/main` (`ad3c6e7`).
@@ -332,7 +335,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-028 — Layout hoá đơn: i18n validation, header danh sách, chi tiết hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: (1) Loại bỏ chuỗi tiếng Việt hardcode trong `InvoiceForm.validate()` và các fallback trong phạm vi invoices/finance, thêm nhóm khoá `Finance.validation.*` + `Finance.hints.*` + `Finance.errors.pdfFailed` (EN/VI). (2) Gom hai nút hành động trang danh sách hoá đơn vào một container bên phải, tiêu đề bên trái, nhãn một dòng. (3) Làm lại trang chi tiết: header chỉ số hoá đơn + chip, lưới thông tin 2/4 cột, notes dưới lưới, footer bảng colSpan đúng cột Amount, header bảng 11px, hàng nút hành động ngay dưới lưới với nhãn một dòng và thứ tự Send/Download PDF/Cancel/Delete.
 - Progress: 2026-11-26 — OpenCode triển khai trên branch `fix/FIX-028-invoice-layout` từ `origin/main`.
@@ -340,7 +344,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-027 — Vòng lặp render vô hạn ở trang danh sách hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse (thay vai FE theo quy ước) · Reviewer: Nguyen (nghiệm thu bằng mắt)
 - Mô tả: Trang `/invoices` (FE-020) cho `useEffect` nạp dữ liệu phụ thuộc vào chính state `loading` mà `load()` thay đổi (deps `[session, firstLoad, loading, load]`), nên mỗi lần nạp xong lại kích hoạt nạp tiếp — trang render/fetch liên tục, dropdown filter nhảy focus và giật lag; chỉ xảy ra ở Invoices vì các trang danh sách khác dùng mẫu FE-019. Sửa theo đúng mẫu Clients/Projects: bỏ state `firstLoad`/`showSkeleton` tự chế, dùng `hasLoaded` + hook dùng chung `useDelayedSkeleton(loading && !hasLoaded)` (DEC-021 §9), effect nạp dữ liệu chỉ còn deps `[session, load]`. Không đổi giao diện, không đổi API.
 - Progress: 2026-11-26 — Muse sửa trên branch `fix/FIX-027-invoice-list-loop` từ main `2a5c97c`; chờ build/test và PR, Nguyen merge rồi nghiệm thu lại mục A.
@@ -348,7 +353,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-026 — Thay hộp confirm mặc định bằng dialog dùng chung kiểu shadcn/ui (PO yêu cầu sau nghiệm thu FIX-023, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen (nghiệm thu bằng mắt)
 - Mô tả: Thay toàn bộ 11 điểm xác nhận native trong app nội bộ bằng component/hook dùng chung `ConfirmDialog` / `useConfirm` (không thêm dependency, không dùng Radix): 7 điểm `confirm()` đã liệt kê (Projects list + detail với milestone/task, Teams list + detail, Thu hồi lời mời) và 4 điểm `window.confirm()` phát hiện thêm khi quét (Clients list + detail, Leads detail — xoá khách/lead/contact). Dialog tự dựng theo mẫu `ActionMenu` (DEC-024): portal ra `document.body`, overlay mờ, panel giữa màn hình, Escape/click ngoài = Huỷ, nút xác nhận phá huỷ màu đỏ, mặc định focus nút Huỷ, con trỏ pointer, không animation khi người dùng giảm chuyển động. Provider đặt tại `apps/web/src/app/[locale]/(app)/layout.tsx`. Nhãn nút lấy từ `Common.actions.{cancel,delete,revoke}` (EN + VI; namespace `Common` trước đây chưa có `actions` nên thêm 3 khóa mỗi ngôn ngữ), câu hỏi vẫn dùng nguyên khóa i18n cũ của từng màn. Không đụng BE, không đụng Portal, không đổi handler hay kết quả nghiệp vụ — chỉ đổi cơ chế xác nhận.
 - Progress: 2026-11-26 — OpenCode triển khai xong trên branch `fix/FIX-026-confirm-dialog` (từ `origin/main` e832108): component/hook `ConfirmDialog` + provider ở layout app, 11 call site chuyển sang `confirmAction(...)`, bổ sung `Common.actions` EN/VI. Kiểm chứng: `npx -y pnpm@10.0.0 build` PASS (dùng `distDir` tạm vì thư mục `.next` cũ thuộc root, đã khôi phục cấu hình), `npx -y pnpm@10.0.0 vitest run` 22/22 PASS, `typecheck` PASS, i18n 572 khóa EN = VI không lơ lửng, byte-check OK, grep không còn native confirm. Chờ Muse + Nguyen nghiệm thu; KHÔNG mở PR.
@@ -356,13 +362,15 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: Không có.
 
 ## FIX-025 — Bản địa hoá cảnh báo theo mã lỗi ở modal Mời thành viên (PO phát hiện tại nghiệm thu FIX-023, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Tại nghiệm thu FIX-023, vị trí cảnh báo trong modal Mời đã đúng (nằm trong modal) nhưng nội dung vẫn là message thô tiếng Anh của API (API trả theo locale lưu trên tài khoản, lệch ngôn ngữ giao diện — cùng gốc rễ DEC-025 đã xử lý cho trạng thái 403). Modal Mời nay ánh xạ các mã lỗi nghiệp vụ sang khóa i18n `Teams.errors.*` (EN + VI, câu chữ khớp lang của BE): `INVITATION_PENDING` (mời trùng email đang chờ), `ALREADY_MEMBER` (email đã là thành viên); nút Gửi lại cũng ánh xạ `INVITATION_ALREADY_ACCEPTED`. Mã lạ vẫn fall back về message API như cũ.
 - Acceptance Criteria: Nguyen mở Team → Lời mời ở giao diện VI: mời trùng email đang chờ → cảnh báo tiếng Việt ngay trong modal; mời email đã là thành viên → cảnh báo tiếng Việt tương ứng; web build PASS; khóa i18n EN = VI, không khóa lơ lửng (kiểm cả khóa động `errors.${code}`).
 
 ## FE-020 — Finance & Billing UI (Group 5)
-- Assignee: OpenCode · Reviewer: Muse + Nguyen (Muse+Nguyen) · Level: L3 · Status: IN_PROGRESS
+- Assignee: OpenCode · Reviewer: Muse + Nguyen (Muse+Nguyen) · Level: L3 · Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Branch: fe/FE-020-finance-ui · PR: —
 - Blocked by: —
 - Acceptance Criteria: Sidebar có mục Invoices; danh sách hiển thị hoá đơn mẫu, filter Overdue chỉ ra hoá đơn quá hạn, bấm dòng vào chi tiết. Tạo hoá đơn: dropdown dự án chỉ hiện dự án của khách hàng đã chọn, số INV-2026-… tự sinh, sửa Draft tính lại tổng. Gửi Draft không có item cảnh báo tại nút; ghi payment vượt số dư cảnh báo ngay trong form; ghi đủ tiền → Paid. Member mở /invoices thấy Forbidden ngôn ngữ hiện tại; Sales xem + tải PDF, không thấy nút Gửi/Xoá. Portal (client@demo.test) xem hoá đơn + thông tin chuyển khoản, không tạo payment. Trang /finance/payment-details chỉ Owner/Admin. Đối soát ngân sách ở chi tiết dự án. next build PASS, vitest run PASS, i18n EN=VI, không có `confirm(` native mới.
@@ -376,31 +384,36 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Chưa áp dụng (task hoãn). Khi mở lại: identity có 0 membership + lời mời đang chờ đăng nhập được tại trang accept và xác nhận thành công; token giới hạn gọi mọi endpoint nghiệp vụ đều bị chặn; bộ test BE xanh trên cả SQLite và MySQL.
 
 ## FIX-023 — Phản hồi tại vị trí tương tác + trạng thái không có quyền (PO yêu cầu tại nghiệm thu FE-015, 2026-11-26; DEC-025)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Bốn điểm. (1) Hai trang accept (nội bộ + Portal) tự chuyển hướng sang trang accept đúng loại lời mời khi mở nhầm bề mặt, giữ nguyên token. (2) Ưu tiên tuyệt đối trạng thái sai tài khoản ở trang accept: đang đăng nhập bằng danh tính khác thì chỉ hiện cảnh báo, không hiện form đặt mật khẩu/nút nhận lời mời (lỗi nghiệm thu mục B4 — trước đây form email mới và khối cảnh báo hiện đồng thời). (3) Quét toàn app theo DEC-025: lỗi của form/section hiển thị ngay trong form/section đó — chi tiết khách hàng (gồm form cấp quyền Portal), chi tiết lead (gồm khối chuyển đổi), chi tiết dự án (gồm các modal thêm thành viên/cột mốc/task và section gán team), chi tiết task (checklist, bình luận), chi tiết thành viên (hồ sơ, vai trò) và nhóm, các form tạo ở trang danh sách (khách hàng gồm cả form thẻ, lead, dự án) và các modal (mời thành viên, tạo nhóm); banner đầu trang chỉ còn cho lỗi tải trang và hành động cấp trang. (4) Trang không có quyền (API 403 `FORBIDDEN`) hiển thị trạng thái bản địa hoá theo ngôn ngữ giao diện (component `Forbidden` dùng chung, khóa `Common.forbidden`) ở mọi trang danh sách/chi tiết; bản địa hoá các chuỗi hardcode còn sót (confirm xoá ở Projects, ghi chú giới hạn Admin ở chi tiết thành viên). `lib/projects/api` từ nay đính kèm code/status vào lỗi như các lib khác.
 - Acceptance Criteria: Nguyen nghiệm thu ở production: cấp quyền Portal trùng email → cảnh báo đỏ hiện ngay trong section Portal; đăng nhập bằng member@demo.test mở Khách hàng/Dự án → trang "không có quyền truy cập" đúng ngôn ngữ đang chọn (EN/VI); mở link mời khách ở trang accept nội bộ → tự sang trang accept Portal; mở link mời email mới khi đang đăng nhập tài khoản khác → chỉ thấy cảnh báo sai tài khoản, không thấy form/nút nhận lời mời; web build PASS, vitest PASS, không khóa i18n lơ lửng.
 
 ## FIX-022 — Chú thích semantics gỡ team trong chi tiết dự án (PO yêu cầu tại nghiệm thu FIX-021, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Tại nghiệm thu FIX-021, PO xác nhận hành vi gỡ team hiện tại là đúng thiết kế TEAM_CONTRACT §4 (chỉ gỡ thành viên vào qua team và chưa có task; thành viên có task được giữ thành thành viên trực tiếp; thành viên thêm riêng không bị ảnh hưởng) nhưng yêu cầu thêm một chú thích nhỏ để người dùng không hiểu lầm. Bổ sung đúng một dòng chú thích tĩnh (khóa i18n `Projects.teamAssignment.note`, EN + VI) ngay dưới hàng nút Gán/Gỡ trong section gán team của trang chi tiết dự án. Không đổi hành vi, không đổi API.
 - Acceptance Criteria: Nguyen mở chi tiết dự án ở production: dòng chú thích hiển thị đúng nội dung EN/VI dưới hàng nút Gán/Gỡ; web build PASS; không khóa i18n lơ lửng.
 
 ## FIX-021 — Hiển thị team đã gán trong chi tiết dự án (góp ý PO 2026-11-26, PO duyệt phương án A qua trang mẫu)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Trước đây trang chi tiết dự án không hiển thị bền vững team nào đã được gán: section gán team chỉ có ô chọn + nút Gán/Gỡ + dòng kết quả tạm, chip thành viên không ghi nguồn team, tải lại trang là mất dấu vết. PO duyệt phương án A từ trang mẫu "Preview 3 phương án hiển thị team đã gán": (1) BE bổ sung trường via_team_id vào danh sách thành viên ở ProjectMemberController (endpoint mà trang chi tiết đang dùng) và vào ProjectResource cho nhất quán bề mặt API — dữ liệu gốc đã có sẵn ở pivot project_members. (2) FE: section Gán team thêm hàng "Team đã gán" dạng chip (tên team + số thành viên team đóng góp, suy ra từ via_team_id của các thành viên hiện tại — đúng ngữ nghĩa snapshot: team chỉ còn được tính là đã gán khi còn ít nhất một thành viên trong dự án), trạng thái rỗng hiện "Chưa gán team nào"; chip của thành viên đến từ team có thêm nhãn nhỏ tên team; team đã bị xoá thì nhãn hiện "Team đã xoá". Danh sách team nay tải cho mọi người xem (không chỉ người có quyền sửa dự án) để phân giải tên team cho nhãn, lỗi tải thì nhãn tự ẩn. Thêm 4 khóa i18n Projects.teamAssignment (EN + VI).
 - Acceptance Criteria: Nguyen mở chi tiết dự án "Website Redesign for Demo Client" ở production, gán Demo Delivery Team rồi tải lại trang: hàng "Team đã gán" còn nguyên chip team kèm số thành viên, các thành viên đến từ team có nhãn tên team trên chip; gỡ team thì hàng chip biến mất tương ứng. API: suite 129 test PASS, Pint PASS; web build PASS.
 
 ## FIX-020 — Menu kebab bị khung bảng cắt + thống nhất click dòng/card (feedback PO tại nghiệm thu FIX-019, 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Hai phần. PHẦN 1 (đã làm, PR riêng): thống nhất điều hướng theo DEC-023 — PO chốt Cách 1 "click dòng/card vào chi tiết" cho toàn bộ table row và card data: bảng Tasks trong chi tiết dự án thêm click dòng (tiêu đề chuyển thành chữ thường), card task mobile click toàn card; card mobile của Projects/Members và card Teams thêm click toàn card; Workload thêm click dòng/card vào chi tiết thành viên; bỏ mục "Chi tiết" khỏi kebab ở Projects/Members/Teams (kebab chỉ còn hành động thật), riêng bảng Members hết hành động trên dòng nên bỏ hẳn cột kebab và phân bổ lại bề rộng cột; Kanban CRM là ngoại lệ có chủ đích (card kéo–thả đổi giai đoạn). PHẦN 2 (đã làm, gộp cùng PR): menu kebab bị khung bảng cắt ở các dòng cuối (DataTable framed bọc overflow-hidden, menu absolute mở xuống bị cắt — bằng chứng là ảnh của PO tại trang Projects; bảng không khung không bị). PO chốt hướng (c) kèm nguyên tắc dùng shadcn/ui linh động theo từng component (DEC-024): ActionMenu render menu qua portal với position fixed bám theo vị trí nút bấm, tự lật lên trên khi sát đáy viewport và giữ vị trí khi cuộn trang — menu không còn bị bất kỳ khung chứa nào cắt.
 - Acceptance Criteria: Phần 1 — Nguyen chạy production, bấm thử từng danh sách (Clients, Projects, Members, Teams, Workload, Tasks trong chi tiết dự án) ở cả desktop và bề rộng mobile: click dòng/card đều vào đúng trang chi tiết, kebab chỉ còn hành động. Phần 2 — mở menu ở dòng cuối của bảng có khung (trang Projects) và thử cuộn trang khi menu đang mở: menu hiển thị trọn vẹn, không bị cắt. Typecheck + build PASS.
 
 ## FIX-019 — Tinh chỉnh hiển thị dữ liệu sau nghiệm thu FE-019 (DEC-022, PO duyệt mẫu 2026-11-26)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse (thay vai FE theo quy ước 2026-11-23) · Reviewer: Nguyen (nghiệm thu bằng mắt + merge)
 - Mô tả: Áp dụng DEC-022 từ feedback nghiệm thu FE-019 của PO (kèm ảnh chụp trang chi tiết dự án): (1) header table giảm còn 11px + khóa một dòng + ellipsis (component DataTable dùng chung, mọi bảng hưởng lợi); (2) Priority hiển thị dạng chip màu ngữ nghĩa ở bảng Tasks trong chi tiết dự án, card mobile của task và trường priority ở chi tiết task (helper mới `priorityBadgeClass`: urgent đỏ, high đỏ hồng, medium hổ phách, low xám); (3) bỏ viền lồng nhau ở trang chi tiết dự án theo nguyên tắc "một khối dữ liệu = một cấp viền": DataTable thêm prop `framed` — bảng Tasks nằm trong section thì bỏ khung riêng, chỉ giữ kẻ dòng, ô ở mép áp sát padding của section; milestone và card task mobile bỏ viền từng item, phân tách bằng divider; (4) skeleton lần tải đầu của trang chi tiết dự án làm lại đúng hình học: section Tasks dùng skeleton dạng table đúng 6 cột và tuân thủ quy tắc hiện sau ~200ms như các trang danh sách (trước đây là thanh xám chung chung và hiện ngay lập tức). Ngoài phạm vi: checkbox chọn nhiều dòng cho thao tác hàng loạt — PO chủ động hoãn 2026-11-26, chỉ làm khi PO chỉ định màn hình cụ thể.
 - Acceptance Criteria: Nguyen chạy app ở chế độ production (WEB_MODE=prod) kiểm tra bằng mắt trang chi tiết dự án: header bảng Tasks một dòng, không phình; Priority là chip màu; section Milestones/Tasks chỉ còn một cấp viền; mở trang chi tiết với mạng chậm (hoặc throttle trong DevTools) thấy skeleton dạng bảng. Typecheck + build PASS.
@@ -554,7 +567,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## BE-010 — Hoàn thiện membership: invitations v2 + portal invite-link + Owner-invariant tests
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: OpenCode (QA)
 - Mô tả: Ba luồng theo kế hoạch đã được PO duyệt 2026-11-25, hiệu lệnh bắt đầu + chốt mẫu email 2026-11-26 (DEC-020). (1) Invitations v2: người được mời đã có danh tính thì chấp nhận bằng cách đăng nhập rồi xác nhận (không đặt mật khẩu lần hai) — chưa đăng nhập trả 403 INVITATION_LOGIN_REQUIRED, đăng nhập bằng danh tính khác trả 403 INVITATION_IDENTITY_MISMATCH; email mới giữ luồng công khai đặt tên + mật khẩu; thêm GET /invitations/preview cho màn hình xác nhận. (2) Portal invite-link thay DEC-009 điểm 6: cấp quyền Portal cho email mới = gửi invitation kind=client (link tự đặt mật khẩu, dùng lại mẫu email lời mời, câu chữ link đổi cho Portal); email đã có danh tính = tạo membership client ngay như cũ; Q3 chặn ở mọi điểm tạo membership. (3) Bất biến Owner: thêm POST /ownership/transfer (chỉ Owner; gỡ vai Owner khỏi membership cũ + gán cho membership mới trong MỘT transaction, thu hồi token cả hai); test bao phủ transfer, giới hạn Admin, và cascade xoá client → vô hiệu membership Portal + thu hồi token.
 - Acceptance Criteria: toàn bộ suite PASS trên SQLite VÀ MySQL (107 test sau BE-010); migrate:fresh sạch trên MySQL 8; Pint PASS; các ca cốt lõi trong InvitationV2Test + OwnerInvarianceTest đều xanh; hợp đồng bổ sung ghi ở docs/TEAM_CONTRACT.md §8; DEC-020 ghi vào DECISIONS.md. Không bump VERSION.md.
@@ -566,19 +580,22 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: Luồng invitation khớp danh tính đầy đủ (mời người đã có identity ở agency khác, ALREADY_MEMBER xử lý trọn vẹn); Portal chuyển sang link mời đặt mật khẩu thay cho agency đặt mật khẩu (thay đường parity của BE-009); bộ test Owner-invariant (Owner duy nhất, không tự hạ/xoá Owner qua membership); trau chuốt directory (job_title/phone theo membership hiển thị đủ các màn phụ).
 - Handoff: Chỉ bắt đầu sau khi BE-009 merge và Nguyen ra hiệu.
 ## FE-019 — Chuẩn hoá hiển thị dữ liệu: table desktop + skeleton (DEC-021)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen (nghiệm thu trực quan)
 - Mô tả: Áp dụng quy ước DEC-021 (docs/UI_GUIDELINES.md §3 + §9) cho toàn bộ màn danh sách hiện có, làm TRƯỚC FE-014/FE-015 để các màn mới sinh ra đúng chuẩn. Phần table: dựng component table dùng chung (kẻ ngang mảnh, header dính, hover dòng, max-width + ellipsis từng cột, menu kebab cho hành động của dòng) và chuyển các màn đủ điều kiện (≤6 cột cốt lõi, nội dung ngắn): danh bạ Members, Workload, danh sách Clients, danh sách Projects, danh sách Task trong trang chi tiết project. Giữ card: Portal phía khách, thẻ Team, timeline hoạt động/ghi chú, Kanban CRM. Mobile giữ nguyên card ở mọi màn (hai cách trình bày theo breakpoint, tái dùng component card hiện có). Phần skeleton: dựng component Skeleton dùng chung + bản sao skeleton cho từng loại thẻ/dòng; áp dụng cho tải lần đầu/chuyển trang ở mọi vùng dữ liệu; đổi filter/phân trang giữ dữ liệu cũ (placeholderData) kèm chỉ dấu tải nhẹ; tôn trọng prefers-reduced-motion.
 - Acceptance Criteria: Không màn danh sách nào tràn/cuộn ngang trên desktop ở các bề rộng nghiệm thu (1280/1024); mọi vùng dữ liệu có skeleton khớp hình học nội dung thật (layout không xê dịch khi dữ liệu về); typecheck + build PASS; Nguyen nghiệm thu trực quan từng màn.
 - Progress: 2026-11-26 — PR #71 + #72 đã merge; Muse hoàn thành FE-019 trên branch fe/FE-019-data-display (component DataTable + Skeleton dùng chung, chuyển 5 bề mặt: Clients, Projects, Members, Workload, Tasks trong chi tiết project); PR #73 đã merge vào main, PO đang nghiệm thu lại ở chế độ production (WEB_MODE).
 ## CHORE-001 — Chuyển chế độ dev/production cho web bằng biến môi trường WEB_MODE
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: Muse · Reviewer: Nguyen
 - Mô tả: `docker-compose.yml` trước đây hard-code service web chạy `pnpm dev` — chế độ dev biên dịch từng trang theo từng locale ngay khi điều hướng nên nghiệm thu luôn thấy chuyển trang chậm (PO phản ánh nhiều lần, log lúc nghiệm thu FE-019 xác nhận `next dev` + Compiling liên tục). Nay web nhận biến `WEB_MODE` (mặc định `dev`): `WEB_MODE=prod docker compose up -d web` sẽ build production + `pnpm start` phục vụ nghiệm thu; không đặt biến thì giữ nguyên hành vi dev cũ. PO duyệt mở chore 2026-11-26.
 - Acceptance Criteria: `docker compose config` render đúng cả hai chế độ; chạy prod thì log không còn Compiling khi chuyển trang; mặc định (không biến) vẫn là dev như cũ.
 
 ## FE-014 — Màn hình chọn agency + bộ chuyển agency (DEC-018)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode · Reviewer: Muse
 - Progress: 2026-11-26 — OpenCode hoàn thành trên branch `fe/FE-014-agency-selection` (commit f6985eb, 19 files): `LoginResult` dạng `requiresSelection`; BFF route `select-agency` / `switch-agency` / `memberships` theo mẫu proxy hiện có; selection token lưu riêng ở sessionStorage (`auth_selection`), không bao giờ ghi vào cookie `app_token`, BFF login chỉ set cookie ở kết cục có session thật; trang `/select-agency` khung L2 Card trung tâm (tự về `/login` khi không có selection token; token hết hạn/API lỗi thì hiện thông báo rồi về `/login`); `AgencySwitcher` ngay dưới logo sidebar (1 membership = tên tĩnh; 2+ = menu, chip vai trò một dòng, đánh dấu agency hiện tại, chuyển xong tải lại `/dashboard`); thông báo `NO_ACTIVE_MEMBERSHIP` và i18n EN/VI đầy đủ. Kiểm chứng phía OpenCode: build + typecheck PASS, vitest 17/17 PASS, tinker kiểm chứng 3 kết cục đăng nhập + switch rotate/revoke token. Muse đã review code trên branch và hợp nhất thủ công TASK/CHANGELOG/messages với main hiện tại (branch dựa trên main cũ trước PR #78/#79/#80 — entry FE-014 tự tạo của OpenCode được thay bằng entry chính thức này, giữ nguyên nội dung Progress). Chờ Nguyen nghiệm thu bằng mắt (gộp cùng đợt nghiệm thu FIX-021) và merge.
 - Status: TODO
@@ -587,7 +604,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Acceptance Criteria: identity có 2 membership staff đăng nhập thấy màn hình chọn agency, chọn xong vào đúng dữ liệu của agency đã chọn; chuyển agency bằng switcher thì toàn bộ dữ liệu đổi theo, không còn dữ liệu của agency cũ; các tài khoản demo (1 membership) đăng nhập thẳng như hiện tại, không thấy màn hình chọn; khóa i18n EN/VI đầy đủ, không khóa lơ lửng; typecheck + build PASS.
 
 ## FE-015 — Màn hình chấp nhận lời mời v2 + quản lý truy cập Portal (DEC-020)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode · Reviewer: Muse
 - Progress: 2026-11-26 — OpenCode hoàn thành trên branch `fe/FE-015-invitation-accept-v2` (từ main sau PR #81): BFF proxy `preview` nội bộ + Portal; trang `/accept-invitation` và `/portal/accept-invitation` đều preview token rồi rẽ 4 trạng thái (email mới đặt mật khẩu + tự đăng nhập, identity có sẵn yêu cầu đăng nhập qua `redirectTo`, identity trùng xác nhận không hỏi password, identity khác báo lỗi rõ ràng); login nội bộ/Portal nhận `returnTo` đã sanitize; middleware cho phép mở trang mời Portal mà không bị redirect; chi tiết khách hàng bỏ form password ban đầu, cấp cho email mới → lời mời pending, email có identity → tài khoản active ngay, xử lý `INVITATION_PENDING` / `EMAIL_ALREADY_REGISTERED`. Kiểm chứng: typecheck PASS, vitest 22/22 PASS, next build PASS (64 routes), i18n EN/VI 558 khóa khớp + không khóa lơ lửng, 19 ca HTTP/tinker qua BFF (4 trạng thái nội bộ + 4 trạng thái Portal + cấp lại pending + identity có sẵn active). Chờ review/merge; KHÔNG đụng BE/migration/seed/contract, không làm ownership transfer.
 - Mô tả: Cập nhật phía FE theo hợp đồng invitations v2 của BE-010 (DEC-020). (1) Trang chấp nhận lời mời (nội bộ + Portal): đọc GET /invitations/preview theo token và hiển thị đúng theo trạng thái — email mới: form tên + mật khẩu như hiện tại; email đã có identity nhưng chưa đăng nhập: hướng dẫn đăng nhập rồi quay lại xác nhận (API trả 403 INVITATION_LOGIN_REQUIRED nếu accept trực tiếp); đã đăng nhập đúng identity: màn hình xác nhận tham gia agency (không hỏi mật khẩu); đăng nhập bằng identity khác: thông báo lỗi INVITATION_IDENTITY_MISMATCH rõ ràng. (2) Quản lý truy cập Portal ở trang chi tiết khách hàng: khớp với hành vi mới của BE-010 — cấp quyền cho email mới tạo lời mời đang chờ (hiển thị trạng thái pending thay vì tài khoản đã kích hoạt), cấp cho email đã có identity thì thành viên Portal xuất hiện ngay; thông điệp EN + VI cho các trạng thái. Luồng chuyển quyền Owner (POST /ownership/transfer) chưa có giao diện — chỉ bổ sung vào task này nếu PO chỉ định vị trí hiển thị.
@@ -595,7 +613,8 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Blockers: none (FE-014 đã merge qua PR #81).
 
 ## QA-007 — Kiểm thử hồi quy các luồng danh tính đa agency (DEC-018 + DEC-020)
-- Status: IN_PROGRESS
+- Status: DONE
+Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Assignee: OpenCode · Reviewer: Muse
 - Mô tả: Bộ test cho các luồng danh tính đã lên FE ở FE-014/FE-015: đăng nhập identity nhiều membership (màn hình chọn agency, tự chọn theo agency dùng gần nhất), chuyển agency không rò rỉ dữ liệu chéo trên giao diện và API, 4 trạng thái chấp nhận lời mời v2, cấp quyền Portal bằng liên kết mời. Ưu tiên test API/PHPUnit cho logic BE đã có và bổ sung ca UI (Playwright hoặc Vitest theo hạ tầng hiện có) cho các màn hình mới ở mức khả thi; phát hiện rò rỉ dữ liệu chéo thì DỪNG và báo cáo, không tự sửa BE.
 - Acceptance Criteria: bộ test chạy PASS toàn bộ cùng suite hiện tại; báo cáo liệt kê đủ các ca theo từng luồng; không sửa code BE/FE trong task này.
