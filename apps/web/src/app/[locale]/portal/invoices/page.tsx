@@ -46,7 +46,7 @@ export default function PortalInvoicesPage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/portal/invoices", {
+        const res = await fetch("/api/portal/invoices?per_page=100", {
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error("load failed");

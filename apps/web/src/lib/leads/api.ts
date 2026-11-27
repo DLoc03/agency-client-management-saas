@@ -50,6 +50,12 @@ export async function listLeads(
   return res.data || [];
 }
 
+export async function listLeadsPage(
+  params: Record<string, string | number | undefined> = {},
+) {
+  return request<Paginated<Lead>>(`/api/leads${queryString(params)}`);
+}
+
 export async function getLead(id: number) {
   const res = await request<{ data: Lead }>(`/api/leads/${id}`);
   return res.data;
@@ -96,7 +102,7 @@ export async function getPipelineSummary() {
 /* ---------------- Contacts (shared table) ---------------- */
 
 export async function listLeadContacts(leadId: number) {
-  const res = await request<Paginated<LeadContact>>(`/api/leads/${leadId}/contacts`);
+  const res = await request<Paginated<LeadContact>>(`/api/leads/${leadId}/contacts?per_page=100`);
   return res.data || [];
 }
 
@@ -130,7 +136,7 @@ export async function deleteLeadContact(leadId: number, contactId: number) {
 /* ---------------- Notes ---------------- */
 
 export async function listLeadNotes(leadId: number) {
-  const res = await request<Paginated<LeadNote>>(`/api/leads/${leadId}/notes`);
+  const res = await request<Paginated<LeadNote>>(`/api/leads/${leadId}/notes?per_page=100`);
   return res.data || [];
 }
 
@@ -150,7 +156,7 @@ export async function deleteLeadNote(leadId: number, noteId: number) {
 
 export async function listLeadActivities(leadId: number) {
   const res = await request<Paginated<LeadActivity>>(
-    `/api/leads/${leadId}/activities`,
+    `/api/leads/${leadId}/activities?per_page=100`,
   );
   return res.data || [];
 }
@@ -185,7 +191,7 @@ export async function deleteLeadActivity(leadId: number, activityId: number) {
 }
 
 export async function listDueActivities() {
-  const res = await request<Paginated<LeadActivity>>("/api/lead-activities/due");
+  const res = await request<Paginated<LeadActivity>>("/api/lead-activities/due?per_page=100");
   return res.data || [];
 }
 

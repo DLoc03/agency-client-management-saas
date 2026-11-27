@@ -6,7 +6,8 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
-import { listTeams, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
+import { listTeams, listTeamsPage, createTeam, deleteTeam, listUsers } from "@/lib/team/api";
+import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -20,6 +21,10 @@ export default function TeamsPage() {
   const c = useTranslations("Common");
 
   const [teams, setTeams] = useState<Team[]>([]);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -36,7 +41,10 @@ export default function TeamsPage() {
     setLoading(true);
     setError(null);
     try {
-      setTeams(await listTeams());
+      const res = await listTeamsPage({ page, per_page: perPage });
+      setTeams(res.data || []);
+      setTotal(res.meta?.total ?? res.data?.length ?? 0);
+      setLastPage(res.meta?.last_page ?? 1);
       setForbidden(false);
       listUsers()
         .then((users) => setDirectory(users.map((u) => ({ id: u.id, name: u.name, email: u.email }))))
@@ -51,7 +59,12 @@ export default function TeamsPage() {
 
   useEffect(() => {
     if (session) load();
-  }, [session]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, page, perPage]);
+
+  useEffect(() => {
+    if (page > lastPage) setPage(lastPage);
+  }, [page, lastPage]);
 
   const canCreate = !!session?.user.permissions.includes("teams.create");
   const canDelete = !!session?.user.permissions.includes("teams.delete");
@@ -174,6 +187,22 @@ export default function TeamsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {!loading && teams.length > 0 && total > 0 && (
+          <div className="mt-6">
+            <Pagination
+              page={page}
+              perPage={perPage}
+              total={total}
+              lastPage={lastPage}
+              onPageChange={setPage}
+              onPerPageChange={(value) => {
+                setPerPage(value);
+                setPage(1);
+              }}
+              disabled={loading}
+            />
           </div>
         )}
       </div>

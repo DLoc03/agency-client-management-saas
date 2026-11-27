@@ -8,11 +8,13 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { priorityBadgeClass } from "@/lib/status-colors";
 import {
   getTask,
   updateTask,
+  deleteTask,
   listChecklist,
   addChecklistItem,
   updateChecklistItem,
@@ -88,6 +90,8 @@ export default function TaskDetailPage() {
   const canUpdate = !!session?.user.permissions.includes("tasks.update");
   const canComment = !!session?.user.permissions.includes("tasks.comments.manage");
   const canAct = task?.can_act !== false;
+  const canDelete = !!session?.user.permissions.includes("tasks.delete");
+  const confirmAction = useConfirm();
   const canDeleteComment = (comment: TaskComment) =>
     comment.author?.id === session?.user.id ||
     session?.user.roles.includes("agency_owner") ||
@@ -177,6 +181,27 @@ export default function TaskDetailPage() {
     );
   }
 
+  const handleToggleVisibility = async () => {
+    if (!task) return;
+    try {
+      const updated = await updateTask(task.id, { client_visible: !(task.client_visible !== false) });
+      setTask({ ...task, client_visible: updated.client_visible });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+    }
+  };
+
+  const handleDeleteTask = async () => {
+    if (!task) return;
+    if (!(await confirmAction(t("confirmDeleteTask"), { intent: "delete" }))) return;
+    try {
+      await deleteTask(task.id);
+      router.push(`/projects/${projectId}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -188,6 +213,33 @@ export default function TaskDetailPage() {
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>
+        {canAct && (canUpdate || canDelete) && (
+          <div className="ml-auto shrink-0">
+            <ActionMenu
+              items={[
+                ...(canUpdate
+                  ? [
+                      {
+                        label: t("portal.clientVisible"),
+                        icon: task.client_visible !== false ? "eye-off" : "eye",
+                        onClick: handleToggleVisibility,
+                      },
+                    ]
+                  : []),
+                ...(canDelete
+                  ? [
+                      {
+                        label: t("actions.delete"),
+                        icon: "trash-2",
+                        danger: true,
+                        onClick: handleDeleteTask,
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          </div>
+        )}
       </div>
 
       {error && (

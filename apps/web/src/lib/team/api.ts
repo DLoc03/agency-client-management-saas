@@ -41,6 +41,17 @@ export async function listTeams(params: Record<string, string | undefined> = {})
   return paginated(res);
 }
 
+type PageMeta = { current_page: number; last_page: number; per_page: number; total: number };
+
+export async function listTeamsPage(params: Record<string, string | number | undefined> = {}) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
+  });
+  const q = qs.toString();
+  return request<{ data: Team[]; meta?: PageMeta }>(`/api/teams${q ? `?${q}` : ""}`);
+}
+
 export async function getTeam(id: number) {
   const res = await request<{ data: Team }>(`/api/teams/${id}`);
   return res.data;
@@ -88,6 +99,15 @@ export async function listUsers(params: Record<string, string | number | boolean
   return paginated(res);
 }
 
+export async function listUsersPage(params: Record<string, string | number | boolean | undefined> = {}) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
+  });
+  const q = qs.toString();
+  return request<{ data: DirectoryUser[]; meta?: PageMeta }>(`/api/users${q ? `?${q}` : ""}`);
+}
+
 export async function getUser(id: number) {
   const res = await request<{ data: DirectoryUser }>(`/api/users/${id}`);
   return res.data;
@@ -120,6 +140,15 @@ export async function updateUserActivation(id: number, isActive: boolean) {
 export async function listInvitations() {
   const res = await request<{ data: Invitation[] }>("/api/invitations");
   return paginated(res);
+}
+
+export async function listInvitationsPage(params: Record<string, string | number | undefined> = {}) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== "" && v !== null) qs.set(k, String(v));
+  });
+  const q = qs.toString();
+  return request<{ data: Invitation[]; meta?: PageMeta }>(`/api/invitations${q ? `?${q}` : ""}`);
 }
 
 export async function createInvitation(payload: Record<string, unknown>) {

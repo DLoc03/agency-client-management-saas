@@ -9,6 +9,7 @@ import { formatMoney } from "@/lib/currency";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/Avatar";
 import { Icon } from "@/components/shell/Icon";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 
 type Tab = "files" | "discussion" | "approvals" | "history";
 
@@ -108,19 +109,19 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
     (async () => {
       setFilesLoading(true);
       try {
-        const res = await fetch(`/api/portal/projects/${projectId}/files`, { headers: { Accept: "application/json" } });
+        const res = await fetch(`/api/portal/projects/${projectId}/files?per_page=100`, { headers: { Accept: "application/json" } });
         if (res.ok) { const b = await res.json(); if (!cancelled) setFiles(b.data || []); }
       } catch {}
       try {
-        const res = await fetch(`/api/portal/projects/${projectId}/comments`, { headers: { Accept: "application/json" } });
+        const res = await fetch(`/api/portal/projects/${projectId}/comments?per_page=100`, { headers: { Accept: "application/json" } });
         if (res.ok) { const b = await res.json(); if (!cancelled) setComments(b.data || []); }
       } catch {}
       try {
-        const res = await fetch(`/api/portal/projects/${projectId}/approvals`, { headers: { Accept: "application/json" } });
+        const res = await fetch(`/api/portal/projects/${projectId}/approvals?per_page=100`, { headers: { Accept: "application/json" } });
         if (res.ok) { const b = await res.json(); if (!cancelled) setApprovals(b.data || []); }
       } catch {}
       try {
-        const res = await fetch(`/api/portal/projects/${projectId}/history`, { headers: { Accept: "application/json" } });
+        const res = await fetch(`/api/portal/projects/${projectId}/history?per_page=100`, { headers: { Accept: "application/json" } });
         if (res.ok) { const b = await res.json(); if (!cancelled) setHistory(b.data || []); }
       } catch {}
       if (!cancelled) setFilesLoading(false);
@@ -197,7 +198,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
       if (res.status === 422) {
         setApprovalError(t("alreadyResponded"));
         // reload approvals
-        const r = await fetch(`/api/portal/projects/${projectId}/approvals`, { headers: { Accept: "application/json" } });
+        const r = await fetch(`/api/portal/projects/${projectId}/approvals?per_page=100`, { headers: { Accept: "application/json" } });
         if (r.ok) { const b = await r.json(); setApprovals(b.data || []); }
         return;
       }
@@ -269,25 +270,34 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
               ) : (
                 <ul className="mt-3 space-y-2">
                   {files.map((f) => (
-                    <li key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 px-4 py-3">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <Icon name={fileIcon(f.original_name, f.mime_type)} className="h-5 w-5 shrink-0 text-slate-500" />
-                        <div className="min-w-0">
-                          <p className="truncate text-sm text-slate-900">{f.original_name}</p>
-                          {f.uploaded_by && (
-                            <p className="flex items-center gap-1 text-xs text-slate-500">
-                              <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-4 w-4 text-[9px]" />
-                              {f.uploaded_by.name} · {String(f.created_at).slice(0, 10)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 gap-2">
-                        <a href={`/api/portal/projects/${projectId}/files/${f.id}/download`} className="text-xs font-medium text-emerald-700 hover:underline">{t("download")}</a>
-                        {f.uploader_kind === "client" && (
-                          <button type="button" onClick={() => handleDeleteFile(f.id)} className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-red-600 hover:underline"><Icon name="trash-2" className="h-3.5 w-3.5" /> {t("delete")}</button>
+                    <li key={f.id} className="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3">
+                      <Icon name={fileIcon(f.original_name, f.mime_type)} className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-900">{f.original_name}</p>
+                        {f.uploaded_by && (
+                          <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                            <Avatar name={f.uploaded_by.name} seed={f.uploaded_by.id} className="h-5 w-5 shrink-0 text-[9px]" />
+                            <span className="truncate"><span className="font-semibold text-slate-700">{f.uploaded_by.name}</span> · {String(f.created_at).slice(0, 10)}</span>
+                          </p>
                         )}
                       </div>
+                      <ActionMenu
+                        items={[
+                          {
+                            label: t("download"),
+                            icon: "download",
+                            onClick: () => { window.location.href = `/api/portal/projects/${projectId}/files/${f.id}/download`; },
+                          },
+                          ...(f.uploader_kind === "client"
+                            ? [{
+                                label: t("delete"),
+                                icon: "trash-2",
+                                danger: true,
+                                onClick: () => handleDeleteFile(f.id),
+                              }]
+                            : []),
+                        ]}
+                      />
                     </li>
                   ))}
                 </ul>
