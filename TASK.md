@@ -341,6 +341,14 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có (BE-009 đã merge).
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
+## FIX-035 — Gọn lại giao diện mục Tài khoản Portal ở chi tiết khách hàng (phát hiện khi nghiệm thu, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
+- Mô tả: Mục Tài khoản Portal ở trang chi tiết khách hàng (phía Workspace) dàn hàng ngang quá sơ sài. Sắp xếp lại mỗi hàng tài khoản thành 3 vùng (khối danh tính hai dòng tên/email + Avatar; chip trạng thái + dòng meta đăng nhập gần nhất text-xs; hành động), cỡ chữ nhỏ lại một nấc (nội dung text-sm, meta text-xs), và nút Vô hiệu hóa thành nút danger-soft nổi bật (nền đỏ nhạt + viền đỏ + chữ đỏ đậm + icon khoá) theo quy tắc chung mới của PO cho nút nguy hiểm — đồng thời ghi quy tắc vào docs/UI_GUIDELINES.md mục 7. Chỉ trình bày: không đổi API/logic/i18n keys.
+- Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-035-portal-accounts-ui` từ `origin/main` (`bb2d63d`); Muse bổ sung khi review: icon `lock` còn thiếu trong bộ Icon dùng chung và hồ sơ TASK/CHANGELOG chưa được push kèm.
+- Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n 725 = 725; byte-check OK; nhìn bằng mắt: hàng tài khoản gọn hai dòng, nút Vô hiệu hóa nổi bật có icon khoá và vẫn mở đúng hộp thoại xác nhận, form cấp tài khoản hoạt động, 375px không vỡ layout.
+- Blockers: Không có.
+
 ## FE-022 — Nút chuyển ngôn ngữ bằng cờ quốc gia ở Topbar (Nhóm 6/7, 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
