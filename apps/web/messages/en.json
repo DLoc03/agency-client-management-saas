@@ -8,6 +8,8 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "moreActions": "More actions",
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
     "pagination": {
       "rowsPerPage": "Rows per page",
       "page": "Page {page} of {last}",
@@ -151,6 +153,8 @@
     "siteTitle": "Brewbase - Agency & Client Management"
   },
   "Portal": {
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
     "brand": "Brewbase",
     "login": {
       "title": "Sign in to Client Portal",
@@ -308,7 +312,40 @@
         "bankAccountHolder": "Account holder",
         "vietqrPayload": "VietQR payload"
       }
-    }
+    },
+    "pendingApprovals": "Needs your approval",
+    "unpaidInvoices": "Unpaid invoices",
+    "recentFiles": "Recent files",
+    "viewAll": "View all",
+    "files": "Files",
+    "discussion": "Discussion",
+    "approvals": "Approvals",
+    "history": "History",
+    "upload": "Upload",
+    "download": "Download",
+    "delete": "Delete",
+    "approve": "Approve",
+    "requestChanges": "Request changes",
+    "comment": "Comment",
+    "send": "Send",
+    "noFiles": "No files yet",
+    "noComments": "No messages yet",
+    "noApprovals": "No approval requests",
+    "noHistory": "No history yet",
+    "clientVisible": "Visible to client",
+    "portalSection": "Client Portal",
+    "historyTypes": {
+      "comment": "{actor} commented: {excerpt}",
+      "approval_requested": "Approval requested: {title}",
+      "approval_responded": "{actor} {decision}: {title}",
+      "invoice_issued": "Invoice {number} issued: {amount}",
+      "invoice_paid": "Invoice {number} paid: {amount}"
+    },
+    "loadError": "Could not load. Please try again.",
+    "commentRequired": "Comment is required.",
+    "alreadyResponded": "Already responded.",
+    "historyDecisionApproved": "approved",
+    "historyDecisionChanges": "requested changes"
   },
   "Projects": {
     "title": "Projects",
@@ -445,6 +482,15 @@
       "remaining": "Remaining",
       "reconciliationHint": "Figures computed at read time; budget is not edited here.",
       "note": "Invoiced = sum of non-cancelled invoices; Collected = sum of payments on those invoices."
+    },
+    "portal": {
+      "historyTypes": {
+        "comment": "{actor} commented: {excerpt}",
+        "approval_requested": "Approval requested: {title}",
+        "approval_responded": "{actor} {decision}: {title}",
+        "invoice_issued": "Invoice {number} issued: {amount}",
+        "invoice_paid": "Invoice {number} paid: {amount}"
+      }
     }
   },
   "Leads": {
@@ -943,7 +989,9 @@
       "reminder_milestone_due": "Milestone {milestone} is due tomorrow",
       "reminder_milestone_overdue": "Milestone {milestone} is overdue",
       "reminder_lead_followup": "Follow up with lead {lead}",
-      "reminder_invoice_overdue": "Invoice {invoice} is overdue"
+      "reminder_invoice_overdue": "Invoice {invoice} is overdue",
+      "portal_comment": "{actor} commented on project {project}",
+      "portal_approval_response": "{actor} responded to approval \"{approval}\" on project {project}"
     }
   }
 }

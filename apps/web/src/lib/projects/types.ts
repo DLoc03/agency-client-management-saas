@@ -50,6 +50,7 @@ export interface Milestone {
   description: string | null;
   due_date: string | null;
   status: MilestoneStatus;
+  client_visible?: boolean;
   tasks_count: number | null;
   tasks_done_count: number | null;
   progress_percent: number | null;
@@ -63,6 +64,7 @@ export interface Task {
   title: string;
   description: string | null;
   status: TaskStatus;
+  client_visible?: boolean;
   priority: TaskPriority;
   milestone: { id: number; name: string } | null;
   assignee: { id: number; name: string; email: string } | null;

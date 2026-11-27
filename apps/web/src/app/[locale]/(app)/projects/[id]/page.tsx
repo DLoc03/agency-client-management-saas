@@ -28,6 +28,7 @@ import {
   deleteMilestone,
   listTasks,
   createTask,
+  updateTask,
   deleteTask,
   getTimeline,
 } from "@/lib/projects/api";
@@ -72,6 +73,17 @@ export default function ProjectDetailPage() {
   const [milestoneError, setMilestoneError] = useState<string | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
   const [forbidden, setForbidden] = useState(false);
+
+  // Client Portal (FE-023)
+  const [portalFiles, setPortalFiles] = useState<any[]>([]);
+  const [portalComments, setPortalComments] = useState<any[]>([]);
+  const [portalApprovals, setPortalApprovals] = useState<any[]>([]);
+  const [portalHistory, setPortalHistory] = useState<any[]>([]);
+  const [portalTab, setPortalTab] = useState<"files" | "discussion" | "approvals" | "history">("files");
+  const [portalCommentDraft, setPortalCommentDraft] = useState("");
+  const [portalApprovalTitle, setPortalApprovalTitle] = useState("");
+  const [portalApprovalDesc, setPortalApprovalDesc] = useState("");
+  const [portalError, setPortalError] = useState<string | null>(null);
 
   // task filters
   const [taskStatus, setTaskStatus] = useState("");
@@ -159,6 +171,36 @@ export default function ProjectDetailPage() {
   }, [session, id]);
 
   useEffect(() => {
+    if (!session || !id) return;
+    let cancelled = false;
+    const loadPortal = async () => {
+      const fetchJson = async (url: string) => {
+        try {
+          const res = await fetch(url, { headers: { Accept: "application/json" } });
+          if (!res.ok) return [];
+          const b = await res.json();
+          return b.data || [];
+        } catch {
+          return [];
+        }
+      };
+      const [files, comments, approvals, history] = await Promise.all([
+        fetchJson(`/api/projects/${id}/files`),
+        fetchJson(`/api/projects/${id}/portal-comments`),
+        fetchJson(`/api/projects/${id}/approvals`),
+        fetchJson(`/api/projects/${id}/history`),
+      ]);
+      if (cancelled) return;
+      setPortalFiles(files);
+      setPortalComments(comments);
+      setPortalApprovals(approvals);
+      setPortalHistory(history);
+    };
+    loadPortal();
+    return () => { cancelled = true; };
+  }, [session, id]);
+
+  useEffect(() => {
     if (session && id) loadTasks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, id, taskStatus, taskPriority, taskAssignee, taskMilestone]);
@@ -170,6 +212,8 @@ export default function ProjectDetailPage() {
   const canDeleteTask = !!session?.user.permissions.includes("tasks.delete");
   const canUpdateProject = !!session?.user.permissions.includes("projects.update");
   const canDeleteProject = !!session?.user.permissions.includes("projects.delete");
+  const canManagePortalFiles = !!session?.user.permissions.includes("portal.files.manage");
+  const canManagePortalApprovals = !!session?.user.permissions.includes("portal.approvals.manage");
   const currency = session?.agency.base_currency || "USD";
   // FIX-021 (option A): surface which teams currently contribute members.
   const teamNameFor = (teamId: number) =>
@@ -270,6 +314,26 @@ export default function ProjectDetailPage() {
       setProject(p);
     } catch (e) {
       setTaskError(e instanceof Error ? e.message : t("errors.createFailed"));
+    }
+  };
+
+  const handleToggleTaskVisibility = async (task: Task) => {
+    const next = !(task.client_visible !== false);
+    try {
+      const updated = await updateTask(task.id, { client_visible: next });
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, client_visible: updated.client_visible } : t)));
+    } catch (e) {
+      setTaskError(e instanceof Error ? e.message : t("errors.updateFailed"));
+    }
+  };
+
+  const handleToggleMilestoneVisibility = async (m: Milestone) => {
+    const next = !(m.client_visible !== false);
+    try {
+      const updated = await updateMilestone(id, m.id, { client_visible: next });
+      setMilestones((prev) => prev.map((x) => (x.id === m.id ? { ...x, client_visible: updated.client_visible } : x)));
+    } catch (e) {
+      setMilestoneError(e instanceof Error ? e.message : t("errors.updateFailed"));
     }
   };
 
@@ -704,6 +768,15 @@ export default function ProjectDetailPage() {
                         {m.due_date ?? "—"} · {t(`milestoneStatuses.${m.status}`)}
                       </p>
                     </div>
+                    <button
+                      type="button"
+                      disabled={!canManageMilestones}
+                      onClick={() => handleToggleMilestoneVisibility(m)}
+                      title={t("portal.clientVisible")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
+                    >
+                      <Icon name={m.client_visible !== false ? "eye" : "eye-off"} className="h-4 w-4" />
+                    </button>
                     {canManageMilestones && (
                       <ActionMenu
                         items={[
@@ -864,6 +937,25 @@ export default function ProjectDetailPage() {
                     width: "w-[12%]",
                     cellClassName: "tabular-nums",
                     render: (task) => task.due_date?.slice(0, 10) ?? "—",
+                  },
+                  {
+                    key: "portal",
+                    header: t("portal.clientVisible"),
+                    width: "w-[8%]",
+                    render: (task) => (
+                      <button
+                        type="button"
+                        disabled={!canUpdateTask}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleTaskVisibility(task);
+                        }}
+                        title={t("portal.clientVisible")}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
+                      >
+                        <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-4 w-4" />
+                      </button>
+                    ),
                   },
                   {
                     key: "actions",
@@ -1054,6 +1146,207 @@ export default function ProjectDetailPage() {
       )}
 
       {/* Task modal */}
+      {/* Client Portal (FE-023) */}
+      <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold">{t("portal.portalSection")}</h2>
+        <div className="flex gap-1 overflow-x-auto border-b border-border mb-4">
+          {(["files","discussion","approvals","history"] as const).map((tb) => (
+            <button
+              key={tb}
+              type="button"
+              onClick={() => setPortalTab(tb)}
+              className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                portalTab === tb ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t(`portal.${tb === "files" ? "files" : tb === "discussion" ? "discussion" : tb === "approvals" ? "approvals" : "history"}`)}
+            </button>
+          ))}
+        </div>
+        {portalError && (
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{portalError}</div>
+        )}
+
+        {portalTab === "files" && (
+          <div className="space-y-3">
+            {canManagePortalFiles && (
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent">
+                {t("portal.upload")}
+                <input type="file" className="hidden" onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const fd = new FormData();
+                  fd.append("file", f);
+                  try {
+                    const res = await fetch(`/api/projects/${id}/files`, { method: "POST", body: fd });
+                    if (res.ok) {
+                      const b = await res.json();
+                      setPortalFiles((prev) => [b.data, ...prev]);
+                    } else {
+                      const b = await res.json().catch(()=>null);
+                      setPortalError(b?.error?.message || c("uploadFailed"));
+                    }
+                  } catch { setPortalError(c("uploadFailed")); }
+                  e.target.value = "";
+                }} />
+              </label>
+            )}
+            {portalFiles.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("portal.noFiles")}</p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {portalFiles.map((f: any) => (
+                  <li key={f.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                    <span className="truncate">{f.original_name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{f.client_visible ? t("portal.clientVisible") : ""}</span>
+                      {canManagePortalFiles && (
+                        <>
+                          <button type="button" onClick={async () => {
+                            await fetch(`/api/projects/${id}/files/${f.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ client_visible: !f.client_visible }) });
+                            setPortalFiles((prev) => prev.map((x) => x.id === f.id ? { ...x, client_visible: !f.client_visible } : x));
+                          }} className="text-xs text-muted-foreground hover:text-foreground">
+                            <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
+                          </button>
+                          <button type="button" onClick={async () => {
+                            const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
+                            if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
+                            else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || c("deleteFailed")); }
+                          }} className="text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
+                        </>
+                      )}
+                      <a href={`/api/projects/${id}/files/${f.id}/download`} className="text-xs text-primary hover:underline">{t("portal.download")}</a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {portalTab === "discussion" && (
+          <div className="space-y-3">
+            {portalComments.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("portal.noComments")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {portalComments.map((c: any) => (
+                  <li key={c.id} className="rounded-md border border-border p-3 text-sm">
+                    <p className="text-xs text-muted-foreground">{c.author_kind} · {String(c.created_at).slice(0,10)}</p>
+                    <p className="mt-1 whitespace-pre-wrap">{c.body}</p>
+                    {canManagePortalFiles && (
+                      <button type="button" onClick={async () => {
+                        await fetch(`/api/projects/${id}/portal-comments/${c.id}`, { method: "DELETE" });
+                        setPortalComments((prev) => prev.filter((x) => x.id !== c.id));
+                      }} className="mt-1 text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!portalCommentDraft.trim()) return;
+              const res = await fetch(`/api/projects/${id}/portal-comments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ body: portalCommentDraft.trim() }) });
+              if (res.ok) { const b = await res.json(); setPortalComments((prev) => [...prev, b.data]); setPortalCommentDraft(""); } else { const b = await res.json().catch(()=>null); setPortalError(b?.error?.message || "Comment failed"); }
+            }} className="space-y-2">
+              <textarea value={portalCommentDraft} onChange={(e) => setPortalCommentDraft(e.target.value)} rows={3} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("portal.comment")} />
+              <div className="flex justify-end">
+                <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("portal.send")}</button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {portalTab === "approvals" && (
+          <div className="space-y-3">
+            {canManagePortalApprovals && (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (!portalApprovalTitle.trim()) return;
+                const res = await fetch(`/api/projects/${id}/approvals`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: portalApprovalTitle.trim(), description: portalApprovalDesc.trim() || undefined }) });
+                if (res.ok) { const b = await res.json(); setPortalApprovals((prev) => [b.data, ...prev]); setPortalApprovalTitle(""); setPortalApprovalDesc(""); } else { const b = await res.json().catch(()=>null); setPortalError(b?.error?.message || "Approval failed"); }
+              }} className="space-y-2 rounded-md border border-border p-3">
+                <input value={portalApprovalTitle} onChange={(e) => setPortalApprovalTitle(e.target.value)} placeholder={t("portal.approvals")} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
+                <textarea value={portalApprovalDesc} onChange={(e) => setPortalApprovalDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("fields.description")} />
+                <div className="flex justify-end">
+                  <button type="submit" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("actions.create")}</button>
+                </div>
+              </form>
+            )}
+            {portalApprovals.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("portal.noApprovals")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {portalApprovals.map((a: any) => (
+                  <li key={a.id} className="rounded-md border border-border p-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{a.title}</p>
+                      <span className="text-xs text-muted-foreground">{a.status}</span>
+                    </div>
+                    {a.description && <p className="mt-1 text-muted-foreground">{a.description}</p>}
+                    {canManagePortalApprovals && a.status === "pending" && (
+                      <button type="button" onClick={async () => {
+                        await fetch(`/api/projects/${id}/approvals/${a.id}`, { method: "DELETE" });
+                        setPortalApprovals((prev) => prev.filter((x) => x.id !== a.id));
+                      }} className="mt-2 text-xs text-red-600 hover:underline">{t("actions.delete")}</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {portalTab === "history" && (
+          <div className="space-y-2">
+            {portalHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("portal.noHistory")}</p>
+            ) : (
+              <ul className="space-y-2">
+                {portalHistory.map((e: any, i: number) => {
+                  const d = e as Record<string, unknown>;
+                  const actor = String((d.actor as { name?: string } | null)?.name ?? "");
+                  const title = String(d.approval_title ?? "");
+                  const number = String(d.invoice_number ?? "");
+                  const amount = formatMoney(d.amount as string | number, currency, locale) || String(d.amount ?? "");
+                  const decisionRaw = String(d.decision ?? "");
+                  const excerpt = String(d.body ?? "").slice(0, 80);
+                  let text = "";
+                  switch (String(d.type)) {
+                    case "comment":
+                      text = t("portal.historyTypes.comment", { actor, excerpt });
+                      break;
+                    case "approval_requested":
+                      text = t("portal.historyTypes.approval_requested", { title });
+                      break;
+                    case "approval_responded": {
+                      const decLabel = decisionRaw === "approved" ? t("portal.historyDecisionApproved") : t("portal.historyDecisionChanges");
+                      text = t("portal.historyTypes.approval_responded", { actor, decision: decLabel, title });
+                      break;
+                    }
+                    case "invoice_issued":
+                      text = t("portal.historyTypes.invoice_issued", { number, amount });
+                      break;
+                    case "invoice_paid":
+                      text = t("portal.historyTypes.invoice_paid", { number, amount });
+                      break;
+                    default:
+                      text = String(d.type);
+                  }
+                  return (
+                    <li key={i} className="rounded-md border border-border p-3 text-sm text-muted-foreground">
+                      <p className="text-foreground">{text}</p>
+                      <p className="mt-1 text-xs">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
+      </section>
+
       {showTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <form onSubmit={handleCreateTask} className="w-full max-w-lg space-y-4 rounded-lg bg-background p-6 shadow-xl">
