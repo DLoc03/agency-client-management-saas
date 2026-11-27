@@ -1,24 +1,26 @@
-# Hướng dẫn chạy Brewbase ở local — cả hai máy
+# Hướng dẫn chạy Brewbase ở local — theo hệ điều hành
 
 Tài liệu tham chiếu cố định: chạy dự án, khởi động lại, và xử lý các sự cố đã từng gặp.
-Chọn đúng phần theo máy đang ngồi. Mọi lệnh đều chạy tại thư mục gốc của dự án.
+Chọn đúng phần theo hệ điều hành đang dùng. Mọi lệnh đều chạy tại thư mục gốc của dự án.
 
-| | Máy công ty (Ubuntu) | Máy nhà (Windows) |
+| | Ubuntu / Linux | Windows |
 |---|---|---|
 | Thư mục dự án | `~/Sources/agency-client-management-saas` | `D:\Personal Project\agency-client-management-saas` |
 | Terminal | bash | PowerShell |
 | Web | `http://localhost:3100` | `http://localhost:3000` |
 | API | `http://localhost:8001` | `http://localhost:8000` |
-| Tài khoản demo | `owner@demo.test` / `password` (nội bộ), `client@demo.test` / `password` (Portal) | như máy công ty (nhưng dữ liệu mỗi máy một DB riêng) |
+| Tài khoản demo | `owner@demo.test` / `password` (nội bộ), `client@demo.test` / `password` (Portal) | như bên Linux (nhưng dữ liệu mỗi máy một DB riêng) |
 
-Nguyên tắc chung cho cả hai máy:
+Bảng trên là cấu hình hiện tại của chiếc máy đang chạy hệ điều hành tương ứng (máy công ty chạy Ubuntu, máy nhà chạy Windows); thư mục và cổng do cấu hình local của từng máy quyết định, còn cách chạy thì theo hệ điều hành.
+
+Nguyên tắc chung cho cả hai hệ điều hành:
 - Luôn chạy web ở **chế độ prod** khi nghiệm thu/sử dụng (build một lần lúc khởi động, duyệt trang tức thì). Dev mode biên dịch lại từng trang mỗi lần mở — chỉ dùng khi đang code FE và cần hot-reload.
 - Sau khi pull code mới: có migration mới thì **chạy migrate**, có thay đổi `composer.lock` thì **restart api**, và **dựng lại container web** — container không tự cập nhật code đang phục vụ.
 - Chỉ coi web là sẵn sàng khi log hiện dòng **Ready**. Mở trang lần đầu sau khi dựng lại thì hard-refresh (Ctrl+Shift+R) vì cache trình duyệt chậm hơn bản build.
 
 ---
 
-## Phần A — Máy công ty (Ubuntu / bash)
+## Phần A — Ubuntu / Linux (bash)
 
 ### A1. Chạy nghiệm thu chuẩn (sau khi pull code mới)
 
@@ -37,7 +39,7 @@ docker compose logs -f web
 - `git log` phải hiện đúng commit merge mới nhất (đối chiếu với mã PR Loc Jr. báo).
 - `migrate` hiện DONE cho các migration mới, hoặc "Nothing to migrate" nếu đã chạy — cả hai đều bình thường.
 - Chờ log web hiện **Ready** rồi nhấn Ctrl+C thoát xem log, mở `http://localhost:3100`, hard-refresh.
-- `.next` ở máy công ty do container chạy bằng root tạo ra nên phải có `sudo` khi xoá.
+- `.next` trên Linux do container chạy bằng root tạo ra nên phải có `sudo` khi xoá.
 
 ### A2. Khởi động lại bình thường (không có code mới)
 
@@ -55,9 +57,9 @@ docker compose down
 
 ---
 
-## Phần B — Máy nhà (Windows / PowerShell)
+## Phần B — Windows (PowerShell)
 
-### B0. Điều kiện riêng của máy nhà (chỉ cần biết, đã cấu hình sẵn)
+### B0. Điều kiện riêng trên Windows (chỉ cần biết, đã cấu hình sẵn)
 
 - **Docker Desktop phải được mở trước** khi chạy bất kỳ lệnh `docker compose` nào.
 - MySQL cài sẵn trên Windows chiếm cổng 3306, nên dự án có file local `docker-compose.override.yml` (không commit) ánh xạ MySQL sang cổng **3307**. Nếu 3307 cũng bị chiếm thì đổi sang 3308 — xem sự cố C2.
@@ -102,16 +104,16 @@ docker compose down
 
 - **Triệu chứng:** log web hiện Compiling liên tục khi duyệt trang; trang tải rất chậm.
 - **Nguyên nhân:** web đang chạy dev mode (mặc định khi không đặt WEB_MODE) — chế độ này biên dịch từng trang theo yêu cầu.
-- **Xử lý:** chuyển sang prod. Máy công ty: `docker compose stop web` rồi `WEB_MODE=prod docker compose up -d web`. Máy nhà: kiểm tra file `.env` ở gốc dự án có dòng `WEB_MODE=prod` chưa (chưa có thì thêm bằng `Add-Content .env "`nWEB_MODE=prod"`), rồi `docker compose stop web` và `docker compose up -d web`. Chờ **Ready** — từ đó duyệt trang tức thì.
+- **Xử lý:** chuyển sang prod. Trên Ubuntu/Linux: `docker compose stop web` rồi `WEB_MODE=prod docker compose up -d web`. Trên Windows: kiểm tra file `.env` ở gốc dự án có dòng `WEB_MODE=prod` chưa (chưa có thì thêm bằng `Add-Content .env "`nWEB_MODE=prod"`), rồi `docker compose stop web` và `docker compose up -d web`. Chờ **Ready** — từ đó duyệt trang tức thì.
 
 ### C2. Lỗi cổng đã bị chiếm khi `docker compose up`
 
 - **Triệu chứng:** `Error response from daemon: Ports are not available: ... bind: Only one usage of each socket address...` kèm số cổng (ví dụ 3307).
 - **Nguyên nhân:** một tiến trình hoặc container khác đang giữ cổng đó.
-- **Xử lý ở máy nhà (PowerShell):**
+- **Xử lý trên Windows (PowerShell):**
   1. Tìm thủ phạm: `netstat -ano | findstr :3307` (thay số cổng theo lỗi) — cột cuối là PID; xem nó là gì: `Get-Process -Id <PID>`. Kiểm tra thêm `docker ps` — nếu thủ phạm là container của chính dự án từ một lần chạy khác thì `docker rm -f <tên-container>` rồi `docker compose up -d` lại.
   2. Nếu thủ phạm là tiến trình Windows đang cần dùng (MySQL hệ thống, dịch vụ khác…): đừng tắt nó — **đổi cổng trong file override**: mở `notepad docker-compose.override.yml`, đổi `"3307:3306"` thành `"3308:3306"` (kiểm tra 3308 trống bằng `netstat -ano | findstr :3308` — không in gì là trống), lưu rồi `docker compose up -d`. Đổi cổng host không ảnh hưởng ứng dụng vì các container nói chuyện với nhau qua cổng nội bộ.
-- **Xử lý ở máy công ty (bash):** tìm thủ phạm bằng `sudo lsof -i :<cổng>` hoặc `docker ps`; cổng của máy công ty (8001/3100) do file override đặt — đổi số trong `docker-compose.override.yml` tương tự nếu cần.
+- **Xử lý trên Ubuntu/Linux (bash):** tìm thủ phạm bằng `sudo lsof -i :<cổng>` hoặc `docker ps`; cổng web/API trên Linux (3100/8001) do file override đặt — đổi số trong `docker-compose.override.yml` tương tự nếu cần.
 
 ### C3. Trang vẫn hiện giao diện/dữ liệu cũ sau khi pull code mới
 
@@ -131,7 +133,7 @@ docker compose down
   docker compose exec api cp .env.example .env
   docker compose exec api php artisan key:generate
   ```
-  (Máy nhà dùng cùng hai lệnh này trong PowerShell.)
+  (Trên Windows dùng cùng hai lệnh này trong PowerShell.)
 
 ### C6. Lệnh `docker compose exec api ...` báo thiếu `vendor/autoload.php`
 
