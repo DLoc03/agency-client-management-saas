@@ -8,6 +8,7 @@ use App\Http\Requests\Projects\StoreTaskCommentRequest;
 use App\Http\Resources\TaskCommentResource;
 use App\Models\Role;
 use App\Models\Task;
+use App\Support\Notifier;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +37,16 @@ class TaskCommentController extends Controller
             'author_id' => $request->user()->id,
             'body' => $request->validated('body'),
         ]);
+
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): a new comment
+        // notifies the task's assignee and creator (never the author).
+        Notifier::notifyMany([$task->assignee_id, $task->created_by], Notifier::TYPE_TASK_COMMENTED, [
+            'task_id' => $task->id,
+            'task_title' => $task->title,
+            'project_id' => $task->project_id,
+            'comment_id' => $comment->id,
+            'actor_name' => $request->user()->name,
+        ], actorId: $request->user()->id);
 
         // FIX-005 pattern: refresh for stored values, then load the author.
         return TaskCommentResource::make($comment->refresh()->load('author'))->response()->setStatusCode(201);

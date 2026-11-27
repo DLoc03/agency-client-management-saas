@@ -9,6 +9,7 @@ use App\Http\Requests\Projects\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Project;
 use App\Models\Task;
+use App\Support\Notifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -44,7 +45,20 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request, Project $project): JsonResponse
     {
-        $task = $project->tasks()->create($request->validated());
+        $task = $project->tasks()->create(array_merge($request->validated(), [
+            'created_by' => $request->user()->id,
+        ]));
+
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): a task created
+        // with an assignee notifies the new assignee.
+        if ($task->assignee_id) {
+            Notifier::notify($task->assignee_id, Notifier::TYPE_TASK_ASSIGNED, [
+                'task_id' => $task->id,
+                'task_title' => $task->title,
+                'project_id' => $project->id,
+                'actor_name' => $request->user()->name,
+            ], actorId: $request->user()->id);
+        }
 
         // FIX-005 pattern: reload so column defaults are reflected.
         return TaskResource::make($task->refresh()->load(['assignee', 'milestone']))
@@ -75,7 +89,33 @@ class TaskController extends Controller
             $data = array_intersect_key($data, array_flip(['status']));
         }
 
+        $previousStatus = $task->status;
+        $previousAssigneeId = $task->assignee_id;
+
         $task->update($data);
+
+        // BE-009 (docs/WORKFLOW_CONTRACT.md section 4): reassignment
+        // notifies the NEW assignee; a status change notifies the
+        // assignee and the task creator. The Notifier drops the actor.
+        if ($task->assignee_id && $task->assignee_id !== $previousAssigneeId) {
+            Notifier::notify($task->assignee_id, Notifier::TYPE_TASK_ASSIGNED, [
+                'task_id' => $task->id,
+                'task_title' => $task->title,
+                'project_id' => $task->project_id,
+                'actor_name' => $user->name,
+            ], actorId: $user->id);
+        }
+
+        if ($task->status !== $previousStatus) {
+            Notifier::notifyMany([$task->assignee_id, $task->created_by], Notifier::TYPE_TASK_STATUS_CHANGED, [
+                'task_id' => $task->id,
+                'task_title' => $task->title,
+                'project_id' => $task->project_id,
+                'from_status' => $previousStatus,
+                'to_status' => $task->status,
+                'actor_name' => $user->name,
+            ], actorId: $user->id);
+        }
 
         return TaskResource::make($task->refresh()->load(['assignee', 'milestone']));
     }
