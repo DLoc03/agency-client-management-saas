@@ -1,6 +1,15 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-039 — Đồng bộ trạng thái hiển thị Portal & thẻ card mobile (Nhóm 7)
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Branch: fix/FIX-039-visibility-sync
+- Progress: Theo feedback nghiệm thu cuối của PO trên FIX-038: (1) thêm khoá `Projects.portal.clientHidden` EN+VI — chip trạng thái Portal hết lệch icon/nhãn (trước đây trạng thái ẩn hiện "—"); nhãn mục bật/tắt trong mọi dropdown nay theo trạng thái (đang hiện → "Ẩn trên Portal" + icon eye-off, đang ẩn → "Hiển thị trên Portal" + icon eye); (2) thẻ công việc mobile sắp xếp lại theo khuôn dòng file của Portal Section — tiêu đề, dòng meta avatar + tên người được gán đậm + hạn, hàng chip gọn bên dưới; bảng desktop giữ nguyên; (3) trang chi tiết công việc thêm chip trạng thái hiển thị Portal cạnh tiêu đề, bên cạnh kebab đã có từ FIX-038; (4) dòng file ở Portal Section: nhãn trạng thái luôn hiển thị kèm icon đồng bộ, nút mắt chỉ còn ở desktop (lg+), trên mobile thao tác ẩn/hiện nằm trong dropdown; (5) rà soát toàn bộ dropdown menu theo yêu cầu PO — menu thao tác của danh sách Hoá đơn (buildActions động theo trạng thái) là nơi duy nhất còn thiếu icon: bổ sung eye/send/x/trash-2/download cho Xem/Gửi/Huỷ/Xoá/Tải PDF; các menu còn lại đã có đủ icon từ FIX-037.
+- Blocked by: —
+- Acceptance Criteria: Chip Portal ở card task mobile và dòng file luôn khớp icon + nhãn với trạng thái thật; dropdown bật/tắt ghi rõ hành động theo trạng thái; chi tiết công việc thấy trạng thái Portal ngay ở header; mobile không còn nút mắt lệch hàng ở tab File.
+- Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
+
+---
 ## FIX-038 — Hoàn thiện nghiệm thu vòng 2 (Nhóm 7) + phân trang danh sách
 - Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
 - Branch: fix/FIX-038-acceptance-polish

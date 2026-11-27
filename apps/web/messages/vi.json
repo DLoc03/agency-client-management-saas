@@ -505,6 +505,7 @@
       "noComments": "Chưa có tin nhắn nào.",
       "noHistory": "Chưa có lịch sử nào.",
       "clientVisible": "Hiển thị trên Portal",
+      "clientHidden": "Ẩn trên Portal",
       "approvalStatuses": {
         "pending": "Chờ duyệt",
         "approved": "Đã duyệt",

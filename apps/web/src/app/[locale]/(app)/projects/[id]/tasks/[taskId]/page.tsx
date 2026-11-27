@@ -213,6 +213,10 @@ export default function TaskDetailPage() {
           {t("actions.back")}
         </button>
         <h1 className="text-2xl font-bold tracking-tight">{task.title}</h1>
+        <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${task.client_visible !== false ? "border-slate-200 bg-slate-100 text-slate-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
+          <Icon name={task.client_visible !== false ? "eye" : "eye-off"} className="h-3 w-3" />
+          {task.client_visible !== false ? t("portal.clientVisible") : t("portal.clientHidden")}
+        </span>
         {canAct && (canUpdate || canDelete) && (
           <div className="ml-auto shrink-0">
             <ActionMenu
@@ -220,7 +224,7 @@ export default function TaskDetailPage() {
                 ...(canUpdate
                   ? [
                       {
-                        label: t("portal.clientVisible"),
+                        label: task.client_visible !== false ? t("portal.clientHidden") : t("portal.clientVisible"),
                         icon: task.client_visible !== false ? "eye-off" : "eye",
                         onClick: handleToggleVisibility,
                       },
