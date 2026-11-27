@@ -1183,7 +1183,8 @@ export default function ProjectDetailPage() {
                       const b = await res.json();
                       setPortalFiles((prev) => [b.data, ...prev]);
                     } else {
-                      setPortalError("Upload failed");
+                      const b = await res.json().catch(()=>null);
+                      setPortalError(b?.error?.message || "Upload failed");
                     }
                   } catch { setPortalError("Upload failed"); }
                   e.target.value = "";
@@ -1208,8 +1209,9 @@ export default function ProjectDetailPage() {
                             <Icon name={f.client_visible ? "eye" : "eye-off"} className="h-4 w-4" />
                           </button>
                           <button type="button" onClick={async () => {
-                            await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
-                            setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
+                            const dr = await fetch(`/api/projects/${id}/files/${f.id}`, { method: "DELETE" });
+                            if (dr.ok) setPortalFiles((prev) => prev.filter((x) => x.id !== f.id));
+                            else { const b = await dr.json().catch(()=>null); setPortalError(b?.error?.message || "Delete failed"); }
                           }} className="text-xs text-red-600 hover:underline">{t("portal.delete")}</button>
                         </>
                       )}
@@ -1246,7 +1248,7 @@ export default function ProjectDetailPage() {
               e.preventDefault();
               if (!portalCommentDraft.trim()) return;
               const res = await fetch(`/api/projects/${id}/portal-comments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ body: portalCommentDraft.trim() }) });
-              if (res.ok) { const b = await res.json(); setPortalComments((prev) => [...prev, b.data]); setPortalCommentDraft(""); }
+              if (res.ok) { const b = await res.json(); setPortalComments((prev) => [...prev, b.data]); setPortalCommentDraft(""); } else { const b = await res.json().catch(()=>null); setPortalError(b?.error?.message || "Comment failed"); }
             }} className="space-y-2">
               <textarea value={portalCommentDraft} onChange={(e) => setPortalCommentDraft(e.target.value)} rows={3} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("portal.comment")} />
               <div className="flex justify-end">
@@ -1263,7 +1265,7 @@ export default function ProjectDetailPage() {
                 e.preventDefault();
                 if (!portalApprovalTitle.trim()) return;
                 const res = await fetch(`/api/projects/${id}/approvals`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: portalApprovalTitle.trim(), description: portalApprovalDesc.trim() || undefined }) });
-                if (res.ok) { const b = await res.json(); setPortalApprovals((prev) => [b.data, ...prev]); setPortalApprovalTitle(""); setPortalApprovalDesc(""); }
+                if (res.ok) { const b = await res.json(); setPortalApprovals((prev) => [b.data, ...prev]); setPortalApprovalTitle(""); setPortalApprovalDesc(""); } else { const b = await res.json().catch(()=>null); setPortalError(b?.error?.message || "Approval failed"); }
               }} className="space-y-2 rounded-md border border-border p-3">
                 <input value={portalApprovalTitle} onChange={(e) => setPortalApprovalTitle(e.target.value)} placeholder={t("portal.approvals")} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
                 <textarea value={portalApprovalDesc} onChange={(e) => setPortalApprovalDesc(e.target.value)} rows={2} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder={t("fields.description")} />
@@ -1302,11 +1304,43 @@ export default function ProjectDetailPage() {
               <p className="text-sm text-muted-foreground">{t("portal.noHistory")}</p>
             ) : (
               <ul className="space-y-2">
-                {portalHistory.map((e: any, i: number) => (
-                  <li key={i} className="rounded-md border border-border p-3 text-sm text-muted-foreground">
-                    {String(e.type)} · {String(e.created_at).slice(0, 10)}
-                  </li>
-                ))}
+                {portalHistory.map((e: any, i: number) => {
+                  const d = e as Record<string, unknown>;
+                  const actor = String((d.actor as { name?: string } | null)?.name ?? "");
+                  const title = String(d.approval_title ?? "");
+                  const number = String(d.invoice_number ?? "");
+                  const amount = formatMoney(d.amount as string | number, currency, locale) || String(d.amount ?? "");
+                  const decisionRaw = String(d.decision ?? "");
+                  const excerpt = String(d.body ?? "").slice(0, 80);
+                  let text = "";
+                  switch (String(d.type)) {
+                    case "comment":
+                      text = t("portal.historyTypes.comment", { actor, excerpt });
+                      break;
+                    case "approval_requested":
+                      text = t("portal.historyTypes.approval_requested", { title });
+                      break;
+                    case "approval_responded": {
+                      const decLabel = decisionRaw === "approved" ? t("portal.historyDecisionApproved") : t("portal.historyDecisionChanges");
+                      text = t("portal.historyTypes.approval_responded", { actor, decision: decLabel, title });
+                      break;
+                    }
+                    case "invoice_issued":
+                      text = t("portal.historyTypes.invoice_issued", { number, amount });
+                      break;
+                    case "invoice_paid":
+                      text = t("portal.historyTypes.invoice_paid", { number, amount });
+                      break;
+                    default:
+                      text = String(d.type);
+                  }
+                  return (
+                    <li key={i} className="rounded-md border border-border p-3 text-sm text-muted-foreground">
+                      <p className="text-foreground">{text}</p>
+                      <p className="mt-1 text-xs">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

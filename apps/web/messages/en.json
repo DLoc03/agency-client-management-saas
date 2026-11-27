@@ -329,7 +329,19 @@
     "noApprovals": "No approval requests",
     "noHistory": "No history yet",
     "clientVisible": "Visible to client",
-    "portalSection": "Client Portal"
+    "portalSection": "Client Portal",
+    "historyTypes": {
+      "comment": "{actor} commented: {excerpt}",
+      "approval_requested": "Approval requested: {title}",
+      "approval_responded": "{actor} {decision}: {title}",
+      "invoice_issued": "Invoice {number} issued: {amount}",
+      "invoice_paid": "Invoice {number} paid: {amount}"
+    },
+    "loadError": "Could not load. Please try again.",
+    "commentRequired": "Comment is required.",
+    "alreadyResponded": "Already responded.",
+    "historyDecisionApproved": "approved",
+    "historyDecisionChanges": "requested changes"
   },
   "Projects": {
     "title": "Projects",
@@ -466,6 +478,15 @@
       "remaining": "Remaining",
       "reconciliationHint": "Figures computed at read time; budget is not edited here.",
       "note": "Invoiced = sum of non-cancelled invoices; Collected = sum of payments on those invoices."
+    },
+    "portal": {
+      "historyTypes": {
+        "comment": "{actor} commented: {excerpt}",
+        "approval_requested": "Approval requested: {title}",
+        "approval_responded": "{actor} {decision}: {title}",
+        "invoice_issued": "Invoice {number} issued: {amount}",
+        "invoice_paid": "Invoice {number} paid: {amount}"
+      }
     }
   },
   "Leads": {

@@ -329,7 +329,19 @@
     "noApprovals": "Chưa có yêu cầu phê duyệt",
     "noHistory": "Chưa có lịch sử",
     "clientVisible": "Khách nhìn thấy",
-    "portalSection": "Cổng khách hàng"
+    "portalSection": "Cổng khách hàng",
+    "historyTypes": {
+      "comment": "{actor} đã bình luận: {excerpt}",
+      "approval_requested": "Yêu cầu duyệt: {title}",
+      "approval_responded": "{actor} đã {decision}: {title}",
+      "invoice_issued": "Hoá đơn {number} đã phát hành: {amount}",
+      "invoice_paid": "Hoá đơn {number} đã thanh toán: {amount}"
+    },
+    "loadError": "Không tải được. Vui lòng thử lại.",
+    "commentRequired": "Nhận xét là bắt buộc.",
+    "alreadyResponded": "Đã được xử lý.",
+    "historyDecisionApproved": "đồng ý",
+    "historyDecisionChanges": "yêu cầu chỉnh sửa"
   },
   "Projects": {
     "title": "Dự án",
@@ -466,6 +478,15 @@
       "remaining": "Còn lại",
       "reconciliationHint": "Số liệu tính lúc đọc; không sửa ngân sách ở đây.",
       "note": "Invoiced = tổng hoá đơn chưa hủy của dự án; Collected = tổng thanh toán trên những hoá đơn đó."
+    },
+    "portal": {
+      "historyTypes": {
+        "comment": "{actor} đã bình luận: {excerpt}",
+        "approval_requested": "Yêu cầu duyệt: {title}",
+        "approval_responded": "{actor} đã {decision}: {title}",
+        "invoice_issued": "Hoá đơn {number} đã phát hành: {amount}",
+        "invoice_paid": "Hoá đơn {number} đã thanh toán: {amount}"
+      }
     }
   },
   "Leads": {

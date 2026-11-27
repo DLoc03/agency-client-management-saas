@@ -4,6 +4,8 @@ import { usePortalAuth, type PortalProject } from "@/lib/portal-auth";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { formatMoney } from "@/lib/currency";
 import Link from "next/link";
 
 type Tab = "files" | "discussion" | "approvals" | "history";
@@ -19,6 +21,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
   const router = useRouter();
   const tp = useTranslations("Portal");
   const ts = useTranslations("Projects");
+  const locale = useLocale();
   const t = useTranslations("Portal");
 
   const [project, setProject] = useState<PortalProject | null>(null);
@@ -86,7 +89,9 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
     return () => { cancelled = true; };
   }, [session, project, projectId]);
 
+  const [fileError, setFileError] = useState<string | null>(null);
   const handleUpload = async (file: File) => {
+    setFileError(null);
     const fd = new FormData();
     fd.append("file", file);
     try {
@@ -94,15 +99,28 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
       if (res.ok) {
         const b = await res.json();
         setFiles((prev) => [b.data, ...prev]);
+      } else {
+        const b = await res.json().catch(() => null);
+        setFileError(b?.error?.message || "Upload failed");
       }
-    } catch {}
+    } catch {
+      setFileError("Upload failed");
+    }
   };
 
   const handleDeleteFile = async (fileId: number) => {
+    setFileError(null);
     try {
-      await fetch(`/api/portal/projects/${projectId}/files/${fileId}`, { method: "DELETE" });
-      setFiles((prev) => prev.filter((f) => f.id !== fileId));
-    } catch {}
+      const res = await fetch(`/api/portal/projects/${projectId}/files/${fileId}`, { method: "DELETE" });
+      if (res.ok) {
+        setFiles((prev) => prev.filter((f) => f.id !== fileId));
+      } else {
+        const b = await res.json().catch(() => null);
+        setFileError(b?.error?.message || "Delete failed");
+      }
+    } catch {
+      setFileError("Delete failed");
+    }
   };
 
   const handleComment = async (e: React.FormEvent) => {
@@ -120,14 +138,14 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
       setComments((prev) => [...prev, b.data]);
       setNewComment("");
     } catch {
-      setCommentError(t("loadError", { default: "Could not send." }));
+      setCommentError(t("loadError"));
     }
   };
 
   const handleRespond = async (approvalId: number, decision: "approved" | "changes_requested") => {
     setApprovalError(null);
     if (decision === "changes_requested" && !responseComment.trim()) {
-      setApprovalError(t("commentRequired", { default: "Comment is required." }));
+      setApprovalError(t("commentRequired"));
       return;
     }
     setRespondingId(approvalId);
@@ -138,7 +156,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
         body: JSON.stringify({ decision, comment: responseComment.trim() || undefined }),
       });
       if (res.status === 422) {
-        setApprovalError(t("alreadyResponded", { default: "Already responded." }));
+        setApprovalError(t("alreadyResponded"));
         // reload approvals
         const r = await fetch(`/api/portal/projects/${projectId}/approvals`, { headers: { Accept: "application/json" } });
         if (r.ok) { const b = await r.json(); setApprovals(b.data || []); }
@@ -149,7 +167,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
       setApprovals((prev) => prev.map((a) => (a.id === approvalId ? b.data : a)));
       setResponseComment("");
     } catch {
-      setApprovalError(t("loadError", { default: "Could not respond." }));
+      setApprovalError(t("loadError"));
     } finally {
       setRespondingId(null);
     }
@@ -212,6 +230,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                   <input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); e.target.value = ""; }} />
                 </label>
               </div>
+              {fileError && <p className="mb-2 text-sm text-red-700">{fileError}</p>}
               {files.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-500">{t("noFiles")}</p>
               ) : (
@@ -301,11 +320,43 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
                 <p className="mt-3 text-sm text-slate-500">{t("noHistory")}</p>
               ) : (
                 <ul className="mt-3 space-y-2">
-                  {history.map((e, i) => (
-                    <li key={i} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                      {String(e.type)} · {String(e.created_at).slice(0, 10)}
-                    </li>
-                  ))}
+                  {history.map((e, i) => {
+                    const d = e as Record<string, unknown>;
+                    const actor = String((d.actor as { name?: string } | null)?.name ?? "");
+                    const title = String(d.approval_title ?? "");
+                    const number = String(d.invoice_number ?? "");
+                    const amount = formatMoney(d.amount as string | number, "USD", locale) || String(d.amount ?? "");
+                    const decisionRaw = String(d.decision ?? "");
+                    const excerpt = String(d.body ?? "").slice(0, 80);
+                    let text = "";
+                    switch (String(d.type)) {
+                      case "comment":
+                        text = t("historyTypes.comment", { actor, excerpt });
+                        break;
+                      case "approval_requested":
+                        text = t("historyTypes.approval_requested", { title });
+                        break;
+                      case "approval_responded": {
+                        const decLabel = decisionRaw === "approved" ? t("historyDecisionApproved") : t("historyDecisionChanges");
+                        text = t("historyTypes.approval_responded", { actor, decision: decLabel, title });
+                        break;
+                      }
+                      case "invoice_issued":
+                        text = t("historyTypes.invoice_issued", { number, amount });
+                        break;
+                      case "invoice_paid":
+                        text = t("historyTypes.invoice_paid", { number, amount });
+                        break;
+                      default:
+                        text = String(d.type);
+                    }
+                    return (
+                      <li key={i} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                        <p>{text}</p>
+                        <p className="mt-1 text-xs text-slate-500">{new Date(String(d.occurred_at)).toLocaleString(locale)}</p>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </section>

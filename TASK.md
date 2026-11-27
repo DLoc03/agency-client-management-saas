@@ -341,6 +341,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Acceptance Criteria: Chốt khi soạn prompt sau QA-008; tuân thủ DEC-013 (Portal Bento emerald), DEC-021/023/025 và quy ước i18n EN + VI đầy đủ.
 - Blockers: Không có (BE-011 + QA-008 đã qua).
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-023-portal-collaboration-ui` từ `origin/main` (`bfdc0f3`). Hướng thiết kế theo mẫu PO duyệt: bố cục A (Bento kính mờ) + diện mạo C (tiến độ nổi bật) cho Portal; nội bộ giữ phong cách workspace.
+- Progress: 2026-11-27 — Vòng sửa R1–R3: lịch sử địa phương hoá (Portal.historyTypes + Projects.portal.historyTypes), lỗi file/bình luận/phê duyệt hiển thị tại chỗ (DEC-025), bỏ { default } khỏi t(); thêm khoá historyDecisionApproved/Changes.
 
 ## FIX-031 — Batch BE nhỏ tồn đọng Nhóm 5: GET payment-details + validate project cùng client (mục 4 trong thứ tự PO duyệt 2026-11-27)
 - Status: IN_PROGRESS
