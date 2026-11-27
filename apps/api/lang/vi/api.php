@@ -3,6 +3,7 @@
 return [
     'UNAUTHENTICATED' => 'Chưa đăng nhập.',
     'FORBIDDEN' => 'Bạn không có quyền thực hiện thao tác này.',
+    'TASK_ACTION_FORBIDDEN' => 'Chỉ người được giao hoặc quản lý dự án mới có thể thay đổi task này.',
     'NOT_FOUND' => 'Không tìm thấy dữ liệu yêu cầu.',
     'VALIDATION_FAILED' => 'Dữ liệu gửi lên không hợp lệ.',
     'RATE_LIMITED' => 'Quá nhiều lần thử. Vui lòng thử lại sau.',

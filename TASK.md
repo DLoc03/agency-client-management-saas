@@ -333,6 +333,13 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có (BE-009 đã merge).
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
+## FIX-033 — Phạm vi thao tác trên task: chỉ assignee / quản lý dự án / vai trò quản lý (phát hiện khi nghiệm thu FE-021, 2026-11-27)
+- Status: IN_PROGRESS
+- Assignee: Muse (BE) + OpenCode (FE) · Reviewer: Nguyen
+- Mô tả: Theo DEC-027 (PO chốt theo đề xuất của Muse tại nghiệm thu FE-021): API trước nay chỉ chặn thao tác trên task theo quyền vai trò, thiếu kiểm tra phạm vi — staff không được giao vẫn sửa/comment/checklist được task của người khác (mâu thuẫn DEC-005), FE lại render đủ nút thao tác rồi để user ăn banner 403 thô (trái DEC-025). Phần BE: quy tắc một điểm tại Task::canBeActedOnBy() (assignee, hoặc quản lý dự án qua projects.project_manager_id, hoặc membership hiện tại là Owner / giữ vai trò Admin / Project Manager); guard áp cho PATCH + DELETE task, tạo comment, tạo/sửa/xoá checklist — vi phạm trả 403 TASK_ACTION_FORBIDDEN (lang EN/VI); TaskResource thêm cờ can_act tính theo cùng quy tắc. Phần FE (làm sau, chờ PR BE merge): khoá các control theo can_act kèm ghi chú tại chỗ trên trang chi tiết task, bỏ banner 403 thô.
+- Acceptance Criteria: Test PHPUnit mới tests/Feature/Projects/TaskActionScopeTest.php — assignee thao tác được (đổi trạng thái, comment, thêm + tick checklist); Team Member không được giao (vẫn xem được task qua tư cách thành viên dự án) bị 403 TASK_ACTION_FORBIDDEN ở PATCH task / POST comment / POST + PATCH + DELETE checklist; quản lý dự án (chỉ giữ vai trò Team Member) thao tác được; vai trò Project Manager / Admin / Owner thao tác được mọi task; payload GET task có can_act đúng (true cho assignee + Owner, false cho thành viên không được giao). Toàn suite PASS; Pint PASS; byte-check OK.
+- Progress: 2026-11-27 — Muse triển khai phần BE trên branch `fix/FIX-033-task-action-scope` từ `origin/main` (`472d0e7`). Phần FE ⏸ chờ PR BE này merge mới soạn prompt (kỷ luật prompt).
+- Blockers: Không có ở phần BE; phần FE chờ PR BE merge.
 ## FIX-032 — Nhãn trường Thuế và hàng nhãn mục hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-27)
 - Status: IN_PROGRESS
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
