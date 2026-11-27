@@ -1149,13 +1149,13 @@ export default function ProjectDetailPage() {
       {/* Client Portal (FE-023) */}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">{t("portal.portalSection")}</h2>
-        <div className="flex gap-1 overflow-x-auto border-b border-border mb-4">
+        <div className="flex flex-wrap gap-2 border-b border-border mb-4">
           {(["files","discussion","approvals","history"] as const).map((tb) => (
             <button
               key={tb}
               type="button"
               onClick={() => setPortalTab(tb)}
-              className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
                 portalTab === tb ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >

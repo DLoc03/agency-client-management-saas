@@ -486,6 +486,23 @@
       "note": "Invoiced = sum of non-cancelled invoices; Collected = sum of payments on those invoices."
     },
     "portal": {
+      "portalSection": "Client Portal",
+      "files": "Files",
+      "discussion": "Discussion",
+      "approvals": "Approvals",
+      "history": "History",
+      "upload": "Upload",
+      "noFiles": "No files yet.",
+      "noApprovals": "No approval requests yet.",
+      "noComments": "No messages yet.",
+      "noHistory": "No history yet.",
+      "clientVisible": "Shown in portal",
+      "comment": "Write a reply…",
+      "send": "Send",
+      "delete": "Delete",
+      "download": "Download",
+      "historyDecisionApproved": "approved",
+      "historyDecisionChanges": "requested changes",
       "historyTypes": {
         "comment": "{actor} commented: {excerpt}",
         "approval_requested": "Approval requested: {title}",
