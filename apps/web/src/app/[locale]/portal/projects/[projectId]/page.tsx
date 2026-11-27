@@ -205,13 +205,13 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Tabs */}
-          <div className="mt-6 flex gap-1 overflow-x-auto border-b border-slate-200">
+          <div className="mt-6 flex flex-wrap gap-2 border-b border-slate-200">
             {(["files", "discussion", "approvals", "history"] as Tab[]).map((tb) => (
               <button
                 key={tb}
                 type="button"
                 onClick={() => setTab(tb)}
-                className={`-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                className={`border-b-2 px-3 py-2 text-sm font-medium transition-colors rounded-sm flex-1 ${
                   tab === tb ? "border-emerald-500 text-slate-900" : "border-transparent text-slate-500 hover:text-slate-900"
                 }`}
               >
@@ -270,7 +270,7 @@ export default function PortalProjectDetailPage({ params }: { params: Promise<{ 
               <form onSubmit={handleComment} className="mt-4 space-y-2">
                 {commentError && <p className="text-sm text-red-700">{commentError}</p>}
                 <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} rows={3} className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm" placeholder={t("comment")} />
-                <div className="flex justify-end">
+                <div className="flex justify-center text-center">
                   <button type="submit" className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700">{t("send")}</button>
                 </div>
               </form>

@@ -153,6 +153,8 @@
     "siteTitle": "Brewbase - Agency & Client Management"
   },
   "Portal": {
+    "back": "Back",
+    "progress": "Progress",
     "uploadFailed": "Upload failed",
     "deleteFailed": "Delete failed",
     "brand": "Brewbase",

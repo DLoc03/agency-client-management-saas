@@ -13,6 +13,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 ## 2. Tương thích nhiều loại màn hình (responsive)
 
 - Mọi màn hình phải dùng tốt ở các bề rộng phổ biến, từ điện thoại tới desktop: không vỡ bố cục, không tràn ngang ngoài ý muốn, không che khuất nội dung.
+- **Trên mobile, nút bấm chiếm toàn chiều rộng → nhãn phải CĂN GIỮA**: khi một button có `width: 100%` (full-width) trên mobile, nội dung chữ (label) phải được căn giữa theo trục ngang ( `text-center` hoặc `justify-center`). Áp dụng cho các nút submit, nút xác nhận, và các nút hành động chính trong giao diện Client Portal và Portal.
 - Tự kiểm tra ít nhất ở 3 bề rộng đại diện (nhỏ, trung bình, lớn) trước khi báo cáo hoàn thành.
 
 ## 3. Hiển thị dữ liệu danh sách: table trên desktop, card trên mobile (DEC-021, PO chốt 2026-11-26)

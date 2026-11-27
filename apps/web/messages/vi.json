@@ -153,6 +153,8 @@
     "siteTitle": "Brewbase - Quản lý Agency & Khách hàng"
   },
   "Portal": {
+    "back": "Quay lại",
+    "progress": "Tiến độ",
     "uploadFailed": "Tải lên thất bại",
     "deleteFailed": "Xoá thất bại",
     "brand": "Brewbase",
