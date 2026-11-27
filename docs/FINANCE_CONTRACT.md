@@ -70,6 +70,7 @@ Approved by the Product Owner as proposed on 2026-11-25 (DEC-019). This contract
   - Sent → Cancelled: `POST /invoices/{id}/cancel` — only when **no payment exists yet** (with payments → 422 `CANNOT_CANCEL_INVOICE`); Paid can never be cancelled (no refunds in the MVP).
   - Draft → Delete: Owner only, soft delete; Sent/Paid/Cancelled cannot be deleted (422 `CANNOT_DELETE_INVOICE`) — cancel first instead.
   - Any other mutation of a non-Draft invoice (PATCH on Sent/Paid/Cancelled, send on a non-Draft invoice) → 422 `INVOICE_NOT_EDITABLE`. (Code named at implementation time in BE-008; this contract originally specified the Draft-only rule in §4.2 without naming the rejection code.)
+- **Project–client consistency (FIX-031):** an invoice's `project_id` must belong to the same client as the invoice's `client_id`, on create and on update (when an update omits `client_id`, the invoice's stored client applies). A project of another client in the same workspace → 422 `PROJECT_CLIENT_MISMATCH`; a project from another workspace still answers 422 `CROSS_TENANT_REFERENCE`.
 
 ### 4.4 Manual payments
 - Recordable only on Sent/Overdue invoices (Draft/Cancelled → 422 `PAYMENT_NOT_ALLOWED`).
@@ -91,7 +92,7 @@ Approved by the Product Owner as proposed on 2026-11-25 (DEC-019). This contract
 6. `POST /invoices/{id}/send` · 7. `POST /invoices/{id}/cancel`
 8. `GET /invoices/{id}/pdf`
 9. `POST /invoices/{id}/payments` · 10. `GET /invoices/{id}/payments` · 11. `DELETE /payments/{id}` (soft delete, recompute balance/status)
-12. `PATCH /agencies/{id}/payment-details` (bank_name, bank_account_number, bank_account_holder, vietqr_payload — Owner/Admin)
+12. `PATCH /agencies/{id}/payment-details` (bank_name, bank_account_number, bank_account_holder, vietqr_payload — Owner/Admin) · `GET /agencies/{id}/payment-details` (FIX-031 — same Owner/Admin permission, same response shape, so the settings form can prefill the saved details instead of opening empty)
 13. `GET /portal/invoices` · 14. `GET /portal/invoices/{id}` (read-only, client-scoped)
 
 ## 6. Project Budget reconciliation figures (read-time, like BE-006 progress %)

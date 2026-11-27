@@ -435,6 +435,109 @@ class InvoiceModuleTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_agency_payment_details_get_returns_saved_and_empty_fields(): void
+    {
+        $owner = $this->makeUser();
+        $agencyId = $owner->agency_id;
+        $sales = $this->makeUser([Role::SALES_MANAGER], $agencyId);
+        $otherAgency = $this->makeUser();
+
+        // Fresh agency: the four fields read back as null.
+        $this->as($owner)->getJson("/api/v1/agencies/{$agencyId}/payment-details")
+            ->assertOk()
+            ->assertJsonPath('data.id', $agencyId)
+            ->assertJsonPath('data.bank_name', null)
+            ->assertJsonPath('data.vietqr_payload', null);
+
+        // After a PATCH, GET returns the same shape with the saved values.
+        $this->as($owner)->patchJson("/api/v1/agencies/{$agencyId}/payment-details", [
+            'bank_name' => 'Vietcombank',
+            'bank_account_number' => '1234567890',
+            'bank_account_holder' => 'Demo Agency',
+            'vietqr_payload' => 'qr-static-payload',
+        ])->assertOk();
+
+        $this->as($owner)->getJson("/api/v1/agencies/{$agencyId}/payment-details")
+            ->assertOk()
+            ->assertJsonPath('data.bank_name', 'Vietcombank')
+            ->assertJsonPath('data.bank_account_number', '1234567890')
+            ->assertJsonPath('data.bank_account_holder', 'Demo Agency')
+            ->assertJsonPath('data.vietqr_payload', 'qr-static-payload');
+
+        // Same authorization as PATCH: Sales Manager may not read it...
+        $this->as($sales)->getJson("/api/v1/agencies/{$agencyId}/payment-details")->assertForbidden();
+
+        // ...and another agency's id is a 404, never foreign data.
+        $this->as($owner)->getJson("/api/v1/agencies/{$otherAgency->agency_id}/payment-details")->assertNotFound();
+    }
+
+    public function test_invoice_project_must_belong_to_the_same_client(): void
+    {
+        $owner = $this->makeUser();
+        $clientA = $this->makeClient($owner);
+        $clientB = $this->makeClient($owner);
+        $projectA = Project::factory()->create(['agency_id' => $owner->agency_id, 'client_id' => $clientA->id]);
+        $projectB = Project::factory()->create(['agency_id' => $owner->agency_id, 'client_id' => $clientB->id]);
+        $otherAgency = $this->makeUser();
+        $foreignProject = Project::factory()->create([
+            'agency_id' => $otherAgency->agency_id,
+            'client_id' => $this->makeClient($otherAgency)->id,
+        ]);
+
+        $items = [['description' => 'X', 'quantity' => 1, 'unit_price' => 10]];
+
+        // Create: a project of another client in the same agency is rejected.
+        $this->as($owner)->postJson('/api/v1/invoices', [
+            'client_id' => $clientA->id,
+            'project_id' => $projectB->id,
+            'items' => $items,
+        ])->assertStatus(422)->assertJsonPath('error.code', 'PROJECT_CLIENT_MISMATCH');
+
+        // Create with the project's own client, or with no project, is fine.
+        $invoiceId = $this->as($owner)->postJson('/api/v1/invoices', [
+            'client_id' => $clientA->id,
+            'project_id' => $projectA->id,
+            'items' => $items,
+        ])->assertCreated()->json('data.id');
+        $this->as($owner)->postJson('/api/v1/invoices', [
+            'client_id' => $clientA->id,
+            'items' => $items,
+        ])->assertCreated();
+
+        // Update: switching only the project to another client's project
+        // is rejected — the invoice's stored client applies.
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'project_id' => $projectB->id,
+        ])->assertStatus(422)->assertJsonPath('error.code', 'PROJECT_CLIENT_MISMATCH');
+
+        // Update with the same client's project, or clearing the project, is fine.
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'project_id' => $projectA->id,
+        ])->assertOk();
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'project_id' => null,
+        ])->assertOk();
+
+        // Update that moves the client while the project stays put is
+        // judged against the NEW client.
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'project_id' => $projectA->id,
+        ])->assertOk();
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'client_id' => $clientB->id,
+        ])->assertStatus(422)->assertJsonPath('error.code', 'PROJECT_CLIENT_MISMATCH');
+
+        // A project from another agency still answers CROSS_TENANT_REFERENCE.
+        $this->as($owner)->postJson('/api/v1/invoices', [
+            'client_id' => $clientA->id,
+            'project_id' => $foreignProject->id,
+            'items' => $items,
+        ])->assertStatus(422)->assertJsonPath('error.code', 'CROSS_TENANT_REFERENCE');
+        $this->as($owner)->patchJson("/api/v1/invoices/{$invoiceId}", [
+            'project_id' => $foreignProject->id,
+        ])->assertStatus(422)->assertJsonPath('error.code', 'CROSS_TENANT_REFERENCE');
+    }
+
     public function test_project_reconciliation_figures(): void
     {
         $owner = $this->makeUser();

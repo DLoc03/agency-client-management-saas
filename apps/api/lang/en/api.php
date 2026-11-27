@@ -40,5 +40,6 @@ return [
     'CANNOT_CANCEL_INVOICE' => 'This invoice cannot be cancelled.',
     'CANNOT_DELETE_INVOICE' => 'Only a draft invoice can be deleted.',
     'PAYMENT_NOT_ALLOWED' => 'Payments can only be recorded on a sent invoice.',
+    'PROJECT_CLIENT_MISMATCH' => 'The selected project belongs to a different client than this invoice.',
     'OVERPAYMENT_NOT_ALLOWED' => 'The payment exceeds the balance due on this invoice.',
 ];
