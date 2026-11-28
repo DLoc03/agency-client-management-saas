@@ -234,6 +234,16 @@ class InvitationController extends Controller
             return $user;
         });
 
+        // FIX-024 (DEC-030): an invitation-scoped login token is
+        // one-shot — once the accept succeeds it has served its only
+        // purpose, so it is deleted instead of lingering until expiry.
+        if ($authUser) {
+            $accessToken = $authUser->currentAccessToken();
+            if ($accessToken && $accessToken->abilities === ['invitation']) {
+                $accessToken->delete();
+            }
+        }
+
         return response()->json([
             'data' => [
                 'user_id' => $result->id,

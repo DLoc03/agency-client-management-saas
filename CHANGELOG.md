@@ -6,6 +6,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Fixed
+- Invitation login dead-end removed (FIX-024, DEC-030): an existing identity with zero active memberships and a pending invitation no longer gets stuck between `INVITATION_LOGIN_REQUIRED` and `NO_ACTIVE_MEMBERSHIP` — login now returns an `invitation_only` payload with a scope-limited token (single `invitation` ability, 60-minute expiry, no membership or agency binding) whose only useful endpoint is `POST /invitations/accept`, and the token is deleted on a successful accept. Tenant endpoints keep rejecting it, and identities without a pending invitation still receive 403 `NO_ACTIVE_MEMBERSHIP` exactly as before.
+
 ## [1.0.0] - 2026-11-28
 
 ### Added

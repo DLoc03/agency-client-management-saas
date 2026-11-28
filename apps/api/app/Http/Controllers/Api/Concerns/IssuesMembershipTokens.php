@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Concerns;
 
 use App\Exceptions\ApiException;
+use App\Models\Invitation;
 use App\Models\Membership;
 use App\Models\User;
 use App\Support\Tenant;
@@ -91,6 +92,45 @@ trait IssuesMembershipTokens
     }
 
     /**
+     * FIX-024 (DEC-030): a token whose only ability is `invitation`,
+     * bound to no membership and no agency. ResolveTenant rejects it
+     * on every tenant endpoint; its one useful call is accepting the
+     * pending invitation (POST /invitations/accept), after which it
+     * is deleted.
+     */
+    protected function issueInvitationToken(User $user): string
+    {
+        return $user->createToken('invitation', ['invitation'], now()->addMinutes(60))->plainTextToken;
+    }
+
+    /**
+     * The earliest still-pending invitation addressed to this
+     * identity on the given login surface (staff / portal), if any.
+     * Bypass reason: this runs in the login flow, before any tenant
+     * context exists — the lookup is strictly for the identity that
+     * just authenticated (matched by user_id or by email) and only
+     * decides whether an invitation-scoped token may be issued.
+     */
+    protected function pendingInvitationFor(User $user, ?string $membershipKind): ?Invitation
+    {
+        $invitationKind = match ($membershipKind) {
+            Membership::KIND_STAFF => Invitation::KIND_STAFF,
+            Membership::KIND_CLIENT => Invitation::KIND_CLIENT,
+            default => null,
+        };
+
+        return Invitation::withoutGlobalScopes()
+            ->whereNull('accepted_at')
+            ->whereNull('revoked_at')
+            ->where('expires_at', '>', now())
+            ->when($invitationKind, fn ($q) => $q->where('kind', $invitationKind))
+            ->where(fn ($q) => $q->where('user_id', $user->id)
+                ->orWhere('email', $user->email))
+            ->orderBy('id')
+            ->first();
+    }
+
+    /**
      * Decide the login outcome for an authenticated identity:
      * exactly one usable membership (or a remembered one) → full
      * token; several → selection token + list; none → 403.
@@ -102,6 +142,29 @@ trait IssuesMembershipTokens
         $memberships = $this->activeMemberships($user, $kind);
 
         if ($memberships->isEmpty()) {
+            // FIX-024 (DEC-030): an identity with no membership but a
+            // pending invitation would otherwise dead-end here — it
+            // could never sign in to accept the invitation. Give it a
+            // scoped invitation token instead; with no pending
+            // invitation the refusal is unchanged.
+            $invitation = $this->pendingInvitationFor($user, $kind);
+            if ($invitation) {
+                $invitation->load('agency');
+
+                return [
+                    'invitation_only' => true,
+                    'token' => $this->issueInvitationToken($user),
+                    'identity' => $identityPayload,
+                    'invitation' => [
+                        'kind' => $invitation->kind,
+                        'agency' => [
+                            'id' => $invitation->agency->id,
+                            'name' => $invitation->agency->name,
+                        ],
+                    ],
+                ];
+            }
+
             throw new ApiException('NO_ACTIVE_MEMBERSHIP', 403);
         }
 
