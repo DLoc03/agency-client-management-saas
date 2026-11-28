@@ -61,6 +61,9 @@ Route::prefix('v1/auth')->group(function () {
 
     Route::middleware(['auth:sanctum', 'ability:app'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+        // Identity-level (BE-013): locale belongs to the identity, so
+        // no tenant context — same placement as logout.
+        Route::patch('/profile', [AuthController::class, 'updateProfile']);
         Route::get('/me', [AuthController::class, 'me'])->middleware('tenant');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware('tenant');
     });
@@ -79,6 +82,8 @@ Route::prefix('v1/portal/auth')->group(function () {
 
     Route::middleware(['auth:sanctum', 'ability:portal'])->group(function () {
         Route::post('/logout', [PortalAuthController::class, 'logout']);
+        // Identity-level (BE-013): Portal mirror of PATCH /auth/profile.
+        Route::patch('/profile', [PortalAuthController::class, 'updateProfile']);
         Route::get('/me', [PortalAuthController::class, 'me'])->middleware('tenant');
     });
 });

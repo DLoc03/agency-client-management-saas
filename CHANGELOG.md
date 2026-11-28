@@ -6,6 +6,9 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 
 ## [Unreleased]
 
+### Added
+- Profile locale endpoint (BE-013, DEC-031): `PATCH /auth/profile` — with the Portal mirror `PATCH /portal/auth/profile` — lets a signed-in identity persist its own `locale` (`en` or `vi`, validated against the supported locales; anything else is a 422 `VALIDATION_FAILED`). The endpoint is identity-level (no tenant context) and returns the updated identity in the login identity-payload shape. The stored locale already drives API message localization via `SetApiLocale`, so later API messages follow the new locale immediately; the FE toggle write-through ships separately as FE-025.
+
 ### Fixed
 - FIX-045: Invitation emails are now fault-tolerant — a mail transport failure (e.g. an unreachable SMTP host) no longer fails the action that created the invitation with a 500. The send in `InvitationController::sendMail` (covering create and resend) and the Portal grant send in `ClientPortalAccountController` now catch the failure and log a warning (invitation id, recipient, error), mirroring the Notifier's isolation pattern; the invitation stays pending and can be resent once the transport recovers.
 - FIX-047: Portal accept refetch dứt điểm — thêm prop onInvitationLogin cho LoginForm/PortalLoginForm (gọi trong nhánh invitationOnly), trang accept tăng refreshKey và đưa vào deps của effect fetch preview → sau login nhúng preview tự fetch lại và hiện form xác nhận không cần reload. Sửa interpolation subtitle Portal accept (truyền agency từ preview).

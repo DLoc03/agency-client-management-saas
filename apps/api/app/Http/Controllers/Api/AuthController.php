@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Concerns\IssuesMembershipTokens;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Models\Membership;
 use App\Models\User;
 use App\Support\Tenant;
@@ -96,6 +97,21 @@ class AuthController extends Controller
                     ->map(fn (Membership $m) => $this->membershipPayload($m))->all(),
             ],
         ]);
+    }
+
+    /**
+     * Identity-level profile update (BE-013, DEC-031). Locale belongs
+     * to the identity, not to any membership, so the route sits
+     * outside the tenant middleware: it works through whichever
+     * membership the token is bound to, and the stored locale then
+     * drives SetApiLocale on every later request.
+     */
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->forceFill(['locale' => $request->validated()['locale']])->save();
+
+        return response()->json(['data' => $this->identityPayload($user)]);
     }
 
     public function changePassword(ChangePasswordRequest $request): JsonResponse

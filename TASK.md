@@ -1,6 +1,17 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## BE-013 — Endpoint cập nhật locale theo tài khoản (PATCH /auth/profile + bản Portal)
+- Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
+- Branch: be/BE-013-profile-locale
+- Contract: DEC-031
+- Progress: Thêm `PATCH /v1/auth/profile` (staff) và `PATCH /v1/portal/auth/profile` (Portal) — endpoint cấp danh tính (identity-level, không qua tenant middleware, cùng vị trí với logout trong nhóm ability tương ứng) nhận `{ locale }`, validate theo nguồn sự thật locale hiện có (`Rule::in(['en', 'vi'])` như SetApiLocale và các FormRequest khác, sai → 422 VALIDATION_FAILED), ghi vào `users.locale` của chính người gọi và trả identity payload đúng khuôn login (`identityPayload` của từng bề mặt). Guard ability của nhóm route chặn sẵn token `select` / `invitation` và token khác bề mặt bằng 403. Thêm `ProfileLocaleTest` (7 test: staff cập nhật + thông điệp API sau đó theo locale mới, Portal cập nhật, locale sai/thiếu → 422, guest → 401, token chéo bề mặt → 403, token select/invitation → 403). Toàn bộ PHPUnit 252 test / 1526 assertions xanh trên SQLite + MySQL 8; Pint PASS.
+- Blocked by: —
+- Acceptance Criteria: PATCH locale hợp lệ → 200 + locale được lưu + response đúng khuôn identity payload; locale không hỗ trợ hoặc thiếu → 422 VALIDATION_FAILED; token phạm vi hẹp (select/invitation) và token khác bề mặt bị chặn 403; toàn bộ PHPUnit xanh trên SQLite + MySQL; Pint PASS.
+- Handoff: OpenCode QA review, KHÔNG tự review, KHÔNG merge. FE-025 (toggle ghi xuyên + đăng nhập áp locale đã lưu) soạn prompt sau khi BE-013 merge.
+
+---
+
 ## FIX-045 — Email lời mời chịu lỗi transport (không 500 thao tác chính)
 - Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
 - Branch: fix/FIX-045-invitation-mail-resilience
