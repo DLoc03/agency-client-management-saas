@@ -70,16 +70,21 @@ function ReportsPage() {
   );
 
   const requested = searchParams.get("tab") as TabKey | null;
-  const initialTab =
-    requested && allowedTabs.includes(requested) ? requested : allowedTabs[0];
-  const [activeTab, setActiveTab] = useState<TabKey | undefined>(initialTab);
+  const [activeTab, setActiveTab] = useState<TabKey | undefined>(undefined);
 
+  // Resolve the initial tab only once the session (and therefore the
+  // allowed tabs) is known, so a ?tab= deep link is honoured instead of
+  // being clamped to the first tab before permissions load.
   useEffect(() => {
-    if (allowedTabs.length === 0) return;
-    if (!activeTab || !allowedTabs.includes(activeTab)) {
+    if (!session || allowedTabs.length === 0) return;
+    if (activeTab === undefined) {
+      setActiveTab(
+        requested && allowedTabs.includes(requested) ? requested : allowedTabs[0],
+      );
+    } else if (!allowedTabs.includes(activeTab)) {
       setActiveTab(allowedTabs[0]);
     }
-  }, [allowedTabs, activeTab]);
+  }, [session, allowedTabs, activeTab, requested]);
 
   if (isLoading || !session) {
     return (
@@ -199,7 +204,7 @@ function RevenueTab({
       }
       const err = e as { status?: number };
       if (err.status === 422) {
-        setFormError(e instanceof Error ? e.message : t("revenue.errors.invalidRange"));
+        setFormError(t("revenue.errors.invalidRange"));
       } else {
         setError(e instanceof Error ? e.message : t("revenue.errors.loadFailed"));
       }
@@ -217,6 +222,20 @@ function RevenueTab({
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Block invalid ranges on the client with a specific localized
+    // message instead of round-tripping to a generic API validation error.
+    if (from && to) {
+      if (from > to) {
+        setFormError(t("revenue.errors.fromAfterTo"));
+        return;
+      }
+      const [fy, fm] = from.split("-").map(Number);
+      const [ty, tm] = to.split("-").map(Number);
+      if ((ty - fy) * 12 + (tm - fm) > 24) {
+        setFormError(t("revenue.errors.rangeTooLong"));
+        return;
+      }
+    }
     setApplying(true);
     await load({ from: from || undefined, to: to || undefined });
     setApplying(false);
@@ -523,14 +542,14 @@ function ProjectsTab({
                   <div
                     key={r.id}
                     onClick={() => router.push(`/projects/${r.id}`)}
-                    className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
+                    className="flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
                   >
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex min-w-0 items-start justify-between gap-2">
                       <div className="min-w-0">
                         <h3 className="truncate font-semibold text-foreground">{r.name}</h3>
                         <p className="truncate text-xs text-muted-foreground">{r.client?.name ?? "—"}</p>
                       </div>
-                      <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(r.status)}`}>
+                      <span className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(r.status)}`}>
                         {tProjects(`statuses.${r.status}`)}
                       </span>
                     </div>
@@ -733,11 +752,13 @@ function ClientsTab({
                 <div
                   key={r.id}
                   onClick={() => router.push(`/clients/${r.id}`)}
-                  className="flex cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
+                  className="flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="truncate font-semibold text-foreground">{r.name}</h3>
-                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(r.status)}`}>
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h3 className="truncate font-semibold text-foreground">{r.name}</h3>
+                    </div>
+                    <span className={`shrink-0 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(r.status)}`}>
                       {tClients(`statuses.${r.status}`)}
                     </span>
                   </div>
