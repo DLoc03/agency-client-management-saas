@@ -2,35 +2,35 @@
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
 ## FIX-044 — Gửi hoá đơn từ danh sách bị chặn sai + vị trí báo lỗi (Nhóm 8, vòng cuối)
-- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: DONE
 - Branch: fix/FIX-044-invoice-send-list-fix
 - Nguồn: nghiệm thu vòng cuối của PO (2026-11-28): FIX-043 đạt 3/4, mục Invoices chưa đạt. Nguyên nhân gốc tìm thấy khi PO chất vấn: trang danh sách Invoices có bước kiểm tra trước phía client dựa vào `invoice.items`, nhưng API danh sách (`InvoiceController::index`) KHÔNG nạp items (chỉ `client/project/agency`; `InvoiceResource` chỉ xuất items khi đã nạp — vốn chỉ có ở trang chi tiết) → `items` rỗng với MỌI dòng → bước kiểm tra chặn Send của mọi hoá đơn ngay tại client, API không bao giờ được gọi; trang chi tiết gọi thẳng API (API đếm items thật trong DB) nên gửi bình thường. FIX-043 mới sửa lớp hiển thị nên chưa chạm tới lỗi này. PO chốt thêm quy ước: lỗi thao tác ở trang danh sách hiện ở vùng báo lỗi PHÍA TRÊN bảng, không inline trong dòng/bảng (gây xê dịch UI).
 - Nội dung: (1) bỏ hẳn bước kiểm tra items phía client ở danh sách — API là nguồn sự thật duy nhất; (2) xoá cơ chế inlineErrors trong bảng/thẻ — lỗi Send/Cancel/Delete hiện ở vùng lỗi đầu trang, map theo mã lỗi sang thông điệp bản địa hoá (INVOICE_EMPTY, INVOICE_NOT_EDITABLE, CANNOT_CANCEL_INVOICE, CANNOT_DELETE_INVOICE), fallback dùng khóa *Failed bản địa hoá; (3) trang chi tiết hoá đơn: các catch Send/Cancel/Delete (và load/xoá payment/PDF) cũng map mã lỗi/fallback bản địa hoá thay vì để lọt message thô của API.
 - Acceptance Criteria: tsc/build/Vitest xanh; i18n parity + quét khóa lơ lửng bản đúng NONE missing (không thêm khóa mới — dùng lại Finance.errors hiện có); PO kiểm lại: Send từ danh sách chạy được với hoá đơn có dòng hàng; hoá đơn trống thật thì lỗi bản địa hoá hiện phía trên bảng, bảng không xê dịch.
 
 ## FIX-043 — Sửa nghiệm thu Nhóm 8 vòng 1 (raw error code ở Invoices, Reports)
-- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: DONE
 - Branch: fix/FIX-043-group8-acceptance-fixes
 - Nguồn: nghiệm thu Nhóm 8 vòng 1 của PO (2026-11-28, đạt 90%) — 4 mục: (1) danh sách Invoices hiện lỗi dạng `INVOICE_EMPTY: <message>` (rò mã lỗi thô trước thông điệp đã bản địa hoá ở cả desktop + mobile; nhánh API của Send và fallback Delete/Cancel còn để lộ message thô của API); (2) Reports tab Revenue chọn From sau To thì hiện message validation tiếng Anh chung chung của API; (3) mở thẳng `/reports?tab=clients` vẫn vào tab Revenue (tab khởi tạo bị chốt trước khi session/quyền tải xong); (4) card mobile ở tab Projects của Reports tràn ngang (thiếu `min-w-0` ở card + hàng tiêu đề như card trang Projects; tab Clients cùng khuôn nên sửa luôn).
 - Nội dung: bỏ tiền tố mã lỗi khi render inline error ở Invoices + map INVOICE_EMPTY ở nhánh catch của Send + fallback bản địa hoá cho Delete/Cancel; Reports — chặn From > To và khoảng > 24 tháng ngay phía client với thông điệp cụ thể đã bản địa hoá (khóa mới `Reports.revenue.errors.fromAfterTo` / `rangeTooLong`), 422 từ server cũng hiện bản địa hoá; khởi tạo tab Reports sau khi session sẵn sàng để tôn trọng `?tab=`; bổ sung `min-w-0`/`shrink-0` cho card mobile Projects + Clients của Reports.
 - Acceptance Criteria: tsc/build/Vitest xanh; i18n parity + quét khóa lơ lửng bản đúng NONE missing; PO nghiệm thu nhanh vòng cuối trên 4 điểm đã sửa.
 
 ## FIX-042 — Sửa findings QA-009 vòng 1 cho BE-012 (Nhóm 8)
-- Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
+- Assignee: Backend (Muse) · Level: L2 · Status: DONE
 - Branch: fix/FIX-042-analytics-qa-fixes
 - Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
 - Progress: QA-009 vòng 1 kết luận FAIL với 2 finding blocking; task này sửa cả hai, kèm finding non-blocking N1 và các test còn thiếu theo §7 của hợp đồng. (B1) Tràn tháng Carbon: phép cộng/trừ tháng chưa neo `startOfMonth()` tại AnalyticsController (biên tháng này/tháng trước của section sales; cửa sổ 6 tháng của section finance) và ReportController (cửa sổ mặc định của báo cáo doanh thu) khiến ngày 29–31 tràn sang tháng sai — cửa sổ 6 tháng co còn 5 tháng và overview trả 500 vì thiếu phần tử series; nay neo `startOfMonth()` trước mọi phép dịch tháng, kèm test travelTo tại 2026-01-31, 2026-03-31, 2026-07-31 cho cả overview và cửa sổ mặc định của revenue report. (B2) `/reports/projects` chưa áp phạm vi dữ liệu: Team Member nhận toàn bộ dự án kèm budget/invoiced/collected của agency; nay áp scope `visibleTo` như danh sách dự án (DEC-016), eager-load thêm quan hệ `agency` cho resource (khử N+1 ở is_overdue), kèm test hai chiều — Team Member chỉ thấy dự án mình tham gia, Owner thấy tất cả. (N1) collected tại báo cáo clients từng loại payment trên invoice cancelled, lệch định nghĩa §2; nay bỏ bộ lọc trạng thái invoice để khớp RevenueReport, kèm test biên dựng bằng factory (trạng thái cancelled-có-payment không tạo được qua API theo FINANCE_CONTRACT §4.3). Bổ sung test còn thiếu: Portal token (ability `portal`) gọi overview và một endpoint reports bị 403. Cần QA-009 rà soát lại vòng 2 trên PR của task này mới tính là PASS.
 - Acceptance Criteria: PHPUnit xanh trên SQLite và MySQL 8, gồm các test mới (biên tràn tháng 29–31, phạm vi `/reports/projects`, nhất quán collected với invoice cancelled có payment, Portal token 403); Pint sạch trên các file chạm vào.
 - Handoff: Mở PR ghi rõ số test; QA-009 vòng 2 rà soát trên PR này.
 ## FIX-041 — Chip trạng thái Portal + nền mềm cho comment và thành viên (UI)
-- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L2 · Status: DONE
 - Branch: fix/FIX-041-soft-ui-chips
 - Progress: Theo rà soát của PO: (1) chip trạng thái ở section Tài khoản Portal (chi tiết khách hàng) đang dùng màu trơn `border-border` cho cả hai trạng thái — đổi sang màu ngữ nghĩa dùng chung `statusBadgeClass` (active = xanh lá mềm, inactive = đỏ mềm như bản đồ màu hiện có); (2) comment trong chi tiết công việc còn viền lồng viền và thiếu avatar — bỏ viền từng comment, dùng một nền mềm thống nhất `bg-muted/50` cho mọi comment (PO chốt: không tô màu theo từng người vì Owner/Admin/PM cùng comment sẽ rối), thêm Avatar + tên người comment và ngày cạnh tên; (3) tương tự ở danh sách thành viên trong chi tiết Nhóm: bỏ viền từng dòng, nền mềm `bg-muted/50`, thêm Avatar + tên/email, nút Gỡ thành viên đổi từ chữ đỏ trơn sang nút danger-soft (nền đỏ nhạt, viền đỏ, chữ đỏ đậm, icon x) đúng quy tắc nút nguy hiểm.
 - Acceptance Criteria: tsc/build/Vitest xanh, i18n parity giữ nguyên (không thêm khoá); PO nghiệm thu trực quan.
 - Handoff: Mở PR, chờ PO merge (QA-009 đang chạy độc lập trên BE-012, không liên quan).
 
 ## BE-012 — Analytics & Reporting API (Nhóm 8)
-- Assignee: Backend (Muse) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Backend (Muse) · Level: L3 · Status: DONE
 - Branch: be/BE-012-analytics-api
 - Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
 - Progress: Đã triển khai xong cả 5 endpoint theo hợp đồng, chờ QA-009 rà soát: `GET /analytics/overview` (payload theo section sales/projects/finance, section không có quyền thì bỏ hẳn khỏi payload; khi không có section nào thì chỉ trả section `personal` với số task của chính mình), `GET /reports/revenue` (theo tháng, lọc khoảng ngày, mặc định 6 tháng, tối đa 24 tháng), `GET /reports/projects` (tiến độ %, quá hạn, đã thu so với ngân sách — dùng lại phép tính của ProjectResource qua các method trên model Project), `GET /reports/clients` (doanh thu theo client), `GET /reports/revenue/export` (CSV phía server, cùng một đường truy vấn `App\Support\RevenueReport` với báo cáo JSON và section finance của overview). Định nghĩa doanh thu theo §2 của hợp đồng: đã thu theo `payments.paid_on`, đã xuất hoá đơn trừ cancelled (draft vẫn tính theo §7), công nợ là snapshot trên invoice Sent/Overdue; không thêm khoá quyền mới, không cache, không migration. Test: 15 test mới trong `tests/Feature/Analytics/`; toàn bộ suite 228 test PASS trên cả SQLite và MySQL 8 (1377 assertions), `migrate:fresh` sạch trên MySQL, Pint sạch. Hai điểm kỹ thuật đáng lưu ý: (1) section được quyết bằng `hasPermission` đúng §4 của hợp đồng, và phạm vi của section `projects` đi theo phạm vi dữ liệu của vai trò (điểm mở về Team Member đã được PO chốt theo bản bổ sung DEC-029 ngày 2026-11-28): section mang trường `scope` — người xem không bị giới hạn (cơ sở `Project::scopeVisibleTo`) nhận `scope: "agency"` với số liệu toàn agency, Team Member nhận section projects với `scope: "mine"`, mọi con số chỉ tính trên các dự án mình là thành viên (`project_members`); chỉ membership không có cả ba quyền xem mới rơi vào `personal`; (2) lỗi validation của khoảng ngày đi qua ValidationException nên mang mã chuẩn của hệ thống là `VALIDATION_FAILED` (hợp đồng viết `VALIDATION_ERROR` nhưng ghi chú "standard shape" — shape và HTTP 422 giữ nguyên).
@@ -38,7 +38,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Mở PR, ghi rõ số test; QA-009 rà soát sau khi PR mở.
 
 ## QA-009 — Rà soát BE-012 Analytics & Reporting (Nhóm 8)
-- Assignee: QA Review & Tester (OpenCode) · Level: L2 · Status: TODO
+- Assignee: QA Review & Tester (OpenCode) · Level: L2 · Status: DONE
 - Branch: qa/QA-009-analytics-review
 - Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
 - Progress: ⏸ chờ BE-012 mở PR. Rà soát độc lập theo hợp đồng: đối chiếu định nghĩa số liệu §2 với code (đặc biệt: draft được tính vào invoiced là hành vi đã tài liệu hoá, không phải bug), section bị bỏ theo quyền, `personal` chỉ xuất hiện khi không có section thật nào, CSV khớp số liệu JSON trên cùng dữ liệu, cô lập tenant.
@@ -46,7 +46,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: PASS là điều kiện để soạn prompt FE-024.
 
 ## FE-024 — Dashboard số liệu + trang Reports (Nhóm 8)
-- Assignee: Frontend (OpenCode; Muse thay vai khi cần theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (OpenCode; Muse thay vai khi cần theo convention 2026-11-23) · Level: L3 · Status: DONE
 - Branch: fe/FE-024-analytics-ui
 - Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
 - Progress: ✅ FE-024 implemented: dashboard sections from /analytics/overview (sales/projects/finance/personal), CSS bar chart, /reports with 3 tabs, Revenue/Projects/Clients reports, CSV export via BFF, nav item Reports, i18n EN+VI. tsc/build/Vitest pass.
@@ -55,7 +55,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Mở PR kèm ảnh chụp các section theo từng vai trò (Owner, Sales, PM, Accountant, Member) để PO đối chiếu phân quyền bằng mắt.
 
 ## FIX-040 — Bố cục header chi tiết & căn hàng icon thao tác (Nhóm 7)
-- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: DONE
 - Branch: fix/FIX-040-detail-actions-layout
 - Progress: Theo feedback nghiệm thu của PO trên FIX-039: (1) dòng Milestone: khối tên thành flex-1 và cụm mắt + kebab gom về cạnh phải trong một flex chung, nút mắt dùng đúng khuôn nút của ActionMenu (p-1.5, icon 16px) — hết cảnh icon Eye trôi giữa card do justify-between; (2) trang chi tiết công việc bỏ hẳn kebab ở header (dropdown chỉ dành cho row/card dữ liệu) — thao tác hiện đầy đủ thành nút: nút bật/tắt hiển thị Portal (icon + nhãn theo trạng thái) và nút Xoá danger-soft (nền đỏ nhạt, viền đỏ, chữ đỏ đậm, icon thùng rác); header xếp lại theo tầng: hàng nút Quay lại, hàng tiêu đề + chip trạng thái, hàng nút thao tác — hết vỡ bố cục mobile; (3) dòng file ở Portal Section: nút mắt và nút ba chấm nằm chung một flex items-center, nút mắt dùng đúng khuôn p-1.5 như nút mở menu nên hai icon ngang hàng tuyệt đối trên desktop (mobile giữ nguyên như FIX-039); (4) hai quy ước mới của PO ghi vào UI_GUIDELINES §14 (đối xứng thao tác row/card ↔ chi tiết, chi tiết hiện nút đầy đủ) và §15 (nút Back ở trang chi tiết chỉ là nút dạng chữ) — đồng thời chuẩn hoá ngay các nút Back còn dạng hộp viền theo §15: chi tiết thành viên, chi tiết nhóm, chi tiết công việc, form hoá đơn (các trang chi tiết còn lại đã là nút chữ).
 - Blocked by: —
@@ -64,7 +64,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 ## FIX-039 — Đồng bộ trạng thái hiển thị Portal & thẻ card mobile (Nhóm 7)
-- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: DONE
 - Branch: fix/FIX-039-visibility-sync
 - Progress: Theo feedback nghiệm thu cuối của PO trên FIX-038: (1) thêm khoá `Projects.portal.clientHidden` EN+VI — chip trạng thái Portal hết lệch icon/nhãn (trước đây trạng thái ẩn hiện "—"); nhãn mục bật/tắt trong mọi dropdown nay theo trạng thái (đang hiện → "Ẩn trên Portal" + icon eye-off, đang ẩn → "Hiển thị trên Portal" + icon eye); (2) thẻ công việc mobile sắp xếp lại theo khuôn dòng file của Portal Section — tiêu đề, dòng meta avatar + tên người được gán đậm + hạn, hàng chip gọn bên dưới; bảng desktop giữ nguyên; (3) trang chi tiết công việc thêm chip trạng thái hiển thị Portal cạnh tiêu đề, bên cạnh kebab đã có từ FIX-038; (4) dòng file ở Portal Section: nhãn trạng thái luôn hiển thị kèm icon đồng bộ, nút mắt chỉ còn ở desktop (lg+), trên mobile thao tác ẩn/hiện nằm trong dropdown; (5) rà soát toàn bộ dropdown menu theo yêu cầu PO — menu thao tác của danh sách Hoá đơn (buildActions động theo trạng thái) là nơi duy nhất còn thiếu icon: bổ sung eye/send/x/trash-2/download cho Xem/Gửi/Huỷ/Xoá/Tải PDF; các menu còn lại đã có đủ icon từ FIX-037.
 - Blocked by: —
@@ -73,7 +73,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 ## FIX-038 — Hoàn thiện nghiệm thu vòng 2 (Nhóm 7) + phân trang danh sách
-- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: DONE
 - Branch: fix/FIX-038-acceptance-polish
 - Progress: Ba điểm nghiệm thu vòng 2 của PO: (1) trang chi tiết công việc có đủ thao tác như row bên ngoài (menu kebab ở header: bật/tắt hiển thị Portal + Xoá, gate theo can_act + quyền tasks.update/tasks.delete); (2) tab File ở mobile hết vỡ layout — tên file truncate trong cột min-w-0, tên người tải font-semibold, thao tác Tải xuống/Xoá đưa vào menu dropdown, nút mắt ẩn/hiện Portal giữ nguyên trên card (áp dụng cả Portal); (3) tab Phê duyệt bỏ lồng viền — form tạo chuyển nền mềm bg-muted/30, danh sách phê duyệt chuyển divide-y không khung. Cộng yêu cầu bổ sung của PO: phân trang đầy đủ cho các danh sách — Clients/Members/Teams/Invitations có Pagination hoàn chỉnh (helper Page-variant trả meta, reset về trang 1 khi đổi bộ lọc), bảng Kanban Leads tải per_page=100 (board gom theo stage nên không dùng page controls), toàn bộ danh sách con (tasks, milestones, files/comments/approvals/history ở cả hai phía, checklist, task comments, contacts, notes, activities, payments, portal invoices, tags, directory users) tải per_page=100 thay vì bị cắt ở mặc định 15 của API.
 - Blocked by: —
@@ -82,7 +82,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 
 ---
 ## FIX-037 — Polish UI Portal & icon hệ thống (Nhóm 7)
-- Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (OpenCode) · Level: L3 · Status: DONE
 - Branch: fix/FIX-037-portal-ui-polish
 - Progress: Đang thực hiện S1–S10: (1) Thêm Portal.tasksDone, (2) Approval card status chip + response block, (3) Discussion tab avatar + tên thật + tông nền, (4) History tab avatar + tên + fix "đã đã" + truncate, (5) Files tab dropzone + icon + uploader, (6) Section description, (7) Mobile toggle visibility, (8) Icon send, (9) Icon sweep, (10) Paperwork.
 - Blocked by: —
@@ -92,7 +92,7 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 ---
 
 ## FIX-036 — Sửa lỗi nghiệm thu Nhóm 7 vòng 1
-- Assignee: Frontend (OpenCode) · Level: L3 · Status: IN_PROGRESS
+- Assignee: Frontend (OpenCode) · Level: L3 · Status: DONE
 - Branch: fix/FIX-036-portal-acceptance-fixes
 - Progress: Đang thực hiện các sửa S1–S5: (1) Hợp nhất route slug BFF Portal, (2) Bổ sung khoá i18n thiếu, (3) Sửa responsive section Client Portal, (4) Fix card team name ellipsis, (5) Quy ước nút mobile center. Kiểm chứng: tsc PASS, next build PASS, vitest PASS, i18n EN=VI, byte-check, manual 375px check.
 - Blocked by: —
@@ -415,7 +415,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## BE-011 — Client Portal & Collaboration (Nhóm 7) theo hợp đồng PORTAL_CONTRACT
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
 - Mô tả: Triển khai Nhóm 7 theo `docs/PORTAL_CONTRACT.md` (DEC-028, Nguyen duyệt cả 12 điểm Q1–Q12 theo đề xuất 2026-11-27): cột `client_visible` cho milestones/tasks (mặc định hiện, sửa qua PATCH sẵn có) và Portal chỉ tính tiến độ trên phần hiển thị; project draft/cancelled ẩn khỏi Portal; bảng `project_files` hai chiều trên disk private (giới hạn 20 MB + allowlist đuôi trong config/portal.php, tải qua endpoint stream có xác thực); bảng `portal_comments` — một luồng trao đổi duy nhất theo project, tách hẳn task_comments nội bộ; bảng `approval_requests` (pending/approved/changes_requested, comment bắt buộc khi yêu cầu sửa, phản hồi một lần và bất biến, account bất kỳ của cùng client record đều phản hồi được, ghi responded_by); `GET /portal/dashboard` tổng hợp một lần gọi; history tổng hợp lúc đọc từ comment + approval + sự kiện invoice công khai (không bảng activity); Notifier thêm `portal.comment` (→ quản lý dự án + thành viên dự án) và `portal.approval_response` (→ người tạo request + quản lý dự án), in-app only, MVP không email cho client; 2 khóa quyền mới `portal.files.manage` + `portal.approvals.manage` (Owner/Admin/PM), trả lời luồng trao đổi chỉ cần `projects.view`.
 - Acceptance Criteria: Toàn bộ tiêu chí mục 8 của PORTAL_CONTRACT; test PHPUnit trong `tests/Feature/Portal/` (lọc hiển thị + mẫu số tiến độ, draft/cancelled 404, ghim client trên mọi endpoint mới kể cả download/respond, giới hạn upload, vòng đời approval + thông báo đúng người nhận, dashboard, thứ tự history trộn 3 nguồn); toàn suite PASS trên SQLite và MySQL 8; Pint PASS.
@@ -424,7 +424,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## QA-008 — Rà soát BE-011 Nhóm 7 (Portal & Collaboration)
-- Status: TODO
+- Status: DONE
 - Assignee: OpenCode (QA) · Reviewer: Muse + Nguyen
 - Mô tả: Review chéo BE-011 theo mục 8 của `docs/PORTAL_CONTRACT.md`: lọc hiển thị và mẫu số tiến độ phía Portal, ẩn project draft/cancelled, ghim client_id trên mọi endpoint Portal mới (file/comment/approval/history/dashboard), giới hạn upload + mime/size theo file thật, vòng đời approval (bất biến sau phản hồi, APPROVAL_ALREADY_RESPONDED, comment bắt buộc khi changes_requested), người nhận hai thông báo mới, suite chạy trên MySQL 8.
 - Blocked by: BE-011 (chỉ bắt đầu sau khi PR BE-011 mở).
@@ -432,7 +432,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Chờ BE-011.
 
 ## FE-023 — Portal & Collaboration UI (Nhóm 7): Portal + section Client Portal nội bộ
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: FE cho Nhóm 7 theo `docs/PORTAL_CONTRACT.md` mục 7: Portal (dashboard thêm khối Cần bạn duyệt + invoice chưa thanh toán + File mới; chi tiết project thêm Files / Trao đổi / Duyệt bàn giao / Lịch sử; giữ phong cách Bento emerald DEC-013) và phía nội bộ (section "Client Portal" trong chi tiết project: công tắc client_visible, quản lý Files, Approvals, luồng Trao đổi, Lịch sử; chuông thông báo render thêm `portal.comment` / `portal.approval_response`). Ghi chú hướng UI của PO (DEC-028): Portal là bề mặt phía khách — khách ít thao tác và thao tác đơn giản, chất lượng trình bày quan trọng hơn mật độ thông tin; FE-023 bắt đầu bằng các trang mẫu thiết kế để PO duyệt trước khi triển khai, như quy trình mẫu của các đợt UI trước.
 - Blocked by: QA-008 (chỉ soạn prompt sau khi BE-011 merge và QA-008 PASS — kỷ luật prompt).
@@ -442,7 +442,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Progress: 2026-11-27 — Vòng sửa R1–R3: lịch sử địa phương hoá (Portal.historyTypes + Projects.portal.historyTypes), lỗi file/bình luận/phê duyệt hiển thị tại chỗ (DEC-025), bỏ { default } khỏi t(); thêm khoá historyDecisionApproved/Changes.
 
 ## FIX-031 — Batch BE nhỏ tồn đọng Nhóm 5: GET payment-details + validate project cùng client (mục 4 trong thứ tự PO duyệt 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
 - Mô tả: (a) Thêm `GET /agencies/{id}/payment-details` — cùng quyền `agencies.payment-details.update` (Owner/Admin) và cùng response shape với PATCH, để form cài đặt prefill dữ liệu đã lưu thay vì mở trống (hạn chế đã ghi trong PR #89; không thêm khóa quyền mới). (b) Validate `invoice.project_id` phải thuộc cùng client với `invoice.client_id` trên cả create và update — khi update chỉ đổi client hoặc chỉ đổi project thì cặp (client, project) sau cập nhật vẫn được kiểm; project của client khác cùng workspace → 422 `PROJECT_CLIENT_MISMATCH`, project của workspace khác vẫn 422 `CROSS_TENANT_REFERENCE`; mã lỗi mới có trong `lang/en|vi/api.php`; `docs/FINANCE_CONTRACT.md` §4.3 + §5 bổ sung quy tắc theo mẫu amendment `INVOICE_NOT_EDITABLE` (PR #80).
 - Acceptance Criteria: GET trả đúng 4 trường đã lưu (agency chưa lưu gì trả null), Sales Manager 403, agency khác 404; create/update với project của client khác → 422 `PROJECT_CLIENT_MISMATCH` (kể cả update chỉ đổi client), cùng client và không có project → OK, project cross-agency vẫn `CROSS_TENANT_REFERENCE`; toàn suite PHPUnit PASS trên SQLite + test Finance PASS trên MySQL 8; Pint PASS.
@@ -450,7 +450,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## BE-009 — Workflow & Notifications (Nhóm 6) theo hợp đồng WORKFLOW_CONTRACT
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (BE) · Reviewer: OpenCode (QA) + Nguyen
 - Mô tả: Triển khai Nhóm 6 theo `docs/WORKFLOW_CONTRACT.md` (DEC-026, Nguyen duyệt nguyên văn theo đề xuất 2026-11-27): bảng `notifications` tự xây (BelongsToAgency, `dedupe_key` duy nhất chống nhắc trùng) + cột `created_by` bổ sung cho `tasks`/`invoices`; service `App\Support\Notifier` là điểm tạo thông báo duy nhất (chỉ tạo cho membership staff đang hoạt động trong agency của token, không bao giờ báo cho chính người thực hiện hành động, lỗi thông báo không làm hỏng hành động nghiệp vụ); API đọc/đánh dấu đã đọc (list + `unread` filter, unread-count, read, read-all — ghim theo danh tính + agency của token, id lạ trả 404, không thêm khóa quyền mới); sự kiện `task.assigned` / `task.status_changed` / `task.commented` / `invoice.status_changed` gắn tại controller task/comment/invoice và tại `Invoice::refreshStatusFromPayments()` cho các chuyển trạng thái do thanh toán (gồm cả Paid quay về Sent khi xoá thanh toán); email chỉ cho `task.assigned` + invoice sang Paid qua job `SendNotificationMail` (payload mang agency_id, chạy trong Tenant::run, render theo locale lưu trên tài khoản, mẫu `NotificationMail` + `lang/en|vi/mail.php`); lệnh `reminders:run` chạy lịch 01:00 UTC, đánh giá theo múi giờ từng agency — task/milestone sắp hạn + quá hạn, lead quá 3 ngày chưa liên hệ, invoice quá hạn chỉ nhắc nội bộ (Accountant + Owner, không bao giờ gửi khách) — kèm xoá thông báo quá 90 ngày.
 - Acceptance Criteria: Toàn bộ tiêu chí mục 8 của WORKFLOW_CONTRACT; test PHPUnit trong `tests/Feature/Workflow/` cho từng trigger sự kiện (kèm loại trừ actor + membership đã vô hiệu), cách ly chéo user/agency của API thông báo, từng rule reminders + dedupe chạy 2 lần trong ngày + ca biên múi giờ agency + dọn dẹp 90 ngày; toàn suite PASS trên SQLite và MySQL 8; Pint PASS.
@@ -458,7 +458,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## FE-021 — Chuông thông báo + trang thông báo (Nhóm 6)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: FE cho Nhóm 6 theo `docs/WORKFLOW_CONTRACT.md` mục 9: icon chuông kèm badge số chưa đọc ở khung app, panel dropdown (khoảng 10 thông báo mới nhất, nút đánh dấu tất cả đã đọc), trang `/notifications` đầy đủ dùng lại component Pagination dùng chung, liên kết sâu từ thông báo tới task/invoice/dự án tương ứng; toàn bộ chuỗi hiển thị qua namespace i18n `Notifications.*` (EN + VI) render từ `type` + `data` của API.
 - Blocked by: BE-009 — chỉ soạn prompt chi tiết sau khi BE-009 merge (kỷ luật prompt, đúng nhịp FE-020 của Nhóm 5).
@@ -467,7 +467,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-021-notifications-ui` từ `origin/main` (`c7b2157`).
 
 ## FIX-035 — Gọn lại giao diện mục Tài khoản Portal ở chi tiết khách hàng (phát hiện khi nghiệm thu, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: Mục Tài khoản Portal ở trang chi tiết khách hàng (phía Workspace) dàn hàng ngang quá sơ sài. Sắp xếp lại mỗi hàng tài khoản thành 3 vùng (khối danh tính hai dòng tên/email + Avatar; chip trạng thái + dòng meta đăng nhập gần nhất text-xs; hành động), cỡ chữ nhỏ lại một nấc (nội dung text-sm, meta text-xs), và nút Vô hiệu hóa thành nút danger-soft nổi bật (nền đỏ nhạt + viền đỏ + chữ đỏ đậm + icon khoá) theo quy tắc chung mới của PO cho nút nguy hiểm — đồng thời ghi quy tắc vào docs/UI_GUIDELINES.md mục 7. Chỉ trình bày: không đổi API/logic/i18n keys.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-035-portal-accounts-ui` từ `origin/main` (`bb2d63d`); Muse bổ sung khi review: icon `lock` còn thiếu trong bộ Icon dùng chung và hồ sơ TASK/CHANGELOG chưa được push kèm.
@@ -475,7 +475,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## FE-022 — Nút chuyển ngôn ngữ bằng cờ quốc gia ở Topbar (Nhóm 6/7, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: Thêm nút cờ tròn (VN/UK) cạnh chuông thông báo ở Topbar khu vực staff; bấm chuyển locale giữ nguyên trang; tái sử dụng logic `router.replace(pathname, { locale })` của `LocaleSwitcher`; vẽ cờ bằng SVG inline (`FlagIcon`), không emoji/ảnh ngoài. Thêm key `Common.switchLanguage`.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fe/FE-022-language-toggle` từ `origin/main` (`27484cd`).
@@ -483,7 +483,7 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Blockers: Không có.
 
 ## FIX-033 — Phạm vi thao tác trên task: chỉ assignee / quản lý dự án / vai trò quản lý (phát hiện khi nghiệm thu FE-021, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: Muse (BE) + OpenCode (FE) · Reviewer: Nguyen
 - Mô tả: Theo DEC-027 (PO chốt theo đề xuất của Muse tại nghiệm thu FE-021): API trước nay chỉ chặn thao tác trên task theo quyền vai trò, thiếu kiểm tra phạm vi — staff không được giao vẫn sửa/comment/checklist được task của người khác (mâu thuẫn DEC-005), FE lại render đủ nút thao tác rồi để user ăn banner 403 thô (trái DEC-025). Phần BE: quy tắc một điểm tại Task::canBeActedOnBy() (assignee, hoặc quản lý dự án qua projects.project_manager_id, hoặc membership hiện tại là Owner / giữ vai trò Admin / Project Manager); guard áp cho PATCH + DELETE task, tạo comment, tạo/sửa/xoá checklist — vi phạm trả 403 TASK_ACTION_FORBIDDEN (lang EN/VI); TaskResource thêm cờ can_act tính theo cùng quy tắc. Phần FE (làm sau, chờ PR BE merge): khoá các control theo can_act kèm ghi chú tại chỗ trên trang chi tiết task, bỏ banner 403 thô.
 - Acceptance Criteria: Test PHPUnit mới tests/Feature/Projects/TaskActionScopeTest.php — assignee thao tác được (đổi trạng thái, comment, thêm + tick checklist); Team Member không được giao (vẫn xem được task qua tư cách thành viên dự án) bị 403 TASK_ACTION_FORBIDDEN ở PATCH task / POST comment / POST + PATCH + DELETE checklist; quản lý dự án (chỉ giữ vai trò Team Member) thao tác được; vai trò Project Manager / Admin / Owner thao tác được mọi task; payload GET task có can_act đúng (true cho assignee + Owner, false cho thành viên không được giao). Toàn suite PASS; Pint PASS; byte-check OK.
@@ -491,13 +491,13 @@ Progress: 2026-11-27 — Đóng gói trong release 0.7.0.
 - Progress: 2026-11-27 — OpenCode triển khai phần FE trên branch `fe/FIX-033-task-detail-gating` từ `origin/main` (`e705717`): khoá control theo `can_act`, ghi chú tại chỗ, bỏ banner 403 thô, deep-link thông báo task → chi tiết task, description có vùng nền.
 - Blockers: Không có ở phần BE; phần FE chờ PR BE merge.
 ## FIX-032 — Nhãn trường Thuế và hàng nhãn mục hoá đơn (phát hiện khi nghiệm thu FE-020, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: (1) Đổi giá trị VI của `Finance.fields.taxRate` từ "Thuế (%)" thành "Thuế" để tránh nhân đôi "(%)" với component. (2) Thêm hàng nhãn (Mô tả/Số lượng/Đơn giá) trên lưới mục trong `InvoiceForm`, nhãn nhỏ riêng trên mobile (`sm:sr-only`), đổi placeholder Số lượng/Đơn giá thành tên trường.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-032-invoice-form-labels` từ `origin/main` (`472d0e7`).
 - Acceptance Criteria: `npx -y pnpm@10.0.0 exec tsc --noEmit` PASS; `npx -y pnpm@10.0.0 build` PASS; `npx -y pnpm@10.0.0 vitest run` PASS (22/22); i18n 723 = 723; byte-check OK.
 ## FIX-034 — Thanh cuộn dọc thừa ở tab Team + khung viền nút chuông thông báo (phát hiện khi nghiệm thu FE-021, 2026-11-27)
-- Status: IN_PROGRESS
+- Status: DONE
 - Assignee: OpenCode (FE) · Reviewer: Muse + Nguyen
 - Mô tả: (1) Thêm `overflow-y-hidden` vào nav tab Team (giữ `overflow-x-auto`) để loại bỏ thanh cuộn dọc thừa; quét pattern tương tự → không có chỗ khác. (2) Bỏ khung viền/nền hộp của nút chuông ở Topbar, giữ icon, badge, vùng bấm và hover nền mờ.
 - Progress: 2026-11-27 — OpenCode triển khai trên branch `fix/FIX-034-team-tab-scrollbar` từ `origin/main` (`472d0e7`).
