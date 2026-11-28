@@ -69,7 +69,8 @@ export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
     setInvitationAgency(null);
-    const result = await login(values);
+    const trimmed = { email: values.email.trim(), password: values.password.trim() };
+    const result = await login(trimmed);
 
     if (result.success) {
       if ("invitationOnly" in result) {

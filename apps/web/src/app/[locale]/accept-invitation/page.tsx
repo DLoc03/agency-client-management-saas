@@ -73,7 +73,7 @@ function AcceptInvitationInner() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, session]);
 
   // FIX-023: a client invitation opened on the internal surface belongs
   // to the Portal accept page — forward it, keeping the same token.

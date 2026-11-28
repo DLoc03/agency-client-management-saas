@@ -69,6 +69,7 @@ Tài liệu ràng buộc cho mọi công việc Frontend của dự án, theo DE
 ## 10. Vị trí hiển thị lỗi và trạng thái không có quyền (DEC-025, PO chốt 2026-11-26)
 
 - Lỗi/cảnh báo của một thao tác hiển thị **ngay tại vị trí tương tác**: form nào báo lỗi trong form đó (modal thì trong modal, section thì đầu section), không gom về banner chung ở đầu trang. Người dùng không phải cuộn đi tìm cảnh báo.
+- **Không bao giờ hiển thị nguyên văn thông điệp validation mặc định của API**: mọi cảnh báo/lỗi cho người dùng phải là thông điệp rõ ràng, đã bản địa hoá. Nếu API trả `VALIDATION_FAILED`, ánh xạ sang thông điệp bản địa hoá (ưu tiên chi tiết theo trường nếu API trả về; không có thì dùng khoá fallback chung `Common.errors.validationFailed`). Chặn phía client khi có thể (ví dụ: 0 vai trò thì không gọi API).
 - Banner đầu trang chỉ dành cho: lỗi tải dữ liệu lần đầu của cả trang, và hành động cấp trang (ví dụ xoá bản ghi từ nút ở header trang chi tiết).
 - Khi API trả 403 `FORBIDDEN` lúc tải trang, hiển thị trạng thái toàn trang "không có quyền truy cập" bằng ngôn ngữ giao diện đang chọn (component dùng chung `Forbidden`, khóa `Common.forbidden`) — không hiển thị nguyên văn message của API (message API đi theo locale của tài khoản, có thể khác ngôn ngữ giao diện).
 - Mọi chuỗi hiển thị cho người dùng (kể cả hộp thoại confirm) đều qua khóa i18n EN + VI; không để chuỗi hardcode trong JSX.
