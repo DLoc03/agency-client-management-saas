@@ -180,7 +180,7 @@ export default function InvoicesPage() {
           },
         }));
       } else {
-        setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+        setError(t("errors.deleteFailed"));
       }
     }
   };
@@ -200,7 +200,7 @@ export default function InvoicesPage() {
           },
         }));
       } else {
-        setError(e instanceof Error ? e.message : t("errors.cancelFailed"));
+        setError(t("errors.cancelFailed"));
       }
     }
   };
@@ -222,7 +222,18 @@ export default function InvoicesPage() {
       await sendInvoice(invoice.id);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.sendFailed"));
+      const err = e as { code?: string };
+      if (err.code === "INVOICE_EMPTY") {
+        setInlineErrors((prev) => ({
+          ...prev,
+          [invoice.id]: {
+            code: "INVOICE_EMPTY",
+            message: t("errors.INVOICE_EMPTY"),
+          },
+        }));
+      } else {
+        setError(t("errors.sendFailed"));
+      }
     } finally {
       setSendingId(null);
     }
@@ -510,7 +521,7 @@ export default function InvoicesPage() {
                         <ActionMenu items={buildActions(invoice)} />
                         {err && (
                           <p className="mt-1 text-xs text-red-600 font-medium whitespace-nowrap">
-                            {err.code}: {err.message}
+                            {err.message}
                           </p>
                         )}
                       </td>
@@ -587,7 +598,7 @@ export default function InvoicesPage() {
                       ))}
                       {err && (
                         <p className="mt-1 text-xs text-red-600 font-medium">
-                          {err.code}: {err.message}
+                          {err.message}
                         </p>
                       )}
                     </div>

@@ -1089,6 +1089,8 @@
       "outstandingNote": "Số tại thời điểm hiện tại",
       "errors": {
         "invalidRange": "Khoảng ngày không hợp lệ.",
+        "fromAfterTo": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.",
+        "rangeTooLong": "Khoảng ngày không được vượt quá 24 tháng.",
         "loadFailed": "Không tải được báo cáo."
       }
     },

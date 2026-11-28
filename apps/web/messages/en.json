@@ -1089,6 +1089,8 @@
       "outstandingNote": "Snapshot as of today",
       "errors": {
         "invalidRange": "Invalid date range.",
+        "fromAfterTo": "Start date must be before or equal to the end date.",
+        "rangeTooLong": "Date range cannot exceed 24 months.",
         "loadFailed": "Failed to load report."
       }
     },

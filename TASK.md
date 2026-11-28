@@ -1,6 +1,13 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-043 — Sửa nghiệm thu Nhóm 8 vòng 1 (raw error code ở Invoices, Reports)
+- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Branch: fix/FIX-043-group8-acceptance-fixes
+- Nguồn: nghiệm thu Nhóm 8 vòng 1 của PO (2026-11-28, đạt 90%) — 4 mục: (1) danh sách Invoices hiện lỗi dạng `INVOICE_EMPTY: <message>` (rò mã lỗi thô trước thông điệp đã bản địa hoá ở cả desktop + mobile; nhánh API của Send và fallback Delete/Cancel còn để lộ message thô của API); (2) Reports tab Revenue chọn From sau To thì hiện message validation tiếng Anh chung chung của API; (3) mở thẳng `/reports?tab=clients` vẫn vào tab Revenue (tab khởi tạo bị chốt trước khi session/quyền tải xong); (4) card mobile ở tab Projects của Reports tràn ngang (thiếu `min-w-0` ở card + hàng tiêu đề như card trang Projects; tab Clients cùng khuôn nên sửa luôn).
+- Nội dung: bỏ tiền tố mã lỗi khi render inline error ở Invoices + map INVOICE_EMPTY ở nhánh catch của Send + fallback bản địa hoá cho Delete/Cancel; Reports — chặn From > To và khoảng > 24 tháng ngay phía client với thông điệp cụ thể đã bản địa hoá (khóa mới `Reports.revenue.errors.fromAfterTo` / `rangeTooLong`), 422 từ server cũng hiện bản địa hoá; khởi tạo tab Reports sau khi session sẵn sàng để tôn trọng `?tab=`; bổ sung `min-w-0`/`shrink-0` cho card mobile Projects + Clients của Reports.
+- Acceptance Criteria: tsc/build/Vitest xanh; i18n parity + quét khóa lơ lửng bản đúng NONE missing; PO nghiệm thu nhanh vòng cuối trên 4 điểm đã sửa.
+
 ## FIX-042 — Sửa findings QA-009 vòng 1 cho BE-012 (Nhóm 8)
 - Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
 - Branch: fix/FIX-042-analytics-qa-fixes
