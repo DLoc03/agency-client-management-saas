@@ -14,11 +14,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { useLocale } from "next-intl";
-import { useRouter, usePathname, useSearchParams } from "@/i18n/routing";
+import { useRouter, usePathname } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import type {
   PortalAuthSession,
   PortalBackendInvitationOnly,
@@ -71,6 +73,13 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
     }
   }, [locale, pathname, searchParams, router]);
 
+  // The bootstrap effect below must run once on mount only. It reads the
+  // latest applyStoredLocale through a ref: the callback's identity changes
+  // on every navigation (pathname/searchParams deps), so depending on it
+  // directly would refetch the session profile on every route change.
+  const applyStoredLocaleRef = useRef(applyStoredLocale);
+  applyStoredLocaleRef.current = applyStoredLocale;
+
   // Bootstrap the session from the httpOnly cookie via the BFF.
   useEffect(() => {
     let cancelled = false;
@@ -82,7 +91,7 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled && res.ok) {
           const body = (await res.json()) as PortalMeResponse;
           setSession({ client: body.data.client, agency: body.data.agency });
-          applyStoredLocale(body.data.client.locale);
+          applyStoredLocaleRef.current(body.data.client.locale);
         }
       } catch {
         // No session — the route guards handle redirection.
@@ -93,7 +102,7 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [applyStoredLocale]);
+  }, []);
 
   const login = useCallback(
     async (req: PortalLoginRequest): Promise<PortalLoginResult> => {

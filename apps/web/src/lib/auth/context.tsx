@@ -7,7 +7,8 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "@/i18n/routing";
+import { usePathname, useRouter } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import {
   createContext,
   useCallback,
