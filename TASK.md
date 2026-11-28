@@ -1,13 +1,6 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
-## FIX-042 — Sửa findings QA-009 vòng 1 cho BE-012 (Nhóm 8)
-- Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
-- Branch: fix/FIX-042-analytics-qa-fixes
-- Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
-- Progress: QA-009 vòng 1 kết luận FAIL với 2 finding blocking; task này sửa cả hai, kèm finding non-blocking N1 và các test còn thiếu theo §7 của hợp đồng. (B1) Tràn tháng Carbon: phép cộng/trừ tháng chưa neo `startOfMonth()` tại AnalyticsController (biên tháng này/tháng trước của section sales; cửa sổ 6 tháng của section finance) và ReportController (cửa sổ mặc định của báo cáo doanh thu) khiến ngày 29–31 tràn sang tháng sai — cửa sổ 6 tháng co còn 5 tháng và overview trả 500 vì thiếu phần tử series; nay neo `startOfMonth()` trước mọi phép dịch tháng, kèm test travelTo tại 2026-01-31, 2026-03-31, 2026-07-31 cho cả overview và cửa sổ mặc định của revenue report. (B2) `/reports/projects` chưa áp phạm vi dữ liệu: Team Member nhận toàn bộ dự án kèm budget/invoiced/collected của agency; nay áp scope `visibleTo` như danh sách dự án (DEC-016), eager-load thêm quan hệ `agency` cho resource (khử N+1 ở is_overdue), kèm test hai chiều — Team Member chỉ thấy dự án mình tham gia, Owner thấy tất cả. (N1) collected tại báo cáo clients từng loại payment trên invoice cancelled, lệch định nghĩa §2; nay bỏ bộ lọc trạng thái invoice để khớp RevenueReport, kèm test biên dựng bằng factory (trạng thái cancelled-có-payment không tạo được qua API theo FINANCE_CONTRACT §4.3). Bổ sung test còn thiếu: Portal token (ability `portal`) gọi overview và một endpoint reports bị 403. Cần QA-009 rà soát lại vòng 2 trên PR của task này mới tính là PASS.
-- Acceptance Criteria: PHPUnit xanh trên SQLite và MySQL 8, gồm các test mới (biên tràn tháng 29–31, phạm vi `/reports/projects`, nhất quán collected với invoice cancelled có payment, Portal token 403); Pint sạch trên các file chạm vào.
-- Handoff: Mở PR ghi rõ số test; QA-009 vòng 2 rà soát trên PR này.
 ## FIX-041 — Chip trạng thái Portal + nền mềm cho comment và thành viên (UI)
 - Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
 - Branch: fix/FIX-041-soft-ui-chips
