@@ -1,6 +1,30 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## BE-012 — Analytics & Reporting API (Nhóm 8)
+- Assignee: Backend (Muse) · Level: L3 · Status: TODO
+- Branch: be/BE-012-analytics-api
+- Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
+- Progress: Chưa bắt đầu. Phạm vi: `GET /analytics/overview` (payload theo section sales/projects/finance, section không có quyền thì bỏ hẳn; Team Member chỉ nhận section `personal` với số task của chính mình), `GET /reports/revenue` (theo tháng, lọc khoảng ngày, mặc định 6 tháng, tối đa 24 tháng), `GET /reports/projects` (tiến độ %, quá hạn, đã thu so với ngân sách — dùng lại phép tính của ProjectResource), `GET /reports/clients` (doanh thu theo client), `GET /reports/revenue/export` (CSV phía server, cùng đường truy vấn với báo cáo JSON). Định nghĩa doanh thu theo §2 của hợp đồng: đã thu theo `payments.paid_on`, đã xuất hoá đơn trừ cancelled, công nợ là snapshot trên invoice Sent/Overdue; không thêm khoá quyền mới, không cache.
+- Acceptance Criteria: PHPUnit xanh trên SQLite và MySQL 8, gồm test: bỏ section theo từng tập quyền, trường hợp chỉ có `personal`, biên tháng theo múi giờ agency khác UTC, delta null khi tháng trước bằng 0, nội dung CSV (header, tháng điền 0, dòng total), 403 trên các endpoint reports, cô lập cross-tenant. Pint sạch.
+- Handoff: Mở PR, ghi rõ số test; QA-009 rà soát sau khi PR mở.
+
+## QA-009 — Rà soát BE-012 Analytics & Reporting (Nhóm 8)
+- Assignee: QA Review & Tester (OpenCode) · Level: L2 · Status: TODO
+- Branch: qa/QA-009-analytics-review
+- Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
+- Progress: ⏸ chờ BE-012 mở PR. Rà soát độc lập theo hợp đồng: đối chiếu định nghĩa số liệu §2 với code (đặc biệt: draft được tính vào invoiced là hành vi đã tài liệu hoá, không phải bug), section bị bỏ theo quyền, `personal` chỉ xuất hiện khi không có section thật nào, CSV khớp số liệu JSON trên cùng dữ liệu, cô lập tenant.
+- Acceptance Criteria: Báo cáo PASS/FAIL có bằng chứng (test tự chạy lại trên SQLite + MySQL, kiểm tra tay bằng curl với các tài khoản demo khác vai trò); mọi finding phân loại blocking / non-blocking rõ ràng.
+- Handoff: PASS là điều kiện để soạn prompt FE-024.
+
+## FE-024 — Dashboard số liệu + trang Reports (Nhóm 8)
+- Assignee: Frontend (OpenCode; Muse thay vai khi cần theo convention 2026-11-23) · Level: L3 · Status: TODO
+- Branch: fe/FE-024-analytics-ui
+- Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
+- Progress: ⏸ chờ BE-012 merge + QA-009 PASS. Phạm vi: `/dashboard` thành dashboard số liệu (header chào gọn, thẻ số liệu + biểu đồ cột CSS vẽ tay cho chuỗi 6 tháng, section nào API không trả thì không render, skeleton đúng khuôn lưới thẻ); trang `/reports` (mục Reports ở sidebar) với 3 tab Revenue / Projects / Clients — tab nào 403 thì ẩn, không tab nào dùng được thì hiện trạng thái Forbidden dùng chung; tab Revenue có lọc khoảng ngày + nút xuất CSV; mọi chuỗi qua i18n EN + VI (namespace `Analytics` / `Reports`), trạng thái project hiển thị bằng chip đã bản địa hoá như hiện tại.
+- Acceptance Criteria: tsc/build/Vitest xanh, i18n parity và quét khoá lơ lửng (bản quét đúng, khớp cả lời gọi có tham số) không thiếu khoá; đối chiếu UI_GUIDELINES (một cấp viền, chip một dòng, nút có icon dẫn đầu, skeleton §9); nghiệm thu trực quan của PO trên dữ liệu demo.
+- Handoff: Mở PR kèm ảnh chụp các section theo từng vai trò (Owner, Sales, PM, Accountant, Member) để PO đối chiếu phân quyền bằng mắt.
+
 ## FIX-040 — Bố cục header chi tiết & căn hàng icon thao tác (Nhóm 7)
 - Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
 - Branch: fix/FIX-040-detail-actions-layout
