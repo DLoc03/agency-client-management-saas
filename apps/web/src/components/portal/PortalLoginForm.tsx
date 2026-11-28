@@ -10,6 +10,7 @@ import { Icon } from "@/components/shell/Icon";
 import { Link, useRouter } from "@/i18n/routing";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { usePortalAuth } from "@/lib/portal-auth";
+import { loginNavOptions } from "@/lib/auth/login-nav";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -75,7 +76,10 @@ export function PortalLoginForm({ redirectTo, onInvitationLogin }: { redirectTo?
         else setInvitationAgency(result.invitation.agency.name);
         return;
       }
-      router.replace(safeRedirect || "/portal");
+      // FIX-049: carry the stored locale of the just-logged-in client
+      // on the post-login navigation.
+      const loginLocale = result.session.client.locale;
+      router.replace(safeRedirect || "/portal", loginNavOptions(loginLocale));
       return;
     }
 

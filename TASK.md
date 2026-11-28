@@ -102,6 +102,17 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
 
 ---
+## FIX-049 — Ngôn ngữ đã lưu thua cuộc đua điều hướng sau đăng nhập
+- Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
+- Branch: fix/FIX-049-stored-locale-navigation
+- Nguyên nhân gốc: applyStoredLocale fires router.replace locale inside login context, then form login fires router.replace(target) without locale → second wins; nothing reapplies saved locale after landing.
+- Progress: S1 — LoginForm/PortalLoginForm pass locale from login payload on post-login replace; select-agency passes locale from returned session; keep applyStoredLocale; added loginNavOptions helper + test. S2 — test for navigation options.
+- Blocked by: FE-025 (PR #132 merged 6994b4b)
+- Acceptance Criteria: TH1/TH2 correct; locale source documented; no behavior break; tsc/build/vitest PASS.
+- Handoff: Muse review + open PR; PO retests TH1/TH2. KHÔNG tự merge.
+
+---
+
 ## FE-025 — Ngôn ngữ đi theo tài khoản (persist locale + apply on session start)
 - Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
 - Branch: fe/FE-025-locale-persistence

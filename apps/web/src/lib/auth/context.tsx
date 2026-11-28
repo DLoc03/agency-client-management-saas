@@ -40,7 +40,7 @@ interface AuthContextValue {
   selectAgency: (
     selectionToken: string,
     membershipId: number
-  ) => Promise<LoginError | null>;
+  ) => Promise<{ session: AuthSession } | LoginError>;
   switchAgency: (membershipId: number) => Promise<LoginError | null>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -141,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (
       selectionToken: string,
       membershipId: number
-    ): Promise<LoginError | null> => {
+    ): Promise<{ session: AuthSession } | LoginError> => {
       const result = await clientSelectAgency(selectionToken, membershipId, locale);
 
       if (!result.success) {
@@ -152,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       saveSession(result.session);
       setSession(result.session);
       applyStoredLocale(result.session.user.locale);
-      return null;
+      return { session: result.session };
     },
     [locale, applyStoredLocale]
   );

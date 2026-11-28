@@ -12,6 +12,7 @@ import { Icon } from "@/components/shell/Icon";
 import { useRouter } from "@/i18n/routing";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { useAuth } from "@/lib/auth";
+import { loginNavOptions } from "@/lib/auth/login-nav";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -82,8 +83,15 @@ export function LoginForm({ redirectTo, onInvitationLogin }: { redirectTo?: stri
         else setInvitationAgency(result.invitation.agency.name);
         return;
       }
-      if (safeRedirect) router.replace(safeRedirect);
-      else router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
+      // FIX-049: carry the stored locale of the just-logged-in account
+      // on the post-login navigation; otherwise the form's replace
+      // (without locale) wins the race against applyStoredLocale.
+      const loginLocale: "en" | "vi" | undefined = result.requiresSelection
+        ? result.selection.identity.locale
+        : result.session.user.locale;
+      const navOpts = loginNavOptions(loginLocale);
+      if (safeRedirect) router.replace(safeRedirect, navOpts);
+      else router.replace(result.requiresSelection ? "/select-agency" : "/dashboard", navOpts);
       return;
     }
 
