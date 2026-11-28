@@ -142,6 +142,39 @@ class InvitationLoginTest extends TestCase
         $this->assertNotNull($second->json('data.membership'));
     }
 
+    public function test_expired_invitation_token_on_accept_is_unauthenticated_not_login_required(): void
+    {
+        // QA-009-style probe (FIX-024 round 1, finding F-1): an expired
+        // invitation token presented to the public accept route is an
+        // authentication failure (401), never INVITATION_LOGIN_REQUIRED —
+        // while the no-bearer guest path keeps its 403 below.
+        $owner = $this->makeMembershipUser();
+        $invitee = User::factory()->create();
+        [$invitation, $rawToken] = $this->makeInvitation($owner, $invitee->email, Invitation::KIND_STAFF, [
+            'user_id' => $invitee->id,
+        ]);
+
+        $login = $this->login($invitee->email)->assertOk();
+        $invitationToken = $login->json('data.token');
+
+        $this->travel(61)->minutes();
+
+        $this->withFreshToken($invitationToken)
+            ->postJson('/api/v1/invitations/accept', ['token' => $rawToken])
+            ->assertUnauthorized()
+            ->assertJsonPath('error.code', 'UNAUTHENTICATED');
+
+        $this->assertNull($invitation->fresh()->accepted_at);
+        $this->assertNull($this->membershipOf($invitee, $owner->agency_id));
+
+        // Same request with NO bearer at all keeps the public semantics:
+        // the identity exists but is not signed in -> 403 LOGIN_REQUIRED.
+        $this->asGuest()
+            ->postJson('/api/v1/invitations/accept', ['token' => $rawToken])
+            ->assertForbidden()
+            ->assertJsonPath('error.code', 'INVITATION_LOGIN_REQUIRED');
+    }
+
     public function test_no_membership_and_no_invitation_is_still_refused(): void
     {
         User::factory()->create(['email' => 'lonely@example.test']);

@@ -11,9 +11,11 @@ use App\Http\Resources\InvitationResource;
 use App\Mail\InvitationMail;
 use App\Models\Invitation;
 use App\Models\Membership;
+use App\Models\PersonalAccessToken;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\Tenant;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -163,6 +165,19 @@ class InvitationController extends Controller
             ? User::find($invitation->user_id)
             : User::where('email', $invitation->email)->first();
         $authUser = auth('sanctum')->user();
+
+        if (! $authUser && $request->bearerToken()) {
+            // A bearer credential was presented but resolved to no user:
+            // the token is unknown or expired. That is an authentication
+            // failure (401), not "please log in" — while the public
+            // no-bearer flow below (brand-new identity) stays untouched.
+            // The lookup verifies the unguessable token hash only and
+            // reads no tenant data (same basis as findByToken above).
+            $accessToken = PersonalAccessToken::findToken($request->bearerToken());
+            if (! $accessToken || ($accessToken->expires_at && $accessToken->expires_at->isPast())) {
+                throw new AuthenticationException;
+            }
+        }
 
         if ($authUser) {
             if (! $identity || $identity->id !== $authUser->id) {
