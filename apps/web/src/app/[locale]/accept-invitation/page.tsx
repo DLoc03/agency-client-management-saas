@@ -93,8 +93,6 @@ function AcceptInvitationInner() {
       return key;
     }
   };
-  const loginHref = `/login?returnTo=${encodeURIComponent(`/accept-invitation?token=${token}`)}`;
-
   const doAccept = async (withPassword: boolean) => {
     if (!preview) return;
     setSubmitting(true);
@@ -245,7 +243,7 @@ function AcceptInvitationInner() {
                 <h2 className="text-base font-semibold">{t("accept.loginRequired.heading")}</h2>
                 <p className="text-sm text-muted-foreground">{t("accept.loginRequired.body")}</p>
                 <LoginForm
-                  redirectTo={loginHref}
+                  redirectTo={`/accept-invitation?token=${encodeURIComponent(token)}`}
                   onInvitationLogin={() => setRefreshKey((k) => k + 1)}
                 />
               </div>
