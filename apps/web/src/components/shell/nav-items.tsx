@@ -24,5 +24,6 @@ export function useNavItems(): NavItem[] {
     { key: "team", href: "/team/teams", icon: "users" },
     { key: "tasks", href: "/tasks", icon: "check-square", disabled: true },
     { key: "invoices", href: "/invoices", icon: "receipt" },
+    { key: "reports", href: "/reports", icon: "chart-bar" },
   ];
 }

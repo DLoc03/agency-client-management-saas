@@ -127,7 +127,8 @@
       "projects": "Projects",
       "team": "Team",
       "tasks": "Tasks",
-      "invoices": "Invoices"
+      "invoices": "Invoices",
+      "reports": "Reports"
     },
     "roles": {
       "agency_owner": "Agency Owner",
@@ -1025,6 +1026,105 @@
       "reminder_invoice_overdue": "Invoice {invoice} is overdue",
       "portal_comment": "{actor} commented on project {project}",
       "portal_approval_response": "{actor} responded to approval \"{approval}\" on project {project}"
+    }
+  },
+  "Analytics": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {name}",
+    "agency": "Workspace: {agency}",
+    "sections": {
+      "sales": "Sales",
+      "projects": "Projects",
+      "projectsMine": "My projects",
+      "finance": "Finance",
+      "personal": "My work"
+    },
+    "sales": {
+      "newLeadsThisMonth": "New leads this month",
+      "activeClients": "Active clients",
+      "leadsByStage": "Leads by stage"
+    },
+    "projects": {
+      "tasksOverdue": "Overdue tasks",
+      "projectsOverdue": "Overdue projects",
+      "byStatus": "Projects by status"
+    },
+    "finance": {
+      "collectedThisMonth": "Collected this month",
+      "invoicedThisMonth": "Invoiced this month",
+      "outstanding": "Outstanding receivables",
+      "monthlySeries": "Monthly revenue",
+      "legendInvoiced": "Invoiced",
+      "legendCollected": "Collected"
+    },
+    "personal": {
+      "myOpenTasks": "My open tasks",
+      "myOverdueTasks": "My overdue tasks"
+    },
+    "links": {
+      "viewReport": "View report"
+    },
+    "errors": {
+      "loadFailed": "Failed to load dashboard."
+    }
+  },
+  "Reports": {
+    "title": "Reports",
+    "subtitle": "Revenue, projects and clients",
+    "tabs": {
+      "revenue": "Revenue",
+      "projects": "Projects",
+      "clients": "Clients"
+    },
+    "revenue": {
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "exportCsv": "Export CSV",
+      "month": "Month",
+      "invoiced": "Invoiced",
+      "collected": "Collected",
+      "total": "Total",
+      "outstandingCard": "Current outstanding",
+      "outstandingNote": "Snapshot as of today",
+      "errors": {
+        "invalidRange": "Invalid date range.",
+        "loadFailed": "Failed to load report."
+      }
+    },
+    "projects": {
+      "title": "Project performance",
+      "project": "Project",
+      "client": "Client",
+      "status": "Status",
+      "progress": "Progress",
+      "dueDate": "Due date",
+      "overdue": "Overdue",
+      "budget": "Budget",
+      "invoiced": "Invoiced",
+      "collected": "Collected",
+      "remaining": "Remaining budget",
+      "errors": {
+        "loadFailed": "Failed to load report."
+      }
+    },
+    "clients": {
+      "title": "Client revenue",
+      "client": "Client",
+      "status": "Status",
+      "projectsCount": "Projects",
+      "invoiced": "Invoiced",
+      "collected": "Collected",
+      "outstanding": "Outstanding",
+      "errors": {
+        "loadFailed": "Failed to load report."
+      }
+    },
+    "errors": {
+      "loadFailed": "Failed to load report."
+    },
+    "empty": {
+      "title": "No data"
     }
   }
 }
