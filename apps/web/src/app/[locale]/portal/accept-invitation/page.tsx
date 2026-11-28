@@ -46,6 +46,7 @@ function PortalAcceptInner() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [accepted, setAccepted] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const showSkeleton = useDelayedSkeleton(loading);
 
   useEffect(() => {
@@ -73,7 +74,7 @@ function PortalAcceptInner() {
     return () => {
       active = false;
     };
-  }, [token, session]);
+  }, [token, session, refreshKey]);
 
   // FIX-023: a staff invitation opened on the Portal surface belongs to
   // the internal accept page — forward it, keeping the same token.
@@ -133,7 +134,7 @@ function PortalAcceptInner() {
             {t("heading")}
           </h1>
           <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
-            {t("subtitle")}
+            {t("subtitle", { agency: preview?.agency?.name ?? "" })}
           </p>
         </div>
 
@@ -238,6 +239,7 @@ function PortalAcceptInner() {
                 <p className="text-sm text-slate-500">{t("loginRequiredBody")}</p>
                 <PortalLoginForm
                   redirectTo={`/portal/accept-invitation?token=${token}`}
+                  onInvitationLogin={() => setRefreshKey((k) => k + 1)}
                 />
               </div>
             )}

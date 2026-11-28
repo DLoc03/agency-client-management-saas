@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import { Logo } from "@/components/shell/Logo";
 import { PasswordInput } from "@/components/ui/PasswordInput";
+import { LoginForm } from "@/components/auth/LoginForm";
 import { Skeleton, useDelayedSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/lib/auth";
 import { acceptInvitation, previewInvitation } from "@/lib/team/api";
@@ -46,6 +47,7 @@ function AcceptInvitationInner() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [accepted, setAccepted] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const showSkeleton = useDelayedSkeleton(loading);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ function AcceptInvitationInner() {
     return () => {
       active = false;
     };
-  }, [token, session]);
+  }, [token, session, refreshKey]);
 
   // FIX-023: a client invitation opened on the internal surface belongs
   // to the Portal accept page — forward it, keeping the same token.
@@ -242,12 +244,10 @@ function AcceptInvitationInner() {
               <div className="space-y-3">
                 <h2 className="text-base font-semibold">{t("accept.loginRequired.heading")}</h2>
                 <p className="text-sm text-muted-foreground">{t("accept.loginRequired.body")}</p>
-                <Link
-                  href={loginHref}
-                  className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-                >
-                  {t("accept.loginRequired.action")}
-                </Link>
+                <LoginForm
+                  redirectTo={loginHref}
+                  onInvitationLogin={() => setRefreshKey((k) => k + 1)}
+                />
               </div>
             )}
 

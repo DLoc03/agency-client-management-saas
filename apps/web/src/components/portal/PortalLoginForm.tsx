@@ -37,7 +37,7 @@ function buildSchema(t: ReturnType<typeof useTranslations<"Portal.login">>) {
 
 type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
-export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
+export function PortalLoginForm({ redirectTo, onInvitationLogin }: { redirectTo?: string; onInvitationLogin?: () => void } = {}) {
   const t = useTranslations("Portal.login");
   const tAuth = useTranslations("Auth");
   const schema = buildSchema(t);
@@ -70,6 +70,7 @@ export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
         // pending. Back on the accept page the flow can complete;
         // without one, point the user at the invitation email instead
         // of an error.
+        if (onInvitationLogin) onInvitationLogin();
         if (safeRedirect) router.replace(safeRedirect);
         else setInvitationAgency(result.invitation.agency.name);
         return;
