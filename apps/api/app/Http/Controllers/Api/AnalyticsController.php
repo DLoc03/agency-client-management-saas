@@ -21,8 +21,10 @@ use Illuminate\Support\Carbon;
  * the caller's membership may not see is omitted entirely; when no
  * section is permitted the caller receives only `personal` (their
  * own task counts), so the endpoint never 403s a signed-in staff
- * member. All figures are computed at read time under the tenant
- * scope — no caching (contract section 6.9).
+ * member. Section visibility follows permission; the projects
+ * section's scope follows the caller's data scope (DEC-029
+ * supplement). All figures are computed at read time under the
+ * tenant scope — no caching (contract section 6.9).
  */
 class AnalyticsController extends Controller
 {
@@ -39,7 +41,7 @@ class AnalyticsController extends Controller
             $data['sales'] = $this->salesSection($now);
         }
         if ($user->hasPermission('projects.view')) {
-            $data['projects'] = $this->projectsSection($today);
+            $data['projects'] = $this->projectsSection($user, $today);
         }
         if ($user->hasPermission('invoices.view')) {
             $data['finance'] = $this->financeSection($now, $today);
@@ -92,9 +94,25 @@ class AnalyticsController extends Controller
         ];
     }
 
-    private function projectsSection(string $today): array
+    private function projectsSection(User $user, string $today): array
     {
-        $byStatus = Project::query()
+        // Scope follows the caller's data scope (DEC-029 supplement):
+        // callers with unrestricted project visibility — the
+        // Project::scopeVisibleTo basis — get agency-wide figures;
+        // a Team-Member-only caller gets the same section computed
+        // over the projects they are a member of only, so an overdue
+        // task in a project they do not belong to is never counted.
+        $unrestricted = Project::hasUnrestrictedVisibility($user);
+
+        $projects = Project::query();
+        $tasks = Task::query();
+        if (! $unrestricted) {
+            $memberOf = fn ($q) => $q->whereHas('members', fn ($m) => $m->where('users.id', $user->id));
+            $projects->where($memberOf);
+            $tasks->whereHas('project', $memberOf);
+        }
+
+        $byStatus = (clone $projects)
             ->selectRaw('status, COUNT(*) as status_count')
             ->groupBy('status')
             ->pluck('status_count', 'status');
@@ -104,12 +122,13 @@ class AnalyticsController extends Controller
         }
 
         return [
+            'scope' => $unrestricted ? 'agency' : 'mine',
             'projects_by_status' => $projectsByStatus,
-            'overdue_tasks' => Task::query()
+            'overdue_tasks' => $tasks
                 ->where('status', '!=', Task::STATUS_DONE)
                 ->where('due_date', '<', $today)
                 ->count(),
-            'overdue_projects' => Project::query()
+            'overdue_projects' => $projects
                 ->whereNotIn('status', [Project::STATUS_COMPLETED, Project::STATUS_CANCELLED])
                 ->where('due_date', '<', $today)
                 ->count(),

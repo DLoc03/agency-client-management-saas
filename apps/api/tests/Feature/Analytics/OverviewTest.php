@@ -106,6 +106,7 @@ class OverviewTest extends TestCase
         $response->assertJsonPath('data.sales.leads_by_stage.qualified', 1);
         $response->assertJsonPath('data.sales.leads_by_stage.unqualified', 0);
 
+        $response->assertJsonPath('data.projects.scope', 'agency');
         $response->assertJsonPath('data.projects.projects_by_status.draft', 1);
         $response->assertJsonPath('data.projects.projects_by_status.in_progress', 1);
         $response->assertJsonPath('data.projects.projects_by_status.completed', 1);
@@ -144,13 +145,44 @@ class OverviewTest extends TestCase
         $projectsOnly = $this->userWithPermissions(['projects.view'], $agencyId);
         $data = $this->as($projectsOnly)->getJson('/api/v1/analytics/overview')->assertOk()->json('data');
         $this->assertSame(['projects'], array_keys($data));
+        $this->assertSame('agency', $data['projects']['scope']);
 
         // The stock Team Member holds projects.view (DEC-016) and no
         // leads/invoices permission, so it receives exactly the
-        // projects section under the contract section 4 mapping.
+        // projects section under the contract section 4 mapping —
+        // scoped to its own member projects (DEC-029 supplement).
         $member = $this->makeMembershipUser([Role::TEAM_MEMBER], $agencyId);
         $data = $this->as($member)->getJson('/api/v1/analytics/overview')->assertOk()->json('data');
         $this->assertSame(['projects'], array_keys($data));
+        $this->assertSame('mine', $data['projects']['scope']);
+    }
+
+    public function test_team_member_projects_section_counts_member_projects_only(): void
+    {
+        $this->travelTo(Carbon::parse('2026-11-28 12:00:00', 'UTC'));
+        $agencyId = Agency::factory()->create()->id;
+        $member = $this->makeMembershipUser([Role::TEAM_MEMBER], $agencyId);
+
+        // Project A: the member belongs to it. In progress, overdue,
+        // with one overdue open task and one done task.
+        $own = Project::factory()->create(['agency_id' => $agencyId, 'status' => Project::STATUS_IN_PROGRESS, 'due_date' => '2026-11-01']);
+        $own->members()->attach($member->id);
+        Task::factory()->create(['agency_id' => $agencyId, 'project_id' => $own->id, 'status' => Task::STATUS_TODO, 'due_date' => '2026-11-01']);
+        Task::factory()->create(['agency_id' => $agencyId, 'project_id' => $own->id, 'status' => Task::STATUS_DONE, 'due_date' => '2026-11-01']);
+
+        // Project B: the member does NOT belong to it. Also overdue,
+        // with an overdue open task that is even assigned to the
+        // member — membership, not assignment, is the scope basis.
+        $other = Project::factory()->create(['agency_id' => $agencyId, 'status' => Project::STATUS_DRAFT, 'due_date' => '2026-11-01']);
+        Task::factory()->create(['agency_id' => $agencyId, 'project_id' => $other->id, 'assignee_id' => $member->id, 'status' => Task::STATUS_TODO, 'due_date' => '2026-11-01']);
+
+        $response = $this->as($member)->getJson('/api/v1/analytics/overview')->assertOk();
+        $this->assertSame(['projects'], array_keys($response->json('data')));
+        $response->assertJsonPath('data.projects.scope', 'mine');
+        $response->assertJsonPath('data.projects.projects_by_status.in_progress', 1);
+        $response->assertJsonPath('data.projects.projects_by_status.draft', 0);
+        $response->assertJsonPath('data.projects.overdue_tasks', 1);
+        $response->assertJsonPath('data.projects.overdue_projects', 1);
     }
 
     public function test_personal_section_only_when_no_section_is_permitted(): void
