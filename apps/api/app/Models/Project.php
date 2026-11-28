@@ -132,14 +132,25 @@ class Project extends Model
     }
 
     /**
+     * Whether the user sees every project of the agency: anyone who
+     * is not a Team-Member-only user. This is the unrestricted branch
+     * of scopeVisibleTo, named so other readers (e.g. the analytics
+     * overview, DEC-029 supplement) share the exact same basis.
+     */
+    public static function hasUnrestrictedVisibility(User $user): bool
+    {
+        return ! $user->hasRole(Role::TEAM_MEMBER)
+            || $user->hasAnyRole([Role::OWNER, Role::ADMIN, Role::SALES_MANAGER, Role::PROJECT_MANAGER, Role::ACCOUNTANT]);
+    }
+
+    /**
      * Team Member visibility (DEC-016 matrix): a user whose only view
      * access comes from the Team Member role sees just the projects
      * they participate in — as a member or via an assigned task.
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if (! $user->hasRole(Role::TEAM_MEMBER)
-            || $user->hasAnyRole([Role::OWNER, Role::ADMIN, Role::SALES_MANAGER, Role::PROJECT_MANAGER, Role::ACCOUNTANT])) {
+        if (static::hasUnrestrictedVisibility($user)) {
             return $query;
         }
 

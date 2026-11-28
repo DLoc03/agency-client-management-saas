@@ -74,6 +74,7 @@ not see is omitted from the payload entirely** (never zero-filled):
       "leads_by_stage": { "new": 5, "contacted": 3, "qualified": 2, "unqualified": 1 }
     },
     "projects": {
+      "scope": "agency",
       "projects_by_status": { "draft": 1, "in_progress": 4, "on_hold": 0, "completed": 6, "cancelled": 0 },
       "overdue_tasks": 3,
       "overdue_projects": 1
@@ -100,10 +101,25 @@ not see is omitted from the payload entirely** (never zero-filled):
   first), months labelled `YYYY-MM` in the agency timezone.
 - `projects_by_status` keys = the project status enum; every key is present (0 allowed)
   so the FE chart is stable.
+- `projects.scope` = `"agency"` or `"mine"` (see the scope rule below); the FE labels
+  a `"mine"` section honestly (e.g. "My projects").
 - `personal` is returned **only when the caller receives none of** `sales`, `projects`,
-  `finance` (the Team Member case in the RBAC matrix): counts of tasks assigned to the
-  caller (`my_open_tasks` = status != done; `my_overdue_tasks` per §2). When at least
-  one real section is present, `personal` is omitted.
+  `finance`: counts of tasks assigned to the caller (`my_open_tasks` = status != done;
+  `my_overdue_tasks` per §2). When at least one real section is present, `personal` is
+  omitted.
+
+**Section scope rule (DEC-029 supplement, 2026-11-28).** Section *visibility* follows
+permission (§4); section *scope* follows the role's data scope. The `projects` section
+is `"agency"` when the caller's project visibility is unrestricted — the exact basis
+`Project::scopeVisibleTo` encodes (anyone who is not a Team-Member-only user) — and
+`"mine"` otherwise: `projects_by_status`, `overdue_projects` and `overdue_tasks` are
+then computed only over the projects the caller is a member of (`project_members`), so
+an overdue task in a project the caller does not belong to is never counted. The
+standing principle for Group 8: *section visibility follows permission; section scope
+follows the role's data scope*. Sales and Finance are not subdivided in MVP — no role
+holds a partial slice of them (Sales sees all of sales, Accountant all of finance, a
+Team Member neither) — a future metric that does have a partial-slice consumer applies
+this same rule instead of a hard block.
 - A caller with no section at all and no assigned tasks still receives
   `{ "personal": { "my_open_tasks": 0, "my_overdue_tasks": 0 } }` — the endpoint never
   403s a signed-in staff member; the dashboard always has something truthful to render.
@@ -112,8 +128,8 @@ not see is omitted from the payload entirely** (never zero-filled):
 
 - Defaults: `from` = first day of the month 5 months ago, `to` = today (agency
   timezone) — i.e. the same 6-month window as the dashboard series.
-- `from > to` → 422 `VALIDATION_ERROR` (standard shape). A range longer than 24 months
-  → 422 `VALIDATION_ERROR` (guard against unbounded aggregation).
+- `from > to` → 422 `VALIDATION_FAILED` (standard shape). A range longer than 24 months
+  → 422 `VALIDATION_FAILED` (guard against unbounded aggregation).
 - Response:
   ```json
   {
@@ -170,8 +186,9 @@ not see is omitted from the payload entirely** (never zero-filled):
 A report endpoint called without its permission → 403 `FORBIDDEN` (standard). This
 mapping implements the RBAC matrix row "Analytics & Reports" (Owner/Admin see all
 sections; Sales sees the sales part; PM the project part; Accountant the finance part;
-Team Member none → `personal`; Client never — these are staff endpoints and Portal
-tokens are rejected by the existing ability checks).
+Team Member the project part scoped `"mine"` per §3.1, or `personal` if no section is
+permitted; Client never — these are staff endpoints and Portal tokens are rejected by
+the existing ability checks).
 
 ## 5. Frontend surface (FE-024, for orientation — UI rules in UI_GUIDELINES)
 
@@ -192,9 +209,13 @@ tokens are rejected by the existing ability checks).
 
 1. Dashboard lives on the existing `/dashboard` route; one sectioned overview endpoint;
    sections omitted (not zeroed) when not permitted.
-2. Team Member receives the `personal` section only (own task counts) — the RBAC
-   matrix's "no access" is honoured for agency figures, while the landing page stays
-   useful and truthful.
+2. Section visibility follows permission; section scope follows the role's data
+   scope (supplemented 2026-11-28 — this point replaces the original "personal only"
+   wording). A Team Member receives the `projects` section scoped `"mine"` (figures
+   over their member projects only, per the §3.1 scope rule) — decision-relevant
+   metrics reach them inside their own scope instead of a hard block, while agency
+   figures stay with unrestricted viewers (`scope: "agency"`). `personal` remains the
+   fallback for a caller permitted no section at all.
 3. Revenue definitions per §2: collected is cash-basis by `paid_on`; invoiced excludes
    cancelled; outstanding is a current snapshot over sent/overdue invoices.
 4. Dashboard series and the revenue report default to a 6-month window; report range
@@ -216,6 +237,10 @@ tokens are rejected by the existing ability checks).
   builder usage on business tables needs the AGENTS.md bypass-reason comment if it ever
   bypasses the global scope — prefer Eloquent aggregates on scoped models.
 - Tests must cover: section omission per permission set, the `personal`-only case,
+  the projects-section scope cases (`scope: "agency"` for an unrestricted viewer with
+  full counts; `scope: "mine"` for a Team-Member-only caller — member of one of two
+  projects with overdue tasks in both, every count reflecting the member project only,
+  including an overdue task assigned to them in the non-member project),
   month-boundary behaviour in a non-UTC agency timezone, delta `null` when the previous
   month is 0, CSV content (header, zero-filled months, total row), 403s on the report
   endpoints, and cross-tenant isolation (another agency's figures never leak).
