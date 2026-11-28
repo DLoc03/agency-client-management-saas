@@ -518,6 +518,26 @@ export async function clientGetMe(
  * Client-side call to Next.js BFF: POST /api/auth/logout
  * Clears httpOnly cookie and calls Laravel logout.
  */
+/**
+ * Client-side call to Next.js BFF: PATCH /api/auth/profile
+ * Updates the user's locale on the backend. Non-blocking: failures
+ * are swallowed so the UI language change is never blocked.
+ */
+export async function updateProfileLocale(locale: string): Promise<void> {
+  try {
+    await fetch("/api/auth/profile", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ locale }),
+    });
+  } catch {
+    // Non-blocking — the UI language already changed.
+  }
+}
+
 export async function clientLogout(): Promise<void> {
   try {
     await fetch("/api/auth/logout", {

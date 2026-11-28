@@ -102,6 +102,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
 
 ---
+## FE-025 — Ngôn ngữ đi theo tài khoản (persist locale + apply on session start)
+- Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
+- Branch: fe/FE-025-locale-persistence
+- Progress: S1 — BFF PATCH profile routes + updateProfileLocale helpers; S2 — LanguageToggle ghi xuyên khi có session; S3 — auth context áp locale đã lưu khi session set.
+- Blocked by: BE-013 (PR #131 merged)
+- Acceptance Criteria: toggle ghi về account; login/khôi phục session áp locale đã lưu; chỉ replace khi khác; giữ pathname+query; không phá accept/returnTo; unauth không áp; tsc/build/vitest PASS.
+- Handoff: Muse review, KHÔNG tự review, KHÔNG merge, KHÔNG mở PR.
+
+---
+
 ## FIX-047 — Portal accept refetch dứt điểm (refetch invitation preview sau login nhúng)
 - Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
 - Branch: fe/FIX-047-portal-accept-refetch

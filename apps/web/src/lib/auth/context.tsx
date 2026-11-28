@@ -7,6 +7,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { usePathname, useRouter, useSearchParams } from "@/i18n/routing";
 import {
   createContext,
   useCallback,
@@ -50,6 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // FE-025: apply the account's stored locale on session start.
+  // Only replace when locale actually differs; preserve pathname + query.
+  const applyStoredLocale = useCallback((userLocale: string | undefined) => {
+    if (!userLocale) return;
+    if (userLocale !== locale) {
+      const qs = searchParams.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      router.replace(target, { locale: userLocale as "en" | "vi" });
+    }
+  }, [locale, pathname, searchParams, router]);
 
   useEffect(() => {
     let isMounted = true;
@@ -71,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         setSession(validatedSession);
         saveSession(validatedSession);
+        applyStoredLocale(meResult.user.locale);
       } else if (cached) {
         clearCachedSession();
         setSession(null);
@@ -114,9 +130,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearSelection();
       saveSession(result.session);
       setSession(result.session);
+      applyStoredLocale(result.session.user.locale);
       return result;
     },
-    [locale]
+    [locale, applyStoredLocale]
   );
 
   const selectAgency = useCallback(
@@ -133,9 +150,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearSelection();
       saveSession(result.session);
       setSession(result.session);
+      applyStoredLocale(result.session.user.locale);
       return null;
     },
-    [locale]
+    [locale, applyStoredLocale]
   );
 
   const switchAgency = useCallback(
@@ -148,9 +166,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       saveSession(result.session);
       setSession(result.session);
+      applyStoredLocale(result.session.user.locale);
       return null;
     },
-    [locale]
+    [locale, applyStoredLocale]
   );
 
   const logout = useCallback(async () => {

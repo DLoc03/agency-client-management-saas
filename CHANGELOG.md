@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Added
+- FE-025: persist account locale — toggle write-through and apply stored locale on session start. LanguageToggle (staff) writes to account via PATCH profile when signed in; auth contexts apply saved locale on login/session restore with same-path+query replace; non-blocking on API error. Portal has no language toggle; S3 applied for Portal.
 - Profile locale endpoint (BE-013, DEC-031): `PATCH /auth/profile` — with the Portal mirror `PATCH /portal/auth/profile` — lets a signed-in identity persist its own `locale` (`en` or `vi`, validated against the supported locales; anything else is a 422 `VALIDATION_FAILED`). The endpoint is identity-level (no tenant context) and returns the updated identity in the login identity-payload shape. The stored locale already drives API message localization via `SetApiLocale`, so later API messages follow the new locale immediately; the FE toggle write-through ships separately as FE-025.
 
 ### Fixed
