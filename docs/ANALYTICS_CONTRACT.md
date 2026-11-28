@@ -112,8 +112,8 @@ not see is omitted from the payload entirely** (never zero-filled):
 
 - Defaults: `from` = first day of the month 5 months ago, `to` = today (agency
   timezone) — i.e. the same 6-month window as the dashboard series.
-- `from > to` → 422 `VALIDATION_ERROR` (standard shape). A range longer than 24 months
-  → 422 `VALIDATION_ERROR` (guard against unbounded aggregation).
+- `from > to` → 422 `VALIDATION_FAILED` (standard shape). A range longer than 24 months
+  → 422 `VALIDATION_FAILED` (guard against unbounded aggregation).
 - Response:
   ```json
   {

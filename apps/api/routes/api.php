@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AgencyPaymentDetailsController;
+use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientContactController;
 use App\Http\Controllers\Api\ClientController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Api\ProjectHistoryController;
 use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\ProjectPortalCommentController;
 use App\Http\Controllers\Api\ProjectTeamController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TaskChecklistController;
 use App\Http\Controllers\Api\TaskCommentController;
@@ -253,6 +255,19 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+});
+
+// Analytics & Reporting (docs/ANALYTICS_CONTRACT.md, DEC-029) —
+// read-only aggregates computed at read time. The overview has no
+// route permission: its sections are gated per membership permission
+// inside the controller and it never 403s a staff member; the report
+// endpoints carry their section permission (contract section 4).
+Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->group(function () {
+    Route::get('/analytics/overview', [AnalyticsController::class, 'overview']);
+    Route::get('/reports/revenue', [ReportController::class, 'revenue'])->middleware('permission:invoices.view');
+    Route::get('/reports/revenue/export', [ReportController::class, 'revenueExport'])->middleware('permission:invoices.view');
+    Route::get('/reports/projects', [ReportController::class, 'projects'])->middleware('permission:projects.view');
+    Route::get('/reports/clients', [ReportController::class, 'clients'])->middleware('permission:clients.view');
 });
 
 // Portal project view (docs/PROJECT_CONTRACT.md endpoints 17-18) —
