@@ -81,6 +81,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
 
 ---
+## FIX-047 — Portal accept refetch dứt điểm (refetch invitation preview sau login nhúng)
+- Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
+- Branch: fe/FIX-047-portal-accept-refetch
+- Progress: S1 — thêm prop onInvitationLogin cho LoginForm/PortalLoginForm, gọi trong nhánh invitationOnly; trang accept Portal + nội bộ tăng refreshKey và đưa vào deps của effect fetch preview. S2 — sửa interpolation subtitle Portal accept (truyền agency từ preview).
+- Blocked by: —
+- Acceptance Criteria: Portal accept tự chuyển trạng thái sau login nhúng; subtitle không hiện thô; tsc/build/vitest PASS; parity i18n; JSON parse OK.
+- Handoff: Muse review, KHÔNG tự review, KHÔNG merge, KHÔNG mở PR.
+
+---
+
 ## FIX-046 — Post-acceptance fixes (Portal accept state, localized validation, login trim, invite pending state)
 - Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
 - Branch: fe/FIX-046-acceptance-followups

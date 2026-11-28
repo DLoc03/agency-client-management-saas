@@ -7,6 +7,7 @@ Only OpenCode may package an `[Unreleased]` section into a release and bump `VER
 ## [Unreleased]
 
 ### Fixed
+- FIX-047: Portal accept refetch dứt điểm — thêm prop onInvitationLogin cho LoginForm/PortalLoginForm (gọi trong nhánh invitationOnly), trang accept tăng refreshKey và đưa vào deps của effect fetch preview → sau login nhúng preview tự fetch lại và hiện form xác nhận không cần reload. Sửa interpolation subtitle Portal accept (truyền agency từ preview).
 - FIX-046: Post-acceptance fixes — Portal accept page now re-fetches preview when session changes (auto-transitions to confirm state after login); member role validation errors are localized (client-side 0-roles check + API VALIDATION_FAILED mapping to Common.errors.validationFailed); login forms trim email/password on submit; invite modal send button shows pending state (disabled + loading label). New UI_GUIDELINES convention: never display raw API validation messages.
 - Invitation login dead-end removed (FIX-024, DEC-030): an existing identity with zero active memberships and a pending invitation no longer gets stuck between `INVITATION_LOGIN_REQUIRED` and `NO_ACTIVE_MEMBERSHIP` — login now returns an `invitation_only` payload with a scope-limited token (single `invitation` ability, 60-minute expiry, no membership or agency binding) whose only useful endpoint is `POST /invitations/accept`, and the token is deleted on a successful accept. Tenant endpoints keep rejecting it, and identities without a pending invitation still receive 403 `NO_ACTIVE_MEMBERSHIP` exactly as before.
 
