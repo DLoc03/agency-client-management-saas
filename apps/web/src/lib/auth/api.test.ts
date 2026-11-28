@@ -4,7 +4,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { backendGetMe, backendLogin, backendLogout, getBackendApiUrl, normalizeBackendBaseUrl } from "./api";
+import { backendGetMe, backendLogin, backendLogout, clientLogin, getBackendApiUrl, normalizeBackendBaseUrl } from "./api";
 
 describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
   beforeEach(() => {
@@ -48,7 +48,7 @@ describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
       );
 
       expect(result.success).toBe(true);
-      if (result.success && "token" in result.data) {
+      if (result.success && "token" in result.data && "user" in result.data) {
         expect(result.data.token).toBe("1|sanctum_token_123");
         expect(result.data.user.roles).toContain("agency_owner");
         expect(result.data.agency.slug).toBe("acme");
@@ -157,6 +157,83 @@ describe("Real Auth API (backendLogin, backendGetMe, backendLogout)", () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.code).toBe("NETWORK_ERROR");
+      }
+    });
+  });
+
+  describe("clientLogin", () => {
+    it("returns the invitationOnly result for an invitation_only BFF response (FIX-024)", async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: {
+            invitation_only: true,
+            identity: {
+              id: 7,
+              name: "Invited Member",
+              email: "invited@acme.test",
+              locale: "en",
+              roles: [],
+              permissions: [],
+            },
+            invitation: {
+              kind: "staff",
+              agency: { id: 1, name: "Acme Agency" },
+            },
+          },
+        }),
+      } as Response);
+
+      const result = await clientLogin(
+        { email: "invited@acme.test", password: "password8" },
+        "en"
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success && "invitationOnly" in result) {
+        expect(result.invitation.kind).toBe("staff");
+        expect(result.invitation.agency.name).toBe("Acme Agency");
+      } else {
+        throw new Error("expected the invitationOnly login result");
+      }
+      // The BFF call must not carry any token — it lives in cookies only.
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/auth/login",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("still returns the selection result for a selection_token response", async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: {
+            selection_token: "selection-token",
+            identity: {
+              id: 1,
+              name: "Alice Owner",
+              email: "owner@acme.test",
+              locale: "en",
+              roles: [],
+              permissions: [],
+            },
+            memberships: [],
+          },
+        }),
+      } as Response);
+
+      const result = await clientLogin(
+        { email: "owner@acme.test", password: "password8" },
+        "en"
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success && "requiresSelection" in result) {
+        expect(result.requiresSelection).toBe(true);
+      } else {
+        throw new Error("expected the agency-selection login result");
       }
     });
   });

@@ -46,8 +46,26 @@ export interface AgencySelection {
   memberships: AgencyMembership[];
 }
 
+/**
+ * FIX-024 (DEC-030): the identity exists but holds no active staff
+ * membership yet while a staff invitation is pending. The backend
+ * returns a short-lived invitation-scoped token instead of a session;
+ * it is useful only for POST /invitations/accept and lives in its own
+ * httpOnly cookie (see INVITATION_TOKEN_STORAGE_KEY) — never in the
+ * app token cookie and never exposed to client JS.
+ */
+export interface BackendInvitationOnly {
+  invitation_only: true;
+  token: string;
+  identity: AuthUser;
+  invitation: {
+    kind: string;
+    agency: { id: number; name: string };
+  };
+}
+
 export interface LoginResponse {
-  data: BackendSession | AgencySelection;
+  data: BackendSession | AgencySelection | BackendInvitationOnly;
 }
 
 export interface SessionResponse {
@@ -83,6 +101,9 @@ export const TOKEN_STORAGE_KEY = "app_token";
 /** Short-lived selection token lives here, never in the app token cookie. */
 export const SELECTION_STORAGE_KEY = "auth_selection";
 
+/** Invitation-scoped token cookie (httpOnly, FIX-024) — accept-flow only. */
+export const INVITATION_TOKEN_STORAGE_KEY = "invitation_token";
+
 /** Auth session stored in memory / client state */
 export interface AuthSession {
   token: string;
@@ -99,6 +120,11 @@ export interface LoginError {
 export type LoginResult =
   | { success: true; requiresSelection: false; session: AuthSession }
   | { success: true; requiresSelection: true; selection: AgencySelection }
+  | {
+      success: true;
+      invitationOnly: true;
+      invitation: BackendInvitationOnly["invitation"];
+    }
   | {
       success: false;
       code: string;

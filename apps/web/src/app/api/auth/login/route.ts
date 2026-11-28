@@ -5,7 +5,10 @@
  */
 
 import { backendGetMe, backendLogin } from "@/lib/auth/api";
-import { TOKEN_STORAGE_KEY } from "@/lib/auth/types";
+import {
+  INVITATION_TOKEN_STORAGE_KEY,
+  TOKEN_STORAGE_KEY,
+} from "@/lib/auth/types";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -48,6 +51,32 @@ export async function POST(request: NextRequest) {
           selection_token: data.selection_token,
           identity: data.identity,
           memberships: data.memberships,
+        },
+      });
+    }
+
+    if ("invitation_only" in data) {
+      // FIX-024 (DEC-030): no membership yet, but a staff invitation is
+      // pending. Park the invitation-scoped token in its own httpOnly
+      // cookie (60 minutes, mirroring the backend expiry) so the accept
+      // page can complete; the raw token never reaches client JS and no
+      // app session cookie is set.
+      const cookieStore = await cookies();
+      cookieStore.delete(TOKEN_STORAGE_KEY);
+      cookieStore.set({
+        name: INVITATION_TOKEN_STORAGE_KEY,
+        value: data.token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 3600,
+      });
+      return NextResponse.json({
+        data: {
+          invitation_only: true,
+          identity: data.identity,
+          invitation: data.invitation,
         },
       });
     }

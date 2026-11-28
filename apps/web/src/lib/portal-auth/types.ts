@@ -54,6 +54,23 @@ export interface PortalResetPasswordRequest {
   password: string;
 }
 
+/**
+ * FIX-024 (DEC-030): raw backend outcome when the identity exists but
+ * holds no active client membership yet while a client invitation is
+ * pending — an invitation-scoped token instead of a Portal session.
+ * The token lives in the shared httpOnly invitation_token cookie (see
+ * lib/auth/types) and is useful only for POST /invitations/accept.
+ */
+export interface PortalBackendInvitationOnly {
+  invitation_only: true;
+  token: string;
+  identity: PortalClient;
+  invitation: {
+    kind: string;
+    agency: { id: number; name: string };
+  };
+}
+
 /** Client-side session: identity only, the token stays in the BFF cookie. */
 export interface PortalAuthSession {
   client: PortalClient;
@@ -62,6 +79,11 @@ export interface PortalAuthSession {
 
 export type PortalLoginResult =
   | { success: true; session: PortalAuthSession }
+  | {
+      success: true;
+      invitationOnly: true;
+      invitation: PortalBackendInvitationOnly["invitation"];
+    }
   | { success: false; code: string; message?: string };
 
 export type PortalResetResult =

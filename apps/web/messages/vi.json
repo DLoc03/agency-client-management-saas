@@ -53,6 +53,8 @@
     "footerNote": "Quản lý Agency & Khách hàng"
   },
   "Auth": {
+    "invitationPendingTitle": "Đang có lời mời chờ",
+    "invitationPendingBody": "Tài khoản của bạn đang có lời mời đang chờ từ {agency}. Hãy mở liên kết trong email mời để tiếp tục.",
     "login": {
       "title": "Đăng nhập vào không gian làm việc",
       "subtitle": "Nhập email và mật khẩu làm việc của bạn.",

@@ -5,6 +5,7 @@
  * internal app login (FE-004). The token never reaches client JS.
  */
 
+import { INVITATION_TOKEN_STORAGE_KEY } from "@/lib/auth/types";
 import { backendPortalLogin } from "@/lib/portal-auth/api";
 import { PORTAL_TOKEN_STORAGE_KEY } from "@/lib/portal-auth/types";
 import { cookies } from "next/headers";
@@ -35,6 +36,33 @@ export async function POST(request: NextRequest) {
         { error: result.error },
         { status: result.status }
       );
+    }
+
+    if ("invitation_only" in result.data) {
+      // FIX-024 (DEC-030): no client membership yet, but a client
+      // invitation is pending. Park the invitation-scoped token in its
+      // own httpOnly cookie (60 minutes, mirroring the backend expiry)
+      // so the Portal accept page can complete; the raw token never
+      // reaches client JS and no portal session cookie is set.
+      const data = result.data;
+      const cookieStore = await cookies();
+      cookieStore.delete(PORTAL_TOKEN_STORAGE_KEY);
+      cookieStore.set({
+        name: INVITATION_TOKEN_STORAGE_KEY,
+        value: data.token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 3600,
+      });
+      return NextResponse.json({
+        data: {
+          invitation_only: true,
+          identity: data.identity,
+          invitation: data.invitation,
+        },
+      });
     }
 
     const { token, client, agency } = result.data;

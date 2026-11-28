@@ -35,6 +35,7 @@ export type {
   AuthAgency,
   AuthSession,
   AuthUser,
+  BackendInvitationOnly,
   BackendSession,
   LoginError,
   LoginRequest,
@@ -45,4 +46,8 @@ export type {
   SessionResponse,
   SessionResult,
 } from "./types";
-export { SELECTION_STORAGE_KEY, TOKEN_STORAGE_KEY } from "./types";
+export {
+  INVITATION_TOKEN_STORAGE_KEY,
+  SELECTION_STORAGE_KEY,
+  TOKEN_STORAGE_KEY,
+} from "./types";
