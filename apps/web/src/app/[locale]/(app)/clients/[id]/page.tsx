@@ -894,7 +894,7 @@ export default function ClientDetailPage() {
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1 text-right sm:flex-row sm:items-center sm:gap-3">
                   <div className="flex flex-col items-end gap-0.5">
-                    <span className="whitespace-nowrap rounded-full border border-border px-2 py-0.5 text-xs font-medium">
+                    <span className={`whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${statusBadgeClass(account.is_active ? "active" : "inactive")}`}>
                       {account.is_active ? t("portal.active") : t("portal.disabled")}
                     </span>
                     <span className="text-xs text-muted-foreground">
