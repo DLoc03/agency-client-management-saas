@@ -73,7 +73,7 @@ function PortalAcceptInner() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, session]);
 
   // FIX-023: a staff invitation opened on the Portal surface belongs to
   // the internal accept page — forward it, keeping the same token.

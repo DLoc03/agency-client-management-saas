@@ -36,6 +36,7 @@ export default function InvitationsPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ email: "", roleIds: [] as number[] });
   const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const isOwner = !!session?.user.roles.includes("agency_owner");
   const isAdmin = !!session?.user.roles.includes("admin") && !isOwner;
@@ -99,6 +100,7 @@ export default function InvitationsPage() {
       return;
     }
     setFormError(null);
+    setSubmitting(true);
     try {
       await createInvitation({ email: form.email, role_ids: form.roleIds });
       setShowForm(false);
@@ -111,6 +113,8 @@ export default function InvitationsPage() {
       } else {
         setFormError(e instanceof Error ? e.message : t("errors.createFailed"));
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -273,9 +277,9 @@ export default function InvitationsPage() {
               <button type="button" onClick={() => setShowForm(false)} className="rounded-md border border-border px-4 py-2 text-sm">
                 {t("actions.cancel")}
               </button>
-              <button type="submit" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+              <button type="submit" disabled={submitting} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60">
                 <Icon name="mail" className="h-4 w-4" />
-                {t("invitationsForm.send")}
+                {submitting ? c("loading") : t("invitationsForm.send")}
               </button>
             </div>
           </form>

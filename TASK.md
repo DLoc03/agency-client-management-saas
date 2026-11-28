@@ -81,6 +81,16 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: Muse tự làm theo convention thay vai FE; PO nghiệm thu trực quan + merge, Muse không tự merge.
 
 ---
+## FIX-046 — Post-acceptance fixes (Portal accept state, localized validation, login trim, invite pending state)
+- Assignee: Frontend (OpenCode) · Level: L2 · Status: IN_PROGRESS
+- Branch: fe/FIX-046-acceptance-followups
+- Progress: Đang thực hiện S1–S4: (1) Portal accept auto-refetch on session change, (2) localized validation errors + Common.errors.validationFailed, (3) trim email/password on login, (4) invite modal pending state.
+- Blocked by: —
+- Acceptance Criteria: Portal accept tự chuyển trạng thái sau login; lỗi validation bản địa hoá; login trim khoảng trắng; nút mời có pending state; tsc/build/vitest PASS; parity i18n.
+- Handoff: Muse review, KHÔNG tự review, KHÔNG merge, KHÔNG mở PR.
+
+---
+
 ## FIX-037 — Polish UI Portal & icon hệ thống (Nhóm 7)
 - Assignee: Frontend (OpenCode) · Level: L3 · Status: DONE
 - Branch: fix/FIX-037-portal-ui-polish

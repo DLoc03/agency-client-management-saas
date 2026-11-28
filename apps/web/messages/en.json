@@ -25,8 +25,10 @@
       "body": "Your current role doesn't include permission to view this section. If you think this is a mistake, contact your workspace owner.",
       "back": "Back to dashboard"
     },
-    "switchLanguage": "Switch language"
-  },
+    "switchLanguage": "Switch language",
+    "errors": {
+      "validationFailed": "The submitted data is invalid. Please check your input."
+    }
   "Home": {
     "status": "Foundation phase — the application is being initialized.",
     "subtitle": "Manage leads, clients, projects and billing in one place.",
