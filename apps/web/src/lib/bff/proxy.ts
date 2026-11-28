@@ -46,9 +46,12 @@ export async function proxyToBackend(
     }
     const text = await res.text();
     const contentType = res.headers.get("content-type") || "application/json";
+    const outHeaders: Record<string, string> = { "Content-Type": contentType };
+    const disposition = res.headers.get("content-disposition");
+    if (disposition) outHeaders["Content-Disposition"] = disposition;
     return new NextResponse(text, {
       status: res.status,
-      headers: { "Content-Type": contentType },
+      headers: outHeaders,
     });
   } catch (err: unknown) {
     return NextResponse.json(

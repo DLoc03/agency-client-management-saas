@@ -32,10 +32,11 @@ Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạ
 - Handoff: PASS là điều kiện để soạn prompt FE-024.
 
 ## FE-024 — Dashboard số liệu + trang Reports (Nhóm 8)
-- Assignee: Frontend (OpenCode; Muse thay vai khi cần theo convention 2026-11-23) · Level: L3 · Status: TODO
+- Assignee: Frontend (OpenCode; Muse thay vai khi cần theo convention 2026-11-23) · Level: L3 · Status: IN_PROGRESS
 - Branch: fe/FE-024-analytics-ui
 - Contract: docs/ANALYTICS_CONTRACT.md (DEC-029)
-- Progress: ⏸ chờ BE-012 merge + QA-009 PASS. Phạm vi: `/dashboard` thành dashboard số liệu (header chào gọn, thẻ số liệu + biểu đồ cột CSS vẽ tay cho chuỗi 6 tháng, section nào API không trả thì không render, skeleton đúng khuôn lưới thẻ); trang `/reports` (mục Reports ở sidebar) với 3 tab Revenue / Projects / Clients — tab nào 403 thì ẩn, không tab nào dùng được thì hiện trạng thái Forbidden dùng chung; tab Revenue có lọc khoảng ngày + nút xuất CSV; mọi chuỗi qua i18n EN + VI (namespace `Analytics` / `Reports`), trạng thái project hiển thị bằng chip đã bản địa hoá như hiện tại.
+- Progress: ✅ FE-024 implemented: dashboard sections from /analytics/overview (sales/projects/finance/personal), CSS bar chart, /reports with 3 tabs, Revenue/Projects/Clients reports, CSV export via BFF, nav item Reports, i18n EN+VI. tsc/build/Vitest pass.
+  (legacy note) ⏸ chờ BE-012 merge + QA-009 PASS. Phạm vi: `/dashboard` thành dashboard số liệu (header chào gọn, thẻ số liệu + biểu đồ cột CSS vẽ tay cho chuỗi 6 tháng, section nào API không trả thì không render, skeleton đúng khuôn lưới thẻ); trang `/reports` (mục Reports ở sidebar) với 3 tab Revenue / Projects / Clients — tab nào 403 thì ẩn, không tab nào dùng được thì hiện trạng thái Forbidden dùng chung; tab Revenue có lọc khoảng ngày + nút xuất CSV; mọi chuỗi qua i18n EN + VI (namespace `Analytics` / `Reports`), trạng thái project hiển thị bằng chip đã bản địa hoá như hiện tại.
 - Acceptance Criteria: tsc/build/Vitest xanh, i18n parity và quét khoá lơ lửng (bản quét đúng, khớp cả lời gọi có tham số) không thiếu khoá; đối chiếu UI_GUIDELINES (một cấp viền, chip một dòng, nút có icon dẫn đầu, skeleton §9); nghiệm thu trực quan của PO trên dữ liệu demo.
 - Handoff: Mở PR kèm ảnh chụp các section theo từng vai trò (Owner, Sales, PM, Accountant, Member) để PO đối chiếu phân quyền bằng mắt.
 

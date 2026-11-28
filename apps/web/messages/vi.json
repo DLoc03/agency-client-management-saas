@@ -127,7 +127,8 @@
       "projects": "Dự án",
       "team": "Nhóm",
       "tasks": "Tác vụ",
-      "invoices": "Hoá đơn"
+      "invoices": "Hoá đơn",
+      "reports": "Báo cáo"
     },
     "roles": {
       "agency_owner": "Chủ agency",
@@ -1025,6 +1026,105 @@
       "reminder_invoice_overdue": "Hoá đơn {invoice} đã quá hạn",
       "portal_comment": "{actor} đã bình luận trong dự án {project}",
       "portal_approval_response": "{actor} đã phản hồi phê duyệt \"{approval}\" trong dự án {project}"
+    }
+  },
+  "Analytics": {
+    "title": "Bảng điều khiển",
+    "welcome": "Chào mừng trở lại, {name}",
+    "agency": "Không gian: {agency}",
+    "sections": {
+      "sales": "Bán hàng",
+      "projects": "Dự án",
+      "projectsMine": "Dự án của tôi",
+      "finance": "Tài chính",
+      "personal": "Việc của tôi"
+    },
+    "sales": {
+      "newLeadsThisMonth": "Lead mới tháng này",
+      "activeClients": "Khách hàng đang hoạt động",
+      "leadsByStage": "Lead theo giai đoạn"
+    },
+    "projects": {
+      "tasksOverdue": "Công việc quá hạn",
+      "projectsOverdue": "Dự án quá hạn",
+      "byStatus": "Dự án theo trạng thái"
+    },
+    "finance": {
+      "collectedThisMonth": "Đã thu tháng này",
+      "invoicedThisMonth": "Đã xuất hoá đơn tháng này",
+      "outstanding": "Công nợ chưa thu",
+      "monthlySeries": "Doanh thu theo tháng",
+      "legendInvoiced": "Đã xuất",
+      "legendCollected": "Đã thu"
+    },
+    "personal": {
+      "myOpenTasks": "Việc đang mở của tôi",
+      "myOverdueTasks": "Việc quá hạn của tôi"
+    },
+    "links": {
+      "viewReport": "Xem báo cáo"
+    },
+    "errors": {
+      "loadFailed": "Không tải được bảng điều khiển."
+    }
+  },
+  "Reports": {
+    "title": "Báo cáo",
+    "subtitle": "Doanh thu, dự án và khách hàng",
+    "tabs": {
+      "revenue": "Doanh thu",
+      "projects": "Dự án",
+      "clients": "Khách hàng"
+    },
+    "revenue": {
+      "from": "Từ",
+      "to": "Đến",
+      "apply": "Áp dụng",
+      "exportCsv": "Xuất CSV",
+      "month": "Tháng",
+      "invoiced": "Đã xuất",
+      "collected": "Đã thu",
+      "total": "Tổng",
+      "outstandingCard": "Công nợ hiện tại",
+      "outstandingNote": "Số tại thời điểm hiện tại",
+      "errors": {
+        "invalidRange": "Khoảng ngày không hợp lệ.",
+        "loadFailed": "Không tải được báo cáo."
+      }
+    },
+    "projects": {
+      "title": "Hiệu suất dự án",
+      "project": "Dự án",
+      "client": "Khách hàng",
+      "status": "Trạng thái",
+      "progress": "Tiến độ",
+      "dueDate": "Hạn",
+      "overdue": "Quá hạn",
+      "budget": "Ngân sách",
+      "invoiced": "Đã xuất",
+      "collected": "Đã thu",
+      "remaining": "Ngân sách còn lại",
+      "errors": {
+        "loadFailed": "Không tải được báo cáo."
+      }
+    },
+    "clients": {
+      "title": "Doanh thu khách hàng",
+      "client": "Khách hàng",
+      "status": "Trạng thái",
+      "projectsCount": "Số dự án",
+      "invoiced": "Đã xuất",
+      "collected": "Đã thu",
+      "outstanding": "Công nợ",
+      "errors": {
+        "loadFailed": "Không tải được báo cáo."
+      }
+    },
+    "errors": {
+      "loadFailed": "Không tải được báo cáo."
+    },
+    "empty": {
+      "title": "Chưa có dữ liệu"
     }
   }
 }
