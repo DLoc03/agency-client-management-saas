@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Icon } from "@/components/shell/Icon";
 import { Select } from "@/components/ui/Select";
 import { ActionMenu } from "@/components/ui/ActionMenu";
+import { Avatar } from "@/components/ui/Avatar";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { Forbidden, isForbiddenError } from "@/components/ui/Forbidden";
 import { priorityBadgeClass } from "@/lib/status-colors";
@@ -398,26 +399,39 @@ export default function TaskDetailPage() {
         ) : (
           <ul className="space-y-3">
             {comments.map((comment) => (
-              <li key={comment.id} className="rounded-md border border-border p-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {comment.author?.name ?? "—"}
-                    {comment.created_at ? ` · ${comment.created_at.slice(0, 10)}` : ""}
-                  </p>
-                  {canDeleteComment(comment) && (
-                    <ActionMenu
-                      items={[
-                        {
-                          label: t("actions.delete"),
-                          icon: "trash-2",
-                          danger: true,
-                          onClick: () => handleDeleteComment(comment.id),
-                        },
-                      ]}
-                    />
-                  )}
+              <li key={comment.id} className="rounded-md bg-muted/50 p-3">
+                <div className="flex items-start gap-3">
+                  <Avatar
+                    name={comment.author?.name ?? "?"}
+                    seed={comment.author?.id ?? comment.id}
+                    className="h-8 w-8 shrink-0 text-xs"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium">
+                        {comment.author?.name ?? "—"}
+                        {comment.created_at ? (
+                          <span className="ml-2 text-xs font-normal text-muted-foreground">
+                            {comment.created_at.slice(0, 10)}
+                          </span>
+                        ) : null}
+                      </p>
+                      {canDeleteComment(comment) && (
+                        <ActionMenu
+                          items={[
+                            {
+                              label: t("actions.delete"),
+                              icon: "trash-2",
+                              danger: true,
+                              onClick: () => handleDeleteComment(comment.id),
+                            },
+                          ]}
+                        />
+                      )}
+                    </div>
+                    <p className="mt-1 text-sm whitespace-pre-wrap">{comment.body}</p>
+                  </div>
                 </div>
-                <p className="mt-1 text-sm whitespace-pre-wrap">{comment.body}</p>
               </li>
             ))}
           </ul>

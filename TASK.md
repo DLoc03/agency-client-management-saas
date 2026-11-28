@@ -1,6 +1,13 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-041 — Chip trạng thái Portal + nền mềm cho comment và thành viên (UI)
+- Assignee: Frontend (Muse thay vai FE theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Branch: fix/FIX-041-soft-ui-chips
+- Progress: Theo rà soát của PO: (1) chip trạng thái ở section Tài khoản Portal (chi tiết khách hàng) đang dùng màu trơn `border-border` cho cả hai trạng thái — đổi sang màu ngữ nghĩa dùng chung `statusBadgeClass` (active = xanh lá mềm, inactive = đỏ mềm như bản đồ màu hiện có); (2) comment trong chi tiết công việc còn viền lồng viền và thiếu avatar — bỏ viền từng comment, dùng một nền mềm thống nhất `bg-muted/50` cho mọi comment (PO chốt: không tô màu theo từng người vì Owner/Admin/PM cùng comment sẽ rối), thêm Avatar + tên người comment và ngày cạnh tên; (3) tương tự ở danh sách thành viên trong chi tiết Nhóm: bỏ viền từng dòng, nền mềm `bg-muted/50`, thêm Avatar + tên/email, nút Gỡ thành viên đổi từ chữ đỏ trơn sang nút danger-soft (nền đỏ nhạt, viền đỏ, chữ đỏ đậm, icon x) đúng quy tắc nút nguy hiểm.
+- Acceptance Criteria: tsc/build/Vitest xanh, i18n parity giữ nguyên (không thêm khoá); PO nghiệm thu trực quan.
+- Handoff: Mở PR, chờ PO merge (QA-009 đang chạy độc lập trên BE-012, không liên quan).
+
 ## BE-012 — Analytics & Reporting API (Nhóm 8)
 - Assignee: Backend (Muse) · Level: L3 · Status: IN_PROGRESS
 - Branch: be/BE-012-analytics-api
