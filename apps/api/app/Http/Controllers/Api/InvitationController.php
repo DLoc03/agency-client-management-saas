@@ -20,9 +20,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Throwable;
 
 /** Member invitations (docs/TEAM_CONTRACT.md endpoints 13-17). */
 class InvitationController extends Controller
@@ -297,7 +299,20 @@ class InvitationController extends Controller
     {
         $invitation->loadMissing(['agency', 'inviter']);
         $acceptUrl = rtrim(config('app.frontend_url'), '/').'/accept-invitation?token='.$rawToken;
-        Mail::to($invitation->email)->send(new InvitationMail($invitation, $acceptUrl));
+        try {
+            Mail::to($invitation->email)->send(new InvitationMail($invitation, $acceptUrl));
+        } catch (Throwable $e) {
+            // FIX-045: a mail transport failure must not fail the
+            // invitation itself — the row already exists and stays
+            // pending, so the email can be sent again via resend
+            // once the transport recovers (same isolation pattern
+            // as App\Support\Notifier).
+            Log::warning('Failed to send invitation email.', [
+                'invitation_id' => $invitation->id,
+                'recipient' => $invitation->email,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function guardOwnerRoleNotInvited(array $roleIds): void
