@@ -93,19 +93,6 @@ export default function InvoicesPage() {
   const [sendingId, setSendingId] = useState<number | null>(null);
   const [pdfLoadingId, setPdfLoadingId] = useState<number | null>(null);
 
-  // Inline errors shown at the action button (e.g. INVOICE_EMPTY at Send).
-  const [inlineErrors, setInlineErrors] = useState<
-    Record<number, { code: string; message: string }>
-  >({});
-
-  const clearInlineError = useCallback((id: number) => {
-    setInlineErrors((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-  }, []);
-
   const fetchReference = useCallback(() => {
     import("@/lib/clients/api")
       .then(({ listClients }) => listClients())
@@ -145,7 +132,7 @@ export default function InvoicesPage() {
         setForbidden(true);
         return;
       }
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      setError(t("errors.loadFailed"));
     } finally {
       setLoading(false);
       setHasLoaded(true);
@@ -166,57 +153,37 @@ export default function InvoicesPage() {
   }, [page, lastPage]);
 
   const handleDelete = async (id: number) => {
+    setError(null);
     try {
       await deleteInvoice(id);
       await load();
     } catch (e) {
-      const err = e as { code?: string; message?: string };
-      if (err.code === "CANNOT_DELETE_INVOICE") {
-        setInlineErrors((prev) => ({
-          ...prev,
-          [id]: {
-            code: err.code ?? "",
-            message: t("errors.CANNOT_DELETE_INVOICE"),
-          },
-        }));
-      } else {
-        setError(t("errors.deleteFailed"));
-      }
+      const err = e as { code?: string };
+      setError(
+        err.code === "CANNOT_DELETE_INVOICE"
+          ? t("errors.CANNOT_DELETE_INVOICE")
+          : t("errors.deleteFailed"),
+      );
     }
   };
 
   const handleCancel = async (id: number) => {
+    setError(null);
     try {
       await cancelInvoice(id);
       await load();
     } catch (e) {
-      const err = e as { code?: string; message?: string };
-      if (err.code === "CANNOT_CANCEL_INVOICE") {
-        setInlineErrors((prev) => ({
-          ...prev,
-          [id]: {
-            code: err.code ?? "",
-            message: t("errors.CANNOT_CANCEL_INVOICE"),
-          },
-        }));
-      } else {
-        setError(t("errors.cancelFailed"));
-      }
+      const err = e as { code?: string };
+      setError(
+        err.code === "CANNOT_CANCEL_INVOICE"
+          ? t("errors.CANNOT_CANCEL_INVOICE")
+          : t("errors.cancelFailed"),
+      );
     }
   };
 
   const handleSend = async (invoice: InvoiceRow) => {
-    clearInlineError(invoice.id);
-    if (!invoice.items || invoice.items.length === 0) {
-      setInlineErrors((prev) => ({
-        ...prev,
-        [invoice.id]: {
-          code: "INVOICE_EMPTY",
-          message: t("errors.INVOICE_EMPTY"),
-        },
-      }));
-      return;
-    }
+    setError(null);
     setSendingId(invoice.id);
     try {
       await sendInvoice(invoice.id);
@@ -224,13 +191,9 @@ export default function InvoicesPage() {
     } catch (e) {
       const err = e as { code?: string };
       if (err.code === "INVOICE_EMPTY") {
-        setInlineErrors((prev) => ({
-          ...prev,
-          [invoice.id]: {
-            code: "INVOICE_EMPTY",
-            message: t("errors.INVOICE_EMPTY"),
-          },
-        }));
+        setError(t("errors.INVOICE_EMPTY"));
+      } else if (err.code === "INVOICE_NOT_EDITABLE") {
+        setError(t("errors.INVOICE_NOT_EDITABLE"));
       } else {
         setError(t("errors.sendFailed"));
       }
@@ -252,7 +215,7 @@ export default function InvoicesPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.pdfFailed"));
+      setError(t("errors.pdfFailed"));
     } finally {
       setPdfLoadingId(null);
     }
@@ -488,7 +451,6 @@ export default function InvoicesPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {invoices.map((invoice) => {
-                  const err = inlineErrors[invoice.id];
                   return (
                     <tr
                       key={invoice.id}
@@ -519,11 +481,6 @@ export default function InvoicesPage() {
                       </td>
                       <td className="p-3 text-right shrink-0">
                         <ActionMenu items={buildActions(invoice)} />
-                        {err && (
-                          <p className="mt-1 text-xs text-red-600 font-medium whitespace-nowrap">
-                            {err.message}
-                          </p>
-                        )}
                       </td>
                     </tr>
                   );
@@ -535,7 +492,6 @@ export default function InvoicesPage() {
             {/* Mobile cards */}
             <div className="lg:hidden space-y-3">
               {invoices.map((invoice) => {
-                const err = inlineErrors[invoice.id];
                 return (
                   <div
                     key={invoice.id}
@@ -596,11 +552,6 @@ export default function InvoicesPage() {
                           {item.label}
                         </button>
                       ))}
-                      {err && (
-                        <p className="mt-1 text-xs text-red-600 font-medium">
-                          {err.message}
-                        </p>
-                      )}
                     </div>
                   </div>
                 );
