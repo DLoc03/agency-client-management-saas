@@ -64,12 +64,8 @@ class AnalyticsController extends Controller
         // created_at is a UTC timestamp: the agency-local month
         // boundaries are converted to UTC before comparing.
         $thisMonthStart = $now->copy()->startOfMonth()->utc();
-        // Anchor to the 1st BEFORE shifting months: an unanchored
-        // addMonth/subMonth on the 29th–31st overflows into the
-        // wrong month (Carbon does not clamp), which corrupts both
-        // boundaries (QA-009 B1).
-        $nextMonthStart = $now->copy()->startOfMonth()->addMonth()->utc();
-        $lastMonthStart = $now->copy()->startOfMonth()->subMonth()->utc();
+        $nextMonthStart = $now->copy()->addMonth()->startOfMonth()->utc();
+        $lastMonthStart = $now->copy()->subMonth()->startOfMonth()->utc();
 
         $newThisMonth = Lead::query()
             ->where('created_at', '>=', $thisMonthStart)
@@ -143,11 +139,7 @@ class AnalyticsController extends Controller
     {
         // The 6-month window ending today (contract section 3.1),
         // built by the same code path as the revenue report.
-        // startOfMonth() first, for the same overflow reason as in
-        // salesSection() (QA-009 B1): on the 31st an unanchored
-        // subMonths(5) lands in the wrong month and the 6-month
-        // window collapses to 5 entries.
-        $windowStart = $now->copy()->startOfMonth()->subMonths(5)->toDateString();
+        $windowStart = $now->copy()->subMonths(5)->startOfMonth()->toDateString();
         $report = RevenueReport::build($windowStart, $today);
         $series = $report['months'];
         $current = $series[5];

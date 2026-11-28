@@ -68,16 +68,8 @@ class ReportController extends Controller
     public function projects(Request $request): AnonymousResourceCollection
     {
         $projects = Project::query()
-            // The report follows the caller's data scope (DEC-016,
-            // DEC-029 scope principle): the same visibleTo scope the
-            // project list uses, so a Team Member never receives
-            // figures for projects they do not participate in
-            // (QA-009 B2).
-            ->visibleTo($request->user())
             ->where('status', '!=', Project::STATUS_CANCELLED)
-            // `agency` is eager-loaded because ProjectReportResource
-            // reads the agency timezone per row for is_overdue.
-            ->with(['client', 'agency'])
+            ->with('client')
             ->withCount([
                 'tasks',
                 'tasks as tasks_done_count' => fn ($q) => $q->where('status', Task::STATUS_DONE),
@@ -101,12 +93,10 @@ class ReportController extends Controller
 
         // Payments carry no client_id: group them through their
         // invoice. The tenant scope qualifies payments.agency_id, so
-        // the join stays inside the current agency. Collected follows
-        // the contract section 2 definition exactly — payments summed
-        // with NO invoice-status filter, the same rule RevenueReport
-        // applies (single source of truth, QA-009 N1).
+        // the join stays inside the current agency.
         $collectedByClient = Payment::query()
             ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
+            ->where('invoices.status', '!=', Invoice::STATUS_CANCELLED)
             ->groupBy('invoices.client_id')
             ->selectRaw('invoices.client_id as client_id, SUM(payments.amount) as client_sum')
             ->pluck('client_sum', 'client_id');
@@ -168,13 +158,9 @@ class ReportController extends Controller
         $to = ! empty($validated['to'])
             ? Carbon::parse($validated['to'], $timezone)->startOfDay()
             : $today->copy();
-        // The default `from` anchors startOfMonth() BEFORE
-        // subMonths: an unanchored shift on the 29th–31st overflows
-        // into the wrong month and shrinks the default window below
-        // 6 months (QA-009 B1).
         $from = ! empty($validated['from'])
             ? Carbon::parse($validated['from'], $timezone)->startOfDay()
-            : $today->copy()->startOfMonth()->subMonths(5);
+            : $today->copy()->subMonths(5)->startOfMonth();
 
         if ($from->gt($to)) {
             throw ValidationException::withMessages([

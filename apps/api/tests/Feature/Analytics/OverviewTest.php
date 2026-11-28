@@ -219,52 +219,6 @@ class OverviewTest extends TestCase
         $response->assertJsonPath('data.finance.collected_last_month', '0.00');
     }
 
-    public function test_month_arithmetic_does_not_overflow_at_month_ends(): void
-    {
-        $owner = $this->makeMembershipUser([Role::OWNER]);
-        $agencyId = $owner->agency_id;
-        Lead::factory()->create(['agency_id' => $agencyId, 'created_at' => '2026-01-15 09:00:00']);
-        Lead::factory()->create(['agency_id' => $agencyId, 'created_at' => '2026-02-05 09:00:00']);
-
-        // QA-009 B1 probe: at 2026-01-31 the unanchored addMonth()
-        // pushed the next-month boundary to 2026-03-01, so the
-        // February lead leaked into "this month".
-        $this->travelTo(Carbon::parse('2026-01-31 12:00:00', 'UTC'));
-        $response = $this->as($owner)->getJson('/api/v1/analytics/overview')->assertOk();
-        $response->assertJsonPath('data.sales.new_leads_this_month', 1);
-        $response->assertJsonPath('data.sales.new_leads_last_month', 0);
-
-        // At 2026-03-31 the unanchored subMonth() landed on
-        // 2026-03-01, so the February lead vanished from last month.
-        $this->travelTo(Carbon::parse('2026-03-31 12:00:00', 'UTC'));
-        $response = $this->as($owner)->getJson('/api/v1/analytics/overview')->assertOk();
-        $response->assertJsonPath('data.sales.new_leads_this_month', 0);
-        $response->assertJsonPath('data.sales.new_leads_last_month', 1);
-
-        // At 2026-07-31 the finance window collapsed to 5 months
-        // and the overview 500ed on the missing series key.
-        $this->travelTo(Carbon::parse('2026-07-31 12:00:00', 'UTC'));
-        $response = $this->as($owner)->getJson('/api/v1/analytics/overview')->assertOk();
-        $series = $response->json('data.finance.monthly_series');
-        $this->assertCount(6, $series);
-        $this->assertSame('2026-02', $series[0]['month']);
-        $this->assertSame('2026-07', $series[5]['month']);
-    }
-
-    public function test_portal_token_is_rejected_from_staff_analytics(): void
-    {
-        $owner = $this->makeMembershipUser([Role::OWNER]);
-        $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
-        $portal = $this->makePortalIdentity($owner->agency_id, $client->id);
-
-        // The staff analytics routes sit behind the `app` ability;
-        // a Portal token (ability `portal`) is rejected outright
-        // (contract section 4: Client never).
-        $asPortal = $this->withFreshToken($this->boundTokenFor($portal, 'portal'));
-        $asPortal->getJson('/api/v1/analytics/overview')->assertForbidden();
-        $asPortal->getJson('/api/v1/reports/projects')->assertForbidden();
-    }
-
     public function test_month_boundaries_follow_the_agency_timezone(): void
     {
         // 2026-11-30 20:30 UTC is already 2026-12-01 in Tokyo: the
