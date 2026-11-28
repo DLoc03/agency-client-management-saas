@@ -25,7 +25,6 @@ Nguyên tắc chung cho cả hai hệ điều hành:
 ### A1. Chạy nghiệm thu chuẩn (sau khi pull code mới)
 
 ```bash
-cd ~/Sources/agency-client-management-saas
 git checkout main && git pull
 git log --oneline -1
 docker compose exec api php artisan migrate
@@ -44,7 +43,6 @@ docker compose logs -f web
 ### A2. Khởi động lại bình thường (không có code mới)
 
 ```bash
-cd ~/Sources/agency-client-management-saas
 WEB_MODE=prod docker compose up -d
 docker compose logs -f web
 ```
@@ -68,7 +66,6 @@ docker compose down
 ### B1. Chạy nghiệm thu chuẩn (sau khi pull code mới)
 
 ```powershell
-cd "D:\Personal Project\agency-client-management-saas"
 git checkout main
 git pull
 git log --oneline -1
@@ -85,7 +82,6 @@ docker compose logs -f web
 ### B2. Khởi động lại bình thường (không có code mới)
 
 ```powershell
-cd "D:\Personal Project\agency-client-management-saas"
 docker compose up -d
 docker compose logs -f web
 ```
