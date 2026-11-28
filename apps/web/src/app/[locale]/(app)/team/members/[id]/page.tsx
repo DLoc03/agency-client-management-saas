@@ -99,7 +99,12 @@ export default function MemberDetailPage() {
       });
       setUser(updated);
     } catch (e) {
-      setProfileError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      const err = e as Error & { code?: string };
+      if (err.code === "VALIDATION_FAILED") {
+        setProfileError(c("errors.validationFailed"));
+      } else {
+        setProfileError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      }
     } finally {
       setSaving(false);
     }
@@ -135,7 +140,12 @@ export default function MemberDetailPage() {
       const updated = await updateUserActivation(id, isActive);
       setUser(updated);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      const err = e as Error & { code?: string };
+      if (err.code === "VALIDATION_FAILED") {
+        setError(c("errors.validationFailed"));
+      } else {
+        setError(e instanceof Error ? e.message : t("errors.updateFailed"));
+      }
     } finally {
       setSaving(false);
     }

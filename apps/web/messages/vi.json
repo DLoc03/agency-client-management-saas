@@ -29,6 +29,7 @@
     "errors": {
       "validationFailed": "Dữ liệu gửi lên không hợp lệ. Vui lòng kiểm tra lại."
     }
+  },
   "Home": {
     "status": "Giai đoạn nền tảng — ứng dụng đang được khởi tạo.",
     "subtitle": "Quản lý lead, khách hàng, dự án và hoá đơn trong một hệ thống.",
