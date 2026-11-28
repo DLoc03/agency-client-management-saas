@@ -85,6 +85,24 @@ class RevenueReportTest extends TestCase
         $this->assertSame(['month' => '2026-11', 'invoiced' => '1200.00', 'collected' => '400.00'], $months[5]);
     }
 
+    public function test_revenue_report_default_window_does_not_overflow_on_the_31st(): void
+    {
+        // QA-009 B1 probe: at 2026-07-31 the unanchored
+        // subMonths(5) landed in March, shrinking the default
+        // window to 5 months starting 2026-03-01.
+        $this->travelTo(Carbon::parse('2026-07-31 12:00:00', 'UTC'));
+        $owner = $this->makeMembershipUser([Role::OWNER]);
+
+        $response = $this->as($owner)->getJson('/api/v1/reports/revenue')->assertOk();
+        $response->assertJsonPath('data.from', '2026-02-01');
+        $response->assertJsonPath('data.to', '2026-07-31');
+
+        $months = $response->json('data.months');
+        $this->assertCount(6, $months);
+        $this->assertSame('2026-02', $months[0]['month']);
+        $this->assertSame('2026-07', $months[5]['month']);
+    }
+
     public function test_revenue_report_custom_range_limits_and_zero_fills_months(): void
     {
         $owner = $this->makeMembershipUser([Role::OWNER]);
