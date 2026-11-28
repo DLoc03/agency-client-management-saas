@@ -108,6 +108,53 @@ class ProjectClientReportTest extends TestCase
         $page->assertJsonPath('meta.current_page', 2);
     }
 
+    public function test_projects_report_is_scoped_to_the_callers_visible_projects(): void
+    {
+        $owner = $this->makeMembershipUser([Role::OWNER]);
+        $member = $this->makeMembershipUser([Role::TEAM_MEMBER], $owner->agency_id);
+
+        $own = Project::factory()->create(['agency_id' => $owner->agency_id, 'status' => Project::STATUS_IN_PROGRESS]);
+        $own->members()->attach($member->id);
+        Project::factory()->create(['agency_id' => $owner->agency_id, 'status' => Project::STATUS_IN_PROGRESS]);
+
+        // QA-009 B2: the Team Member receives only the project
+        // they participate in — the other project's budget and
+        // finance figures never leave the API.
+        $response = $this->as($member)->getJson('/api/v1/reports/projects')->assertOk();
+        $response->assertJsonPath('meta.total', 1);
+        $this->assertSame([$own->id], array_column($response->json('data'), 'id'));
+
+        // The Owner still receives the full agency list.
+        $this->as($owner)->getJson('/api/v1/reports/projects')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 2);
+    }
+
+    public function test_clients_report_collected_matches_the_revenue_definition_for_cancelled_invoices(): void
+    {
+        $owner = $this->makeMembershipUser([Role::OWNER]);
+        $client = Client::factory()->create(['agency_id' => $owner->agency_id]);
+
+        // A cancelled invoice carrying a payment cannot be produced
+        // through the API (FINANCE_CONTRACT section 4.3 forbids
+        // cancelling an invoice that has payments), so the state is
+        // built with factories. Contract section 2 counts collected
+        // from payments with NO invoice-status filter, and the two
+        // reports must agree on the same data (QA-009 N1).
+        $cancelled = $this->invoice($owner, $client, ['status' => Invoice::STATUS_CANCELLED, 'issue_date' => '2026-11-01', 'total' => 500]);
+        $this->pay($cancelled, 300);
+
+        $rows = $this->as($owner)->getJson('/api/v1/reports/clients')->assertOk()->json('data');
+        $this->assertCount(1, $rows);
+        $this->assertSame('300.00', $rows[0]['collected_total']);
+        $this->assertSame('0.00', $rows[0]['invoiced_total']);
+        $this->assertSame('0.00', $rows[0]['outstanding']);
+
+        $this->as($owner)->getJson('/api/v1/reports/revenue')
+            ->assertOk()
+            ->assertJsonPath('data.totals.collected', '300.00');
+    }
+
     public function test_clients_report_aggregates_and_ordering(): void
     {
         $owner = $this->makeMembershipUser([Role::OWNER]);
