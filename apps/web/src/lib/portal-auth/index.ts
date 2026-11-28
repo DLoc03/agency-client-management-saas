@@ -3,6 +3,7 @@
  */
 
 export { PortalAuthProvider, usePortalAuth } from "./context";
+export { updateProfileLocale } from "./profile";
 export { PORTAL_TOKEN_STORAGE_KEY } from "./types";
 export type {
   PortalAgency,

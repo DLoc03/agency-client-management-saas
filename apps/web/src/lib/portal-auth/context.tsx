@@ -14,9 +14,13 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import type {
   PortalAuthSession,
   PortalBackendInvitationOnly,
@@ -54,6 +58,27 @@ async function readMessage(res: Response): Promise<string> {
 export function PortalAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<PortalAuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // FE-025: apply the account's stored locale on session start.
+  const applyStoredLocale = useCallback((userLocale: string | undefined) => {
+    if (!userLocale) return;
+    if (userLocale !== locale) {
+      const qs = searchParams.toString();
+      const target = qs ? `${pathname}?${qs}` : pathname;
+      router.replace(target, { locale: userLocale as "en" | "vi" });
+    }
+  }, [locale, pathname, searchParams, router]);
+
+  // The bootstrap effect below must run once on mount only. It reads the
+  // latest applyStoredLocale through a ref: the callback's identity changes
+  // on every navigation (pathname/searchParams deps), so depending on it
+  // directly would refetch the session profile on every route change.
+  const applyStoredLocaleRef = useRef(applyStoredLocale);
+  applyStoredLocaleRef.current = applyStoredLocale;
 
   // Bootstrap the session from the httpOnly cookie via the BFF.
   useEffect(() => {
@@ -66,6 +91,7 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled && res.ok) {
           const body = (await res.json()) as PortalMeResponse;
           setSession({ client: body.data.client, agency: body.data.agency });
+          applyStoredLocaleRef.current(body.data.client.locale);
         }
       } catch {
         // No session — the route guards handle redirection.
@@ -110,12 +136,13 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
           agency: body.data.agency,
         };
         setSession(newSession);
+        applyStoredLocale(body.data.client.locale);
         return { success: true, session: newSession };
       } catch {
         return { success: false, code: "NETWORK_ERROR" };
       }
     },
-    []
+    [applyStoredLocale]
   );
 
   const logout = useCallback(async () => {

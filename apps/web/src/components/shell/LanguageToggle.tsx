@@ -4,6 +4,8 @@ import { usePathname, useRouter } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { FlagIcon } from "@/components/ui/FlagIcon";
+import { useAuth } from "@/lib/auth";
+import { updateProfileLocale } from "@/lib/auth";
 
 export function LanguageToggle() {
   const locale = useLocale();
@@ -12,11 +14,18 @@ export function LanguageToggle() {
   const t = useTranslations("Common");
   const [isPending, startTransition] = useTransition();
 
+  const { session } = useAuth();
+
   const handleSwitch = () => {
     const next = locale === "vi" ? "en" : "vi";
     startTransition(() => {
       router.replace(pathname, { locale: next });
     });
+    // FE-025: persist the language choice on the account when signed in.
+    // Fire-and-forget: UI language change is never blocked by API errors.
+    if (session) {
+      void updateProfileLocale(next);
+    }
   };
 
   return (

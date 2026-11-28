@@ -15,6 +15,7 @@ export {
   clientSelectAgency,
   clientSwitchAgency,
   getBackendApiUrl,
+  updateProfileLocale,
 } from "./api";
 export { AuthProvider, useAuth } from "./context";
 export {
