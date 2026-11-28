@@ -78,14 +78,18 @@ export default function SelectAgencyPage() {
       membership.id
     );
 
-    if (!result) {
-      router.replace("/dashboard");
+    if (!("session" in result)) {
+      failAndReturn(
+        EXPIRED_CODES.includes(result.code) ? "expired" : "failed"
+      );
       return;
     }
 
-    failAndReturn(
-      EXPIRED_CODES.includes(result.code) ? "expired" : "failed"
-    );
+    // FIX-049: carry the locale of the just-established session on the
+    // navigation to dashboard so it wins over any pre-login route locale.
+    const loginLocale = result.session.user.locale;
+    router.replace("/dashboard", loginLocale ? { locale: loginLocale } : undefined);
+    return;
   };
 
   if (!selection) return null;
