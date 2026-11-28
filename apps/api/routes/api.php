@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\ProjectPortalCommentController;
 use App\Http\Controllers\Api\ProjectTeamController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TaskChecklistController;
 use App\Http\Controllers\Api\TaskCommentController;
@@ -212,6 +213,11 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'ability:app', 'tenant'])->grou
     Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->middleware('permission:teams.delete');
     Route::post('/teams/{team}/members', [TeamMemberController::class, 'store'])->middleware('permission:teams.members.manage');
     Route::delete('/teams/{team}/members/{userId}', [TeamMemberController::class, 'destroy'])->middleware('permission:teams.members.manage');
+
+    // BE-014: roles catalogue. No `permission:` middleware — access needs
+    // EITHER invitations.manage OR users.roles.manage, which the single-key
+    // middleware cannot express; RoleController enforces it instead.
+    Route::get('/roles', [RoleController::class, 'index']);
 
     Route::get('/users', [UserController::class, 'index'])->middleware('permission:users.view');
     Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:users.view');
