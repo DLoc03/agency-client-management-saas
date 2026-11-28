@@ -1,7 +1,20 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { getBackendApiUrl } from "@/lib/auth/api";
-import { TOKEN_STORAGE_KEY } from "@/lib/auth/types";
+import {
+  INVITATION_TOKEN_STORAGE_KEY,
+  TOKEN_STORAGE_KEY,
+} from "@/lib/auth/types";
+
+export interface ProxyOptions {
+  /**
+   * FIX-024: when no app_token cookie exists, fall back to the
+   * invitation-scoped token cookie. Opt-in per route — only the
+   * invitation preview/accept routes use it, since the invitation
+   * token is valid solely for those backend endpoints.
+   */
+  invitationFallback?: boolean;
+}
 
 /**
  * Generic BFF proxy to the Laravel API (/api/v1/*).
@@ -9,10 +22,14 @@ import { TOKEN_STORAGE_KEY } from "@/lib/auth/types";
  */
 export async function proxyToBackend(
   request: NextRequest,
-  backendPath: string
+  backendPath: string,
+  options?: ProxyOptions
 ): Promise<NextResponse> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(TOKEN_STORAGE_KEY)?.value;
+  let token = cookieStore.get(TOKEN_STORAGE_KEY)?.value;
+  if (!token && options?.invitationFallback) {
+    token = cookieStore.get(INVITATION_TOKEN_STORAGE_KEY)?.value;
+  }
 
   const baseUrl = getBackendApiUrl();
   const cleaned = backendPath.replace(/^\/+/, "");

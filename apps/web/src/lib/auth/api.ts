@@ -10,6 +10,7 @@ import type {
   ApiErrorPayload,
   ApiErrorResponse,
   AuthSession,
+  BackendInvitationOnly,
   BackendSession,
   LoginRequest,
   LoginResponse,
@@ -309,7 +310,9 @@ export async function clientLogin(
       return { success: false, ...clientError(body as ApiErrorResponse | null) };
     }
 
-    const data = (body as { data: BackendSession | AgencySelection }).data;
+    const data = (
+      body as { data: BackendSession | AgencySelection | BackendInvitationOnly }
+    ).data;
 
     if ("selection_token" in data) {
       const selection: AgencySelection = {
@@ -318,6 +321,17 @@ export async function clientLogin(
         memberships: data.memberships,
       };
       return { success: true, requiresSelection: true, selection };
+    }
+
+    if ("invitation_only" in data) {
+      // FIX-024: no session was established — the BFF stored the
+      // invitation-scoped token in its own httpOnly cookie; the caller
+      // sends the user back to the invitation accept page.
+      return {
+        success: true,
+        invitationOnly: true,
+        invitation: data.invitation,
+      };
     }
 
     return {

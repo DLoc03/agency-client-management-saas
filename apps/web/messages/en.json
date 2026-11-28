@@ -53,6 +53,8 @@
     "footerNote": "Agency & Client Management"
   },
   "Auth": {
+    "invitationPendingTitle": "Invitation pending",
+    "invitationPendingBody": "Your account has a pending invitation from {agency}. Open the invitation link in your email to continue.",
     "login": {
       "title": "Sign in to your workspace",
       "subtitle": "Enter your work email and password.",

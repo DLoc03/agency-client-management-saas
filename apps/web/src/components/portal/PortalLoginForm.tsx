@@ -39,6 +39,7 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
   const t = useTranslations("Portal.login");
+  const tAuth = useTranslations("Auth");
   const schema = buildSchema(t);
   const { login } = usePortalAuth();
   const router = useRouter();
@@ -47,6 +48,7 @@ export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
       ? redirectTo
       : null;
   const [serverError, setServerError] = useState<ErrorCode | null>(null);
+  const [invitationAgency, setInvitationAgency] = useState<string | null>(null);
 
   const {
     register,
@@ -58,9 +60,19 @@ export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
+    setInvitationAgency(null);
     const result = await login(values);
 
     if (result.success) {
+      if ("invitationOnly" in result) {
+        // FIX-024: credentials are valid and a client invitation is
+        // pending. Back on the accept page the flow can complete;
+        // without one, point the user at the invitation email instead
+        // of an error.
+        if (safeRedirect) router.replace(safeRedirect);
+        else setInvitationAgency(result.invitation.agency.name);
+        return;
+      }
       router.replace(safeRedirect || "/portal");
       return;
     }
@@ -85,6 +97,17 @@ export function PortalLoginForm({ redirectTo }: { redirectTo?: string } = {}) {
       className="flex flex-col gap-5"
       aria-label={t("title")}
     >
+      {/* Pending-invitation notice (FIX-024) — informational, not an error */}
+      {invitationAgency && (
+        <div
+          role="status"
+          className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+        >
+          <p className="font-medium">{tAuth("invitationPendingTitle")}</p>
+          <p>{tAuth("invitationPendingBody", { agency: invitationAgency })}</p>
+        </div>
+      )}
+
       {/* Server-level error banner */}
       {serverError && (
         <div

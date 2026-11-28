@@ -47,6 +47,7 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>;
 
 export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
   const t = useTranslations("Auth.login");
+  const tAuth = useTranslations("Auth");
   const schema = buildSchema(t);
   const { login } = useAuth();
   const router = useRouter();
@@ -55,6 +56,7 @@ export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
       ? redirectTo
       : null;
   const [serverError, setServerError] = useState<FormServerError | null>(null);
+  const [invitationAgency, setInvitationAgency] = useState<string | null>(null);
 
   const {
     register,
@@ -66,9 +68,18 @@ export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
 
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
+    setInvitationAgency(null);
     const result = await login(values);
 
     if (result.success) {
+      if ("invitationOnly" in result) {
+        // FIX-024: credentials are valid and an invitation is pending.
+        // Back on the accept page the flow can complete; without one,
+        // point the user at the invitation email instead of an error.
+        if (safeRedirect) router.replace(safeRedirect);
+        else setInvitationAgency(result.invitation.agency.name);
+        return;
+      }
       if (safeRedirect) router.replace(safeRedirect);
       else router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
       return;
@@ -98,6 +109,17 @@ export function LoginForm({ redirectTo }: { redirectTo?: string } = {}) {
       className="flex flex-col gap-5"
       aria-label={t("title")}
     >
+      {/* Pending-invitation notice (FIX-024) — informational, not an error */}
+      {invitationAgency && (
+        <div
+          role="status"
+          className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700"
+        >
+          <p className="font-medium">{tAuth("invitationPendingTitle")}</p>
+          <p>{tAuth("invitationPendingBody", { agency: invitationAgency })}</p>
+        </div>
+      )}
+
       {/* Server-level error banner */}
       {serverError && (
         <div

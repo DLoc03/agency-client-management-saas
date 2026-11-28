@@ -104,7 +104,7 @@ function AcceptInvitationInner() {
       });
       if (withPassword) {
         const result = await login({ email: preview.email, password });
-        if (result.success) {
+        if (result.success && !("invitationOnly" in result)) {
           router.replace(result.requiresSelection ? "/select-agency" : "/dashboard");
           return;
         }

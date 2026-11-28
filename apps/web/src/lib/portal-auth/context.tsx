@@ -19,6 +19,7 @@ import {
 } from "react";
 import type {
   PortalAuthSession,
+  PortalBackendInvitationOnly,
   PortalForgotPasswordRequest,
   PortalLoginRequest,
   PortalLoginResult,
@@ -91,7 +92,19 @@ export function PortalAuthProvider({ children }: { children: ReactNode }) {
         if (!res.ok) {
           return { success: false, code: await readErrorCode(res) };
         }
-        const body = (await res.json()) as PortalMeResponse;
+        const body = (await res.json()) as
+          | PortalMeResponse
+          | { data: PortalBackendInvitationOnly };
+        if ("invitation_only" in body.data) {
+          // FIX-024: no Portal session exists yet — the BFF parked the
+          // invitation-scoped token in its cookie; the form navigates
+          // back to the accept page (or shows the pending notice).
+          return {
+            success: true,
+            invitationOnly: true,
+            invitation: body.data.invitation,
+          };
+        }
         const newSession: PortalAuthSession = {
           client: body.data.client,
           agency: body.data.agency,

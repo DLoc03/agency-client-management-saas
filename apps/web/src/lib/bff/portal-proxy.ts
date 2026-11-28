@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { getBackendApiUrl } from "@/lib/auth/api";
+import { INVITATION_TOKEN_STORAGE_KEY } from "@/lib/auth/types";
 import { PORTAL_TOKEN_STORAGE_KEY } from "@/lib/portal-auth/types";
+import type { ProxyOptions } from "./proxy";
 
 /**
  * BFF proxy for the Client Portal API (/api/v1/portal/*).
@@ -11,10 +13,17 @@ import { PORTAL_TOKEN_STORAGE_KEY } from "@/lib/portal-auth/types";
  */
 export async function portalProxyToBackend(
   request: NextRequest,
-  backendPath: string
+  backendPath: string,
+  options?: ProxyOptions
 ): Promise<NextResponse> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(PORTAL_TOKEN_STORAGE_KEY)?.value;
+  let token = cookieStore.get(PORTAL_TOKEN_STORAGE_KEY)?.value;
+  if (!token && options?.invitationFallback) {
+    // FIX-024: mirror of the app proxy — only the invitation
+    // preview/accept routes opt in; the invitation token is valid
+    // solely for those backend endpoints.
+    token = cookieStore.get(INVITATION_TOKEN_STORAGE_KEY)?.value;
+  }
 
   const baseUrl = getBackendApiUrl();
   const cleaned = backendPath.replace(/^\/+/, "");

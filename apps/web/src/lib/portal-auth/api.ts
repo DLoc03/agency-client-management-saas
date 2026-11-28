@@ -4,7 +4,11 @@
  */
 
 import { getBackendApiUrl } from "@/lib/auth/api";
-import type { PortalLoginRequest, PortalLoginResponse } from "./types";
+import type {
+  PortalBackendInvitationOnly,
+  PortalLoginRequest,
+  PortalLoginResponse,
+} from "./types";
 
 type ApiErrorPayload = { code: string; message: string };
 
@@ -12,7 +16,10 @@ export async function backendPortalLogin(
   req: PortalLoginRequest,
   locale = "en"
 ): Promise<
-  | { success: true; data: PortalLoginResponse["data"] }
+  | {
+      success: true;
+      data: PortalLoginResponse["data"] | PortalBackendInvitationOnly;
+    }
   | { success: false; status: number; error: ApiErrorPayload }
 > {
   const baseUrl = getBackendApiUrl();
@@ -39,7 +46,12 @@ export async function backendPortalLogin(
       return { success: false, status: res.status, error };
     }
 
-    return { success: true, data: (body as PortalLoginResponse).data };
+    return {
+      success: true,
+      data: (body as PortalLoginResponse).data as
+        | PortalLoginResponse["data"]
+        | PortalBackendInvitationOnly,
+    };
   } catch {
     return {
       success: false,

@@ -94,6 +94,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return result;
       }
 
+      if ("invitationOnly" in result) {
+        // FIX-024: no session exists yet — the only credential is the
+        // invitation cookie set by the BFF; the form navigates back to
+        // the accept page (or shows the pending-invitation notice).
+        clearCachedSession();
+        clearSelection();
+        setSession(null);
+        return result;
+      }
+
       if (result.requiresSelection) {
         clearCachedSession();
         saveSelection(result.selection);

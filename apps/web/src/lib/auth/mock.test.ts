@@ -30,7 +30,7 @@ describe("mockLogin", () => {
   it("returns token + user + agency on valid credentials", async () => {
     const result = await mockLogin({ email: "owner@acme.test", password: "password8" });
     expect("data" in result).toBe(true);
-    if ("data" in result && "token" in result.data) {
+    if ("data" in result && "token" in result.data && "user" in result.data) {
       expect(result.data.token).toMatch(/^mock_token_/);
       expect(result.data.user.email).toBe("owner@acme.test");
       expect(result.data.user.roles).toContain("agency_owner");
