@@ -1,6 +1,17 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## BE-014 — Endpoint danh mục vai trò (GET /roles)
+- Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
+- Branch: be/BE-014-roles-catalogue
+- Contract: —
+- Progress: Thêm `GET /v1/roles` trong nhóm staff (auth:sanctum + ability:app + tenant) trả toàn bộ vai trò toàn cục từ bảng roles (RoleResource: id/key/name, sắp theo id tăng dần = thứ tự seed) — nguồn dữ liệu chuẩn cho modal mời và form vai trò ở chi tiết member, thay cách FE tự gom vai trò từ danh sách member hiện có (agency mới chỉ có Owner thì gom được 0 vai trò chọn được, không mời nổi thành viên đầu tiên). Quyền truy cập: membership hiện tại phải có `invitations.manage` HOẶC `users.roles.manage`; middleware `permission:` chỉ nhận một key nên RoleController tự kiểm tra either và ném AuthorizationException (vẫn ra shape 403 FORBIDDEN chuẩn). Lưu ý dữ kiện: RoleSeeder chỉ seed 6 vai trò nội bộ (agency_owner, admin, sales_manager, project_manager, team_member, accountant) — client KHÔNG phải một role (là loại membership, DEC-018) nên danh mục có 6 mục. Thêm `RolesCatalogueTest` (6 test: Owner nhận đủ 6 vai trò đúng thứ tự seed; membership chỉ có một trong hai quyền vẫn xem được — không role gốc nào tách riêng hai quyền này nên test thu hẹp danh sách quyền của một role gốc qua config để kiểm nhánh either; Team Member không có quyền nào → 403 FORBIDDEN; token Portal → 403; guest → 401).
+- Blocked by: —
+- Acceptance Criteria: GET /roles với Owner → 200 + đủ vai trò theo thứ tự seed; chỉ có một trong hai quyền (invitations.manage / users.roles.manage) → 200; không có quyền nào → 403 FORBIDDEN; token Portal → 403; guest → 401; toàn bộ PHPUnit xanh trên SQLite + MySQL; Pint PASS.
+- Handoff: OpenCode QA review, KHÔNG tự review, KHÔNG merge. FE theo sau là FIX-048 (modal mời + form vai trò ở chi tiết member chuyển sang dùng endpoint này) — phụ thuộc BE-014 merge.
+
+---
+
 ## BE-013 — Endpoint cập nhật locale theo tài khoản (PATCH /auth/profile + bản Portal)
 - Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
 - Branch: be/BE-013-profile-locale
