@@ -93,7 +93,7 @@ export default function InvoiceDetailPage() {
         setForbidden(true);
         return;
       }
-      setError(e instanceof Error ? e.message : t("errors.loadFailed"));
+      setError(t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -170,7 +170,7 @@ export default function InvoiceDetailPage() {
       await deletePayment(paymentId);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.paymentDeleteFailed"));
+      setError(t("errors.paymentDeleteFailed"));
     }
   };
 
@@ -195,7 +195,14 @@ export default function InvoiceDetailPage() {
       await sendInvoice(invoice.id);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.sendFailed"));
+      const err = e as { code?: string };
+      if (err.code === "INVOICE_EMPTY") {
+        setError(t("errors.INVOICE_EMPTY"));
+      } else if (err.code === "INVOICE_NOT_EDITABLE") {
+        setError(t("errors.INVOICE_NOT_EDITABLE"));
+      } else {
+        setError(t("errors.sendFailed"));
+      }
     } finally {
       setSending(false);
     }
@@ -208,7 +215,12 @@ export default function InvoiceDetailPage() {
       await cancelInvoice(invoice.id);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.cancelFailed"));
+      const err = e as { code?: string };
+      setError(
+        err.code === "CANNOT_CANCEL_INVOICE"
+          ? t("errors.CANNOT_CANCEL_INVOICE")
+          : t("errors.cancelFailed"),
+      );
     } finally {
       setCanceling(false);
     }
@@ -221,7 +233,12 @@ export default function InvoiceDetailPage() {
       await deleteInvoice(invoice.id);
       router.push("/invoices");
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.deleteFailed"));
+      const err = e as { code?: string };
+      setError(
+        err.code === "CANNOT_DELETE_INVOICE"
+          ? t("errors.CANNOT_DELETE_INVOICE")
+          : t("errors.deleteFailed"),
+      );
     } finally {
       setDeleting(false);
     }
@@ -240,7 +257,7 @@ export default function InvoiceDetailPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errors.pdfFailed"));
+      setError(t("errors.pdfFailed"));
     }
   };
 

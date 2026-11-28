@@ -1,6 +1,13 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-044 — Gửi hoá đơn từ danh sách bị chặn sai + vị trí báo lỗi (Nhóm 8, vòng cuối)
+- Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
+- Branch: fix/FIX-044-invoice-send-list-fix
+- Nguồn: nghiệm thu vòng cuối của PO (2026-11-28): FIX-043 đạt 3/4, mục Invoices chưa đạt. Nguyên nhân gốc tìm thấy khi PO chất vấn: trang danh sách Invoices có bước kiểm tra trước phía client dựa vào `invoice.items`, nhưng API danh sách (`InvoiceController::index`) KHÔNG nạp items (chỉ `client/project/agency`; `InvoiceResource` chỉ xuất items khi đã nạp — vốn chỉ có ở trang chi tiết) → `items` rỗng với MỌI dòng → bước kiểm tra chặn Send của mọi hoá đơn ngay tại client, API không bao giờ được gọi; trang chi tiết gọi thẳng API (API đếm items thật trong DB) nên gửi bình thường. FIX-043 mới sửa lớp hiển thị nên chưa chạm tới lỗi này. PO chốt thêm quy ước: lỗi thao tác ở trang danh sách hiện ở vùng báo lỗi PHÍA TRÊN bảng, không inline trong dòng/bảng (gây xê dịch UI).
+- Nội dung: (1) bỏ hẳn bước kiểm tra items phía client ở danh sách — API là nguồn sự thật duy nhất; (2) xoá cơ chế inlineErrors trong bảng/thẻ — lỗi Send/Cancel/Delete hiện ở vùng lỗi đầu trang, map theo mã lỗi sang thông điệp bản địa hoá (INVOICE_EMPTY, INVOICE_NOT_EDITABLE, CANNOT_CANCEL_INVOICE, CANNOT_DELETE_INVOICE), fallback dùng khóa *Failed bản địa hoá; (3) trang chi tiết hoá đơn: các catch Send/Cancel/Delete (và load/xoá payment/PDF) cũng map mã lỗi/fallback bản địa hoá thay vì để lọt message thô của API.
+- Acceptance Criteria: tsc/build/Vitest xanh; i18n parity + quét khóa lơ lửng bản đúng NONE missing (không thêm khóa mới — dùng lại Finance.errors hiện có); PO kiểm lại: Send từ danh sách chạy được với hoá đơn có dòng hàng; hoá đơn trống thật thì lỗi bản địa hoá hiện phía trên bảng, bảng không xê dịch.
+
 ## FIX-043 — Sửa nghiệm thu Nhóm 8 vòng 1 (raw error code ở Invoices, Reports)
 - Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: IN_PROGRESS
 - Branch: fix/FIX-043-group8-acceptance-fixes
