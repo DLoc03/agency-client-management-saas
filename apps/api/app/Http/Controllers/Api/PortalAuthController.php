@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Concerns\HandlesPasswordReset;
 use App\Http\Controllers\Api\Concerns\IssuesMembershipTokens;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Models\Membership;
 use App\Models\User;
 use App\Support\Tenant;
@@ -68,6 +69,20 @@ class PortalAuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Identity-level profile update (BE-013, DEC-031) — Portal mirror
+     * of the staff endpoint. Locale belongs to the identity, not to
+     * any membership, so the route sits outside the tenant
+     * middleware, exactly like the staff surface.
+     */
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->forceFill(['locale' => $request->validated()['locale']])->save();
+
+        return response()->json(['data' => $this->identityPayload($user)]);
     }
 
     public function me(Request $request): JsonResponse
