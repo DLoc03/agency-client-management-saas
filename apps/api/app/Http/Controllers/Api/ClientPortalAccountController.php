@@ -16,8 +16,10 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Agency-side management of a client's Portal access
@@ -69,7 +71,19 @@ class ClientPortalAccountController extends Controller
 
             $invitation->loadMissing(['agency', 'inviter']);
             $acceptUrl = rtrim(config('app.frontend_url'), '/').'/portal/accept-invitation?token='.$rawToken;
-            Mail::to($email)->send(new InvitationMail($invitation, $acceptUrl));
+            try {
+                Mail::to($email)->send(new InvitationMail($invitation, $acceptUrl));
+            } catch (Throwable $e) {
+                // FIX-045: same isolation as InvitationController —
+                // a mail transport failure must not fail the grant;
+                // the invitation stays pending and the email can be
+                // sent again once the transport recovers.
+                Log::warning('Failed to send invitation email.', [
+                    'invitation_id' => $invitation->id,
+                    'recipient' => $invitation->email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             return (new InvitationResource($invitation))
                 ->response()->setStatusCode(201);

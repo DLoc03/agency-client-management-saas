@@ -1,6 +1,16 @@
 # TASK.md — Danh sách task theo ID
 Quy tắc ghi file này xem tại `docs/CONVENTIONS.md` mục F.2. Luồng trạng thái: `TODO → IN_PROGRESS → IN_REVIEW → DONE` · nhánh: `BLOCKED`, `REOPEN`.
 
+## FIX-045 — Email lời mời chịu lỗi transport (không 500 thao tác chính)
+- Assignee: Backend (Muse) · Level: L2 · Status: IN_PROGRESS
+- Branch: fix/FIX-045-invitation-mail-resilience
+- Progress: Bọc try/catch quanh điểm gửi mail dùng chung `InvitationController::sendMail` (áp cho cả store + resend) và điểm gửi inline trong `ClientPortalAccountController::store` (cấp Portal qua lời mời): lỗi transport bị nuốt + ghi `Log::warning` kèm invitation_id/recipient/error theo mẫu Notifier; thao tác chính trả response thành công như cũ, lời mời giữ trạng thái pending để gửi lại khi mail hồi phục. Thêm `InvitationMailResilienceTest` (3 test: store staff, resend, portal grant — mail hỏng vẫn 201/200 và lời mời tồn tại ở trạng thái pending).
+- Blocked by: —
+- Acceptance Criteria: Gửi lời mời / gửi lại / cấp Portal khi mail transport hỏng vẫn trả response thành công và lời mời tồn tại; toàn bộ PHPUnit xanh trên SQLite + MySQL; Pint PASS.
+- Handoff: OpenCode QA review, KHÔNG tự review, KHÔNG merge.
+
+---
+
 ## FIX-044 — Gửi hoá đơn từ danh sách bị chặn sai + vị trí báo lỗi (Nhóm 8, vòng cuối)
 - Assignee: Frontend (Muse thay vai theo convention 2026-11-23) · Level: L2 · Status: DONE
 - Branch: fix/FIX-044-invoice-send-list-fix
